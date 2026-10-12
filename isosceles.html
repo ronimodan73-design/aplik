@@ -87,9 +87,9 @@ footer{text-align:center;color:var(--mute);font-size:14px;margin-top:20px}
 </head>
 <body>
 <div class="wrap">
-<header><h1>📐 משולש שווה שוקיים</h1><div><button class="ib" onclick="go('home')" title="בית">🏠</button> <button class="ib" onclick="fs()" title="מסך מלא">⛶</button></div></header>
+<header><div><h1>📐 משולש שווה שוקיים</h1><div style="font-size:14px;color:var(--mute)">שחקים · ערכה: רוני מודן</div></div><div><button class="ib" onclick="go('home')" title="בית">🏠</button> <button class="ib" onclick="fs()" title="מסך מלא">⛶</button></div></header>
 <main id="app"></main>
-<footer>ערכה: רוני מודן · כיתה ט׳</footer>
+<footer>ערכה: רוני מודן · שחקים · כיתה ט׳</footer>
 </div>
 <div class="burst" id="burst"></div>
 <script>
@@ -321,7 +321,7 @@ function finish(){const sc=Math.round(S.pts/NQ*100),L=S.L;DB.last[L]=sc;DB.best[
  <button class="btn ${L<3&&sc>=70?'sec':''}" onclick="go('play',${L})">↻ שוב את רמה ${L+1} (שאלות חדשות)</button>
  <button class="btn sec" onclick="go('report')">📊 הציון שלי ורמת החשיבה</button></div>`}
 function report(){const tl=thinkLevel(),miss=[...new Set(DB.miss.flat())],d=new Date().toLocaleDateString('he-IL');
- app().innerHTML=`<div class="card"><div class="qt">📊 הציון שלי – משולש שווה שוקיים</div>
+ app().innerHTML=`<div class="card"><div class="qt">📊 הציון שלי – משולש שווה שוקיים</div><div style="color:var(--mute);font-size:15px">שחקים · ערכה: רוני מודן</div>
  <input class="name" placeholder="השם שלי" value="${(DB.name||'').replace(/"/g,'')}" oninput="DB.name=this.value;save()"><div style="color:var(--mute);font-size:15px;margin:6px 0">${d}</div>
  <table><tr><th>רמה</th><th>הכי טוב</th><th>אחרון</th></tr>${LV.map((l,i)=>`<tr><td>${l.e} ${i+1}. ${l.n}</td><td><b>${DB.best[i]??'–'}</b> ${stars(DB.best[i])}</td><td>${DB.last[i]??'–'}</td></tr>`).join('')}</table>
  ${DB.exam?`<p><b>📝 בחן את עצמך:</b> הכי טוב ${DB.exam.best} · אחרון ${DB.exam.last}${DB.exam.lastTl>=0?' · רמה '+(DB.exam.lastTl+1):''}</p>`:''}
