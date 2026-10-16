@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>המסע שלי במתמטיקה</title>
+<style>
+:root{
+  --bg:#f6f8fc; --card:#ffffff; --ink:#1f2a44; --soft:#6b7690; --line:#e3e8f2;
+  --ok:#2e9e5b; --okbg:#e8f7ee; --help:#e07b1a; --helpbg:#fff4e8; --main:#2f6fd6;
+  --p0:#2e9e5b; --p1:#2f6fd6; --p2:#e07b1a; --p3:#8a4fd1; --p4:#d6428a;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--ink);font-family:'Segoe UI',Arial,sans-serif;font-size:19px;line-height:1.5}
+body{min-height:100vh;display:flex;flex-direction:column}
+.wrap{width:100%;max-width:640px;margin:0 auto;padding:14px 16px 24px;flex:1}
+.top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
+.top h1{font-size:22px}
+.iconbtn{border:2px solid var(--line);background:var(--card);border-radius:14px;min-width:48px;height:48px;font-size:22px;cursor:pointer}
+.card{background:var(--card);border-radius:20px;padding:18px;box-shadow:0 2px 10px rgba(30,50,90,.07);margin-bottom:14px}
+.btn{display:block;width:100%;border:none;border-radius:16px;padding:16px;font-size:20px;font-weight:700;cursor:pointer;background:var(--main);color:#fff;margin-top:12px;font-family:inherit}
+.btn.ok{background:var(--ok)}
+.btn.ghost{background:var(--card);color:var(--main);border:2px solid var(--main)}
+.hidden{display:none!important}
+.n{direction:ltr;unicode-bidi:isolate;display:inline-block;font-weight:700}
+/* worlds */
+.world{margin-bottom:12px}
+.world h2{font-size:19px;margin-bottom:8px}
+.station{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:right;border:2px solid var(--line);background:var(--card);border-radius:16px;padding:14px 16px;font-size:18px;margin-bottom:8px;font-family:inherit;color:var(--ink);cursor:pointer}
+.station.on{border-color:var(--main)}
+.station.off{opacity:.45;cursor:default}
+.stars{color:#f2b705;letter-spacing:2px;white-space:nowrap}
+/* house */
+.house{direction:ltr;display:flex;justify-content:center;gap:6px;margin:10px auto 4px}
+.roomwrap{display:flex;flex-direction:column;align-items:center;gap:4px}
+.room{width:64px;border:3px solid;border-radius:12px;overflow:hidden;background:#fff;transition:all .3s}
+.room .lbl{font-size:14px;font-weight:700;color:#fff;text-align:center;padding:3px 2px;direction:rtl;min-height:44px;display:flex;align-items:center;justify-content:center;line-height:1.15}
+.room .dg{font-size:34px;font-weight:800;text-align:center;height:56px;line-height:56px}
+.room.hl{transform:translateY(-4px);box-shadow:0 0 0 5px rgba(255,200,0,.55)}
+.room.dim{opacity:.3}
+.val{font-size:16px;font-weight:700;min-height:22px;opacity:0;transition:opacity .5s}
+.val.show{opacity:1}
+.roof{text-align:center;font-size:15px;color:var(--soft)}
+.rowlab{text-align:center;font-weight:700;margin-top:6px}
+/* question */
+.prog{height:12px;background:var(--line);border-radius:8px;overflow:hidden;margin:4px 0 6px}
+.prog i{display:block;height:100%;background:var(--ok);width:0;transition:width .4s}
+.qcount{font-size:15px;color:var(--soft);text-align:center}
+.prompt{font-size:22px;font-weight:700;text-align:center;margin:8px 0}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.opt{border:3px solid var(--line);background:#fff;border-radius:16px;font-size:26px;font-weight:800;padding:14px 6px;cursor:pointer;font-family:inherit;color:var(--ink);direction:ltr;min-height:66px}
+.opt:disabled{opacity:.3;cursor:default;text-decoration:line-through}
+.opt.right{border-color:var(--ok);background:var(--okbg);opacity:1;text-decoration:none}
+.fb{border-radius:16px;padding:14px 16px;margin-top:14px;font-size:19px}
+.fb.ok{background:var(--okbg);border:2px solid var(--ok)}
+.fb.help{background:var(--helpbg);border:2px solid var(--help)}
+.fb h3{font-size:20px;margin-bottom:4px}
+.levels{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.lv{border:2px solid var(--line);background:#fff;border-radius:16px;padding:14px 8px;font-size:17px;cursor:pointer;font-family:inherit;color:var(--ink);text-align:center}
+.lv b{display:block;font-size:20px;color:#f2b705}
+.lv.done{border-color:var(--ok);background:var(--okbg)}
+.big{font-size:60px;text-align:center}
+.center{text-align:center}
+input.name{width:100%;font-size:20px;padding:12px;border:2px solid var(--line);border-radius:14px;font-family:inherit;text-align:center}
+footer{text-align:center;font-size:13px;color:var(--soft);padding:10px}
+@keyframes pop{0%{transform:scale(.9);opacity:0}100%{transform:scale(1);opacity:1}}
+.pop{animation:pop .35s ease-out}
+.fam{display:flex;flex-direction:column;align-items:stretch}
+.famroof{position:relative;height:58px;display:flex;align-items:flex-end;justify-content:center}
+.famroof svg{position:absolute;inset:0;width:100%;height:100%}
+.famroof span{position:relative;font-size:13px;font-weight:800;color:#fff;padding-bottom:6px;direction:rtl;white-space:nowrap}
+.rooms{display:flex;gap:3px;background:#fff;border:3px solid var(--fc);border-top:none;border-radius:0 0 12px 12px;padding:4px}
+.house{gap:10px}
+.room{width:50px;border-radius:9px}
+.room .lbl{font-size:12px;min-height:40px}
+.room.empty{border-style:dashed;opacity:.55}
+@media (max-width:420px){.house{gap:6px}.rooms{gap:2px;padding:3px}.room{width:45px}.room .dg{font-size:28px;height:50px;line-height:50px}.room .lbl{font-size:11px}.val{font-size:11.5px}}
+.nl{width:100%;max-width:560px;display:block;margin:6px auto;direction:ltr}
+.nl .arc{stroke-dasharray:140;stroke-dashoffset:140;animation:draw .5s forwards}
+.nl .arct{opacity:0;animation:fadein .4s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}@keyframes fadein{to{opacity:1}}
+.qbox{display:inline-block;min-width:1.6em;border:3px dashed var(--help);border-radius:8px;color:var(--help);text-align:center;padding:0 4px}
+.eq{font-size:min(5.2vw,24px);line-height:1.8}
+.opts.wide{grid-template-columns:1fr}.opts.wide .opt{font-size:min(5.6vw,24px)}
+.vt{direction:ltr;margin:8px auto;border-collapse:collapse;font-size:30px;font-weight:800}
+.vt td{width:34px;height:42px;text-align:center;padding:0}
+.vt td.op{width:30px;color:var(--ink)!important}
+.vt tr.bar td{height:7px;border-radius:4px}.vt tr.bar td:first-child{background:none}
+.vt tr.cr td{height:22px;font-size:17px;color:var(--help);vertical-align:bottom}
+.vt tr.line td{border-top:3px solid var(--ink)}.vt tr.line td:first-child{border-top:none}
+.vt td.hl{background:#fff3c4;border-radius:8px}
+.vt td.qcell{text-align:center}
+.vlab{font-weight:700;color:var(--soft);margin-top:6px}
+.shop{margin:8px auto;border-collapse:collapse;font-size:19px;min-width:200px}
+.shop th{background:var(--main);color:#fff;padding:6px 14px}.shop td{border:2px solid var(--line);padding:6px 14px;text-align:center}
+.shop tr.hl td{background:#fff3c4;font-weight:800}
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;line-height:1.1;margin:0 2px;direction:ltr}
+.fr b{border-bottom:3px solid currentColor;padding:0 4px}.fr i{font-style:normal}
+.mx{display:inline-flex;align-items:center;gap:2px;direction:ltr;vertical-align:middle}
+.fps{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:6px 0;direction:ltr}
+.fp{width:110px;height:auto}.fp.bar{width:200px}
+.opt .fp{width:100px}.opt .fp.bar{width:180px}
+.clk{width:150px;height:150px}
+.fps .clk{width:120px;height:120px}
+.conv{font-size:20px;margin:4px 0}
+.gs{width:100%;max-width:220px;display:block;margin:6px auto}
+.opt .gs{max-width:170px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <button class="iconbtn" id="homeBtn" aria-label="בית">🏠</button>
+    <h1 id="title">המסע שלי במתמטיקה</h1>
+    <button class="iconbtn" id="soundBtn" aria-label="צליל">🔇</button>
+  </div>
+  <div id="screen"></div>
+</div>
+<footer>ערכה: רוני מודן</footer>
+
+<script>
+/* ===== נתונים קבועים ===== */
+const PN=['אחדות','עשרות','מאות','אלפים','עשרות אלפים','מאות אלפים'];
+const PC=['var(--p0)','var(--p1)','var(--p2)','var(--p3)','var(--p4)','#b8860b'];
+const WORLDS=[
+ {name:'🔢 עולם המספרים',st:[{id:'decimal',name:'מבנה עשרוני – בית המספרים'},{id:'expand',name:'פירוק לפי ערך המקום'},{id:'line',name:'ישר המספרים'}]},
+ {name:'➕ עולם הפעולות',st:[{id:'ops',name:'ארבע פעולות החשבון'},{id:'cmp',name:'השוואת תרגילים'},{id:'miss',name:'מספר חסר במשוואה'},{id:'dist',name:'כפל בעזרת פילוג'},{id:'times',name:'גדול פי, קטן פי'}]},
+ {name:'➗ עולם ההתחלקות',st:[{id:'div56',name:'סימני התחלקות ב־2, 3, 5 ו־6'},{id:'prime',name:'מספרים ראשוניים'}]},
+ {name:'📖 עולם הסיפורים',st:[{id:'story',name:'בעיות מילוליות'},{id:'price',name:'בעיות מחירון'}]},
+ {name:'🍕 עולם השברים',st:[{id:'frac1',name:'משמעות השבר ושבר בציור'},{id:'frac2',name:'שבר גדול משלם, מספר מעורב והשלמה לשלם'}]},
+ {name:'📏 עולם המדידות',st:[{id:'length',name:'מדידות אורך'},{id:'weight',name:'משקל: גרם וק״ג'},{id:'clock',name:'קריאת שעון וחישוב זמנים'}]},
+ {name:'📐 עולם הצורות והנתונים',st:[{id:'parallel',name:'צלעות מקבילות ושרטוט מקבילה'},{id:'angles',name:'סוגי זוויות'},{id:'tri',name:'סוגי משולשים'},{id:'quad',name:'מלבן, ריבוע ומעוין'},{id:'perim',name:'היקף ושטח'},{id:'data',name:'דיאגרמה וחקר נתונים'}]}
+];
+const LEVELS_DEC=[
+ {t:'איפה הספרה גרה?',s:'★'},
+ {t:'כמה הספרה שווה?',s:'★★'},
+ {t:'בונים מספר',s:'★★★'},
+ {t:'מי גדול יותר?',s:'★★★★'}
+];
+const PER=20;
+
+/* ===== שמירה ===== */
+let S={name:'',sound:false,done:{}};
+try{const x=JSON.parse(localStorage.getItem('roniMathJourney')||'null');if(x)S=Object.assign(S,x);}catch(e){}
+function save(){try{localStorage.setItem('roniMathJourney',JSON.stringify(S));}catch(e){}}
+
+/* ===== כלים ===== */
+const $=id=>document.getElementById(id);
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=R(0,i);[a[i],a[j]]=[a[j],a[i]];}return a;};
+const fmt=n=>Number(n).toLocaleString('en-US');
+const N=n=>`<span class="n">${fmt(n)}</span>`;
+const C=(p,txt)=>`<b style="color:${PC[p]}">${txt}</b>`;
+const digs=n=>String(n).split('').reverse().map(Number);           // מקום 0 = אחדות
+const fromDigs=d=>Number(d.slice().reverse().join(''));
+function distinctDigits(len,min){const pool=shuffle([...Array(10-min)].map((_,i)=>i+min));return pool.slice(0,len);}
+function beep(f){if(!S.sound)return;try{const a=new (window.AudioContext||window.webkitAudioContext)();const o=a.createOscillator(),g=a.createGain();o.frequency.value=f||660;g.gain.value=.08;o.connect(g);g.connect(a.destination);o.start();g.gain.exponentialRampToValueAtTime(.0001,a.currentTime+.35);o.stop(a.currentTime+.36);}catch(e){}}
+
+/* ===== ציור בית המספרים ===== */
+function house(n,opt={}){
+  const d=n===null?[]:digs(n);
+  const len=Math.max(opt.len||d.length,d.length);
+  const room=p=>{
+    const used=p<len;
+    const cls=(opt.hl&&opt.hl.includes(p))?' hl':((opt.hl&&opt.dimOthers)?' dim':'');
+    const dg=(opt.blank||p>=d.length)?'&nbsp;':d[p];
+    const v=(opt.vals&&p<d.length)?fmt(d[p]*10**p):'';
+    return `<div class="roomwrap"><div class="room${cls}${used?'':' empty'}" style="border-color:${PC[p]}"><div class="lbl" style="background:${PC[p]}">${PN[p]}</div><div class="dg" style="color:${PC[p]}">${dg}</div></div>${opt.vals?`<div class="val" style="color:${PC[p]}" data-p="${p}">${v}</div>`:''}</div>`;
+  };
+  const fam=(name,col,ps)=>`<div class="fam" style="--fc:${col}"><div class="famroof"><svg viewBox="0 0 100 58" preserveAspectRatio="none"><polygon points="50,2 100,58 0,58" fill="${col}"/></svg><span>${name}</span></div><div class="rooms">${ps.map(room).join('')}</div></div>`;
+  let h='<div class="house">';
+  if(len>3)h+=fam('משפחת האלפים','#6b4bb8',[5,4,3]);
+  h+=fam('משפחת היחידות','#3a7d5c',[2,1,0]);
+  return h+'</div>';
+}
+
+/* ===== מחוללי שאלות – כל תשובה שגויה מביאה הסבר משלה ===== */
+const GEN_DEC=[
+ // ★ איפה הספרה גרה
+ function(i){
+   const len=i<6?3:(i<14?4:(i<18?5:6)), d=distinctDigits(len,1), n=fromDigs(d), p=R(0,len-1);
+   const others=shuffle([...Array(len).keys()].filter(q=>q!==p)).slice(0,2);
+   const opts=[{v:d[p],ok:true}].concat(others.map(q=>({v:d[q],q})));
+   return {
+     prompt:`איזו ספרה גרה בבית ה${C(p,PN[p])}?`, show:{n,hl:[p]},
+     opts:shuffle(opts).map(o=>({label:o.v,ok:!!o.ok,
+       why:o.ok?'':`הספרה ${o.v} גרה בבית ה${C(o.q,PN[o.q])}.<br>אנחנו מחפשים את הבית ה${C(p,'צבעוני הזה – '+PN[p])}. תסתכל על הכותרת של החדר.`,
+       hl:o.ok?[p]:[p,o.q]})),
+     right:`נכון! הספרה ${C(p,d[p])} גרה בבית ה${C(p,PN[p])}.`
+   };
+ },
+ // ★★ כמה הספרה שווה
+ function(i){
+   const len=i<5?3:(i<12?4:(i<17?5:6)), d=distinctDigits(len,2), n=fromDigs(d), p=R(1,len-1), dg=d[p], val=dg*10**p;
+   let ks=[0,p,p-1>0?p-1:null,p+1<=5?p+1:null].filter(k=>k!==null);
+   ks=[...new Set(ks)].slice(0,4);
+   if(ks.length<4)ks.push(p+2<=5?p+2:p-2);
+   const opts=[...new Set(ks)].map(k=>({v:dg*10**k,k}));
+   return {
+     prompt:`בתוך המספר ${N(n)}, כמה שווה הספרה ${C(p,dg)}?`, show:{n,hl:[p]},
+     opts:shuffle(opts).map(o=>({label:fmt(o.v),ok:o.k===p,
+       why:o.k===p?'':(o.k===0
+         ?`${dg} זו רק הספרה.<br>היא גרה בבית ה${C(p,PN[p])}, ולכן היא שווה ${C(p,dg+' '+PN[p])} = ${C(p,N(val))}.`
+         :`${N(o.v)} זה מה שהספרה הייתה שווה אם היא גרה בבית ה${C(o.k,PN[o.k])}.<br>אבל היא גרה בבית ה${C(p,PN[p])}.`),
+       hl:[p]})),
+     right:`נכון! ${C(p,dg)} גרה בבית ה${C(p,PN[p])}, ולכן היא שווה ${C(p,N(val))}.`,
+     after:{n,vals:true,hl:[p]}
+   };
+ },
+ // ★★★ בונים מספר (עם בית ריק)
+ function(i){
+   const len=i<8?4:(i<15?5:6), z=R(1,len-2), d=[];
+   for(let p=0;p<len;p++)d[p]=p===z?0:R(2,9);
+   const n=fromDigs(d);
+   const words=[];for(let p=len-1;p>=0;p--)words.push(C(p,d[p]+' '+PN[p]));
+   const sum=[];for(let p=len-1;p>=0;p--)if(d[p])sum.push(C(p,N(d[p]*10**p)));
+   const form=i%2;
+   const prompt=form?`איזה מספר יוצא?<br><span class="n" style="white-space:nowrap;font-size:min(4.6vw,22px)">${sum.join(' + ')}</span>`:`${words.join(', ')}.<br>איזה מספר זה?`;
+   const dropped=fromDigs(d.filter((x,p)=>p!==z));
+   const reversed=Number(String(n).split('').reverse().join(''));
+   const zw=d.slice();const z2=z===1?2:1;if(z2<len-1||len>3){[zw[z],zw[z2]]=[zw[z2],zw[z]];}
+   const wrongZero=fromDigs(zw);
+   let pool=[{v:n,ok:true},{v:dropped,t:'drop'},{v:reversed,t:'rev'},{v:wrongZero,t:'zw'}];
+   const seen=new Set();pool=pool.filter(o=>!seen.has(o.v)&&seen.add(o.v));
+   const W={
+     drop:`שכחת את הבית הריק.<br>אין ${C(z,PN[z])} – ולכן כותבים ${C(z,'0')} בבית ה${C(z,PN[z])}. בלי האפס, כל הספרות זזות לבית הלא נכון.`,
+     rev:`כתבת את הספרות בסדר הפוך.<br>ה${C(0,'אחדות')} תמיד בחדר הכי ימני, וה${C(len-1,PN[len-1])} בחדר הכי שמאלי.`,
+     zw:`ה־0 נכנס לבית הלא נכון.<br>הבית הריק הוא בית ה${C(z,PN[z])} – שם צריך לשים ${C(z,'0')}.`
+   };
+   return {
+     prompt, show:{n,blank:true},
+     opts:shuffle(pool).map(o=>({label:fmt(o.v),ok:!!o.ok,why:o.ok?'':W[o.t],hl:[z],reveal:true})),
+     right:`נכון! כל ספרה בחדר שלה, ובבית ה${C(z,PN[z])} הריק שמנו ${C(z,'0')}.`,
+     after:{n,hl:[z]}
+   };
+ },
+ // ★★★★ מי גדול יותר
+ function(i){
+   let A,B,q,type;
+   if(i%4===3){ // אורך שונה
+     type='len'; const L=i<10?3:4;
+     const da=[];for(let p=0;p<L;p++)da[p]=R(0,2);da[L]=1;A=fromDigs(da);
+     const db=[];for(let p=0;p<L;p++)db[p]=R(7,9);B=fromDigs(db);q=L;
+   }else{
+     type='same'; const L=i<8?4:(i<15?5:6); q=R(1,L-2);
+     const da=[],db=[];
+     for(let p=L-1;p>q;p--){const x=R(p===L-1?1:0,9);da[p]=x;db[p]=x;}
+     const a=R(3,9);da[q]=a;db[q]=R(0,a-1);if(q===L-1&&db[q]===0)db[q]=1;
+     for(let p=q-1;p>=0;p--){da[p]=R(0,3);db[p]=R(6,9);}
+     A=fromDigs(da);B=fromDigs(db);
+   }
+   const len=Math.max(String(A).length,String(B).length);
+   const top=Math.random()<.5;const first=top?A:B,second=top?B:A;
+   const dA=digs(A),dB=digs(B);
+   const eq=[];for(let p=len-1;p>q;p--)eq.push(p);
+   let why;
+   if(type==='len')why=`ל־${N(B)} יש ספרות גדולות, אבל ל־${N(A)} יש בית ${C(q,PN[q])} – ול־${N(B)} אין בכלל!<br>מי שיש לו בית גדול יותר – הוא הגדול.`;
+   else why=`הסתכלת על הספרות שבסוף.<br>משווים מהבית ה${C(len-1,'הכי שמאלי')} – הבית הכי גדול.<br>`+(eq.length?eq.map(p=>`בית ה${C(p,PN[p])}: ${dA[p]} = ${dB[p]}, ממשיכים.`).join('<br>')+'<br>':'')+`בית ה${C(q,PN[q])}: ${C(q,dA[q])} גדול מ־${C(q,dB[q])}. סיימנו – ${N(A)} גדול יותר.`;
+   return {
+     prompt:'איזה מספר גדול יותר?', two:{first,second,len,hl:[q]},
+     opts:[first,second].map(v=>({label:fmt(v),ok:v===A,why:v===A?'':why,hl:[q]})),
+     right:`נכון! השוואנו מהבית הגדול ביותר, ובבית ה${C(q,PN[q])} מצאנו את ההבדל.`
+   };
+ }
+];
+
+
+const REG=[];
+/* ===== תחנה: ישר המספרים ===== */
+const LC={tick:'#2f6fd6',arrow:'#e07b1a',jump:'#2e9e5b',letter:'#8a4fd1'};
+const K=(col,txt)=>`<b style="color:${col}">${txt}</b>`;
+const KN=(col,n)=>K(col,N(n));
+const pick=a=>a[R(0,a.length-1)];
+const JP=n=>n===1?'קפיצה אחת':n+' קפיצות';
+function nline(c,x={}){
+  const L0=36,L1=306,J=c.J,sp=(L1-L0)/J,X=t=>L0+t*sp;
+  const val=t=>c.start+t*c.step;
+  let s=`<svg class="nl" viewBox="0 0 340 132" xmlns="http://www.w3.org/2000/svg" direction="ltr">`;
+  s+=`<line x1="${L0-14}" y1="72" x2="${L1+12}" y2="72" stroke="#1f2a44" stroke-width="3"/><polygon points="${L1+22},72 ${L1+10},65 ${L1+10},79" fill="#1f2a44"/>`;
+  if(x.arcs){
+    const {from,to,label}=x.arcs,dir=to>from?1:-1;let n=0;
+    for(let t=from;t!==to;t+=dir,n++){
+      const a=X(t),b=X(t+dir),hgt=Math.min(32,sp*.75);
+      s+=`<path class="arc" style="animation-delay:${n*.25}s" d="M${a} 64 Q${(a+b)/2} ${64-hgt*1.6} ${b} 64" stroke="${LC.jump}" stroke-width="3" fill="none"/>`;
+      if(label&&(sp>=45||n===0))s+=`<text class="arct" style="animation-delay:${n*.25}s" x="${(a+b)/2}" y="${64-hgt*.8-4}" text-anchor="middle" font-size="13" font-weight="700" fill="${LC.jump}">${dir>0?'+':'−'}${fmt(c.step)}</text>`;
+    }
+  }
+  for(let t=0;t<=J;t++)if(c.ticks!==false||c.labels.includes(t))
+    s+=`<line x1="${X(t)}" y1="63" x2="${X(t)}" y2="81" stroke="#1f2a44" stroke-width="2.5"/>`;
+  c.labels.forEach(t=>s+=`<text x="${X(t)}" y="101" text-anchor="middle" font-size="15" font-weight="800" fill="${LC.tick}">${fmt(val(t))}</text>`);
+  if(c.letters)Object.entries(c.letters).forEach(([t,l])=>{t=+t;
+    s+=`<circle cx="${X(t)}" cy="72" r="6.5" fill="${LC.letter}"/><text x="${X(t)}" y="52" text-anchor="middle" font-size="19" font-weight="800" fill="${LC.letter}">${l}</text>`;});
+  if(c.arrow!=null){const ax=X(c.arrow);
+    s+=`<polygon points="${ax},62 ${ax-9},43 ${ax+9},43" fill="${LC.arrow}"/><text x="${ax}" y="36" text-anchor="middle" font-size="19" font-weight="800" fill="${LC.arrow}">${x.reveal?fmt(x.reveal):'?'}</text>`;}
+  (x.marks||[]).forEach(m=>s+=`<text x="${X(m.t)}" y="${m.y||124}" text-anchor="middle" font-size="14" font-weight="800" fill="${m.col}">${m.text}</text>`);
+  return s+'</svg>';
+}
+function opts4(right,wrongs){
+  const seen=new Set([right.label]);const out=[right];
+  wrongs.forEach(w=>{if(out.length<4&&!seen.has(w.label)&&!/(^|[\s>])-\d/.test(w.label)){seen.add(w.label);out.push(w);}});
+  return shuffle(out);
+}
+const nearLab=(labels,t)=>Math.max(...labels.filter(l=>l<=t));
+const GEN_LINE=[
+ // ★ מה המספר בחץ
+ function(i){
+   const step=i<7?1:(i<14?10:100), base=R(0,step===1?3:9)*5*step;
+   let k;do{k=R(1,9);}while(k===5);
+   const ans=base+k*step, lab=k<5?0:5, from=base+lab*step;
+   const line={start:base,step,J:10,labels:[0,5,10],arrow:k};
+   const pm=`תבדוק שוב את הספירה.<br>מ־${KN(LC.tick,from)} עד החץ יש ${K(LC.jump,JP(k-lab))}, וכל קפיצה שווה ${KN(LC.jump,step)}.`;
+   const one=`כל קפיצה כאן שווה ${KN(LC.jump,step)}, ולא 1.<br>תסתכל על המספרים הכתובים: מ־${KN(LC.tick,base)} עד ${KN(LC.tick,base+5*step)} יש 5 קפיצות.`;
+   const vis={arcs:{from:lab,to:k,label:true}};
+   return {prompt:'איזה מספר מסמן החץ?',line,ans,
+     opts:opts4({label:fmt(ans),ok:true},[
+       step>1?{label:fmt(from+(k-lab)),why:one,vis}:{label:fmt(ans+2),why:pm,vis},
+       {label:fmt(ans+step),why:pm,vis},{label:fmt(ans-step),why:pm,vis},{label:fmt(ans+2*step),why:pm,vis}]),
+     rightVis:vis,
+     right:`נכון! ${KN(LC.tick,from)} ועוד ${K(LC.jump,JP(k-lab)+' של '+fmt(step))} = ${KN(LC.arrow,ans)}`};
+ },
+ // ★★ כמה שווה קפיצה / חץ כשכתובים רק הקצוות
+ function(i){
+   const step=pick(i<7?[2,5,10]:(i<14?[10,20,25,50]:[50,100,200,500])), J=pick([4,5,10]);
+   const start=i<6?0:R(1,5)*step*J, end=start+J*step, D=J*step;
+   const div=`מחלקים את המרחק ${KN(LC.tick,D)} ל־${K(LC.jump,J+' קפיצות')} שוות: <span class="n">${fmt(D)} : ${J}</span>`;
+   if(i%2===0){
+     const line={start,step,J,labels:[0,J]};
+     const cnt={arcs:{from:0,to:J,label:false}};
+     const ws=[{label:fmt(J),why:`${J} זה מספר הקפיצות.<br>שאלנו כמה שווה כל קפיצה.<br>${div}`,vis:cnt},
+       {label:fmt(D),why:`${N(D)} זה כל המרחק מ־${KN(LC.tick,start)} עד ${KN(LC.tick,end)}.<br>${div}`,vis:cnt}];
+     if(D%(J+1)===0)ws.push({label:fmt(D/(J+1)),why:`ספרת ${J+1} קווים, אבל יש רק ${K(LC.jump,J+' קפיצות')} – הרווחים בין הקווים.<br>${div}`,vis:cnt});
+     ws.push({label:fmt(step*2),why:`בדוק: ${J} קפיצות של ${N(step*2)} מגיעות ל־${N(J*step*2)}, ולא ל־${N(D)}.<br>${div}`,vis:cnt});
+     ws.push({label:fmt(step+ (step>=10?step/2:1)),why:`בדוק: ${div}`,vis:cnt});
+     return {prompt:'כמה שווה כל קפיצה?',line,ans:null,
+       opts:opts4({label:fmt(step),ok:true},ws),rightVis:{arcs:{from:0,to:J,label:true}},
+       right:`נכון! <span class="n">${fmt(D)} : ${J} = ${fmt(step)}</span><br>כל קפיצה שווה ${KN(LC.jump,step)}.`};
+   }
+   const k=R(1,J-1), ans=start+k*step, line={start,step,J,labels:[0,J],arrow:k};
+   const why=`קודם מוצאים כמה שווה קפיצה: <span class="n">${fmt(D)} : ${J} = ${fmt(step)}</span>.<br>מ־${KN(LC.tick,start)} עד החץ יש ${K(LC.jump,JP(k))}.`;
+   const vis={arcs:{from:0,to:k,label:true}};
+   return {prompt:'איזה מספר מסמן החץ?',line,ans,
+     opts:opts4({label:fmt(ans),ok:true},[{label:fmt(start+k),why,vis},{label:fmt(ans+step),why,vis},{label:fmt(ans-step),why,vis},{label:fmt(ans+2*step),why,vis}]),
+     rightVis:vis,right:`נכון! כל קפיצה ${KN(LC.jump,step)}, ו־${k} קפיצות מ־${KN(LC.tick,start)} מגיעות ל־${KN(LC.arrow,ans)}.`};
+ },
+ // ★★★ איזו אות מסמנת את המספר
+ function(i){
+   const step=pick(i<5?[1,2]:(i<10?[5,10]:(i<15?[10,50,100]:[100,500,1000])));
+   const start=R(0,4)*10*step, labels=i<10?[0,5,10]:[0,10];
+   const pool=shuffle([1,2,3,4,6,7,8,9]).slice(0,4).sort((a,b)=>a-b);
+   const LET=['א','ב','ג','ד'], letters={};pool.forEach((t,j)=>letters[t]=LET[j]);
+   const tgt=pick(pool), X0=start+tgt*step, line={start,step,J:10,labels,letters};
+   const v=t=>start+t*step;
+   return {prompt:`איזו אות מסמנת את המספר ${KN(LC.arrow,X0)}?`,line,ans:null,
+     opts:pool.map(t=>{const lb=nearLab(labels,t);
+       return t===tgt?{label:letters[t],ok:true}:{label:letters[t],
+         why:`האות ${K(LC.letter,letters[t])} מסמנת את ${KN(LC.letter,v(t))}:<br>מ־${KN(LC.tick,v(lb))} יש ${K(LC.jump,JP(t-lb)+' של '+fmt(step))}.<br>אנחנו מחפשים את ${KN(LC.arrow,X0)}.`,
+         vis:{arcs:{from:lb,to:t,label:false},marks:[{t,text:fmt(v(t)),col:LC.letter}]}};}),
+     rightVis:{arcs:{from:nearLab(labels,tgt),to:tgt,label:false},marks:[{t:tgt,text:fmt(X0),col:LC.arrow}]},
+     right:`נכון! מ־${KN(LC.tick,v(nearLab(labels,tgt)))} עוד ${K(LC.jump,JP(tgt-nearLab(labels,tgt)))} מגיעים ל־${KN(LC.arrow,X0)}.`};
+ },
+ // ★★★★ באמצע
+ function(i){
+   if(i%2===0){
+     const h=pick(i<10?[5,10,25,50]:[50,100,250,500]), a=R(2,9)*2*h, b=a+2*h, mid=a+h;
+     const line={start:a,step:h,J:2,labels:[0,2],arrow:1,ticks:false};
+     const ex=`המרחק בין ${KN(LC.tick,a)} ל־${KN(LC.tick,b)} הוא ${N(2*h)}.<br>חצי ממנו: ${KN(LC.jump,h)}.<br>מתחילים ב־${KN(LC.tick,a)} ומוסיפים ${KN(LC.jump,h)}.`;
+     const end=`${'%'} הוא מספר בקצה. החץ נמצא בדיוק באמצע.<br>`;
+     return {prompt:'החץ בדיוק באמצע. איזה מספר הוא מסמן?',line,ans:mid,
+       opts:opts4({label:fmt(mid),ok:true},[{label:fmt(a),why:end.replace('%',N(a))+ex},{label:fmt(b),why:end.replace('%',N(b))+ex},
+         {label:fmt(2*h),why:`${N(2*h)} זה כל המרחק בין המספרים, ולא המספר שבאמצע.<br>`+ex},{label:fmt(a+2*h+h),why:ex}]).map(o=>(o.vis={arcs:{from:0,to:1,label:true}},o)),
+       rightVis:{arcs:{from:0,to:1,label:true}},right:`נכון! <span class="n">${fmt(a)} + ${fmt(h)} = ${fmt(mid)}</span>`};
+   }
+   const step=pick(i<10?[10,100]:[100,1000]), start=R(1,9)*10*step, k=R(0,8), lo=start+k*step, hi=lo+step, half=step/2, ans=lo+half;
+   const line={start,step,J:10,labels:[0,5,10],arrow:k+.5}, lb=nearLab([0,5,10],k);
+   const ex=`החץ לא על קו – הוא בדיוק באמצע בין ${KN(LC.letter,lo)} ל־${KN(LC.letter,hi)}.<br>חצי קפיצה של ${N(step)} זה ${KN(LC.jump,half)}.`;
+   const vis={arcs:{from:lb,to:k,label:true}};
+   const ws=[{label:fmt(lo),why:ex,vis},{label:fmt(hi),why:ex,vis}];
+   if(step!==10)ws.push({label:fmt(lo+5),why:`חצי קפיצה זה לא 5.<br>כל קפיצה שווה ${N(step)}, וחצי ממנה ${KN(LC.jump,half)}.`,vis});
+   ws.push({label:fmt(ans+step),why:ex,vis});
+   return {prompt:'איזה מספר מסמן החץ?',line,ans,opts:opts4({label:fmt(ans),ok:true},ws),
+     rightVis:vis,right:`נכון! <span class="n">${fmt(lo)} + ${fmt(half)} = ${fmt(ans)}</span>`};
+ }
+];
+
+/* ===== תחנה: פירוק לפי ערך המקום ===== */
+const QB='<span class="qbox">?</span>';
+const EQ=h=>`<span class="n eq">${h}</span>`;
+const DOT='&nbsp;·&nbsp;';
+const placesDesc=len=>[...Array(len).keys()].reverse();
+const GEN_EXP=[
+ // ★ השלם את הפירוק
+ function(i){
+   const len=i<6?3:(i<12?4:(i<17?5:6)), d=[];for(let p=0;p<len;p++)d[p]=R(1,9);
+   const n=fromDigs(d), p=R(0,len-1), ans=d[p]*10**p;
+   const parts=placesDesc(len).map(q=>q===p?QB:C(q,N(d[q]*10**q)));
+   const ws=[];
+   if(p>0)ws.push({label:fmt(d[p]),why:`${d[p]} זו רק הספרה.<br>היא גרה בבית ה${C(p,PN[p])}, ולכן בפירוק כותבים כמה היא שווה: ${C(p,N(ans))}.`});
+   [p+1,p-1,p+2].forEach(k=>{if(k>=0&&k<=5&&k!==p)ws.push({label:fmt(d[p]*10**k),
+     why:`${N(d[p]*10**k)} זה ${d[p]} ${C(k,PN[k])}.<br>אבל הספרה ${C(p,d[p])} גרה בבית ה${C(p,PN[p])}, ולכן היא שווה ${C(p,N(ans))}.`});});
+   ws.forEach(w=>w.v={hl:[p],vals:true});
+   return {n,prompt:`השלם את הפירוק:<br>${EQ(N(n)+' = '+parts.join(' + '))}`,
+     v0:{hl:[p]},v1:{hl:[p],vals:true},opts:opts4({label:fmt(ans),ok:true},ws),
+     right:`נכון! ${C(p,d[p])} בבית ה${C(p,PN[p])} שווה ${C(p,N(ans))}.`};
+ },
+ // ★★ איזה פירוק נכון (מספרים עם אפס)
+ function(i){
+   const len=i<8?4:(i<15?5:6), z=R(1,len-2), d=[];
+   for(let p=0;p<len;p++)d[p]=p===z?0:R(1,9);
+   if(i%3===2&&z!==1)d[0]=0;
+   const n=fromDigs(d), nz=placesDesc(len).filter(p=>d[p]);
+   const lab=vals=>vals.map(fmt).join(' + ');
+   const right=lab(nz.map(p=>d[p]*10**p));
+   const ws=[];
+   const comp=d.filter(x=>x);              // בלי האפסים – הספרות "זזות"
+   ws.push({label:lab(placesDesc(comp.length).filter(p=>comp[p]).map(p=>comp[p]*10**p)),
+     why:`שכחת את הבית הריק.<br>ב־${N(n)} יש ${C(z,'0')} בבית ה${C(z,PN[z])}. האפס לא נכתב בפירוק, אבל הוא שומר על המקום – ולכן כל ספרה נשארת בבית שלה.`,v:{hl:[z],vals:true}});
+   const below=nz.filter(p=>p<z), q=below.length?below[0]:nz[nz.length-1];
+   const up=nz.map(p=>p===q?d[p]*10**(p+1):d[p]*10**p);
+   ws.push({label:lab(up),why:`הספרה ${C(q,d[q])} גרה בבית ה${C(q,PN[q])}, ולכן היא שווה ${C(q,N(d[q]*10**q))} ולא ${N(d[q]*10**(q+1))}.<br>היא לא נכנסה לבית הריק.`,v:{hl:[q,z],vals:true}});
+   const top=nz[0];
+   ws.push({label:lab(nz.map(p=>p===top?d[p]*10**(p-1):d[p]*10**p)),why:`הספרה ${C(top,d[top])} גרה בבית ה${C(top,PN[top])}, ולכן היא שווה ${C(top,N(d[top]*10**top))}.`,v:{hl:[top],vals:true}});
+   if(q>0)ws.push({label:lab(nz.map(p=>p===q?d[p]*10**(p-1):d[p]*10**p)),why:`הספרה ${C(q,d[q])} גרה בבית ה${C(q,PN[q])}, ולכן היא שווה ${C(q,N(d[q]*10**q))}.`,v:{hl:[q],vals:true}});
+   return {n,wide:true,prompt:`איזה פירוק נכון?<br>${EQ(N(n)+' = ?')}`,v0:{},v1:{vals:true},
+     opts:opts4({label:right,ok:true},ws),
+     right:`נכון! ${EQ(nz.map(p=>C(p,N(d[p]*10**p))).join(' + '))}<br>את ה־0 לא כותבים, אבל הוא שומר על המקום.`};
+ },
+ // ★★★ פירוק בכפל: 4 · 1,000 + ...
+ function(i){
+   const len=i<8?3:(i<15?4:5), d=distinctDigits(len,1), n=fromDigs(d), p=R(0,len-1), form=i%2;
+   const terms=placesDesc(len).map(q=>q!==p?`${C(q,d[q])}${DOT}${C(q,N(10**q))}`:(form?`${C(q,d[q])}${DOT}${QB}`:`${QB}${DOT}${C(q,N(10**q))}`));
+   const prompt=`השלם:<br>${EQ(N(n)+' = '+terms.join(' + '))}`;
+   if(!form){
+     const ws=placesDesc(len).filter(q=>q!==p).map(q=>({label:String(d[q]),v:{hl:[p,q]},
+       why:`${d[q]} גר בבית ה${C(q,PN[q])}.<br>שואלים כמה ${C(p,PN[p])} יש – תסתכל בבית ה${C(p,PN[p])}.`}));
+     ws.push({label:String(d[p]%9+1),v:{hl:[p]},why:`תסתכל בבית ה${C(p,PN[p])}: איזו ספרה גרה שם?`});
+     return {n,prompt,v0:{},v1:{hl:[p]},opts:opts4({label:String(d[p]),ok:true},ws),
+       right:`נכון! בבית ה${C(p,PN[p])} גרה הספרה ${C(p,d[p])}: <span class="n">${d[p]} · ${fmt(10**p)} = ${fmt(d[p]*10**p)}</span>`};
+   }
+   const ws=[0,1,2,3,4,5].filter(k=>k!==p&&Math.abs(k-p)<=2).map(k=>({label:fmt(10**k),v:{hl:[p]},
+     why:`כפול ${N(10**k)} מתאים לבית ה${C(k,PN[k])}.<br>הספרה ${C(p,d[p])} גרה בבית ה${C(p,PN[p])}, ולכן כופלים אותה ב־${C(p,N(10**p))}.`}));
+   return {n,prompt,v0:{},v1:{hl:[p],vals:true},opts:opts4({label:fmt(10**p),ok:true},ws),
+     right:`נכון! <span class="n">${d[p]} · ${fmt(10**p)} = ${fmt(d[p]*10**p)}</span> – ${C(p,d[p]+' '+PN[p])}.`};
+ },
+ // ★★★★ כמה מאות יש בסך הכול
+ function(i){
+   const p=i<7?1:(i<14?2:3), len=Math.min(6,p+R(2,3)), d=[];for(let q=0;q<len;q++)d[q]=R(1,9);
+   const n=fromDigs(d), ans=Math.floor(n/10**p), keep=[...Array(len).keys()].filter(q=>q>=p);
+   const trick=`<br>טריק: מכסים את כל הספרות שמימין לבית ה${C(p,PN[p])}. המספר שנשאר הוא מספר ה${C(p,PN[p])}.`;
+   const v={hl:keep,dimOthers:true};
+   const ws=[{label:fmt(d[p]),v,why:`${d[p]} זו רק הספרה בבית ה${C(p,PN[p])}.<br>אבל גם בבתים הגדולים יותר יש ${PN[p]}!`+trick}];
+   const sm=Math.floor(n/10**(p+1));if(sm>0)ws.push({label:fmt(sm),v,why:`שכחת לספור גם את הספרה שבבית ה${C(p,PN[p])}.`+trick});
+   ws.push({label:fmt(Math.floor(n/10**(p-1))),v,why:`ספרת גם את הספרה שבבית ה${C(p-1,PN[p-1])} – היא קטנה מ${PN[p]}.`+trick});
+   ws.push({label:fmt(ans+1),v,why:trick.slice(4)});
+   return {n,prompt:`כמה ${C(p,PN[p])} יש בסך הכול במספר ${N(n)}?`,v0:{},v1:v,opts:opts4({label:fmt(ans),ok:true},ws),
+     right:`נכון! מכסים את מה שמימין לבית ה${C(p,PN[p])}, ונשארים ${C(p,N(ans))}.<br>במספר ${N(n)} יש ${C(p,N(ans)+' '+PN[p])}.`};
+ }
+];
+
+/* ===== תחנה: ארבע פעולות החשבון (במאונך) ===== */
+const MINUS='−';
+function vert(rows,op,o={}){
+  const nums=[...rows,...(o.parts||[]),typeof o.res==='number'?o.res:0];
+  const W=Math.max(...nums.map(x=>String(x).length));
+  const td=(ch,p,cls)=>`<td class="${cls||''}" style="color:${PC[Math.min(p,5)]}">${ch}</td>`;
+  const row=(n,sign,cls)=>{const s=String(n);let h=`<tr class="${cls||''}"><td class="op">${sign||''}</td>`;
+    for(let p=W-1;p>=0;p--)h+=td(p<s.length?s[s.length-1-p]:'',p,o.hl&&o.hl.includes(p)?'hl':'');return h+'</tr>';};
+  let h=`<table class="vt"><tr class="bar"><td></td>`;
+  for(let p=W-1;p>=0;p--)h+=`<td style="background:${PC[Math.min(p,5)]}"></td>`;
+  h+='</tr>';
+  if(o.carry){h+=`<tr class="cr"><td></td>`;for(let p=W-1;p>=0;p--)h+=`<td>${o.carry[p]!=null?o.carry[p]:''}</td>`;h+='</tr>';}
+  h+=row(rows[0])+row(rows[1],op,'under');
+  if(o.parts){h+=row(o.parts[0],'','line');h+=row(o.parts[1],'+','under');}
+  if(o.res==='?')h+=`<tr class="line"><td></td><td colspan="${W}" class="qcell"><span class="qbox">?</span></td></tr>`;
+  else h+=row(o.res,'','line res');
+  return h+'</table>';
+}
+const dg=(n,p)=>Math.floor(n/10**p)%10;
+const len_=n=>String(n).length;
+function randDigits(len,lo,hi){const d=[];for(let p=0;p<len;p++)d[p]=R(lo,hi);return fromDigs(d);}
+const GEN_OPS=[
+ // ★ חיבור במאונך
+ function(i){
+   const len=i<7?3:(i<16?4:5);let a,b,car;
+   do{a=randDigits(len,1,9);b=randDigits(len,1,9);car={};let c=0;
+     for(let p=0;p<len;p++){const s=dg(a,p)+dg(b,p)+c;c=s>=10?1:0;if(c)car[p+1]=1;}
+   }while(!Object.keys(car).length||(i<4&&Object.keys(car).length>1));
+   const ans=a+b,p0=Math.min(...Object.keys(car).map(Number))-1;
+   let nc=0;for(let p=0;p<len;p++)nc+=((dg(a,p)+dg(b,p))%10)*10**p;
+   const s0=dg(a,p0)+dg(b,p0)+(car[p0]||0);
+   const full=vert([a,b],'+',{res:ans,carry:car,hl:[p0,p0+1]});
+   const tip=`בעמודת ה${C(p0,PN[p0])}: יוצא ${C(p0,s0)}.<br>כותבים ${C(p0,s0%10)}, ו־${C(p0+1,'1')} עובר לעמודת ה${C(p0+1,PN[p0+1])} (המספר הקטן למעלה).`;
+   return {prompt:'כמה יוצא?',v0:vert([a,b],'+',{res:'?'}),v1:full,
+     opts:opts4({label:fmt(ans),ok:true},[
+       {label:fmt(nc),why:'שכחת את המספר שעובר.<br>'+tip,vh:vert([a,b],'+',{res:'?',carry:car,hl:[p0,p0+1]})},
+       {label:fmt(ans+10),why:'בדוק שוב כל עמודה מימין לשמאל.<br>'+tip,vh:vert([a,b],'+',{res:'?',carry:car})},
+       {label:fmt(ans-10),why:'בדוק שוב כל עמודה מימין לשמאל.<br>'+tip,vh:vert([a,b],'+',{res:'?',carry:car})},
+       {label:fmt(ans+100),why:'בדוק שוב כל עמודה מימין לשמאל.<br>'+tip,vh:vert([a,b],'+',{res:'?',carry:car})}]),
+     right:`נכון! <span class="n">${fmt(a)} + ${fmt(b)} = ${fmt(ans)}</span>`};
+ },
+ // ★★ חיסור במאונך
+ function(i){
+   const len=i<7?3:(i<16?4:5);let a,b,info;
+   do{a=randDigits(len,1,9);b=randDigits(len,1,9);if(a<b)[a,b]=[b,a];
+     info=null;let bor=0,top={},fd=0,sb=0;
+     for(let p=0;p<len;p++){let x=dg(a,p)-bor;const y=dg(b,p);
+       if(x<y){top[p]=x+10;if(info===null)info=p;bor=1;}else{if(bor)top[p]=x;bor=0;}
+       sb+=Math.abs(dg(a,p)-y)*10**p;fd+=((dg(a,p)<y?dg(a,p)+10:dg(a,p))-y)*10**p;}
+     if(info!==null)info={p0:info,top,sb,fd};
+   }while(!info||dg(a,len-1)===dg(b,len-1)||(i<4&&Object.keys(info.top).length>2));
+   const ans=a-b,{p0,top,sb,fd}=info,x0=dg(a,p0),y0=dg(b,p0),up=dg(a,p0+1);
+   const full=vert([a,b],MINUS,{res:ans,carry:top,hl:[p0,p0+1]});
+   const tip=`בעמודת ה${C(p0,PN[p0])}: אי אפשר להוריד ${C(p0,y0)} מ־${C(p0,x0)}.<br>לוקחים 1 מעמודת ה${C(p0+1,PN[p0+1])}: ${C(p0+1,up)} הופך ל־${C(p0+1,up-1)}, ו־${C(p0,x0)} הופך ל־${C(p0,x0+10)}.`;
+   const vh=vert([a,b],MINUS,{res:'?',carry:top,hl:[p0,p0+1]});
+   return {prompt:'כמה יוצא?',v0:vert([a,b],MINUS,{res:'?'}),v1:full,
+     opts:opts4({label:fmt(ans),ok:true},[
+       {label:fmt(sb),why:'הורדת את הקטן מהגדול – אבל בחיסור תמיד מורידים את המספר שלמטה מהמספר שלמעלה.<br>'+tip,vh},
+       {label:fmt(fd),why:`לקחת 10, אבל שכחת להקטין את עמודת ה${C(p0+1,PN[p0+1])} ב־1.<br>`+tip,vh},
+       {label:fmt(ans+10),why:'בדוק שוב כל עמודה.<br>'+tip,vh},{label:fmt(ans-10),why:'בדוק שוב כל עמודה.<br>'+tip,vh}]),
+     right:`נכון! <span class="n">${fmt(a)} ${MINUS} ${fmt(b)} = ${fmt(ans)}</span>`};
+ },
+ // ★★★ כפל במאונך
+ function(i){
+   if(i<13){
+     let a,b,car,p0;
+     do{a=randDigits(i<6?2:3,1,9);b=R(3,9);car={};let c=0;p0=null;
+       for(let p=0;p<len_(a);p++){const pr=dg(a,p)*b+c;c=Math.floor(pr/10);if(c){car[p+1]=c;if(p0===null)p0=p;}}
+     }while(p0===null);
+     const ans=a*b;let nc=0;for(let p=0;p<len_(a);p++)nc+=((dg(a,p)*b)%10)*10**p;
+     const pr0=dg(a,p0)*b+(car[p0]||0);
+     const tip=`בעמודת ה${C(p0,PN[p0])}: <span class="n">${dg(a,p0)} · ${b}${car[p0]?' + '+car[p0]:''} = ${pr0}</span>.<br>כותבים ${C(p0,pr0%10)}, ו־${C(p0+1,Math.floor(pr0/10))} עובר לעמודה הבאה – מוסיפים אותו אחרי הכפל.`;
+     const vh=vert([a,b],'·',{res:'?',carry:car,hl:[p0,p0+1]});
+     return {prompt:'כמה יוצא?',v0:vert([a,b],'·',{res:'?'}),v1:vert([a,b],'·',{res:ans,carry:car,hl:[p0,p0+1]}),
+       opts:opts4({label:fmt(ans),ok:true},[
+         {label:fmt(nc),why:'שכחת את המספר שעובר.<br>'+tip,vh},
+         {label:fmt(ans-a),why:`${N(ans-a)} זה רק ${b-1} פעמים ${N(a)}.<br>בדוק שוב כל עמודה.`,vh},
+         {label:fmt(ans+a),why:`${N(ans+a)} זה ${b+1} פעמים ${N(a)}.<br>בדוק שוב כל עמודה.`,vh},
+         {label:fmt(ans+10),why:'בדוק שוב כל עמודה.<br>'+tip,vh}]),
+       right:`נכון! <span class="n">${fmt(a)} · ${b} = ${fmt(ans)}</span>`};
+   }
+   const a=R(12,49),b=R(12,39),b0=b%10,b1=Math.floor(b/10),p1=a*b0,p2=a*b1*10,ans=a*b;
+   const parts=[p1,p2];
+   const tip=`שורה ראשונה: <span class="n">${a} · ${C(0,b0)} = ${fmt(p1)}</span>.<br>שורה שנייה: כופלים ב־${C(1,b1)} <b>עשרות</b>, ולכן כותבים קודם ${C(0,'0')} בעמודת האחדות: <span class="n">${a} · ${C(1,b1*10)} = ${fmt(p2)}</span>.`;
+   const vh=vert([a,b],'·',{res:'?',parts});
+   return {prompt:'כמה יוצא?',v0:vert([a,b],'·',{res:'?'}),v1:vert([a,b],'·',{res:ans,parts}),
+     opts:opts4({label:fmt(ans),ok:true},[
+       {label:fmt(p1+a*b1),why:'שכחת לכתוב 0 בשורה השנייה.<br>'+tip,vh},
+       {label:fmt(p1+p2/10*100),why:'בשורה השנייה הזזת יותר מדי.<br>'+tip,vh},
+       {label:fmt(ans+10),why:'בדוק את החיבור של שתי השורות.<br>'+tip,vh},
+       {label:fmt(ans-a),why:'בדוק שוב.<br>'+tip,vh}]),
+     right:`נכון! <span class="n">${fmt(p1)} + ${fmt(p2)} = ${fmt(ans)}</span>`};
+ },
+ // ★★★★ חילוק – בודקים בכפל
+ function(i){
+   const b=R(2,9);let q;
+   if(i<7)q=R(12,49);
+   else if(i%3===0)q=R(1,9)*100+R(1,9);          // אפס באמצע
+   else q=R(102,399);
+   const a=b*q, ws=[];
+   const chk=w=>`חילוק בודקים בכפל:<br><span class="n">${fmt(w)} · ${b} = ${fmt(w*b)}</span> – וזה לא ${N(a)}.`;
+   if(dg(q,1)===0&&q>=100)ws.push({label:fmt(Math.floor(q/100)*10+q%10),zero:true});
+   [q+1,q-1,q+10,q*10].forEach(w=>ws.push({label:fmt(w)}));
+   ws.forEach(w=>{const v=Number(w.label.replace(/,/g,''));
+     w.why=(w.zero?`שכחת את ה־0 בתוצאה.<br>כשהספרה קטנה מ־${b}, כותבים 0 וממשיכים.<br>`:'')+chk(v);
+     w.vh=`<p class="center vlab">בדיקה:</p>`+vert([v,b],'·',{res:v*b})+`<p class="center">צריך לצאת ${N(a)}</p>`;});
+   return {prompt:`כמה יוצא?<br>${EQ(N(a)+' : '+b+' = ?')}`,v0:'',v1:`<p class="center vlab">בדיקה:</p>`+vert([q,b],'·',{res:a}),
+     opts:opts4({label:fmt(q),ok:true},ws),
+     right:`נכון! <span class="n">${fmt(a)} : ${b} = ${fmt(q)}</span><br>בדיקה: <span class="n">${fmt(q)} · ${b} = ${fmt(a)}</span> ✔`};
+ }
+];
+
+/* ===== תחנה: מספר חסר במשוואה – מודל פסים ===== */
+const BC={whole:['#e8f7ee','#2e9e5b'],known:['#e7efff','#2f6fd6'],q:['#fff4e8','#e07b1a']};
+function bars(whole,parts){            // whole:{v,t,q}  parts:[{v,t,q}]
+  const X0=20,W=300,sum=parts.reduce((s,p)=>s+p.v,0);
+  const seg=(x,y,w,p,kind)=>{const [f,s]=BC[p.q?'q':kind];
+    return `<rect x="${x}" y="${y}" width="${w}" height="36" rx="6" fill="${f}" stroke="${s}" stroke-width="2.5" ${p.q?'stroke-dasharray="6 4"':''}/>`+
+      (p.t!==''&&w>=26?`<text x="${x+w/2}" y="${y+24}" text-anchor="middle" font-size="${w>=60?20:16}" font-weight="800" fill="${s}">${p.t}</text>`:'');};
+  let s=`<svg class="nl" viewBox="0 0 340 104" direction="ltr">`+seg(X0,8,W,whole,'whole');
+  let x=X0;parts.forEach(p=>{const w=W*p.v/sum;s+=seg(x,58,w,p,'known');x+=w;});
+  return s+'</svg>';
+}
+const QT='?';
+const sizeBy=i=>i<7?[10,99]:(i<14?[100,999]:[1000,9999]);
+const chkLine=(expr,res,target)=>`בדיקה: <span class="n">${expr} = ${fmt(res)}</span>${res===target?' ✔':`, וזה לא ${N(target)}.`}`;
+const GEN_MISS=[
+ // ★ חיבור
+ function(i){
+   const [lo,hi]=sizeBy(i);const a=R(lo,hi),ans=R(lo,hi),c=a+ans,first=i%2;
+   const eq=first?`${QB} + ${fmt(a)} = ${fmt(c)}`:`${fmt(a)} + ${QB} = ${fmt(c)}`;
+   const v=bars({v:c,t:fmt(c)},first?[{v:ans,t:QT,q:1},{v:a,t:fmt(a)}]:[{v:a,t:fmt(a)},{v:ans,t:QT,q:1}]);
+   const rule=`<br>חלק חסר = ${K(BC.whole[1],'שלם')} ${MINUS} ${K(BC.known[1],'חלק')}: <span class="n">${fmt(c)} ${MINUS} ${fmt(a)}</span>`;
+   const w=x=>({label:fmt(x),why:(x>c?`חיברת – אבל ${KN(BC.whole[1],c)} הוא השלם, המספר הכי גדול. החלק החסר קטן ממנו.<br>`:'')+chkLine(`${fmt(a)} + ${fmt(x)}`,a+x,c)+rule});
+   return {prompt:`איזה מספר חסר?<br>${EQ(eq)}`,v0:v,v1:v,
+     opts:opts4({label:fmt(ans),ok:true},[w(c+a),w(ans+10),w(ans-10),w(ans+1)]),
+     right:`נכון! <span class="n">${fmt(c)} ${MINUS} ${fmt(a)} = ${fmt(ans)}</span><br>${chkLine(`${fmt(a)} + ${fmt(ans)}`,c,c)}`};
+ },
+ // ★★ חיסור
+ function(i){
+   const [lo,hi]=sizeBy(i);
+   if(i%2===0){                                   // ? − b = r
+     const b=R(lo,hi),r=R(lo,hi),ans=r+b;
+     const v=bars({v:ans,t:QT,q:1},[{v:r,t:fmt(r)},{v:b,t:fmt(b)}]);
+     const rule=`<br>המספר החסר הוא ה${K(BC.whole[1],'שלם')}: הורידו ממנו ${N(b)} ונשאר ${N(r)}.<br>שלם = ${K(BC.known[1],'חלק')} + ${K(BC.known[1],'חלק')}: <span class="n">${fmt(r)} + ${fmt(b)}</span>`;
+     const w=x=>({label:fmt(x),why:chkLine(`${fmt(x)} ${MINUS} ${fmt(b)}`,x-b,r)+rule});
+     return {prompt:`איזה מספר חסר?<br>${EQ(`${QB} ${MINUS} ${fmt(b)} = ${fmt(r)}`)}`,v0:v,v1:v,
+       opts:opts4({label:fmt(ans),ok:true},[w(Math.abs(r-b)||ans+100),w(ans+10),w(ans-10),w(ans+100)]),
+       right:`נכון! <span class="n">${fmt(r)} + ${fmt(b)} = ${fmt(ans)}</span><br>${chkLine(`${fmt(ans)} ${MINUS} ${fmt(b)}`,r,r)}`};
+   }
+   const ans=R(lo,hi),r=R(lo,hi),c=ans+r;          // c − ? = r
+   const v=bars({v:c,t:fmt(c)},[{v:r,t:fmt(r)},{v:ans,t:QT,q:1}]);
+   const rule=`<br>מ־${KN(BC.whole[1],c)} הורידו את המספר החסר ונשאר ${N(r)}.<br>חלק חסר = ${K(BC.whole[1],'שלם')} ${MINUS} ${K(BC.known[1],'חלק')}: <span class="n">${fmt(c)} ${MINUS} ${fmt(r)}</span>`;
+   const w=x=>({label:fmt(x),why:chkLine(`${fmt(c)} ${MINUS} ${fmt(x)}`,c-x,r)+rule});
+   return {prompt:`איזה מספר חסר?<br>${EQ(`${fmt(c)} ${MINUS} ${QB} = ${fmt(r)}`)}`,v0:v,v1:v,
+     opts:opts4({label:fmt(ans),ok:true},[w(c+r),w(ans+10),w(ans-10),w(ans+1)]),
+     right:`נכון! <span class="n">${fmt(c)} ${MINUS} ${fmt(r)} = ${fmt(ans)}</span><br>${chkLine(`${fmt(c)} ${MINUS} ${fmt(ans)}`,r,r)}`};
+ },
+ // ★★★ כפל
+ function(i){
+   const a=R(2,i<10?6:9),ans=i<10?R(2,10):R(11,40),c=a*ans,first=i%2;
+   const eq=first?`${QB} · ${a} = ${fmt(c)}`:`${a} · ${QB} = ${fmt(c)}`;
+   const v=bars({v:c,t:fmt(c)},[...Array(a)].map((_,j)=>({v:1,t:j===0||a<=6?QT:'',q:1})));
+   const rule=`<br>${K(BC.whole[1],N(c))} מתחלק ל־${a} חלקים שווים. כמה בכל חלק?<br>כפל הפוך = חילוק: <span class="n">${fmt(c)} : ${a}</span>`;
+   const w=x=>({label:fmt(x),why:chkLine(`${a} · ${fmt(x)}`,a*x,c)+rule});
+   return {prompt:`איזה מספר חסר?<br>${EQ(eq)}`,v0:v,v1:bars({v:c,t:fmt(c)},[...Array(a)].map(()=>({v:1,t:a<=6?fmt(ans):''}))),
+     opts:opts4({label:fmt(ans),ok:true},[w(c-a),w(c+a),w(ans+1),w(ans-1)]),
+     right:`נכון! <span class="n">${fmt(c)} : ${a} = ${fmt(ans)}</span><br>${chkLine(`${a} · ${fmt(ans)}`,c,c)}`};
+ },
+ // ★★★★ חילוק
+ function(i){
+   if(i%2===0){                                   // ? : a = q
+     const a=R(2,i<10?6:9),q=i<10?R(2,10):R(11,30),ans=a*q;
+     const v=bars({v:ans,t:QT,q:1},[...Array(a)].map(()=>({v:1,t:a<=6?fmt(q):''})));
+     const rule=`<br>המספר החסר הוא ה${K(BC.whole[1],'שלם')}: חילקו אותו ל־${a} חלקים, ובכל חלק ${N(q)}.<br>חילוק הפוך = כפל: <span class="n">${fmt(q)} · ${a}</span>`;
+     const w=x=>({label:fmt(x),why:(x%a===0?chkLine(`${fmt(x)} : ${a}`,x/a,q):`בדיקה: ${N(x)} לא מתחלק ב־${a} בלי שארית.`)+rule});
+     return {prompt:`איזה מספר חסר?<br>${EQ(`${QB} : ${a} = ${fmt(q)}`)}`,v0:v,v1:bars({v:ans,t:fmt(ans)},[...Array(a)].map(()=>({v:1,t:a<=6?fmt(q):''}))),
+       opts:opts4({label:fmt(ans),ok:true},[w(q+a),w(ans+a),w(ans-a),w(ans+10)]),
+       right:`נכון! <span class="n">${fmt(q)} · ${a} = ${fmt(ans)}</span><br>${chkLine(`${fmt(ans)} : ${a}`,q,q)}`};
+   }
+   const q=R(2,i<10?6:12),ans=R(2,i<10?6:10),c=q*ans;          // c : ? = q
+   const v=bars({v:c,t:fmt(c)},[...Array(ans)].map((_,j)=>({v:1,t:ans<=6?fmt(q):(j===0?fmt(q):'')})));
+   const rule=`<br>${K(BC.whole[1],N(c))} מתחלק לחלקים של ${N(q)}. כמה חלקים יש?<br><span class="n">${fmt(c)} : ${q}</span>`;
+   const w=x=>({label:fmt(x),why:(c%x===0?chkLine(`${fmt(c)} : ${fmt(x)}`,c/x,q):`בדיקה: ${N(c)} לא מתחלק ב־${N(x)} בלי שארית.`)+rule});
+   return {prompt:`איזה מספר חסר?<br>${EQ(`${fmt(c)} : ${QB} = ${q}`)}`,v0:v,v1:v,
+     opts:opts4({label:fmt(ans),ok:true},[w(c*q),w(c-q),w(ans+1),w(ans+2)]),
+     right:`נכון! <span class="n">${fmt(c)} : ${q} = ${fmt(ans)}</span><br>${chkLine(`${fmt(c)} : ${fmt(ans)}`,q,q)}`};
+ }
+];
+
+/* ===== תחנה: השוואת תרגילים – מאזניים ===== */
+const LCOL='#8a4fd1',RCOL='#0f8b8d';
+function balance(lx,rx,tilt,lv,rv){      // tilt: 1 = שמאל כבד, -1 = ימין כבד
+  const dy=16*tilt,yl=48+dy,yr=48-dy;
+  const pan=(x,y,txt,val,col)=>`<line x1="${x}" y1="${y}" x2="${x-48}" y2="${y+34}" stroke="${col}" stroke-width="2"/><line x1="${x}" y1="${y}" x2="${x+48}" y2="${y+34}" stroke="${col}" stroke-width="2"/>
+    <rect x="${x-74}" y="${y+34}" width="148" height="${val!=null?56:38}" rx="10" fill="#fff" stroke="${col}" stroke-width="3"/>
+    <text x="${x}" y="${y+59}" text-anchor="middle" font-size="18" font-weight="800" fill="${col}">${txt}</text>
+    ${val!=null?`<text x="${x}" y="${y+82}" text-anchor="middle" font-size="16" font-weight="800" fill="${col}">= ${fmt(val)}</text>`:''}`;
+  return `<svg class="nl" viewBox="0 0 340 150" direction="ltr"><polygon points="170,40 156,72 184,72" fill="#1f2a44"/>
+    <line x1="80" y1="${yl}" x2="260" y2="${yr}" stroke="#1f2a44" stroke-width="5" stroke-linecap="round" style="transition:all .5s"/>
+    ${pan(80,yl,lx,lv,LCOL)}${pan(260,yr,rx,rv,RCOL)}</svg>`;
+}
+function cmpQ(lx,L,rx,Rv,idea){
+  const rel=L>Rv?'>':(L<Rv?'<':'=');
+  const lab=s=>`${lx} ${s} ${rx}`;
+  const words={'>':'גדול מ','<':'קטן מ','=':'שווה ל'};
+  const ex=`בוא נחשב:<br>${K(LCOL,'התרגיל הסגול')}: <span class="n">${lx} = ${fmt(L)}</span><br>${K(RCOL,'התרגיל הכחול')}: <span class="n">${rx} = ${fmt(Rv)}</span>`+(idea?`<br>💡 ${idea}`:'');
+  return {wide:true,prompt:'איזה סימן נכון?',
+    v0:balance(lx,rx,0),v1:balance(lx,rx,rel==='>'?1:(rel==='<'?-1:0),L,Rv),
+    opts:['>','=','<'].map(s=>s===rel?{label:lab(s),ok:true}:{label:lab(s),why:ex}),
+    right:`נכון! ${K(LCOL,N(L))} ${words[rel]}־${K(RCOL,N(Rv))}.`+(idea?`<br>💡 ${idea}`:'')};
+}
+const GEN_CMP=[
+ function(i){const hi=i<10?60:400,a=R(15,hi),b=R(15,hi),k=R(1,9),t=R(0,2);
+   if(t===0)return cmpQ(`${a} + ${b}`,a+b,`${b} + ${a}`,a+b,'בחיבור אפשר להחליף את הסדר – התוצאה לא משתנה.');
+   if(t===1)return cmpQ(`${a} + ${b}`,a+b,`${a+k} + ${b-k}`,a+b,`מספר אחד גדל ב־${k} והשני קטן ב־${k} – הסכום נשאר אותו דבר.`);
+   const d=pick([-1,1])*R(1,3);return cmpQ(`${a} + ${b}`,a+b,`${a+k} + ${b-k+d}`,a+b+d,'');},
+ function(i){const hi=i<10?99:900,a=R(Math.floor(hi/2),hi),b=R(10,Math.floor(hi/3)),k=R(1,9),t=R(0,2);
+   if(t===0){const c=b+pick([-1,1])*k;return cmpQ(`${a} ${MINUS} ${b}`,a-b,`${a} ${MINUS} ${c}`,a-c,'מורידים יותר – נשאר פחות. מורידים פחות – נשאר יותר.');}
+   if(t===1)return cmpQ(`${a} ${MINUS} ${b}`,a-b,`${a+k} ${MINUS} ${b+k}`,a-b,`הוספנו ${k} לשני המספרים – ההפרש לא משתנה.`);
+   const c=a+pick([-1,1])*k;return cmpQ(`${a} ${MINUS} ${b}`,a-b,`${c} ${MINUS} ${b}`,c-b,'מורידים אותו מספר: מי שמתחיל גדול יותר – נשאר גדול יותר.');},
+ function(i){const a=R(3,i<10?12:25),b=R(3,i<10?12:25),t=R(0,2);
+   if(t===0)return cmpQ(`${a} · ${b}`,a*b,`${b} · ${a}`,a*b,'בכפל אפשר להחליף את הסדר – התוצאה לא משתנה.');
+   if(t===1){const e=2*R(2,9);return cmpQ(`${a} · ${e}`,a*e,`${2*a} · ${e/2}`,a*e,'כפלנו מספר אחד ב־2 וחילקנו את השני ב־2 – המכפלה לא משתנה.');}
+   return cmpQ(`${a} · ${b}`,a*b,`${a} · ${b+1}`,a*(b+1),`${a} · ${b+1} זה עוד ${a} אחד יותר.`);},
+ function(i){const p=R(2,9),q=R(2,9),r=R(2,9),t=R(0,2);
+   const rule='קודם כפל וחילוק, אחר כך חיבור וחיסור. מה שבסוגריים – תמיד ראשון.';
+   if(t===0)return cmpQ(`${p} + ${q} · ${r}`,p+q*r,`(${p} + ${q}) · ${r}`,(p+q)*r,rule);
+   if(t===1)return cmpQ(`${p} + ${q} · ${r}`,p+q*r,`${q} · ${r} + ${p}`,p+q*r,rule);
+   return cmpQ(`${p} · ${q} + ${r}`,p*q+r,`${p} · (${q} + ${r})`,p*(q+r),rule);}
+];
+
+/* ===== תחנה: כפל בעזרת פילוג – מודל שטח ===== */
+function area(a,T,U,inT,inU,uLab){
+  const X0=40,W=280,wT=Math.max(150,W*T/(T+U)),wU=W-wT,Y=28,H=78;
+  return `<svg class="nl" viewBox="0 0 340 120" direction="ltr">
+   <text x="${X0+wT/2}" y="20" text-anchor="middle" font-size="18" font-weight="800" fill="${PC[1]}">${fmt(T)}</text>
+   <text x="${X0+wT+wU/2}" y="20" text-anchor="middle" font-size="18" font-weight="800" fill="${PC[0]}">${uLab!=null?uLab:fmt(U)}</text>
+   <text x="${X0-10}" y="${Y+H/2+6}" text-anchor="end" font-size="20" font-weight="800" fill="${LCOL}">${a}</text>
+   <rect x="${X0}" y="${Y}" width="${wT}" height="${H}" fill="#e7efff" stroke="${PC[1]}" stroke-width="3" rx="6"/>
+   <rect x="${X0+wT}" y="${Y}" width="${wU}" height="${H}" fill="#e8f7ee" stroke="${PC[0]}" stroke-width="3" rx="6"/>
+   <text x="${X0+wT/2}" y="${Y+H/2+7}" text-anchor="middle" font-size="19" font-weight="800" fill="${PC[1]}">${inT}</text>
+   <text x="${X0+wT+wU/2}" y="${Y+H/2+7}" text-anchor="middle" font-size="${String(inU).length>4?15:19}" font-weight="800" fill="${PC[0]}">${inU}</text></svg>`;
+}
+function distNums(i){const a=R(3,9),T=10*R(i<10?1:2,9),U=R(1,9);return {a,T,U,n:T+U};}
+const GEN_DIST=[
+ function(i){const {a,T,U,n}=distNums(i);
+   const why=`פירקנו את ${N(n)} ל${K(PC[1],'עשרות')} ו${K(PC[0],'אחדות')}: <span class="n">${fmt(n)} = ${fmt(T)} + ?</span>`;
+   return {prompt:`השלם:<br>${EQ(`${a} · ${fmt(n)} = ${a} · ${C(1,fmt(T))} + ${a} · ${QB}`)}`,
+     v0:area(a,T,U,`${a} · ${T}`,'','?'),v1:area(a,T,U,`${a} · ${T}`,`${a} · ${U}`),
+     opts:opts4({label:fmt(U),ok:true},[{label:fmt(n),why},{label:fmt(T),why},{label:fmt(U+1),why},{label:fmt(U*10),why}]),
+     right:`נכון! <span class="n">${fmt(n)} = ${fmt(T)} + ${U}</span>`};},
+ function(i){const {a,T,U}=distNums(i),ans=a*T,t=T/10;
+   const why=`${C(1,fmt(T))} זה ${C(1,t+' עשרות')}.<br><span class="n">${a} · ${t} = ${a*t}</span> – אז ${a} · ${t} עשרות = ${C(1,(a*t)+' עשרות')}.`;
+   return {prompt:`כמה זה?<br>${EQ(`${a} · ${C(1,fmt(T))} = ${QB}`)}`,v0:area(a,T,U,'?',''),v1:area(a,T,U,fmt(ans),''),
+     opts:opts4({label:fmt(ans),ok:true},[{label:fmt(a*t),why},{label:fmt(ans*10),why},{label:fmt(a+T),why},{label:fmt(ans+a),why}]),
+     right:`נכון! <span class="n">${a} · ${fmt(T)} = ${fmt(ans)}</span> – ${a*t} עשרות.`};},
+ function(i){const {a,T,U,n}=distNums(i),ans=a*U;
+   const why=`החלק ה${K(PC[0],'ירוק')} הוא <span class="n">${a} · ${C(0,U)}</span>.<br>${a} פעמים ${U}.`;
+   return {prompt:`השלם:<br>${EQ(`${a} · ${fmt(n)} = ${C(1,fmt(a*T))} + ${QB}`)}`,v0:area(a,T,U,fmt(a*T),'?'),v1:area(a,T,U,fmt(a*T),fmt(ans)),
+     opts:opts4({label:fmt(ans),ok:true},[{label:fmt(U),why:`${U} זה רק הצלע. צריך את כל החלק הירוק.<br>`+why},{label:fmt(ans*10),why},{label:fmt(a+U),why:`חיברת – אבל זה כפל.<br>`+why},{label:fmt(ans+1),why}]),
+     right:`נכון! <span class="n">${a} · ${U} = ${ans}</span>`};},
+ function(i){const {a,T,U,n}=distNums(i),ans=a*n;
+   const steps=`<span class="n">${a} · ${fmt(n)} = ${C(1,`${a} · ${T}`)} + ${C(0,`${a} · ${U}`)} = ${C(1,fmt(a*T))} + ${C(0,a*U)}</span>`;
+   return {prompt:`כמה יוצא?<br>${EQ(`${a} · ${fmt(n)} = ${QB}`)}`,v0:area(a,T,U,'?','?'),v1:area(a,T,U,fmt(a*T),fmt(a*U)),
+     opts:opts4({label:fmt(ans),ok:true},[
+       {label:fmt(a*T+U),why:`שכחת לכפול גם את ה${K(PC[0],'אחדות')} ב־${a}.<br>`+steps},
+       {label:fmt(a*T/10+a*U),why:`${C(1,fmt(T))} זה עשרות – ${a} · ${T} = ${fmt(a*T)}, ולא ${a*T/10}.<br>`+steps},
+       {label:fmt(ans+10),why:'בדוק את החיבור.<br>'+steps},{label:fmt(ans-a),why:steps}]),
+     right:`נכון! ${steps} = ${N(ans)}`};}
+];
+
+/* ===== תחנה: גדול פי, קטן פי ===== */
+function cbars(rows){                     // rows:[{lab,segs:[{v,t,q,c}]}]
+  const X0=10,W=240,max=Math.max(...rows.map(r=>r.segs.reduce((s,x)=>s+x.v,0)));
+  let s=`<svg class="nl" viewBox="0 0 340 ${rows.length*52+6}" direction="ltr">`;
+  rows.forEach((r,k)=>{const y=6+k*52;let x=X0;
+    s+=`<text x="332" y="${y+25}" text-anchor="start" font-size="15" font-weight="800" fill="#1f2a44" direction="rtl">${r.lab}</text>`;
+    r.segs.forEach(g=>{const w=W*g.v/max,[f,st]=g.q?BC.q:(g.c||BC.known);
+      s+=`<rect x="${x}" y="${y}" width="${w}" height="38" rx="6" fill="${f}" stroke="${st}" stroke-width="2.5" ${g.q?'stroke-dasharray="6 4"':''}/>`;
+      if(w>=24&&g.t!=='')s+=`<text x="${x+w/2}" y="${y+25}" text-anchor="middle" font-size="${w>=50?17:13}" font-weight="800" fill="${st}">${g.t}</text>`;x+=w;});});
+  return s+'</svg>';
+}
+const copies=(k,b,t,q)=>[...Array(k)].map((_,j)=>({v:b,t:(k<=6||j===0)?t:'',q}));
+const RULE=`💡 ${K(PC[1],'פי')} = כופלים או מחלקים. ${K(PC[2],'ב־')} = מוסיפים או מחסירים.`;
+const GEN_TIMES=[
+ function(i){const k=R(2,i<10?5:9),b=R(2,i<10?12:30),ans=k*b;
+   const v=cbars([{lab:fmt(b),segs:[{v:b,t:fmt(b)}]},{lab:`פי ${k}`,segs:copies(k,b,fmt(b),0)}]);
+   const why=`גדול פי ${k} = ${k} פעמים ${N(b)}: <span class="n">${k} · ${b}</span><br>`+RULE;
+   return {prompt:`איזה מספר גדול ${K(PC[1],'פי '+k)} מ־${N(b)}?`,v0:v,v1:v,
+     opts:opts4({label:fmt(ans),ok:true},[{label:fmt(b+k),why:`${N(b+k)} גדול ${K(PC[2],'ב־'+k)}, לא ${K(PC[1],'פי '+k)}.<br>`+why},{label:fmt(ans+b),why},{label:fmt(ans-b),why},{label:fmt(ans+1),why}]),
+     right:`נכון! <span class="n">${k} · ${b} = ${fmt(ans)}</span>`};},
+ function(i){const k=R(2,i<10?5:9),ans=R(2,i<10?12:30),B=k*ans;
+   const v=cbars([{lab:fmt(B),segs:[{v:B,t:fmt(B)}]},{lab:`קטן פי ${k}`,segs:[{v:ans,t:'?',q:1}]}]);
+   const why=`קטן פי ${k} = מחלקים ל־${k} חלקים שווים: <span class="n">${fmt(B)} : ${k}</span><br>`+RULE;
+   return {prompt:`איזה מספר קטן ${K(PC[1],'פי '+k)} מ־${N(B)}?`,v0:v,
+     v1:cbars([{lab:fmt(B),segs:copies(k,ans,fmt(ans),0)},{lab:`קטן פי ${k}`,segs:[{v:ans,t:fmt(ans),c:BC.whole}]}]),
+     opts:opts4({label:fmt(ans),ok:true},[{label:fmt(B-k),why:`${N(B-k)} קטן ${K(PC[2],'ב־'+k)}, לא ${K(PC[1],'פי '+k)}.<br>`+why},{label:fmt(B*k),why:`קטן – התשובה צריכה להיות קטנה מ־${N(B)}.<br>`+why},{label:fmt(ans+1),why},{label:fmt(ans*2),why}]),
+     right:`נכון! <span class="n">${fmt(B)} : ${k} = ${ans}</span>`};},
+ function(i){const k=R(2,i<10?5:9),b=R(2,i<10?12:25),B=k*b;
+   const v=cbars([{lab:fmt(b),segs:[{v:b,t:fmt(b)}]},{lab:fmt(B),segs:[{v:B,t:fmt(B)}]}]);
+   const why=`"פי כמה" = כמה פעמים ${N(b)} נכנס ב־${N(B)}: <span class="n">${fmt(B)} : ${b}</span>`;
+   return {prompt:`פי כמה ${N(B)} גדול מ־${N(b)}?`,v0:v,v1:cbars([{lab:fmt(b),segs:[{v:b,t:fmt(b)}]},{lab:fmt(B),segs:copies(k,b,fmt(b),0)}]),
+     opts:opts4({label:fmt(k),ok:true},[{label:fmt(B-b),why:`${N(B-b)} זה ${K(PC[2],'ב־כמה')} גדול (ההפרש), לא ${K(PC[1],'פי כמה')}.<br>`+why},{label:fmt(k+1),why},{label:fmt(k-1),why},{label:fmt(b),why}]),
+     right:`נכון! <span class="n">${fmt(B)} : ${b} = ${k}</span> – ${N(b)} נכנס ${k} פעמים.`};},
+ function(i){const k=R(2,9),b=R(10,i<10?20:40),t=R(0,3);
+   const kinds=[['גדול',1,'פי'],['גדול',1,'ב־'],['קטן',-1,'פי'],['קטן',-1,'ב־']];
+   const [w,dir,typ]=kinds[t];const B=dir<0&&typ==='פי'?k*b:b;
+   const ans=typ==='פי'?(dir>0?k*b:b/1):(dir>0?b+k:b-k);
+   const base=dir<0&&typ==='פי'?k*b:b, real=typ==='פי'?(dir>0?k*b:b):(dir>0?b+k:b-k);
+   const other=typ==='פי'?(dir>0?base+k:base-k):(dir>0?base*k:Math.round(base/k));
+   const tag=typ==='פי'?K(PC[1],'פי '+k):K(PC[2],'ב־'+k);
+   const v=cbars([{lab:fmt(base),segs:[{v:base,t:fmt(base)}]}]);
+   const why=`${RULE}<br>כאן כתוב ${tag}.`;
+   return {prompt:`איזה מספר ${w} ${tag} מ־${N(base)}?`,v0:v,v1:v,
+     opts:opts4({label:fmt(real),ok:true},[{label:fmt(other),why},{label:fmt(real+1),why},{label:fmt(real+k),why},{label:fmt(real*2),why}]),
+     right:`נכון! ${tag}: <span class="n">${typ==='פי'?(dir>0?`${k} · ${base}`:`${fmt(base)} : ${k}`):(dir>0?`${base} + ${k}`:`${base} ${MINUS} ${k}`)} = ${fmt(real)}</span>`};}
+];
+
+REG.push({id:'cmp',title:'השוואת תרגילים',gen:GEN_CMP,levels:[{t:'בחיבור',s:'★'},{t:'בחיסור',s:'★★'},{t:'בכפל',s:'★★★'},{t:'סדר פעולות',s:'★★★★'}],
+ introHTML:()=>`<p class="prompt">המאזניים יורדים לצד הכבד.</p>${balance('30 + 5',"20 + 9",1,35,29)}<p class="center">מחשבים כל צד, ואז בוחרים סימן:<br><span class="n">35 > 29</span> &nbsp;·&nbsp; <span class="n">29 < 35</span> &nbsp;·&nbsp; <span class="n">35 = 35</span></p><p class="center">הפה של הסימן פתוח תמיד לצד הגדול.</p>`});
+REG.push({id:'dist',title:'כפל בעזרת פילוג',gen:GEN_DIST,levels:[{t:'מפרקים את המספר',s:'★'},{t:'כפל בעשרות',s:'★★'},{t:'החלק השני',s:'★★★'},{t:'כל התרגיל',s:'★★★★'}],
+ introHTML:()=>`<p class="prompt">מפרקים מספר גדול לשני חלקים קלים.</p><p class="center">${EQ('7 · 23 = '+C(1,'7 · 20')+' + '+C(0,'7 · 3'))}</p>${area(7,20,3,'140','21')}<p class="center"><span class="n">${C(1,'140')} + ${C(0,'21')} = 161</span></p>`});
+REG.push({id:'times',title:'גדול פי, קטן פי',gen:GEN_TIMES,levels:[{t:'גדול פי',s:'★'},{t:'קטן פי',s:'★★'},{t:'פי כמה?',s:'★★★'},{t:'פי או ב־?',s:'★★★★'}],
+ introHTML:()=>`<p class="prompt">${K(PC[1],'פי')} זה לא ${K(PC[2],'ב־')}!</p>${cbars([{lab:'4',segs:[{v:4,t:'4'}]},{lab:'פי 3',segs:copies(3,4,'4',0)},{lab:'ב־3',segs:[{v:4,t:'4'},{v:3,t:'3',c:BC.whole}]}])}<p class="center">גדול ${K(PC[1],'פי 3')} מ־4: <span class="n">3 · 4 = 12</span><br>גדול ${K(PC[2],'ב־3')} מ־4: <span class="n">4 + 3 = 7</span></p>`});
+
+/* ===== עולם ההתחלקות ===== */
+const dsum=n=>String(n).split('').reduce((s,c)=>s+ +c,0);
+const sumTxt=n=>`<span class="n">${String(n).split('').join(' + ')} = ${dsum(n)}</span>`;
+const isP=n=>{if(n<2)return false;for(let d=2;d*d<=n;d++)if(n%d===0)return false;return true;};
+const RULES={
+ 5:n=>({ok:n%5===0,why:`ספרת האחדות של ${N(n)} היא ${C(0,n%10)}.<br>מספר מתחלק ב־5 רק אם ספרת האחדות היא ${C(0,'0')} או ${C(0,'5')}.`}),
+ 2:n=>({ok:n%2===0,why:`ספרת האחדות של ${N(n)} היא ${C(0,n%10)}.<br>מספר מתחלק ב־2 (זוגי) רק אם ספרת האחדות היא ${C(0,'0, 2, 4, 6, 8')}.`}),
+ 3:n=>({ok:n%3===0,why:`סכום הספרות של ${N(n)}: ${sumTxt(n)}.<br>מספר מתחלק ב־3 רק אם סכום הספרות מתחלק ב־3. ${dsum(n)} ${dsum(n)%3===0?'מתחלק':'לא מתחלק'} ב־3.`}),
+ 6:n=>({ok:n%6===0,why:`מספר מתחלק ב־6 רק אם הוא מתחלק ${K(PC[1],'גם ב־2')} ${K(PC[2],'וגם ב־3')}.<br>${K(PC[1],'ב־2:')} האחדות ${C(0,n%10)} – ${n%2===0?'כן ✔':'לא ✘'}.<br>${K(PC[2],'ב־3:')} ${sumTxt(n)} – ${n%3===0?'כן ✔':'לא ✘'}.`})
+};
+function pickDiv(d,i,good){const lo=i<8?10:(i<15?100:1000),hi=lo*10-1;let n;do{n=R(lo,hi);}while((n%d===0)!==good);return n;}
+function divQ(d,i,extraBad){
+  const right=pickDiv(d,i,true),bads=[];
+  if(d===6){let n;do{n=pickDiv(2,i,true);}while(n%3===0);bads.push(n);do{n=pickDiv(3,i,true);}while(n%2===0);bads.push(n);bads.push(pickDiv(6,i,false));}
+  else while(bads.length<3){const n=pickDiv(d,i,false);if(!bads.includes(n))bads.push(n);}
+  return {prompt:`איזה מספר מתחלק ב־${d}?`,v0:'',v1:`<p class="center">${RULES[d](right).why.replace(/^.*?<br>/,'')}</p>`,
+    opts:opts4({label:fmt(right),ok:true},bads.map(n=>({label:fmt(n),why:RULES[d](n).why,vh:house(n,{hl:d===3?null:[0]})}))),
+    right:`נכון! ${RULES[d](right).why}`};
+}
+REG.push({id:'div56',title:'סימני התחלקות',levels:[{t:'ב־5',s:'★'},{t:'ב־2 וב־3',s:'★★'},{t:'ב־6',s:'★★★'},{t:'השלם ספרה',s:'★★★★'}],
+ gen:[i=>divQ(5,i),i=>divQ(i%2?3:2,i),i=>divQ(6,i),
+  function(i){const d=i%3===0?5:6,len=i<10?2:3,base=randDigits(len,1,9)*10;
+    const good=[...Array(10).keys()].filter(x=>(base+x)%d===0);
+    if(!good.length)return GEN_DIV_FIX(i);
+    const g=pick(good),bad=shuffle([...Array(10).keys()].filter(x=>(base+x)%d!==0)).slice(0,3);
+    const shown=String(base/10)+'_';
+    return {prompt:`איזו ספרה צריך לכתוב במקום ה־_<br>כדי ש־<span class="n">${shown}</span> יתחלק ב־${d}?`,v0:'',v1:house(base+g,{hl:[0]}),
+      opts:opts4({label:String(g),ok:true},bad.map(x=>({label:String(x),why:`עם ${C(0,x)} יוצא ${N(base+x)}.<br>`+RULES[d](base+x).why,vh:house(base+x,{hl:[0]})}))),
+      right:`נכון! ${N(base+g)} מתחלק ב־${d}.<br>${RULES[d](base+g).why}`};}],
+ introHTML:()=>`<p class="prompt">סימני התחלקות – בודקים בלי לחלק!</p>
+  <p class="center"><b>ב־2:</b> ספרת ה${C(0,'אחדות')} זוגית (${C(0,'0, 2, 4, 6, 8')})</p>
+  <p class="center"><b>ב־5:</b> ספרת ה${C(0,'אחדות')} היא ${C(0,'0')} או ${C(0,'5')}</p>
+  <p class="center"><b>ב־3:</b> סכום הספרות מתחלק ב־3<br>(372: <span class="n">3 + 7 + 2 = 12</span> ✔)</p>
+  <p class="center"><b>ב־6:</b> ${K(PC[1],'גם ב־2')} ${K(PC[2],'וגם ב־3')}</p>`});
+function GEN_DIV_FIX(i){return divQ(6,i);}
+
+function dots(n,rows){if(n>48)return '';const cols=n/rows,r=7,g=20,W=cols*g,H=rows*g;
+  let s=`<svg class="nl" viewBox="0 0 ${Math.max(W+10,60)} ${H+10}" style="max-height:${Math.min(160,H*2+20)}px" direction="ltr">`;
+  for(let y=0;y<rows;y++)for(let x=0;x<cols;x++)s+=`<circle cx="${x*g+15}" cy="${y*g+15}" r="${r}" fill="${y%2?PC[1]:PC[0]}"/>`;return s+'</svg>';}
+const divisors=n=>[...Array(n).keys()].map(x=>x+1).filter(x=>n%x===0);
+const smallF=n=>divisors(n).find(x=>x>1&&x<n);
+function primeIn(lo,hi){let n;do{n=R(lo,hi);}while(!isP(n));return n;}
+function compIn(lo,hi){let n;do{n=R(lo,hi);}while(isP(n)||n<4);return n;}
+const PRIME_RULE='💡 מספר ראשוני מתחלק רק ב־1 ובעצמו. אפשר לסדר אותו רק בשורה אחת.';
+REG.push({id:'prime',title:'מספרים ראשוניים',levels:[{t:'מחלקים',s:'★'},{t:'מי ראשוני?',s:'★★'},{t:'מי לא ראשוני?',s:'★★★'},{t:'כמה מחלקים?',s:'★★★★'}],
+ gen:[
+  function(i){const n=compIn(i<10?12:30,i<10?40:99),ds=divisors(n).filter(x=>x>1&&x<n),d=pick(ds);
+    const bad=shuffle([...Array(n).keys()].slice(2).filter(x=>n%x!==0&&x<=12)).slice(0,3);
+    return {prompt:`איזה מספר הוא מחלק של ${N(n)}?<br><span style="font-size:17px;font-weight:400">(${N(n)} מתחלק בו בלי שארית)</span>`,v0:'',v1:dots(n,d<=n/d?d:n/d),
+      opts:opts4({label:String(d),ok:true},bad.map(x=>({label:String(x),why:`<span class="n">${n} : ${x}</span> יוצא עם שארית: <span class="n">${x} · ${Math.floor(n/x)} = ${x*Math.floor(n/x)}</span>, ונשאר ${n-x*Math.floor(n/x)}.`}))),
+      right:`נכון! <span class="n">${n} : ${d} = ${n/d}</span> בלי שארית.`};},
+  function(i){const hi=i<10?40:99,p=primeIn(5,hi),cs=[];while(cs.length<3){const c=compIn(9,hi);if(!cs.includes(c)&&c%2)cs.push(c);}
+    return {prompt:'איזה מספר הוא ראשוני?',v0:'',v1:dots(p,1)+`<p class="center">${PRIME_RULE}</p>`,
+      opts:opts4({label:String(p),ok:true},cs.map(c=>{const f=smallF(c);return {label:String(c),why:`<span class="n">${c} = ${f} · ${c/f}</span> – יש לו מחלק נוסף (${f}), ולכן הוא לא ראשוני.<br>${PRIME_RULE}`,vh:dots(c,f)};})),
+      right:`נכון! ${N(p)} מתחלק רק ב־1 ובעצמו.`};},
+  function(i){const hi=i<10?40:99,c=i%3===0?compIn(9,hi):(()=>{let x;do{x=compIn(9,hi);}while(x%2===0);return x;})(),ps=[];
+    while(ps.length<3){const p=primeIn(3,hi);if(!ps.includes(p))ps.push(p);}const f=smallF(c);
+    return {prompt:'איזה מספר אינו ראשוני?',v0:'',v1:dots(c,f)+`<p class="center"><span class="n">${c} = ${f} · ${c/f}</span></p>`,
+      opts:opts4({label:String(c),ok:true},ps.map(p=>({label:String(p),why:`${N(p)} מתחלק רק ב־1 ובעצמו – הוא כן ראשוני.<br>חפש מספר שאפשר לכתוב ככפל.`,vh:dots(p,1)}))),
+      right:`נכון! <span class="n">${c} = ${f} · ${c/f}</span>, ולכן הוא לא ראשוני.`};},
+  function(i){const n=pick(i<10?[6,8,10,12,14,15,16,18,20]:[24,28,30,32,36,40,42,45,48]),ds=divisors(n),k=ds.length;
+    const pairs=ds.filter(x=>x*x<=n).map(x=>`<span class="n">${x} · ${n/x}</span>`).join('&nbsp; ');
+    const why=`מחפשים זוגות שהכפל שלהם ${n}:<br>${pairs}<br>המחלקים: <span class="n">${ds.join(', ')}</span>`;
+    return {prompt:`כמה מחלקים יש למספר ${N(n)}?`,v0:'',v1:`<p class="center">${why}</p>`,
+      opts:opts4({label:String(k),ok:true},[{label:String(k-2),why:`אל תשכח את 1 ואת ${n} עצמו!<br>`+why},{label:String(k-1),why},{label:String(k+1),why},{label:String(k+2),why}]),
+      right:`נכון! יש ${k} מחלקים: <span class="n">${ds.join(', ')}</span>`};}],
+ introHTML:()=>`<p class="prompt">ראשוני = מתחלק רק ב־1 ובעצמו.</p>${dots(7,1)}<p class="center">את 7 אפשר לסדר רק בשורה אחת → ${K(PC[0],'ראשוני')}</p>${dots(12,3)}<p class="center">את 12 אפשר לסדר <span class="n">3 · 4</span> → ${K(PC[2],'לא ראשוני')}</p><p class="center">💡 1 הוא לא ראשוני. 2 הוא הראשוני הזוגי היחיד.</p>`});
+
+/* ===== עולם הסיפורים ===== */
+const ITEMS=[['קופסה','עפרונות','📦'],['שקית','סוכריות','🛍️'],['ארגז','תפוחים','🍎'],['מגש','עוגיות','🍪'],['חבילה','מדבקות','⭐']];
+const AS=(t)=>`<p class="center" style="margin-top:8px">שואלים: <b style="color:var(--help)">${t}</b></p>`;
+REG.push({id:'story',title:'בעיות מילוליות',levels:[{t:'כפל',s:'★'},{t:'חלוקה',s:'★★'},{t:'פי',s:'★★★'},{t:'שני שלבים',s:'★★★★'}],
+ gen:[
+  function(i){const [box,it,em]=pick(ITEMS),a=R(3,i<10?9:25),b=R(3,i<10?9:12),ans=a*b;
+    const v=cbars([{lab:`${b} ${box==='קופסה'?'קופסאות':'פעמים'}`,segs:copies(b,a,String(a),0)}]);
+    const why=`יש ${b} קבוצות שוות, ובכל קבוצה ${a}.<br>קבוצות שוות → ${K(PC[1],'כפל')}: <span class="n">${b} · ${a}</span>`;
+    return {prompt:`${em} בכל ${box} יש ${a} ${it}.<br>יש ${b} ${box==='קופסה'?'קופסאות':(box==='שקית'?'שקיות':(box==='ארגז'?'ארגזים':(box==='מגש'?'מגשים':'חבילות')))}.<br>כמה ${it} יש בסך הכול?`,v0:v+AS(`כמה ${it} בסך הכול`),v1:v,
+      opts:opts4({label:fmt(ans),ok:true},[{label:fmt(a+b),why:`חיברת את ${a} ו־${b}.<br>`+why},{label:fmt(ans+a),why},{label:fmt(ans-a),why},{label:fmt(ans+10),why}]),
+      right:`נכון! <span class="n">${b} · ${a} = ${ans}</span> ${it}.`};},
+  function(i){const b=R(2,i<10?6:9),ans=R(3,i<10?9:15),x=b*ans;
+    const v=cbars([{lab:`${x} מדבקות`,segs:copies(b,ans,'?',1)}]);
+    const why=`מחלקים ${N(x)} ל־${b} חלקים שווים → ${K(PC[1],'חילוק')}: <span class="n">${x} : ${b}</span>`;
+    return {prompt:`⭐ יש ${x} מדבקות.<br>מחלקים אותן שווה בשווה ל־${b} ילדים.<br>כמה מדבקות מקבל כל ילד?`,v0:v+AS('כמה מקבל ילד אחד'),v1:cbars([{lab:`${x} מדבקות`,segs:copies(b,ans,String(ans),0)}]),
+      opts:opts4({label:fmt(ans),ok:true},[{label:fmt(x-b),why:`חיסרת – אבל "שווה בשווה" זה חילוק.<br>`+why},{label:fmt(x*b),why:`כפלת – אבל כל ילד מקבל פחות ממה שיש בהתחלה.<br>`+why},{label:fmt(ans+1),why},{label:fmt(ans-1),why}]),
+      right:`נכון! <span class="n">${x} : ${b} = ${ans}</span>. בדיקה: <span class="n">${b} · ${ans} = ${x}</span> ✔`};},
+  function(i){const a=R(3,i<10?12:30),k=R(2,i<10?4:6),ans=a*k,more=i%2===0;
+    if(more){const v=cbars([{lab:'דני',segs:[{v:a,t:String(a)}]},{lab:'רון',segs:copies(k,a,String(a),0)}]);
+      const why=`"פי ${k} יותר" = ${k} פעמים ${a}: <span class="n">${k} · ${a}</span><br>${RULE}`;
+      return {prompt:`לדני יש ${a} קלפים.<br>לרון יש ${K(PC[1],'פי '+k)} יותר קלפים מלדני.<br>כמה קלפים יש לרון?`,v0:v+AS('כמה קלפים לרון'),v1:v,
+        opts:opts4({label:fmt(ans),ok:true},[{label:fmt(a+k),why:`זה ${K(PC[2],'ב־'+k)} יותר, לא ${K(PC[1],'פי '+k)}.<br>`+why},{label:fmt(ans+a),why},{label:fmt(ans-a),why}]),
+        right:`נכון! <span class="n">${k} · ${a} = ${ans}</span>`};}
+    const v=cbars([{lab:'רון',segs:copies(k,a,String(a),0)},{lab:'דני',segs:[{v:a,t:'?',q:1}]}]);
+    const why=`"פי ${k} פחות" = מחלקים ל־${k}: <span class="n">${ans} : ${k}</span><br>${RULE}`;
+    return {prompt:`לרון יש ${ans} קלפים.<br>לדני יש ${K(PC[1],'פי '+k)} פחות קלפים מלרון.<br>כמה קלפים יש לדני?`,v0:v+AS('כמה קלפים לדני'),v1:v,
+      opts:opts4({label:fmt(a),ok:true},[{label:fmt(ans-k),why:`זה ${K(PC[2],'ב־'+k)} פחות, לא ${K(PC[1],'פי '+k)}.<br>`+why},{label:fmt(ans*k),why:`לדני יש פחות – התשובה קטנה מ־${ans}.<br>`+why},{label:fmt(a+1),why}]),
+      right:`נכון! <span class="n">${ans} : ${k} = ${a}</span>`};},
+  function(i){const [box,it,em]=pick(ITEMS),a=R(4,i<10?8:12),b=R(3,i<10?6:9),tot=a*b,c=R(2,tot-2),ans=tot-c;
+    const why=`שלב 1 – כמה היו: <span class="n">${b} · ${a} = ${tot}</span><br>שלב 2 – כמה נשארו: <span class="n">${tot} ${MINUS} ${c}</span>`;
+    return {prompt:`${em} קנו ${b} ${box==='קופסה'?'קופסאות':'חבילות'}. בכל אחת ${a} ${it}.<br>נתנו לחברים ${c} ${it}.<br>כמה ${it} נשארו?`,v0:AS('כמה נשארו – בשני שלבים'),v1:`<p class="center">${why}</p>`,
+      opts:opts4({label:fmt(ans),ok:true},[{label:fmt(tot),why:`עשית רק את שלב 1. צריך גם להוריד את מה שנתנו.<br>`+why},{label:fmt(tot+c),why:`נתנו – זה יורד, לא נוסף.<br>`+why},{label:fmt(a+b-c>0?a+b-c:ans+a),why},{label:fmt(ans-1),why}]),
+      right:`נכון! ${why} = ${N(ans)}`};}],
+ introHTML:()=>`<p class="prompt">בבעיה מילולית: קוראים, מציירים, ואז בוחרים פעולה.</p>
+  <p class="center">${K(PC[1],'קבוצות שוות')} → כפל<br>${K(PC[1],'מחלקים שווה בשווה')} → חילוק<br>${K(PC[2],'נוסף / קיבל')} → חיבור<br>${K(PC[2],'נתן / אכל / נשאר')} → חיסור</p>
+  <p class="center">ותמיד שואלים: מה השאלה?</p>`});
+
+const SHOP=[['מחברת',7],['עט',4],['מחק',2],['סרגל',5],['תיק',45],['מספריים',9],['צבעים',12],['דבק',6]];
+function shopTable(items,hl){return `<table class="shop"><tr><th>מוצר</th><th>מחיר</th></tr>${items.map(([n,p])=>`<tr class="${hl&&hl.includes(n)?'hl':''}"><td>${n}</td><td><span class="n">${p}</span> ₪</td></tr>`).join('')}</table>`;}
+REG.push({id:'price',title:'בעיות מחירון',levels:[{t:'כמה עולה?',s:'★'},{t:'שני מוצרים',s:'★★'},{t:'כמה עודף?',s:'★★★'},{t:'כמה אפשר לקנות?',s:'★★★★'}],
+ gen:[
+  function(i){const it=shuffle(SHOP.slice()).slice(0,4),[n,p]=(c=>pick(c.length?c:it))(it.filter(x=>x[1]<20)),k=R(2,i<10?5:9),ans=k*p;
+    const why=`${n} אחת עולה ${N(p)} ₪. ${k} פעמים: <span class="n">${k} · ${p}</span>`;
+    return {prompt:`כמה עולות ${k} יחידות של ${n}?`,v0:shopTable(it),v1:shopTable(it,[n]),vhAll:shopTable(it,[n]),
+      opts:opts4({label:fmt(ans)+' ₪',ok:true},[{label:fmt(k+p)+' ₪',why:`חיברת – אבל ${k} יחידות זה כפל.<br>`+why,vh:shopTable(it,[n])},{label:fmt(ans+p)+' ₪',why,vh:shopTable(it,[n])},{label:fmt(p)+' ₪',why:`זה המחיר של אחת בלבד.<br>`+why,vh:shopTable(it,[n])}]),
+      right:`נכון! <span class="n">${k} · ${p} = ${ans}</span> ₪`};},
+  function(i){const it=shuffle(SHOP.slice()).slice(0,4),[a,b]=it.slice(0,2),k=i<10?1:R(2,3),ans=k*a[1]+b[1];
+    const q=k===1?`${a[0]} ו${b[0]}`:`${k} ${a[0]} ו${b[0]} אחד`,why=k===1?`<span class="n">${a[1]} + ${b[1]}</span>`:`<span class="n">${k} · ${a[1]} + ${b[1]}</span> – קודם כפל, אחר כך חיבור.`;
+    const vh=shopTable(it,[a[0],b[0]]);
+    return {prompt:`כמה עולים ${q}?`,v0:shopTable(it),v1:vh,
+      opts:opts4({label:fmt(ans)+' ₪',ok:true},[{label:fmt(a[1]+b[1]+(k>1?0:10))+' ₪',why:(k>1?`שכחת לכפול ב־${k}.<br>`:'')+why,vh},{label:fmt(k*(a[1]+b[1]))+' ₪',why:`רק ${a[0]} כפול ${k}.<br>`+why,vh},{label:fmt(ans+1)+' ₪',why,vh},{label:fmt(ans-2)+' ₪',why,vh}]),
+      right:`נכון! ${why} = ${N(ans)} ₪`};},
+  function(i){const it=shuffle(SHOP.slice()).slice(0,4),[n,p]=it.find(x=>x[1]<20)||it[0],k=R(1,i<10?3:6),cost=k*p,pay=cost<=20?20:(cost<=50?50:100),ans=pay-cost;
+    const why=`שלב 1 – כמה עלה: <span class="n">${k} · ${p} = ${cost}</span><br>שלב 2 – עודף = מה ששילמו ${MINUS} מה שעלה: <span class="n">${pay} ${MINUS} ${cost}</span>`;
+    const vh=shopTable(it,[n]);
+    return {prompt:`קנו ${k} ${k===1?'יחידה':'יחידות'} של ${n}, ושילמו בשטר של ${pay} ₪.<br>כמה עודף קיבלו?`,v0:shopTable(it),v1:vh,
+      opts:opts4({label:fmt(ans)+' ₪',ok:true},[{label:fmt(cost)+' ₪',why:`זה כמה שזה עלה – לא העודף.<br>`+why,vh},{label:fmt(pay+cost)+' ₪',why:`עודף זה מה שחוזר אלינו – מחסרים.<br>`+why,vh},{label:fmt(pay-p)+' ₪',why:k>1?`שכחת לכפול ב־${k}.<br>`+why:why,vh},{label:fmt(ans+1)+' ₪',why,vh}]),
+      right:`נכון! <span class="n">${pay} ${MINUS} ${cost} = ${ans}</span> ₪`};},
+  function(i){const it=shuffle(SHOP.slice()).slice(0,4),[n,p]=it.find(x=>x[1]>=4&&x[1]<20)||['עט',4],ans=R(2,i<10?6:12),extra=i<10?0:R(1,p-1),M=ans*p+extra;
+    const why=`כמה פעמים ${p} ₪ נכנס ב־${M} ₪? <span class="n">${M} : ${p}</span>`+(extra?`<br>יוצא ${ans} ונשארים ${extra} ₪ – לא מספיק לעוד ${n}.`:'');
+    const vh=shopTable(it,[n]);
+    return {prompt:`יש לך ${M} ₪.<br>כמה ${n} אפשר לקנות לכל היותר?`,v0:shopTable(it),v1:vh,
+      opts:opts4({label:String(ans),ok:true},[{label:String(ans+1),why:`בדוק: <span class="n">${ans+1} · ${p} = ${(ans+1)*p}</span> – יותר מ־${M} ₪.<br>`+why,vh},{label:String(M-p),why:`חיסרת – אבל צריך לבדוק כמה פעמים המחיר נכנס.<br>`+why,vh},{label:String(ans-1),why:`אפשר עוד אחת: <span class="n">${ans} · ${p} = ${ans*p}</span> ₪.<br>`+why,vh},{label:String(M*p),why,vh}]),
+      right:`נכון! <span class="n">${ans} · ${p} = ${ans*p}</span> ₪${extra?` ונשארים ${extra} ₪`:''}.`};}],
+ introHTML:()=>`<p class="prompt">מחירון = טבלה של מוצרים ומחירים.</p>${shopTable([['מחברת',7],['עט',4]])}<p class="center">3 מחברות: <span class="n">3 · 7 = 21</span> ₪<br>מחברת ועט: <span class="n">7 + 4 = 11</span> ₪<br>עודף מ־20: <span class="n">20 ${MINUS} 11 = 9</span> ₪</p>`});
+
+/* ===== עולם השברים ===== */
+const FC='#e07b1a',FCL='#ffd9b0';
+const FR=(k,d,col)=>`<span class="fr"${col?` style="color:${col}"`:''}><b>${k}</b><i>${d}</i></span>`;
+const MX=(w,k,d)=>`<span class="mx">${w}${FR(k,d)}</span>`;
+function fracPic(k,d,o={}){
+  const shape=o.shape||'bar';
+  if(shape==='pie'){const cx=50,cy=50,r=44;let s=`<svg viewBox="0 0 100 100" class="fp" direction="ltr">`;
+    if(d===1)return s+`<circle cx="50" cy="50" r="44" fill="${k?FC:'#fff'}" stroke="#1f2a44" stroke-width="2.5"/></svg>`;
+    let a0=-Math.PI/2;const ws=o.unequal?shuffle([...Array(d)].map((_,j)=>j===0?2.2:1)):Array(d).fill(1),tot=ws.reduce((a,b)=>a+b,0);
+    ws.forEach((w,j)=>{const a1=a0+2*Math.PI*w/tot,big=a1-a0>Math.PI?1:0;
+      s+=`<path d="M${cx},${cy} L${cx+r*Math.cos(a0)},${cy+r*Math.sin(a0)} A${r},${r} 0 ${big} 1 ${cx+r*Math.cos(a1)},${cy+r*Math.sin(a1)} Z" fill="${j<k?FC:'#fff'}" stroke="#1f2a44" stroke-width="2.5"/>`;a0=a1;});
+    return s+'</svg>';}
+  const W=200,H=46;let s=`<svg viewBox="0 0 ${W+8} ${H+8}" class="fp bar" direction="ltr">`;
+  const ws=o.unequal?shuffle([...Array(d)].map((_,j)=>j===0?2.4:(j===1?0.6:1))):Array(d).fill(1),tot=ws.reduce((a,b)=>a+b,0);let x=4;
+  ws.forEach((w,j)=>{const ww=W*w/tot;s+=`<rect x="${x}" y="4" width="${ww}" height="${H}" fill="${j<k?FC:'#fff'}" stroke="#1f2a44" stroke-width="2.5"/>`;x+=ww;});
+  return s+'</svg>';
+}
+const wholes=(w,k,d,shape)=>`<div class="fps">${[...Array(w)].map(()=>fracPic(d,d,{shape})).join('')}${k?fracPic(k,d,{shape}):''}</div>`;
+const FRULE=`💡 ${K(PC[1],'המכנה')} (למטה) = לכמה חלקים ${b('שווים')} חילקנו. ${K(FC,'המונה')} (למעלה) = כמה חלקים לקחנו.`;
+function b(t){return `<b>${t}</b>`;}
+REG.push({id:'frac1',title:'משמעות השבר',levels:[{t:'איזה שבר צבוע?',s:'★'},{t:'איזה ציור?',s:'★★'},{t:'שבר בסיפור',s:'★★★'},{t:'שבר מכמות',s:'★★★★'}],
+ gen:[
+  function(i){const d=R(3,i<10?8:12),k=R(1,d-1),shape=i%2?'pie':'bar';
+    const why=`יש ${K(PC[1],d+' חלקים')} שווים, ו־${K(FC,k)} צבועים.<br>`+FRULE;
+    return {prompt:'איזה חלק צבוע?',v0:`<div class="fps">${fracPic(k,d,{shape})}</div>`,v1:`<div class="fps">${fracPic(k,d,{shape})}</div>`,
+      opts:opts4({label:FR(k,d),ok:true},[{label:FR(d-k,d),why:`ספרת את החלקים ה${b('לבנים')}.<br>`+why},{label:FR(k,d-k),why:`המכנה הוא ${b('כל')} החלקים – גם הצבועים.<br>`+why},{label:FR(d,k),why:`הפכת: למטה כותבים את כל החלקים.<br>`+why}]),
+      right:`נכון! ${K(FC,k)} מתוך ${K(PC[1],d)} חלקים שווים = ${FR(k,d)}`};},
+  function(i){const d=R(3,i<10?6:10),k=R(1,d-1),shape=i%2?'pie':'bar';
+    const why=FRULE;
+    return {prompt:`איזה ציור מראה ${FR(k,d)}?`,v0:'',v1:'',wide:true,
+      opts:opts4({label:fracPic(k,d,{shape}),ok:true},[
+        {label:fracPic(k,d,{shape,unequal:true}),why:`בציור הזה ${b('החלקים לא שווים')}! בשבר כל החלקים חייבים להיות שווים.<br>`+why},
+        {label:fracPic(k,d+1,{shape}),why:`בציור הזה יש ${d+1} חלקים, וצריך ${K(PC[1],d)}.<br>`+why},
+        {label:fracPic(d-k===k?k+1:d-k,d,{shape}),why:`בציור הזה צבועים ${d-k===k?k+1:d-k} חלקים, וצריך ${K(FC,k)}.<br>`+why}]),
+      right:`נכון! ${K(PC[1],d)} חלקים שווים, ${K(FC,k)} צבועים.`};},
+  function(i){const d=R(4,i<10?8:12),k=R(1,d-1),S=pick([['פיצה','אכלו'],['עוגה','אכלו'],['שוקולד','אכלו'],['גינה','שתלו פרחים ב־']]);
+    const why=`כל ה${S[0]} חולקה ל־${K(PC[1],d)} חלקים שווים → זה המכנה.<br>${S[1].replace('ב־','')} ${K(FC,k)} חלקים → זה המונה.`;
+    return {prompt:`${S[0]==='גינה'?'🌷':'🍕'} ${S[0]} חולקה ל־${d} חלקים שווים.<br>${S[1]==='אכלו'?`אכלו ${k} חלקים`:`${S[1]}${k} חלקים`}.<br>איזה חלק ${S[1]==='אכלו'?'אכלו':'שתלו'}?`,v0:'',v1:`<div class="fps">${fracPic(k,d,{shape:'pie'})}</div>`,
+      opts:opts4({label:FR(k,d),ok:true},[{label:FR(d,k),why:`הפכת את המונה והמכנה.<br>`+why},{label:FR(d-k,d),why:`זה החלק ש${b('נשאר')}.<br>`+why},{label:FR(k,d-k),why:`המכנה הוא ${b('כל')} החלקים.<br>`+why}]),
+      right:`נכון! ${FR(k,d)} – ${k} מתוך ${d} חלקים שווים.`};},
+  function(i){const d=pick(i<10?[2,3,4,5]:[3,4,5,6,8,10]),k=i<6?1:R(1,d-1),one=R(3,i<10?8:15),tot=d*one,ans=k*one;
+    const v=cbars([{lab:fmt(tot),segs:copies(d,one,'',0).map((g,j)=>j<k?{...g,c:[FCL,FC]}:g)}]);
+    const why=`מחלקים ${N(tot)} ל־${K(PC[1],d)} חלקים שווים: <span class="n">${tot} : ${d} = ${one}</span> בכל חלק.<br>`+(k>1?`לוקחים ${K(FC,k)} חלקים: <span class="n">${k} · ${one} = ${ans}</span>`:'לוקחים חלק אחד.');
+    return {prompt:`כמה זה ${FR(k,d)} מ־${N(tot)}?`,v0:v,v1:cbars([{lab:fmt(tot),segs:copies(d,one,String(one),0).map((g,j)=>j<k?{...g,c:[FCL,FC]}:g)}]),
+      opts:opts4({label:fmt(ans),ok:true},[...(k>1?[{label:fmt(one),why:`מצאת חלק אחד – אבל צריך ${K(FC,k)} חלקים.<br>`+why}]:[]),{label:fmt(tot-d),why},{label:fmt(tot*k),why},{label:fmt(ans+one),why},{label:fmt(tot),why},{label:fmt(ans+1),why}]),
+      right:`נכון! ${why}`};}],
+ introHTML:()=>`<p class="prompt">שבר = חלק משלם שחולק ל${b('חלקים שווים')}.</p><div class="fps">${fracPic(3,4,{shape:'pie'})}</div><p class="center" style="font-size:24px">${FR(3,4)}</p><p class="center">${K(FC,'3')} = כמה חלקים לקחנו (מונה)<br>${K(PC[1],'4')} = לכמה חלקים שווים חילקנו (מכנה)</p>`});
+
+REG.push({id:'frac2',title:'מספר מעורב והשלמה לשלם',levels:[{t:'גדול משלם?',s:'★'},{t:'מעורב ← שבר',s:'★★'},{t:'שבר ← מעורב',s:'★★★'},{t:'השלמה לשלם',s:'★★★★'}],
+ gen:[
+  function(i){const d=R(3,9),t=i%2;const big=d+R(1,d),sm=R(1,d-1);
+    const make=(k)=>({label:FR(k,d),k});
+    if(t===0){const opts=[make(big),make(sm),make(R(1,d-1)),make(d)];
+      return {prompt:'איזה שבר גדול משלם?',v0:'',v1:wholes(Math.floor(big/d),big%d,d,'bar'),
+        opts:opts4({label:opts[0].label,ok:true},opts.slice(1).map(o=>({label:o.label,why:o.k===d?`${FR(d,d)} = בדיוק שלם אחד – לא גדול ממנו.<br>💡 מונה גדול מהמכנה → גדול משלם.`:`המונה ${o.k} קטן מהמכנה ${d} → פחות משלם.<br>💡 מונה גדול מהמכנה → גדול משלם.`,vh:wholes(Math.floor(o.k/d),o.k%d,d,'bar')}))),
+        right:`נכון! המונה ${big} גדול מהמכנה ${d} – יותר מ־${d} חלקים, יותר משלם.`};}
+    return {prompt:'איזה שבר שווה בדיוק לשלם?',v0:'',v1:wholes(1,0,d,'bar'),
+      opts:opts4({label:FR(d,d),ok:true},[sm,big,d-1].map(k=>({label:FR(k,d),why:`${FR(k,d)}: ${k} חלקים מתוך ${d} – ${k<d?'פחות':'יותר'} משלם.<br>💡 מונה = מכנה → שלם אחד.`,vh:wholes(Math.floor(k/d),k%d,d,'bar')}))),
+      right:`נכון! ${d} חלקים מתוך ${d} = כל השלם.`};},
+  function(i){const d=R(2,i<10?5:9),w=R(1,i<10?3:5),k=R(1,d-1),n=w*d+k;
+    const why=`${w} שלמים = <span class="n">${w} · ${d} = ${w*d}</span> חלקים.<br>ועוד ${k} חלקים: <span class="n">${w*d} + ${k} = ${n}</span>`;
+    return {prompt:`כתוב כשבר: ${MX(w,k,d)}`,v0:wholes(w,k,d,i%2?'pie':'bar'),v1:wholes(w,k,d,i%2?'pie':'bar'),
+      opts:opts4({label:FR(n,d),ok:true},[{label:FR(w*d,d),why:`שכחת להוסיף את ${k} החלקים.<br>`+why},{label:FR(w+k,d),why:`כל שלם הוא ${d} חלקים – לא חלק אחד.<br>`+why},{label:FR(w*k+d,d),why},{label:FR(n,w*d)===FR(n,d)?FR(n+1,d):FR(n,w*d),why}]),
+      right:`נכון! ${MX(w,k,d)} = ${FR(n,d)}`};},
+  function(i){const d=R(2,i<10?5:9),w=R(1,i<10?3:5),k=R(1,d-1),n=w*d+k;
+    const why=`כמה שלמים? <span class="n">${n} : ${d} = ${w}</span>, ונשארים ${k} חלקים.`;
+    return {prompt:`כתוב כמספר מעורב: ${FR(n,d)}`,v0:'',v1:wholes(w,k,d,'bar'),
+      opts:opts4({label:MX(w,k,d),ok:true},[{label:MX(w,d-k===k?(k%d)+1:d-k,d),why},{label:MX(w+1,k,d),why:`בדוק: ${w+1} שלמים זה ${(w+1)*d} חלקים – יותר מ־${n}.<br>`+why},{label:MX(w,k,n),why:`המכנה לא משתנה – נשאר ${d}.<br>`+why},{label:MX(k,w===k?w+1:w,d),why}]),
+      right:`נכון! ${FR(n,d)} = ${MX(w,k,d)}`};},
+  function(i){const d=R(3,i<10?8:12),k=R(1,d-1),w=i<10?0:R(1,4),ans=d-k;
+    const why=`שלם = ${FR(d,d)}. יש ${K(FC,k)} חלקים, חסרים <span class="n">${d} ${MINUS} ${k}</span> חלקים.`;
+    const q=w?`${EQ(`${MX(w,k,d)} + ${QB} = ${w+1}`)}`:`${EQ(`${FR(k,d)} + ${QB} = 1`)}`;
+    return {prompt:`כמה חסר לשלם?<br>${q}`,v0:`<div class="fps">${fracPic(k,d)}</div>`,v1:`<div class="fps">${fracPic(d,d)}</div>`,
+      opts:opts4({label:FR(ans,d),ok:true},[{label:FR(k,d),why:`זה מה ש${b('יש')}, לא מה שחסר.<br>`+why},{label:FR(ans,2*d),why:`המכנה נשאר ${d}.<br>`+why},{label:FR(ans===1?2:1,d),why},{label:FR(d,ans),why}]),
+      right:`נכון! <span class="n">${k} + ${ans} = ${d}</span> חלקים = שלם.`};}],
+ introHTML:()=>`<p class="prompt">מספר מעורב = שלמים וגם שבר.</p>${wholes(2,1,4,'pie')}<p class="center" style="font-size:22px">${MX(2,1,4)} = ${FR(9,4)}</p><p class="center"><span class="n">2 · 4 = 8</span> חלקים, ועוד 1 = ${b('9 רבעים')}.</p><p class="center">💡 מונה גדול מהמכנה → יותר משלם.</p>`});
+
+/* ===== עולם המדידות ===== */
+function ruler(from,to){            // ס"מ, אפשר חצאים
+  const X0=14,S=31,Y=58;let s=`<svg class="nl" viewBox="0 0 340 112" direction="ltr"><rect x="${X0+from*S}" y="18" width="${(to-from)*S}" height="20" rx="4" fill="${FC}"/>`;
+  s+=`<rect x="4" y="${Y-6}" width="332" height="56" rx="6" fill="#fff6d6" stroke="#b8860b" stroke-width="2"/>`;
+  for(let mm=0;mm<=100;mm++){const x=X0+mm*S/10,h=mm%10===0?18:(mm%5===0?13:8);s+=`<line x1="${x}" y1="${Y-6}" x2="${x}" y2="${Y-6+h}" stroke="#1f2a44" stroke-width="${mm%10===0?2:1}"/>`;
+    if(mm%10===0)s+=`<text x="${x}" y="${Y+30}" text-anchor="middle" font-size="14" font-weight="800" fill="${PC[1]}">${mm/10}</text>`;}
+  return s+`<text x="330" y="${Y+46}" text-anchor="end" font-size="12" fill="#6b7690">ס״מ</text></svg>`;
+}
+const UNITS={len:[['ק״מ','מ׳',1000],['מ׳','ס״מ',100],['ס״מ','מ״מ',10]],w:[['ק״ג','גרם',1000]]};
+const convNote=(big,small,f)=>`<p class="center conv">${K(PC[3],'1 '+big)} = ${K(PC[1],fmt(f)+' '+small)}</p>`;
+function convQ(i,kind,dirUp){
+  const [big,small,f]=kind==='w'?UNITS.w[0]:pick(i<8?[UNITS.len[1]]:UNITS.len);
+  const a=R(2,i<10?9:25);
+  if(dirUp){const ans=a*f,why=`${K(PC[3],'1 '+big)} = ${K(PC[1],fmt(f)+' '+small)}.<br>${a} ${big} = <span class="n">${a} · ${fmt(f)}</span>`;
+    return {prompt:`${a} ${big} = ? ${small}`,v0:convNote(big,small,f),v1:convNote(big,small,f),
+      opts:opts4({label:fmt(ans)+' '+small,ok:true},[{label:fmt(a*f/10)+' '+small,why},{label:fmt(a*f*10)+' '+small,why},{label:fmt(a+f)+' '+small,why:`חיברת – אבל כל ${big} שווה ${fmt(f)} ${small}, אז כופלים.<br>`+why}]),
+      right:`נכון! <span class="n">${a} · ${fmt(f)} = ${fmt(ans)}</span> ${small}`};}
+  const n=a*f,why=`${K(PC[1],fmt(f)+' '+small)} = ${K(PC[3],'1 '+big)}.<br>כמה פעמים ${fmt(f)} נכנס ב־${fmt(n)}? <span class="n">${fmt(n)} : ${fmt(f)}</span>`;
+  return {prompt:`${fmt(n)} ${small} = ? ${big}`,v0:convNote(big,small,f),v1:convNote(big,small,f),
+    opts:opts4({label:fmt(a)+' '+big,ok:true},[{label:fmt(a*10)+' '+big,why},{label:fmt(n*f)+' '+big,why:`כפלת – אבל ${big} יחידה גדולה, אז המספר קטן יותר.<br>`+why},{label:fmt(a+1)+' '+big,why}]),
+    right:`נכון! <span class="n">${fmt(n)} : ${fmt(f)} = ${a}</span> ${big}`};
+}
+function mixQ(i,kind){
+  const [big,small,f]=kind==='w'?UNITS.w[0]:UNITS.len[1];
+  const a=R(1,i<10?4:9),c=f===100?R(5,95):R(50,950),ans=a*f+c;
+  const why=`${a} ${big} = ${K(PC[3],fmt(a*f)+' '+small)}.<br>ועוד ${c}: <span class="n">${fmt(a*f)} + ${c} = ${fmt(ans)}</span>`;
+  return {prompt:`${a} ${big} ו־${c} ${small} = ? ${small}`,v0:convNote(big,small,f),v1:convNote(big,small,f),
+    opts:opts4({label:fmt(ans)+' '+small,ok:true},[{label:fmt(a+c)+' '+small,why:`צריך קודם להפוך את ה${big} ל${small}.<br>`+why},{label:fmt(Number(String(a)+String(c)))+' '+small,why:`"הדבקת" את המספרים. בדוק עם החשבון:<br>`+why},{label:fmt(a*f*10+c)+' '+small,why}]),
+    right:`נכון! ${why}`};
+}
+REG.push({id:'length',title:'מדידות אורך',levels:[{t:'קוראים סרגל',s:'★'},{t:'מ׳ ← ס״מ',s:'★★'},{t:'המרות',s:'★★★'},{t:'מטרים וסנטימטרים',s:'★★★★'}],
+ gen:[
+  function(i){const from=i<6?0:R(1,3),len=i<10?R(2,7):R(2,6)+0.5,to=from+len,ans=len;
+    const lab=x=>(String(x).replace('.5',' וחצי'))+' ס״מ';
+    const why=`הקו מתחיל ב־${K(PC[1],from)} ונגמר ב־${K(PC[1],String(to).replace('.5',' וחצי'))}.<br>אורך = סוף ${MINUS} התחלה`+(from?`: <span class="n">${to} ${MINUS} ${from}</span>`:'');
+    return {prompt:'מה אורך הקו הכתום?',v0:ruler(from,to),v1:ruler(from,to),
+      opts:opts4({label:lab(ans),ok:true},[...(from?[{label:lab(to),why:`הקו לא מתחיל ב־0!<br>`+why}]:[]),{label:lab(ans+1),why},{label:lab(ans-1),why},{label:lab(ans*10),why:`הסרגל בסנטימטרים. כל מספר על הסרגל = ס״מ אחד.<br>`+why}]),
+      right:`נכון! ${lab(ans)}.`};},
+  i=>convQ(i,'len',i%2===0),i=>convQ(i,'len',i%2===1),i=>mixQ(i,'len')],
+ introHTML:()=>`<p class="prompt">יחידות אורך</p>${convNote('ק״מ','מ׳',1000)}${convNote('מ׳','ס״מ',100)}${convNote('ס״מ','מ״מ',10)}<p class="center">מיחידה ${b('גדולה')} לקטנה → ${b('כופלים')} (המספר גדל)<br>מיחידה ${b('קטנה')} לגדולה → ${b('מחלקים')} (המספר קטן)</p>${ruler(1,4)}<p class="center">מודדים מההתחלה לסוף: <span class="n">4 ${MINUS} 1 = 3</span> ס״מ</p>`});
+REG.push({id:'weight',title:'משקל: גרם וק״ג',levels:[{t:'ק״ג ← גרם',s:'★'},{t:'גרם ← ק״ג',s:'★★'},{t:'ק״ג וגרם',s:'★★★'},{t:'מה כבד יותר?',s:'★★★★'}],
+ gen:[i=>convQ(i,'w',true),i=>convQ(i,'w',false),i=>mixQ(i,'w'),
+  function(i){const a=R(1,4),g=R(1,9)*100,A=a*1000+g,B=A+pick([-1,1])*R(1,4)*50;
+    const show=x=>x%1000===0?`${x/1000} ק״ג`:(x>1000&&i%2?`${Math.floor(x/1000)} ק״ג ו־${x%1000} גרם`:`${fmt(x)} גרם`);
+    const lx=show(A),rx=`${fmt(B)} גרם`,heavy=A>B?lx:rx,light=A>B?rx:lx;
+    const why=`הופכים הכול לגרם: ${lx} = ${N(A)} גרם.<br>משווים: ${N(A)} ${A>B?'>':'<'} ${N(B)}`;
+    return {prompt:'מה כבד יותר?',wide:true,v0:balance(lx.replace(' ו־',' '),rx,0),v1:balance(lx.replace(' ו־',' '),rx,A>B?1:-1,A,B),
+      opts:shuffle([{label:heavy,ok:true},{label:light,why},{label:'הם שוקלים אותו דבר',why}]),
+      right:`נכון! ${why}`};}],
+ introHTML:()=>`<p class="prompt">משקל</p>${convNote('ק״ג','גרם',1000)}<p class="center">חצי ק״ג = ${N(500)} גרם<br>רבע ק״ג = ${N(250)} גרם</p><p class="center"><span class="n">2</span> ק״ג ו־<span class="n">300</span> גרם = <span class="n">2,000 + 300 = 2,300</span> גרם</p>`});
+
+function clock(h,m){const cx=60,cy=60,ah=(h%12+m/60)*30*Math.PI/180,am=m*6*Math.PI/180;
+  let s=`<svg class="clk" viewBox="0 0 120 120" direction="ltr"><circle cx="60" cy="60" r="55" fill="#fff" stroke="#1f2a44" stroke-width="4"/>`;
+  for(let k=0;k<60;k++){const a=k*6*Math.PI/180,r1=k%5?50:45;s+=`<line x1="${cx+r1*Math.sin(a)}" y1="${cy-r1*Math.cos(a)}" x2="${cx+53*Math.sin(a)}" y2="${cy-53*Math.cos(a)}" stroke="#1f2a44" stroke-width="${k%5?1:2.5}"/>`;}
+  for(let k=1;k<=12;k++){const a=k*30*Math.PI/180;s+=`<text x="${cx+36*Math.sin(a)}" y="${cy-36*Math.cos(a)+5}" text-anchor="middle" font-size="13" font-weight="800" fill="#1f2a44">${k}</text>`;}
+  s+=`<line x1="60" y1="60" x2="${cx+26*Math.sin(ah)}" y2="${cy-26*Math.cos(ah)}" stroke="${PC[2]}" stroke-width="6" stroke-linecap="round"/>`;
+  s+=`<line x1="60" y1="60" x2="${cx+44*Math.sin(am)}" y2="${cy-44*Math.cos(am)}" stroke="${PC[1]}" stroke-width="4" stroke-linecap="round"/><circle cx="60" cy="60" r="4" fill="#1f2a44"/></svg>`;
+  return `<div class="center">${s}</div>`;}
+const T=(h,m)=>`<span class="n">${h}:${String(m).padStart(2,'0')}</span>`;
+const CLK_RULE=`💡 ${K(PC[2],'המחוג הקצר')} = שעות. ${K(PC[1],'המחוג הארוך')} = דקות (כל מספר = 5 דקות).`;
+REG.push({id:'clock',title:'שעון וזמנים',levels:[{t:'שעה, חצי, רבע',s:'★'},{t:'דקות',s:'★★'},{t:'כמה זמן עבר?',s:'★★★'},{t:'מה תהיה השעה?',s:'★★★★'}],
+ gen:[
+  function(i){const h=R(1,12),m=pick(i<6?[0,30]:[0,15,30,45]);
+    const why=`${CLK_RULE}<br>הארוך על ${m?m/5:12} → ${m} דקות.`;const m2=m/5===h%12?(m+15)%60:m;
+    return {prompt:'מה השעה?',v0:clock(h,m),v1:clock(h,m),
+      opts:opts4({label:T(h,m),ok:true},[{label:T(m===0?12:m/5,(h%12)*5),why:`החלפת בין המחוגים.<br>`+why},{label:T(h%12+1,m),why:`${m>=30?'המחוג הקצר עוד לא הגיע ל־'+(h%12+1)+'.':'בדוק את המחוג הקצר.'}<br>`+why},{label:T(h,(m+30)%60),why},{label:T(h,m===0?5:m/5),why:`כל מספר על השעון = 5 דקות.<br>`+why}]),
+      right:`נכון! השעה ${T(h,m)}.`};},
+  function(i){const h=R(1,12),m=R(1,11)*5+(i>=12?0:0);
+    const why=`${CLK_RULE}<br>הארוך על ${m/5} → <span class="n">${m/5} · 5 = ${m}</span> דקות.`;
+    return {prompt:'מה השעה?',v0:clock(h,m),v1:clock(h,m),
+      opts:opts4({label:T(h,m),ok:true},[{label:T(h,m/5),why:`הארוך מראה דקות – כל מספר שווה 5 דקות.<br>`+why},{label:T(h%12+1,m),why:`המחוג הקצר עוד לא הגיע ל־${h%12+1}.<br>`+why},{label:T(h,(m+5)%60||5),why},{label:T(h,(m+30)%60||30),why}]),
+      right:`נכון! ${T(h,m)}`};},
+  function(i){const h=R(7,15),m=pick([0,15,30,45]),dur=i<8?pick([30,60,90,120]):R(2,20)*5,e=h*60+m+dur,eh=Math.floor(e/60),em=e%60;
+    const lab=x=>x<60?`${x} דקות`:(x%60===0?`${x/60===1?'שעה':x/60+' שעות'}`:`${Math.floor(x/60)===1?'שעה':Math.floor(x/60)+' שעות'} ו־${x%60} דקות`);
+    const why=`מ־${T(h,m)} עד ${T(eh,em)}: סופרים קודם שעות שלמות, ואחר כך דקות.<br>💡 בשעה יש ${b('60')} דקות – לא 100!`;
+    return {prompt:`השיעור התחיל ב־${T(h,m)} ונגמר ב־${T(eh,em)}.<br>כמה זמן נמשך?`,v0:'',v1:`<div class="fps">${clock(h,m)}${clock(eh,em)}</div>`,
+      opts:opts4({label:lab(dur),ok:true},[{label:((eh-h)*100+(em-m)!==dur&&(eh-h)*100+(em-m)>0)?`${(eh-h)*100+(em-m)} דקות`:lab(dur+40),why:`חיסרת כאילו בשעה יש 100 דקות.<br>`+why},{label:lab(dur+60),why},{label:lab(dur>=15?dur-15:dur+15),why},{label:lab(dur+5),why}]),
+      right:`נכון! ${lab(dur)}.`};},
+  function(i){const h=R(7,14),m=R(0,11)*5,add=i<8?pick([15,30,60,90]):R(3,23)*5,e=h*60+m+add,eh=Math.floor(e/60),em=e%60;
+    const lab=x=>x<60?`${x} דקות`:(x%60===0?(x===60?'שעה':x/60+' שעות'):(Math.floor(x/60)===1?'שעה':Math.floor(x/60)+' שעות')+` ו־${x%60} דקות`);
+    const why=`${T(h,m)} ועוד ${lab(add)}.<br>💡 כשהדקות מגיעות ל־60 – עוברים לשעה הבאה.`;
+    const raw=m+(add%60),wrong=raw>=60?T(h+Math.floor(add/60),raw):T(eh+1,em);
+    return {prompt:`עכשיו השעה ${T(h,m)}.<br>מה תהיה השעה בעוד ${lab(add)}?`,v0:clock(h,m),v1:clock(eh,em),
+      opts:opts4({label:T(eh,em),ok:true},[{label:wrong,why:(raw>=60?`אין ${raw} דקות! 60 דקות = שעה.<br>`:'')+why},{label:T(eh,(em+10)%60),why},{label:T(eh-1>0?eh-1:eh+2,em),why},{label:T(eh,(em+30)%60),why}]),
+      right:`נכון! ${T(h,m)} + ${lab(add)} = ${T(eh,em)}`};}],
+ introHTML:()=>`<p class="prompt">קוראים שעון</p>${clock(3,20)}<p class="center">${K(PC[2],'הקצר')} על 3 → ${K(PC[2],'3 שעות')}<br>${K(PC[1],'הארוך')} על 4 → <span class="n">4 · 5 = 20</span> ${K(PC[1],'דקות')}<br>השעה ${T(3,20)}</p><p class="center">💡 בשעה יש 60 דקות. חצי שעה = 30 דקות. רבע שעה = 15 דקות.</p>`});
+
+/* ===== עולם הצורות והנתונים ===== */
+const GB='#2f6fd6',GO='#e07b1a',GI='#1f2a44';
+const SV=(w,h,c,cls)=>`<svg class="${cls||'gs'}" viewBox="0 0 ${w} ${h}" direction="ltr">${c}</svg>`;
+const ln=(x1,y1,x2,y2,col,wd)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${col||GI}" stroke-width="${wd||4}" stroke-linecap="round"/>`;
+const tx=(x,y,t,col,fs)=>`<text x="${x}" y="${y}" text-anchor="middle" font-size="${fs||15}" font-weight="800" fill="${col||GI}">${t}</text>`;
+const poly=(pts,col,fill)=>`<polygon points="${pts.map(p=>p.join(',')).join(' ')}" fill="${fill||'#e7efff'}" stroke="${col||GB}" stroke-width="3.5" stroke-linejoin="round"/>`;
+/* קווים */
+function pairPic(kind){const r=R(-20,20)*Math.PI/180;
+  const L=(cx,cy,a)=>{const dx=55*Math.cos(a),dy=55*Math.sin(a);return ln(cx-dx,cy-dy,cx+dx,cy+dy,GB,5);};
+  if(kind==='par')return SV(140,100,L(70,30,r)+L(70,72,r));
+  if(kind==='perp')return SV(140,100,L(70,50,r)+L(70,50,r+Math.PI/2));
+  if(kind==='cross')return SV(140,100,L(70,50,r)+L(70,50,r+Math.PI/4));
+  return SV(140,100,ln(15,30,125,42,GB,5)+ln(15,75,125,55,GB,5));}  // כמעט מקבילים – נפגשים
+const PAR_RULE=`💡 ${b('מקבילים')} = קווים שלא נפגשים אף פעם, והמרחק ביניהם תמיד שווה (כמו פסי רכבת).<br>${b('ניצבים')} = נפגשים בזווית ישרה.`;
+const QUADS={
+ rect:{n:'מלבן',p:[[20,20],[140,20],[140,90],[20,90]]},sq:{n:'ריבוע',p:[[45,15],[125,15],[125,95],[45,95]]},
+ rho:{n:'מעוין',p:[[85,8],[140,55],[85,102],[30,55]]},par:{n:'מקבילית',p:[[45,20],[150,20],[115,90],[10,90]]},trap:{n:'טרפז',p:[[50,20],[110,20],[150,90],[10,90]]}};
+const LET=['A','B','C','D'];
+function quadPic(k,labels,hl){const q=QUADS[k];let s=poly(q.p);
+  if(hl)s+=ln(...q.p[hl[0]],...q.p[hl[1]],GO,6);
+  if(labels)q.p.forEach((p,j)=>{const cx=q.p.reduce((a,b)=>a+b[0],0)/4,cy=q.p.reduce((a,b)=>a+b[1],0)/4;s+=tx(p[0]+(p[0]-cx)*0.16,p[1]+(p[1]-cy)*0.22+5,LET[j],GI,15);});
+  return SV(160,112,s);}
+function gridSeg(dx,dy,cdx,cdy){let s='';for(let x=0;x<=8;x++)s+=ln(10+x*20,10,10+x*20,130,'#dbe2ef',1);for(let y=0;y<=6;y++)s+=ln(10,10+y*20,170,10+y*20,'#dbe2ef',1);
+  const P=(gx,gy)=>[10+gx*20,130-gy*20];s+=ln(...P(1,1),...P(1+dx,1+dy),GB,5);const sx=cdx<0?7:4,sy=cdy<0?5:1;s+=ln(...P(sx,sy),...P(sx+cdx,sy+cdy),GO,5);return SV(180,140,s);}
+REG.push({id:'parallel',title:'מקבילות',levels:[{t:'אילו מקבילים?',s:'★'},{t:'צלע מקבילה',s:'★★'},{t:'מקבילים או ניצבים?',s:'★★★'},{t:'שרטוט מקביל',s:'★★★★'}],
+ gen:[
+  function(i){return {prompt:'באיזה ציור הקווים מקבילים?',v0:'',v1:`<p class="center">${PAR_RULE}</p>`,wide:true,
+    opts:opts4({label:pairPic('par'),ok:true},[{label:pairPic('perp'),why:`הקווים האלה נפגשים בזווית ישרה – הם ${b('ניצבים')}.<br>`+PAR_RULE},{label:pairPic('cross'),why:'הקווים האלה נחתכים – נפגשים בנקודה.<br>'+PAR_RULE},{label:pairPic('near'),why:'תסתכל טוב: המרחק בין הקווים משתנה. אם נמשיך אותם – הם ייפגשו.<br>'+PAR_RULE}])};},
+  function(i){const k=pick(['rect','sq','par','trap']),q=QUADS[k],side=k==='trap'?0:R(0,3),opp=(side+2)%4;
+    const nm=j=>LET[j]+LET[(j+1)%4];
+    const why=j=>`${nm(j)} ${j===(side+1)%4||j===(side+3)%4?'נפגשת עם':'לא מקבילה ל־'} ${nm(side)}.<br>במצולע, הצלע המקבילה נמצאת ${b('מול')} הצלע – לא לידה.`;
+    return {prompt:`איזו צלע מקבילה לצלע ${K(GO,nm(side))}?`,v0:quadPic(k,true,[side,(side+1)%4]),v1:quadPic(k,true,[opp,(opp+1)%4]),
+      opts:opts4({label:nm(opp),ok:true},[0,1,2,3].filter(j=>j!==side&&j!==opp).map(j=>({label:nm(j),why:why(j)})).concat([{label:nm(side).split('').reverse().join(''),why:`${nm(side).split('').reverse().join('')} זו אותה צלע בדיוק – רק הפוך.<br>מחפשים צלע אחרת שמולה.`}]))};},
+  function(i){const t=pick(['par','perp','cross']),names={par:'מקבילים',perp:'ניצבים',cross:'נחתכים (לא בזווית ישרה)'};
+    const why=`${PAR_RULE}`;
+    return {prompt:'איך נקראים הקווים האלה?',v0:pairPic(t),v1:pairPic(t),
+      opts:opts4({label:names[t],ok:true},Object.keys(names).filter(x=>x!==t).map(x=>({label:names[x],why}))),wide:true};},
+  function(i){const opts=[[1,2],[2,1],[3,1],[1,3],[2,3],[3,2],[4,1]],[dx,dy]=pick(opts);
+    const why=`בקו ה${K(GB,'כחול')}: ${K(GB,dx+' ימינה')} ו־${K(GB,dy+' למעלה')}.<br>קו מקביל עושה ${b('בדיוק אותן קפיצות')} על המשבצות.`;
+    return {prompt:`באיזה ציור הקו ה${K(GO,'כתום')} מקביל לקו ה${K(GB,'כחול')}?`,v0:'',v1:'',wide:true,
+      opts:opts4({label:gridSeg(dx,dy,dx,dy),ok:true},[{label:gridSeg(dx,dy,dx+1,dy),why},{label:gridSeg(dx,dy,-dx,dy),why:'הקו הכתום נוטה לצד השני.<br>'+why},{label:gridSeg(dx,dy,dy,dx),why},{label:gridSeg(dx,dy,dx,dy+1),why}])};}],
+ introHTML:()=>`<p class="prompt">קווים מקבילים</p><div class="fps">${pairPic('par')}${pairPic('perp')}</div><p class="center">${PAR_RULE}</p>`});
+
+/* זוויות */
+function angPic(deg,o={}){const vx=o.vx||60,vy=o.vy||100,l1=o.l1||75,l2=o.l2||75,rot=(o.rot||0)*Math.PI/180,a=deg*Math.PI/180;
+  const p1=[vx+l1*Math.cos(-rot),vy+l1*Math.sin(-rot)],p2=[vx+l2*Math.cos(-rot-a),vy+l2*Math.sin(-rot-a)];
+  let s=ln(vx,vy,...p1,GB,5)+ln(vx,vy,...p2,GB,5);
+  if(Math.round(deg)===90){const u=[Math.cos(-rot),Math.sin(-rot)],v=[Math.cos(-rot-a),Math.sin(-rot-a)],d=16;
+    s+=`<polyline points="${vx+u[0]*d},${vy+u[1]*d} ${vx+u[0]*d+v[0]*d},${vy+u[1]*d+v[1]*d} ${vx+v[0]*d},${vy+v[1]*d}" fill="none" stroke="${GO}" stroke-width="3"/>`;}
+  else{const r=22,q1=[vx+r*Math.cos(-rot),vy+r*Math.sin(-rot)],q2=[vx+r*Math.cos(-rot-a),vy+r*Math.sin(-rot-a)];s+=`<path d="M${q1} A${r},${r} 0 ${deg>180?1:0} 0 ${q2}" fill="none" stroke="${GO}" stroke-width="3"/>`;}
+  if(o.lab)s+=tx(vx+40*Math.cos(-rot-a/2),vy+40*Math.sin(-rot-a/2)+5,o.lab,GO,15);
+  return SV(o.w||170,o.h||115,`<circle cx="${vx}" cy="${vy}" r="4" fill="${GI}"/>`+s);}
+const ANG_T=[['חדה',d=>d<90,'קטנה מ־90°'],['ישרה',d=>d===90,'בדיוק 90° – כמו פינה של דף'],['קהה',d=>d>90&&d<180,'בין 90° ל־180°'],['שטוחה',d=>d===180,'בדיוק 180° – קו ישר']];
+const angType=d=>ANG_T.find(t=>t[1](d));
+const ANG_RULE=`💡 ${ANG_T.map(t=>`${b(t[0])}: ${t[2]}`).join('<br>')}`;
+const randAng=t=>t==='חדה'?R(2,8)*10:(t==='ישרה'?90:(t==='קהה'?R(10,17)*10:180));
+REG.push({id:'angles',title:'סוגי זוויות',levels:[{t:'איזו זווית?',s:'★'},{t:'לפי מעלות',s:'★★'},{t:'מצא את הזווית',s:'★★★'},{t:'מי גדולה יותר?',s:'★★★★'}],
+ gen:[
+  function(i){const t=pick(i<6?['חדה','ישרה','קהה']:['חדה','ישרה','קהה','שטוחה']),d=randAng(t),pic=angPic(d,{rot:R(0,i<8?0:40),vx:d>120?90:60});
+    return {prompt:'איזו זווית זו?',v0:pic,v1:pic,opts:opts4({label:t,ok:true},ANG_T.filter(x=>x[0]!==t).map(x=>({label:x[0],why:`זווית ${x[0]}: ${x[2]}.<br>`+ANG_RULE})))};},
+  function(i){const t=pick(['חדה','ישרה','קהה','שטוחה']),d=t==='חדה'?R(5,89):(t==='קהה'?R(91,179):randAng(t));
+    return {prompt:`זווית של ${N(d)}° היא:`,v0:'',v1:angPic(d,{vx:d>120?90:60}),opts:opts4({label:t,ok:true},ANG_T.filter(x=>x[0]!==t).map(x=>({label:x[0],why:`${d}° ${d<90?'קטן מ־90':(d===90?'שווה 90':'גדול מ־90')}.<br>`+ANG_RULE})))};},
+  function(i){const t=pick(['חדה','ישרה','קהה']),others=['חדה','ישרה','קהה','שטוחה'].filter(x=>x!==t);
+    const mk=x=>angPic(randAng(x),{rot:R(0,30),w:150,h:110,vx:x==='קהה'||x==='שטוחה'?85:50});
+    return {prompt:`איזו זווית היא ${b(t)}?`,v0:'',v1:`<p class="center">${ANG_RULE}</p>`,wide:true,
+      opts:opts4({label:mk(t),ok:true},others.map(x=>({label:mk(x),why:`זו זווית ${x}.<br>`+ANG_RULE})))};},
+  function(i){const d1=R(3,15)*10,d2=d1+pick([-1,1])*R(2,4)*10,big=Math.max(d1,d2),sm=Math.min(d1,d2);
+    const pa=angPic(big,{l1:45,l2:45,vx:big>120?95:55,w:160}),pb=angPic(sm,{l1:85,l2:85,vx:sm>120?95:45,w:160});
+    const why=`💡 גודל הזווית = כמה ${b('פתוחות')} הקרניים – לא כמה הן ארוכות!<br>הזווית עם הקרניים הקצרות פתוחה יותר.`;
+    return {prompt:'איזו זווית גדולה יותר?',v0:'',v1:'',wide:true,
+      opts:shuffle([{label:pa,ok:true},{label:pb,why},{label:'שתיהן שוות',why}]),right:`נכון! היא פתוחה יותר (${big}° לעומת ${sm}°), גם אם הקרניים קצרות.`};}],
+ introHTML:()=>`<p class="prompt">סוגי זוויות</p><div class="fps">${angPic(50,{w:120,lab:'חדה'})}${angPic(90,{w:120,lab:'ישרה'})}${angPic(130,{w:150,vx:85,lab:'קהה'})}</div><p class="center">${ANG_RULE}</p>`});
+
+/* משולשים */
+function triPic(A,o={}){   // A=[a,b,c] זוויות, מצייר לפי שתי זוויות בסיס
+  const [a,bb]=A,base=170,ra=a*Math.PI/180,rb=bb*Math.PI/180,x0=20,y0=120;
+  const t=base*Math.sin(rb)/Math.sin(ra+rb),C=[x0+t*Math.cos(ra),y0-t*Math.sin(ra)],Q=[[x0,y0],[x0+base,y0],C];
+  const mnx=Math.min(...Q.map(p=>p[0])),mxx=Math.max(...Q.map(p=>p[0])),mny=Math.min(...Q.map(p=>p[1])),mxy=Math.max(...Q.map(p=>p[1])),sc=Math.min(170/(mxx-mnx),100/(mxy-mny));
+  const P=Q.map(([x,y])=>[20+(x-mnx)*sc+(170-(mxx-mnx)*sc)/2,18+(y-mny)*sc]);
+  let s=poly(P);if(o.labs)o.labs.forEach((l,j)=>{if(!l)return;const cx=(P[0][0]+P[1][0]+P[2][0])/3,cy=(P[0][1]+P[1][1]+P[2][1])/3;s+=tx(P[j][0]+(cx-P[j][0])*0.3,P[j][1]+(cy-P[j][1])*0.3+5,l,GO,14);});
+  if(o.sides)o.sides.forEach((l,j)=>{const p=P[j],q=P[(j+1)%3],mx=(p[0]+q[0])/2,my=(p[1]+q[1])/2,cx=(P[0][0]+P[1][0]+P[2][0])/3,cy=(P[0][1]+P[1][1]+P[2][1])/3;s+=tx(mx+(mx-cx)*0.35,my+(my-cy)*0.35+5,l,GB,15);});
+  return SV(210,135,s);}
+const TRI_A=`💡 לפי ${b('זוויות')}: ${b('חד־זווית')} – כל הזוויות חדות. ${b('ישר־זווית')} – יש זווית של 90°. ${b('קהה־זווית')} – יש זווית קהה.`;
+const TRI_S=`💡 לפי ${b('צלעות')}: ${b('שווה־צלעות')} – שלוש צלעות שוות. ${b('שווה־שוקיים')} – שתי צלעות שוות. ${b('שונה־צלעות')} – כל הצלעות שונות.`;
+REG.push({id:'tri',title:'סוגי משולשים',levels:[{t:'לפי זוויות',s:'★'},{t:'לפי צלעות',s:'★★'},{t:'ישר־זווית ושווה־שוקיים',s:'★★★'},{t:'סכום הזוויות',s:'★★★★'}],
+ gen:[
+  function(i){const t=R(0,2),names=['חד־זווית','ישר־זווית','קהה־זווית'];let A;
+    if(t===0){const a=R(55,75),c=R(55,75);A=[a,180-a-c,c];if(A[1]>=90)A=[60,60,60];}else if(t===1)A=[90,R(30,60),0].map((x,j,arr)=>j===2?180-arr[0]-arr[1]:x);else{const a=R(100,125);A=[a,R(20,35),0];A[2]=180-A[0]-A[1];}
+    const order=t===1?[A[1],A[0]]:[A[0],A[1]];
+    const pic=t===2?triPic([A[1],A[2]],{labs:[`${A[1]}°`,`${A[2]}°`,`${A[0]}°`]}):triPic(t===1?[90,A[1]]:[A[0],A[1]],{labs:[`${t===1?90:A[0]}°`,`${A[1]}°`,`${A[2]}°`]});
+    return {prompt:'איזה משולש זה – לפי הזוויות?',v0:pic,v1:pic,opts:opts4({label:names[t],ok:true},names.filter((_,j)=>j!==t).map(n=>({label:n,why:`בדוק את הזוויות: ${A.join('°, ')}°.<br>`+TRI_A})))};},
+  function(i){const t=R(0,2),names=['שווה־צלעות','שווה־שוקיים','שונה־צלעות'];const s=R(4,9);
+    let S,A;if(t===0){S=[s,s,s];A=[60,60];}else if(t===1){const b2=s+R(1,3);S=[s,b2,b2];A=[70,70];}else{S=[s,s+1,s+3];A=[50,75];}
+    const pic=triPic(A,{sides:S.map(x=>x+' ס״מ')});
+    return {prompt:'איזה משולש זה – לפי הצלעות?',v0:pic,v1:pic,opts:opts4({label:names[t],ok:true},names.filter((_,j)=>j!==t).map(n=>({label:n,why:`הצלעות: ${S.join(', ')} ס״מ.<br>`+TRI_S})))};},
+  function(i){const kinds=[['ישר־זווית ושווה־שוקיים',[90,45]],['ישר־זווית ולא שווה־שוקיים',[90,35]],['שווה־שוקיים ולא ישר־זווית',[70,70]],['שווה־צלעות',[60,60]]];
+    const k=R(0,3),[nm,A]=kinds[k],third=180-A[0]-A[1];
+    const pic=triPic(A,{labs:[`${A[0]}°`,`${A[1]}°`,`${third}°`]});
+    return {prompt:'איזה משולש זה?',v0:pic,v1:pic,wide:true,
+      opts:opts4({label:nm,ok:true},kinds.filter((_,j)=>j!==k).map(([n])=>({label:n,why:`הזוויות: ${A[0]}°, ${A[1]}°, ${third}°.<br>💡 שתי זוויות שוות → שווה־שוקיים. זווית של 90° → ישר־זווית.`})))};},
+  function(i){const a=R(3,9)*10,bb=R(3,Math.min(9,15-a/10))*10,c=180-a-bb;
+    const why=`💡 סכום הזוויות במשולש הוא תמיד ${b('180°')}.<br><span class="n">180 ${MINUS} ${a} ${MINUS} ${bb}</span>`;
+    return {prompt:'כמה מעלות יש בזווית החסרה?',v0:triPic([a,bb],{labs:[`${a}°`,`${bb}°`,'?']}),v1:triPic([a,bb],{labs:[`${a}°`,`${bb}°`,`${c}°`]}),
+      opts:opts4({label:c+'°',ok:true},[{label:(360-a-bb)+'°',why:`360° זה במרובע. במשולש – 180°.<br>`+why},{label:(a+bb)+'°',why:'חיברת את שתי הזוויות – צריך לחסר אותן מ־180°.<br>'+why},{label:(c+10)+'°',why},{label:(c-10>0?c-10:c+20)+'°',why}]),
+      right:`נכון! <span class="n">180 ${MINUS} ${a} ${MINUS} ${bb} = ${c}</span>`};}],
+ introHTML:()=>`<p class="prompt">סוגי משולשים</p>${triPic([90,45],{labs:['90°','45°','45°']})}<p class="center">${TRI_A}</p><p class="center">${TRI_S}</p>`});
+
+/* מרובעים */
+const QPROP={rect:'4 זוויות ישרות, צלעות נגדיות שוות ומקבילות',sq:'4 זוויות ישרות וכל 4 הצלעות שוות',rho:'כל 4 הצלעות שוות, הזוויות לא חייבות להיות ישרות',par:'צלעות נגדיות שוות ומקבילות',trap:'רק זוג אחד של צלעות מקבילות'};
+const QRULE=`💡 ${['sq','rect','rho'].map(k=>`${b(QUADS[k].n)}: ${QPROP[k]}`).join('<br>')}`;
+const STMTS=[['כל ריבוע הוא מלבן',1,'לריבוע יש 4 זוויות ישרות – כמו למלבן.'],['כל ריבוע הוא מעוין',1,'לריבוע כל הצלעות שוות – כמו למעוין.'],['כל מלבן הוא ריבוע',0,'למלבן הצלעות לא חייבות להיות כולן שוות.'],['כל מעוין הוא ריבוע',0,'למעוין הזוויות לא חייבות להיות ישרות.'],['במלבן כל הזוויות ישרות',1,''],['במעוין כל הזוויות ישרות',0,'במעוין הזוויות לא חייבות להיות ישרות.'],['במעוין כל הצלעות שוות',1,''],['במלבן כל הצלעות שוות',0,'במלבן רק הצלעות הנגדיות שוות.']];
+REG.push({id:'quad',title:'מלבן, ריבוע ומעוין',levels:[{t:'מה שם הצורה?',s:'★'},{t:'לפי התכונות',s:'★★'},{t:'משפט נכון',s:'★★★'},{t:'משפט לא נכון',s:'★★★★'}],
+ gen:[
+  function(i){const k=pick(['rect','sq','rho',...(i>=10?['par','trap']:[])]);
+    return {prompt:'מה שם הצורה?',v0:quadPic(k),v1:quadPic(k)+`<p class="center">${b(QUADS[k].n)}: ${QPROP[k]}</p>`,
+      opts:opts4({label:QUADS[k].n,ok:true},['rect','sq','rho','par','trap'].filter(x=>x!==k).map(x=>({label:QUADS[x].n,why:`${b(QUADS[x].n)}: ${QPROP[x]}.<br>תסתכל על הצלעות ועל הזוויות של הצורה.`,vh:quadPic(k)+quadPic(x)})))};},
+  function(i){const k=pick(['rect','sq','rho']);
+    return {prompt:`לאיזו צורה יש:<br>${b(QPROP[k])}?`,v0:'',v1:quadPic(k),wide:true,
+      opts:opts4({label:QUADS[k].n,ok:true},['rect','sq','rho','par'].filter(x=>x!==k).map(x=>({label:QUADS[x].n,why:`${b(QUADS[x].n)}: ${QPROP[x]}.`,vh:quadPic(x)})))};},
+  function(i){const t=pick(STMTS.filter(s=>s[1])),f=shuffle(STMTS.filter(s=>!s[1])).slice(0,3);
+    return {prompt:'איזה משפט נכון?',v0:'',v1:`<p class="center">${QRULE}</p>`,wide:true,opts:opts4({label:t[0],ok:true},f.map(s=>({label:s[0],why:s[2]+'<br>'+QRULE}))),right:`נכון! ${t[2]||''}`};},
+  function(i){const t=pick(STMTS.filter(s=>!s[1])),f=shuffle(STMTS.filter(s=>s[1])).slice(0,3);
+    return {prompt:'איזה משפט <u>לא</u> נכון?',v0:'',v1:`<p class="center">${QRULE}</p>`,wide:true,opts:opts4({label:t[0],ok:true},f.map(s=>({label:s[0],why:`המשפט הזה נכון. ${s[2]}<br>מחפשים משפט שלא נכון.<br>`+QRULE}))),right:`נכון! ${t[2]}`};}],
+ introHTML:()=>`<p class="prompt">מרובעים מיוחדים</p><div class="fps">${quadPic('sq')}${quadPic('rect')}${quadPic('rho')}</div><p class="center">${QRULE}</p>`});
+
+/* היקף ושטח */
+function rectPic(a,c,grid,labs){const u=Math.min(26,Math.floor(260/Math.max(a,c*1.6))),W=a*u,H=c*u,x0=(300-W)/2+20,y0=14;let s='';
+  if(grid){for(let x=0;x<a;x++)for(let y=0;y<c;y++)s+=`<rect x="${x0+x*u}" y="${y0+y*u}" width="${u}" height="${u}" fill="#e7efff" stroke="#9db6e8" stroke-width="1"/>`;}
+  s+=`<rect x="${x0}" y="${y0}" width="${W}" height="${H}" fill="${grid?'none':'#e7efff'}" stroke="${GB}" stroke-width="3.5"/>`;
+  if(labs!==false){s+=tx(x0+W/2,y0+H+20,a+' ס״מ',GO,15);s+=`<text x="${x0-6}" y="${y0+H/2+5}" text-anchor="end" font-size="15" font-weight="800" fill="${PC[3]}">${c} ס״מ</text>`;}
+  return SV(340,H+36,s,'nl');}
+const PA_RULE=`💡 ${b('היקף')} = האורך ${b('מסביב')} – מחברים את כל הצלעות.<br>${b('שטח')} = כמה ${b('משבצות')} בפנים – אורך · רוחב.`;
+REG.push({id:'perim',title:'היקף ושטח',levels:[{t:'היקף מצולע',s:'★'},{t:'היקף מלבן',s:'★★'},{t:'שטח מלבן',s:'★★★'},{t:'שאלה הפוכה',s:'★★★★'}],
+ gen:[
+  function(i){const n=i<8?3:4,S=[...Array(n)].map(()=>R(3,12)),P=S.reduce((a,c)=>a+c,0);
+    const pic=n===3?triPic([60,55],{sides:S.map(x=>x+' ס״מ')}):SV(220,130,poly([[30,20],[180,30],[200,110],[20,100]])+[[105,18],[205,72],[110,122],[12,62]].map((p,j)=>tx(p[0],p[1],S[j]+' ס״מ',GB,14)).join(''));
+    const why=`היקף = מחברים את ${b('כל')} הצלעות: <span class="n">${S.join(' + ')}</span><br>`+PA_RULE;
+    return {prompt:'מה ההיקף של הצורה?',v0:pic,v1:pic,opts:opts4({label:P+' ס״מ',ok:true},[{label:(P-S[0])+' ס״מ',why:'שכחת צלע אחת.<br>'+why},{label:(P+S[0])+' ס״מ',why:'ספרת צלע אחת פעמיים.<br>'+why},{label:(P+1)+' ס״מ',why}]),right:`נכון! <span class="n">${S.join(' + ')} = ${P}</span> ס״מ`};},
+  function(i){const a=R(4,i<10?9:15),c=R(2,a-1),P=2*(a+c);
+    const why=`במלבן יש ${b('4')} צלעות: שתיים של ${a} ושתיים של ${c}.<br><span class="n">${a} + ${c} + ${a} + ${c}</span>`;
+    return {prompt:'מה ההיקף של המלבן?',v0:rectPic(a,c),v1:rectPic(a,c),
+      opts:opts4({label:P+' ס״מ',ok:true},[{label:(a+c)+' ס״מ',why:'חיברת רק שתי צלעות.<br>'+why},{label:(a*c)+' ס״מ',why:'כפלת – זה השטח, לא ההיקף.<br>'+PA_RULE},{label:(P+2)+' ס״מ',why}]),right:`נכון! <span class="n">${a} + ${c} + ${a} + ${c} = ${P}</span> ס״מ`};},
+  function(i){const a=R(3,i<10?8:12),c=R(2,i<10?5:7),A=a*c;
+    const why=`שטח = כמה משבצות: ${c} שורות של ${a}: <span class="n">${a} · ${c}</span><br>`+PA_RULE;
+    return {prompt:'מה השטח של המלבן?<br><span style="font-size:16px;font-weight:400">(כל משבצת = 1 סמ״ר)</span>',v0:rectPic(a,c,true),v1:rectPic(a,c,true),
+      opts:opts4({label:A+' סמ״ר',ok:true},[{label:2*(a+c)+' סמ״ר',why:'זה ההיקף – האורך מסביב.<br>'+why},{label:(a+c)+' סמ״ר',why:'חיברת – בשטח כופלים.<br>'+why},{label:(A+a)+' סמ״ר',why}]),right:`נכון! <span class="n">${a} · ${c} = ${A}</span> סמ״ר`};},
+  function(i){if(i%2===0){const s=R(3,12),P=4*s,why=`לריבוע 4 צלעות ${b('שוות')}: <span class="n">${P} : 4</span>`;
+      return {prompt:`ההיקף של ריבוע הוא ${N(P)} ס״מ.<br>מה אורך הצלע?`,v0:SV(150,120,poly([[25,10],[125,10],[125,110],[25,110]])+tx(75,65,'?',GO,26)),v1:'',
+        opts:opts4({label:s+' ס״מ',ok:true},[{label:P/2+' ס״מ',why:'חילקת ל־2 – אבל לריבוע 4 צלעות.<br>'+why},{label:(P-4)+' ס״מ',why:'חיסרת 4 – צריך לחלק ל־4.<br>'+why},{label:(s+1)+' ס״מ',why}]),right:`נכון! <span class="n">${P} : 4 = ${s}</span> ס״מ`};}
+    const a=R(3,10),c=R(2,9),A=a*c,why=`שטח = אורך · רוחב. <span class="n">${a} · ? = ${A}</span> → <span class="n">${A} : ${a}</span>`;
+    return {prompt:`שטח מלבן הוא ${N(A)} סמ״ר.<br>האורך ${a} ס״מ. מה הרוחב?`,v0:'',v1:rectPic(a,c,true),
+      opts:opts4({label:c+' ס״מ',ok:true},[{label:(A-a)+' ס״מ',why:'חיסרת – אבל בשטח יש כפל, אז ההפך הוא חילוק.<br>'+why},{label:(c+1)+' ס״מ',why},{label:(A*a)+' ס״מ',why}]),right:`נכון! <span class="n">${A} : ${a} = ${c}</span> ס״מ`};}],
+ introHTML:()=>`<p class="prompt">היקף או שטח?</p>${rectPic(5,3,true)}<p class="center">${K(GB,'היקף')}: <span class="n">5 + 3 + 5 + 3 = 16</span> ס״מ<br>${K(GB,'שטח')}: <span class="n">5 · 3 = 15</span> סמ״ר</p><p class="center">${PA_RULE}</p>`});
+
+/* דיאגרמות */
+const DSETS=[['פירות שנמכרו',['תפוח','בננה','ענבים','אגס','תות']],['ילדים בחוג',['שחייה','כדורגל','ציור','מחול','שחמט']],['ספרים שנקראו',['א׳','ב׳','ג׳','ד׳','ה׳']]];
+function chart(cats,vals,step,hl){const n=cats.length,max=Math.ceil(Math.max(...vals)/step)*step+step,H=150,X0=40,W=280,bw=W/n*0.6;
+  let s='';for(let v=0;v<=max;v+=step){const y=10+H-H*v/max;s+=ln(X0,y,X0+W,y,'#e3e8f2',1)+`<text x="${X0-6}" y="${y+5}" text-anchor="end" font-size="12" font-weight="700" fill="#6b7690">${v}</text>`;}
+  cats.forEach((c,j)=>{const x=X0+W/n*j+W/n*0.2,h=H*vals[j]/max;s+=`<rect x="${x}" y="${10+H-h}" width="${bw}" height="${h}" rx="3" fill="${hl&&hl.includes(j)?GO:GB}"/>`+tx(x+bw/2,H+28,c,GI,13);});
+  return SV(340,H+36,ln(X0,10,X0,10+H,GI,2)+ln(X0,10+H,X0+W,10+H,GI,2)+s,'nl');}
+function dset(i){const [t,cats]=pick(DSETS),step=i<10?1:pick([2,5]),vals=[];while(vals.length<4){const v=R(1,i<10?9:8)*step+(i>=15&&step>1&&R(0,1)?step/2:0);if(!vals.includes(v))vals.push(v);}return {t,cats:cats.slice(0,4),vals,step};}
+REG.push({id:'data',title:'דיאגרמות וחקר נתונים',levels:[{t:'קוראים עמודה',s:'★'},{t:'הכי הרבה, הכי מעט',s:'★★'},{t:'בכמה יותר?',s:'★★★'},{t:'מסקנות',s:'★★★★'}],
+ gen:[
+  function(i){const D=dset(i),j=R(0,3),v=D.vals[j];
+    const why=`מסתכלים על ${b('ראש')} העמודה "${D.cats[j]}", והולכים ישר שמאלה לציר המספרים.<br>כל קו = ${D.step}.`;
+    return {prompt:`${D.t}: כמה ${D.cats[j]}?`,v0:chart(D.cats,D.vals,D.step),v1:chart(D.cats,D.vals,D.step,[j]),
+      opts:opts4({label:fmt(v),ok:true},[{label:fmt(v+D.step),why,vh:chart(D.cats,D.vals,D.step,[j])},{label:fmt(v-D.step>0?v-D.step:v+2*D.step),why,vh:chart(D.cats,D.vals,D.step,[j])},{label:fmt(D.vals[(j+1)%4]),why:'זו עמודה אחרת.<br>'+why,vh:chart(D.cats,D.vals,D.step,[j])}]),right:`נכון! ${D.cats[j]}: ${N(v)}.`};},
+  function(i){const D=dset(i),most=i%2===0,j=D.vals.indexOf(most?Math.max(...D.vals):Math.min(...D.vals));
+    const why=`${most?'הכי הרבה = העמודה הכי גבוהה.':'הכי מעט = העמודה הכי נמוכה.'}`;
+    return {prompt:`${D.t}: מה ${most?'הכי הרבה':'הכי מעט'}?`,v0:chart(D.cats,D.vals,D.step),v1:chart(D.cats,D.vals,D.step,[j]),
+      opts:opts4({label:D.cats[j],ok:true},D.cats.filter((_,k)=>k!==j).map((c,k)=>({label:c,why:`${c}: ${fmt(D.vals[D.cats.indexOf(c)])}.<br>`+why}))),right:`נכון! ${D.cats[j]}: ${N(D.vals[j])}.`};},
+  function(i){const D=dset(i);let [a,c]=shuffle([0,1,2,3]).slice(0,2);if(D.vals[a]<D.vals[c])[a,c]=[c,a];const d=D.vals[a]-D.vals[c];
+    const why=`${D.cats[a]}: ${N(D.vals[a])}. ${D.cats[c]}: ${N(D.vals[c])}.<br>"בכמה יותר" = חיסור: <span class="n">${fmt(D.vals[a])} ${MINUS} ${fmt(D.vals[c])}</span>`;
+    const vh=chart(D.cats,D.vals,D.step,[a,c]);
+    return {prompt:`${D.t}: בכמה ${D.cats[a]} יותר מ${D.cats[c]}?`,v0:chart(D.cats,D.vals,D.step),v1:vh,
+      opts:opts4({label:fmt(d),ok:true},[{label:fmt(D.vals[a]+D.vals[c]),why:'חיברת – "בכמה יותר" זה חיסור.<br>'+why,vh},{label:fmt(D.vals[a]),why,vh},{label:fmt(d+D.step),why,vh}]),right:`נכון! <span class="n">${fmt(D.vals[a])} ${MINUS} ${fmt(D.vals[c])} = ${fmt(d)}</span>`};},
+  function(i){const D=dset(i),tot=D.vals.reduce((x,y)=>x+y,0),mx=D.vals.indexOf(Math.max(...D.vals)),mn=D.vals.indexOf(Math.min(...D.vals));
+    const T=[`בסך הכול יש ${fmt(tot)}`,`${D.cats[mx]} – הכי הרבה`,`${D.cats[mx]} יותר מ${D.cats[mn]} ב־${fmt(D.vals[mx]-D.vals[mn])}`];
+    const F=[`בסך הכול יש ${fmt(tot+D.step)}`,`${D.cats[mn]} – הכי הרבה`,`${D.cats[mx]} יותר מ${D.cats[mn]} ב־${fmt(D.vals[mx]+D.vals[mn])}`,`${D.cats[mn]} יותר מ${D.cats[mx]}`];
+    const t=pick(T),why=`בדוק כל משפט מול הדיאגרמה:<br>${D.cats.map((c,k)=>`${c}: ${fmt(D.vals[k])}`).join(' · ')}`;
+    return {prompt:`${D.t}: איזה משפט נכון?`,wide:true,v0:chart(D.cats,D.vals,D.step),v1:chart(D.cats,D.vals,D.step),
+      opts:opts4({label:t,ok:true},shuffle(F).slice(0,3).map(f=>({label:f,why}))),right:`נכון! ${why}`};}],
+ introHTML:()=>`<p class="prompt">קוראים דיאגרמת עמודות</p>${chart(['א׳','ב׳','ג׳'],[4,7,2],1,[1])}<p class="center">העמודה ה${K(GO,'כתומה')} מגיעה ל־7.<br>מסתכלים על ראש העמודה והולכים שמאלה לציר.</p>`});
+
+/*@@BATCH@@*/
+/* ===== רישום התחנות – תחנה חדשה = עוד רשומה כאן ===== */
+const STATIONS={
+ decimal:{title:'מבנה עשרוני',levels:LEVELS_DEC,gen:GEN_DEC,intro:introDecimal,
+   render(cur,mode,o){
+     if(cur.two){const hl=mode==='start'?null:o.hl;
+       return `<div class="rowlab">${N(cur.two.first)}</div>${house(cur.two.first,{len:cur.two.len,hl})}<div class="rowlab">${N(cur.two.second)}</div>${house(cur.two.second,{len:cur.two.len,hl})}`;}
+     if(mode==='start')return house(cur.show.n,{blank:cur.show.blank,hl:cur.lv<=1?cur.show.hl:null});
+     const a=mode==='right'&&cur.after?cur.after:{n:cur.show.n,hl:o.hl,blank:cur.show.blank&&!o.reveal};
+     return house(a.n,{hl:a.hl,vals:a.vals,blank:a.blank});
+   }},
+ expand:{title:'פירוק לפי ערך המקום',levels:[{t:'השלם את הפירוק',s:'★'},{t:'איזה פירוק נכון?',s:'★★'},{t:'פירוק בכפל',s:'★★★'},{t:'כמה מאות בסך הכול?',s:'★★★★'}],
+   gen:GEN_EXP,intro:introExpand,
+   render(cur,mode,o){const v=mode==='start'?cur.v0:(mode==='wrong'?(o.v||cur.v0):cur.v1);return house(cur.n,v||{});}},
+ ops:{title:'ארבע פעולות החשבון',levels:[{t:'חיבור',s:'★'},{t:'חיסור',s:'★★'},{t:'כפל',s:'★★★'},{t:'חילוק',s:'★★★★'}],
+   gen:GEN_OPS,intro:introOps,
+   render(cur,mode,o){return mode==='start'?cur.v0:(mode==='wrong'?(o.vh||cur.v0):cur.v1);}},
+ miss:{title:'מספר חסר במשוואה',levels:[{t:'בחיבור',s:'★'},{t:'בחיסור',s:'★★'},{t:'בכפל',s:'★★★'},{t:'בחילוק',s:'★★★★'}],
+   gen:GEN_MISS,intro:introMiss,
+   render(cur,mode,o){return mode==='right'?cur.v1:cur.v0;}},
+ line:{title:'ישר המספרים',levels:[{t:'מה המספר בחץ?',s:'★'},{t:'כמה שווה קפיצה?',s:'★★'},{t:'איזו אות?',s:'★★★'},{t:'באמצע',s:'★★★★'}],
+   gen:GEN_LINE,intro:introLine,
+   render(cur,mode,o){
+     if(mode==='start')return nline(cur.line);
+     if(mode==='wrong')return nline(cur.line,o.vis||{});
+     return nline(cur.line,Object.assign({reveal:cur.ans},cur.rightVis||{}));
+   }}
+};
+REG.forEach(r=>{r.gen=r.gen.map(g=>i=>{const q=g(i);q.right=q.right||'נכון! כל הכבוד! 🌟';return q;});r.render=r.render||((cur,mode,o)=>mode==='start'?cur.v0:(mode==='wrong'?(o.vh||cur.v0):(cur.v1||cur.v0)));
+  r.intro=r.intro||(()=>{$('title').textContent=r.title;$('screen').innerHTML=`<div class="card pop">${r.introHTML()}<button class="btn" id="go">לבחירת שלב</button></div>`;$('go').onclick=levels;});
+  STATIONS[r.id]=r;});
+let ST,SID;
+
+/* ===== מסכים ===== */
+function home(){
+  $('title').textContent='המסע שלי במתמטיקה';
+  if(!S.name){
+    $('screen').innerHTML=`<div class="card center pop"><div class="big">👋</div><p class="prompt">איך קוראים לך?</p><input class="name" id="nm" maxlength="20"><button class="btn" id="nmok">זה השם שלי</button></div>`;
+    $('nmok').onclick=()=>{S.name=$('nm').value.trim()||'אלוף';save();home();};
+    return;
+  }
+  let h=`<div class="card pop"><p class="prompt" style="margin:0">שלום ${S.name}! 😊<br><span style="font-size:17px;font-weight:400">בוחרים תחנה ומתחילים.</span></p></div>`;
+  WORLDS.forEach(w=>{
+    h+=`<div class="world"><h2>${w.name}</h2>`;
+    w.st.forEach(s=>{
+      const ok=s.id&&STATIONS[s.id], nDone=ok?Object.keys(S.done[s.id]||{}).length:0;
+      h+=ok?`<button class="station on" data-id="${s.id}"><span>${s.name}</span><span class="stars">${'★'.repeat(nDone)}${'☆'.repeat(4-nDone)}</span></button>`
+           :`<div class="station off"><span>${s.name}</span><span style="font-size:14px">בקרוב 🔒</span></div>`;
+    });
+    h+='</div>';
+  });
+  $('screen').innerHTML=h;
+  document.querySelectorAll('.station.on').forEach(b=>b.onclick=()=>{SID=b.dataset.id;ST=STATIONS[SID];ST.intro();});
+}
+function introDecimal(){
+  $('title').textContent='בית המספרים';
+  $('screen').innerHTML=`<div class="card pop">
+   <p class="prompt">בבית המספרים לכל ספרה יש חדר.</p>
+   <p class="center">בבית יש שתי משפחות: <b style="color:#3a7d5c">היחידות</b> ו<b style="color:#6b4bb8">האלפים</b>.<br>החדר קובע כמה הספרה שווה.</p>
+   ${house(4352,{vals:true})}
+   <p class="center" id="ex" style="min-height:60px"></p>
+   <button class="btn" id="go">לבחירת שלב</button></div>`;
+  const steps=[[3,`${C(3,'4')} גר בבית ה${C(3,'אלפים')} ← שווה ${C(3,'4,000')}`],[2,`${C(2,'3')} גר בבית ה${C(2,'מאות')} ← שווה ${C(2,'300')}`],[1,`${C(1,'5')} גר בבית ה${C(1,'עשרות')} ← שווה ${C(1,'50')}`],[0,`${C(0,'2')} גר בבית ה${C(0,'אחדות')} ← שווה ${C(0,'2')}`]];
+  steps.forEach(([p,t],k)=>setTimeout(()=>{const el=document.querySelector(`.val[data-p="${p}"]`);if(el)el.classList.add('show');const ex=$('ex');if(ex)ex.innerHTML=t;},700+k*1500));
+  setTimeout(()=>{const ex=$('ex');if(ex)ex.innerHTML=`<span class="n">${C(3,'4,000')} + ${C(2,'300')} + ${C(1,'50')} + ${C(0,'2')} = 4,352</span>`;},700+4*1500);
+  $('go').onclick=levels;
+}
+function introExpand(){
+  $('title').textContent='פירוק לפי ערך המקום';
+  $('screen').innerHTML=`<div class="card pop">
+   <p class="prompt">לפרק מספר = לכתוב כמה שווה כל ספרה.</p>
+   ${house(6407,{vals:true})}
+   <p class="center">${EQ('6,407 = '+C(3,'6,000')+' + '+C(2,'400')+' + '+C(0,'7'))}</p>
+   <p class="center">בבית ה${C(1,'עשרות')} יש ${C(1,'0')} – לא כותבים אותו,<br>אבל הוא שומר על המקום.</p>
+   <button class="btn" id="go">לבחירת שלב</button></div>`;
+  setTimeout(()=>document.querySelectorAll('.val').forEach(e=>e.classList.add('show')),400);
+  $('go').onclick=levels;
+}
+function introOps(){
+  $('title').textContent='ארבע פעולות החשבון';
+  $('screen').innerHTML=`<div class="card pop">
+   <p class="prompt">בתרגיל במאונך כל עמודה היא בית.</p>
+   <p class="center">הצבעים הם אותם צבעים של בית המספרים:<br>${C(0,'אחדות')}, ${C(1,'עשרות')}, ${C(2,'מאות')}, ${C(3,'אלפים')}.</p>
+   ${vert([47,38],'+',{res:85,carry:{1:1},hl:[0,1]})}
+   <p class="center">מתחילים תמיד מה${C(0,'אחדות')} – מימין.<br><span class="n">${C(0,'7 + 8 = 15')}</span>: כותבים ${C(0,'5')}, ו־${C(1,'1')} עובר ל${C(1,'עשרות')}.</p>
+   <button class="btn" id="go">לבחירת שלב</button></div>`;
+  $('go').onclick=levels;
+}
+function introMiss(){
+  $('title').textContent='מספר חסר במשוואה';
+  $('screen').innerHTML=`<div class="card pop">
+   <p class="prompt">כל תרגיל הוא ${K(BC.whole[1],'שלם')} ו${K(BC.known[1],'חלקים')}.</p>
+   <p class="center">${EQ(`25 + ${QB} = 40`)}</p>
+   ${bars({v:40,t:'40'},[{v:25,t:'25'},{v:15,t:'?',q:1}])}
+   <p class="center">${KN(BC.whole[1],40)} הוא השלם. ${KN(BC.known[1],25)} הוא חלק.<br>החלק החסר: <span class="n">40 ${MINUS} 25 = 15</span></p>
+   <p class="center">ותמיד בודקים: <span class="n">25 + 15 = 40</span> ✔</p>
+   <button class="btn" id="go">לבחירת שלב</button></div>`;
+  $('go').onclick=levels;
+}
+function introLine(){
+  $('title').textContent='ישר המספרים';
+  const c={start:0,step:10,J:5,labels:[0,1,2,3,4,5]};
+  $('screen').innerHTML=`<div class="card pop">
+   <p class="prompt">על ישר המספרים כל הקפיצות שוות.</p>
+   ${nline(c,{arcs:{from:0,to:5,label:true}})}
+   <p class="center">כאן כל ${K(LC.jump,'קפיצה')} שווה ${KN(LC.jump,10)}.</p>
+   <p class="center">כדי לדעת כמה שווה קפיצה,<br>מסתכלים על ${K(LC.tick,'המספרים הכתובים')}.</p>
+   <button class="btn" id="go">לבחירת שלב</button></div>`;
+  $('go').onclick=levels;
+}
+function levels(){
+  $('title').textContent=ST.title;
+  const done=S.done[SID]||{};
+  let h=`<div class="card pop"><p class="prompt">באיזה שלב נתרגל?</p><div class="levels">`;
+  ST.levels.forEach((l,k)=>h+=`<button class="lv${done[k]?' done':''}" data-k="${k}"><b>${l.s}</b>${l.t}${done[k]?' ✅':''}</button>`);
+  h+=`</div><button class="btn ghost" id="again">להסבר מההתחלה</button></div>`;
+  $('screen').innerHTML=h;
+  document.querySelectorAll('.lv').forEach(b=>b.onclick=()=>startLevel(+b.dataset.k));
+  $('again').onclick=()=>ST.intro();
+}
+let L,qi,cur,firstTry;
+function startLevel(k){L=k;qi=0;firstTry=0;next();}
+function showVis(html){$('vis').innerHTML=html;setTimeout(()=>document.querySelectorAll('#vis .val').forEach(e=>e.classList.add('show')),50);}
+function next(){
+  if(qi>=PER)return finish();
+  cur=ST.gen[L](qi);cur.lv=L;cur.err=false;
+  $('title').textContent=ST.levels[L].s+' '+ST.levels[L].t;
+  $('screen').innerHTML=`<div class="card pop">
+    <div class="qcount">שאלה ${qi+1} מתוך ${PER}</div>
+    <div class="prog"><i style="width:${qi/PER*100}%"></i></div>
+    <div id="vis"></div>
+    <p class="prompt">${cur.prompt}</p>
+    <div class="opts${cur.wide?' wide':''}">${cur.opts.map((o,j)=>`<button class="opt" data-j="${j}">${o.label}</button>`).join('')}</div>
+    <div id="fb"></div></div>`;
+  showVis(ST.render(cur,'start'));
+  document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>answer(+b.dataset.j,b));
+}
+function answer(j,btn){
+  const o=cur.opts[j];
+  if(o.ok){
+    if(!cur.err)firstTry++;
+    beep(784);
+    document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+    btn.classList.add('right');btn.disabled=false;
+    showVis(ST.render(cur,'right',o));
+    $('fb').innerHTML=`<div class="fb ok pop"><h3>✅ ${cur.err?'הצלחת!':'מצוין!'}</h3>${cur.right}</div><button class="btn ok" id="nx">${qi+1<PER?'לשאלה הבאה':'לסיום השלב'}</button>`;
+    $('nx').onclick=()=>{qi++;next();};
+  }else{
+    cur.err=true;btn.disabled=true;
+    showVis(ST.render(cur,'wrong',o));
+    $('fb').innerHTML=`<div class="fb help pop"><h3>🔍 בוא נבדוק יחד</h3>${o.why}<br><b>עכשיו נסה שוב.</b></div>`;
+  }
+}
+function finish(){
+  S.done[SID]=S.done[SID]||{};S.done[SID][L]=true;save();beep(988);
+  const last=ST.levels.length-1;
+  $('screen').innerHTML=`<div class="card center pop"><div class="big">🏆</div>
+   <p class="prompt">כל הכבוד ${S.name}!</p>
+   <p>סיימת את שלב ${ST.levels[L].s}<br>הצלחת מיד ב־${firstTry} שאלות מתוך ${PER}.</p>
+   ${L<last?`<button class="btn ok" id="nl">לשלב הבא ${ST.levels[L+1].s}</button>`:''}
+   <button class="btn ghost" id="bk">לכל השלבים</button></div>`;
+  if(L<last)$('nl').onclick=()=>startLevel(L+1);
+  $('bk').onclick=levels;
+}
+
+$('homeBtn').onclick=home;
+$('soundBtn').textContent=S.sound?'🔊':'🔇';
+$('soundBtn').onclick=()=>{S.sound=!S.sound;save();$('soundBtn').textContent=S.sound?'🔊':'🔇';beep(660);};
+home();
+
+</script>
+</body>
+</html>
