@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ספריית האנימציות</title>
+<style>
+:root{
+  --bg:#f4f1ea; --card:#ffffff; --ink:#1f2433; --muted:#6b7280; --line:#d9d4c7;
+  --mult:#e11d48; --t1:#2563eb; --t2:#16a34a; --up:#ea580c; --ok:#16a34a; --bad:#dc2626;
+  --accent:#7c3aed;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#20232c;overflow:hidden;font-family:"Segoe UI",Arial,"Noto Sans Hebrew",sans-serif;color:var(--ink)}
+#deck{position:absolute;width:1280px;height:720px;left:50%;top:50%;transform-origin:center;background:var(--bg);border-radius:14px;overflow:hidden}
+.m{direction:ltr;unicode-bidi:isolate;font-family:"Cambria Math","Times New Roman",serif;font-weight:700;white-space:nowrap}
+.c-mult{color:var(--mult)}.c-t1{color:var(--t1)}.c-t2{color:var(--t2)}.c-up{color:var(--up)}
+
+/* ---------- menu ---------- */
+#menu{position:absolute;inset:0;padding:60px 70px}
+#menu h1{font-size:46px;margin-bottom:8px}
+#menu p.sub{font-size:22px;color:var(--muted);margin-bottom:40px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+.card{background:var(--card);border-radius:18px;padding:28px;cursor:pointer;border:3px solid transparent;box-shadow:0 6px 18px rgba(0,0,0,.07);transition:transform .2s ease-out,border-color .2s}
+.card:hover{transform:translateY(-4px);border-color:var(--accent)}
+.card .fam{font-size:16px;color:var(--accent);font-weight:700;margin-bottom:10px}
+.card h2{font-size:30px;margin-bottom:10px}
+.card .ex{font-size:30px;margin-top:14px}
+
+/* ---------- player ---------- */
+#player{position:absolute;inset:0;display:none}
+header{position:absolute;top:0;right:0;left:0;height:86px;display:flex;align-items:center;gap:22px;padding:0 36px;border-bottom:2px solid var(--line)}
+header h1{font-size:38px}
+.why{font-size:19px;background:#ede9fe;color:#4c1d95;padding:8px 16px;border-radius:999px}
+#stageWrap{position:absolute;top:96px;right:24px;width:820px;height:560px}
+#stage svg{width:820px;height:560px;direction:ltr}
+aside{position:absolute;top:96px;left:24px;width:410px;height:560px;background:var(--card);border-radius:18px;padding:26px 28px;box-shadow:0 6px 18px rgba(0,0,0,.06);display:flex;flex-direction:column}
+aside .count{font-size:17px;color:var(--muted);margin-bottom:6px}
+aside h3{font-size:28px;margin-bottom:16px;color:var(--accent)}
+#say{font-size:27px;line-height:1.55}
+#say.err{color:var(--bad)}
+#say.enter{animation:fadeUp .45s ease-out both}
+.hint{margin-top:auto;font-size:16px;color:var(--muted)}
+footer{position:absolute;bottom:0;right:0;left:0;height:58px;display:flex;align-items:center;gap:14px;padding:0 30px}
+button{font:inherit;font-size:20px;border:0;border-radius:12px;padding:9px 20px;cursor:pointer;background:var(--card);box-shadow:0 2px 6px rgba(0,0,0,.08)}
+button.main{background:var(--accent);color:#fff}
+button:disabled{opacity:.35;cursor:default}
+#dots{display:flex;gap:7px;margin:0 8px}
+#dots i{width:12px;height:12px;border-radius:50%;background:var(--line)}
+#dots i.on{background:var(--accent)}
+.credit{margin-right:auto;font-size:15px;color:var(--muted)}
+
+/* ---------- animation engine ---------- */
+[data-step]{opacity:0;visibility:hidden}
+[data-step].on{opacity:1;visibility:visible}
+svg *{transform-box:fill-box;transform-origin:center}
+.on.enter{animation-delay:var(--d,0s)!important}
+.on.enter.fx-fade{animation:fade .5s ease-out both}
+.on.enter.fx-up{animation:fadeUp .55s ease-out both}
+.on.enter.fx-pop{animation:pop .6s cubic-bezier(.2,.8,.3,1) both}
+.on.enter.fx-right{animation:fromRight .6s ease-out both}
+.fx-draw{stroke-dasharray:1;stroke-dashoffset:0}
+.on.enter.fx-draw{animation:draw .9s ease-in-out both}
+.pulse{animation:pulse .7s ease-in-out 2}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+@keyframes fromRight{from{opacity:0;transform:translateX(50px)}to{opacity:1;transform:none}}
+@keyframes pop{0%{opacity:0;transform:scale(.3)}70%{opacity:1;transform:scale(1.08)}100%{opacity:1;transform:scale(1)}}
+@keyframes draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
+@media (prefers-reduced-motion:reduce){.on.enter,.pulse,#say.enter{animation:fade .3s both!important}}
+
+
+.lbl{direction:rtl;unicode-bidi:embed}
+.grid line{stroke:#e5e0d4;stroke-width:2}
+#ln0,#ln1{transition:d .45s ease-out;fill:none;stroke-width:6;stroke-linecap:round}
+.pt{animation:fade .35s ease-out both}
+.lab{display:flex;flex-direction:column;gap:6px;font-size:19px}
+.lab .row{display:flex;align-items:center;gap:8px}
+.lab .row span{flex:1}
+.lab .row b{min-width:52px;text-align:center;font-size:24px;direction:ltr;unicode-bidi:isolate}
+.lab button{font-size:19px;padding:4px 14px}
+.lab button.on{background:var(--accent);color:#fff}
+.lab .eq{font-size:28px;text-align:center;padding:4px;border-radius:12px;background:#f5f3ff}
+.lab .presets button{flex:1;padding:6px 4px}
+.lab .pl{border-right:5px solid;padding:1px 10px;font-size:15px;line-height:1.3;margin-top:2px}
+.lab button:disabled{opacity:.3}
+#eqIn{flex:1;font:700 24px 'Cambria Math','Times New Roman',serif;padding:6px 10px;border:2px solid var(--line);border-radius:10px;text-align:left;min-width:0}
+#pts{max-height:170px;overflow-y:auto}
+#eqErr{color:var(--bad);font-size:15px;min-height:0}
+.lab button.main{background:var(--accent);color:#fff}
+/* svg text */
+.tok{font-family:"Cambria Math","Times New Roman",serif;font-weight:700;text-anchor:middle;dominant-baseline:middle}
+.lbl{font-family:"Segoe UI",Arial,sans-serif;font-weight:700;text-anchor:middle;dominant-baseline:middle}
+</style>
+</head>
+<body>
+<div id="deck">
+
+  <section id="menu">
+    <h1>ספריית האנימציות</h1>
+    <p class="sub">בחרו אנימציה · מעבר בין שלבים: חצים, רווח או לחיצה על המסך</p>
+    <div class="cards" id="cards"></div>
+  </section>
+
+  <section id="player">
+    <header>
+      <h1 id="title"></h1>
+      <span class="why" id="why"></span>
+    </header>
+    <div id="stageWrap"><div id="stage"></div></div>
+    <aside>
+      <div class="count" id="count"></div>
+      <h3 id="asideH">מה עשינו?</h3>
+      <div id="say"></div>
+      <div class="hint" id="hint">⬅ הבא · ➡ הקודם</div>
+    </aside>
+    <footer>
+      <button id="toMenu">☰ תפריט</button>
+      <button id="prev">➡ הקודם</button>
+      <button id="next" class="main">הבא ⬅</button>
+      <div id="dots"></div>
+      <button id="fs" title="מסך מלא">⛶ מסך מלא</button>
+      <span class="credit">ערכה: רוני מודן · שחקים</span>
+    </footer>
+  </section>
+</div>
+
+<!-- ======================= ANIMATION 1: חוק הפילוג ======================= -->
+<template id="t-dist">
+<svg viewBox="0 0 820 560">
+  <defs>
+    <g id="bag">
+      <path d="M-55,-48 q0,-38 55,-38 q55,0 55,38" fill="none" stroke="#a8a29e" stroke-width="7"/>
+      <rect x="-85" y="-50" width="170" height="130" rx="22" fill="#fff" stroke="#a8a29e" stroke-width="4"/>
+      <rect x="-68" y="-18" width="64" height="64" rx="12" fill="#dbeafe" stroke="#2563eb" stroke-width="4"/>
+      <text class="tok" x="-36" y="15" font-size="40" fill="#2563eb">x</text>
+      <circle cx="40" cy="14" r="33" fill="#dcfce7" stroke="#16a34a" stroke-width="4"/>
+      <text class="tok" x="40" y="16" font-size="40" fill="#16a34a">4</text>
+    </g>
+  </defs>
+
+  <!-- step 0: three bags -->
+  <g data-step="0" data-hide="5">
+    <use href="#bag" x="170" y="130" class="fx-pop" data-step="0" style="--d:0s"/>
+    <use href="#bag" x="410" y="130" class="fx-pop" data-step="0" style="--d:.2s"/>
+    <use href="#bag" x="650" y="130" class="fx-pop" data-step="0" style="--d:.4s"/>
+  </g>
+  <g data-step="1" data-hide="5" class="fx-fade">
+    <text class="tok" x="170" y="232" font-size="30" fill="#e11d48">1</text>
+    <text class="tok" x="410" y="232" font-size="30" fill="#e11d48">2</text>
+    <text class="tok" x="650" y="232" font-size="30" fill="#e11d48">3</text>
+  </g>
+
+  <!-- step 1: expression -->
+  <g data-step="1" class="fx-up">
+    <text class="tok" x="250" y="335" font-size="80" fill="#e11d48" id="mult">3</text>
+    <text class="tok" x="300" y="335" font-size="80" fill="#1f2433">·</text>
+    <text class="tok" x="340" y="330" font-size="80" fill="#1f2433">(</text>
+    <text class="tok" x="390" y="335" font-size="80" fill="#2563eb">x</text>
+    <text class="tok" x="445" y="335" font-size="80" fill="#1f2433">+</text>
+    <text class="tok" x="500" y="335" font-size="80" fill="#16a34a">4</text>
+    <text class="tok" x="550" y="330" font-size="80" fill="#1f2433">)</text>
+  </g>
+
+  <!-- step 2: first arc -->
+  <path data-step="2" class="fx-draw" pathLength="1" d="M250,290 Q320,215 390,290" fill="none" stroke="#e11d48" stroke-width="6" stroke-linecap="round"/>
+  <g data-step="2" data-hide="4" class="fx-up" style="--d:.7s">
+    <text class="tok" x="170" y="470" font-size="64" fill="#1f2433">=</text>
+    <text class="tok" x="225" y="470" font-size="64" fill="#e11d48">3</text>
+    <text class="tok" x="262" y="470" font-size="64" fill="#1f2433">·</text>
+    <text class="tok" x="297" y="470" font-size="64" fill="#2563eb">x</text>
+  </g>
+
+  <!-- step 3: second arc -->
+  <path data-step="3" class="fx-draw" pathLength="1" d="M250,290 Q375,170 500,290" fill="none" stroke="#e11d48" stroke-width="6" stroke-linecap="round"/>
+  <g data-step="3" data-hide="4" class="fx-up" style="--d:.7s">
+    <text class="tok" x="355" y="470" font-size="64" fill="#1f2433">+</text>
+    <text class="tok" x="415" y="470" font-size="64" fill="#e11d48">3</text>
+    <text class="tok" x="452" y="470" font-size="64" fill="#1f2433">·</text>
+    <text class="tok" x="490" y="470" font-size="64" fill="#16a34a">4</text>
+  </g>
+
+  <!-- step 4: simplified -->
+  <g data-step="4" class="fx-pop">
+    <text class="tok" x="170" y="470" font-size="64" fill="#1f2433">=</text>
+    <text class="tok" x="260" y="470" font-size="64" fill="#2563eb">3x</text>
+    <text class="tok" x="355" y="470" font-size="64" fill="#1f2433">+</text>
+    <text class="tok" x="440" y="470" font-size="64" fill="#16a34a">12</text>
+    <rect x="120" y="420" width="380" height="100" rx="16" fill="none" stroke="#16a34a" stroke-width="4"/>
+  </g>
+
+  <!-- step 5: common error -->
+  <g data-step="5" data-hide="6" class="fx-right">
+    <rect x="160" y="40" width="500" height="160" rx="20" fill="#fef2f2" stroke="#dc2626" stroke-width="4"/>
+    <text class="tok" x="380" y="122" font-size="72" fill="#1f2433">3x + 4</text>
+    <line x1="250" y1="122" x2="510" y2="122" stroke="#dc2626" stroke-width="7"/>
+    <text class="lbl" x="600" y="120" font-size="80" fill="#dc2626">✗</text>
+  </g>
+  <circle data-step="5" data-hide="6" class="fx-pop" style="--d:.5s" cx="500" cy="335" r="48" fill="none" stroke="#dc2626" stroke-width="5" stroke-dasharray="10 8"/>
+
+  <!-- step 6: general rule -->
+  <g data-step="6" class="fx-up">
+    <rect x="40" y="30" width="740" height="180" rx="20" fill="#fff" stroke="#7c3aed" stroke-width="4"/>
+    <path d="M150,95 Q200,45 250,95" fill="none" stroke="#e11d48" stroke-width="5"/>
+    <path d="M150,95 Q250,20 350,95" fill="none" stroke="#e11d48" stroke-width="5"/>
+    <text class="tok" x="150" y="140" font-size="60" fill="#e11d48">a</text>
+    <text class="tok" x="185" y="140" font-size="60" fill="#1f2433">·(</text>
+    <text class="tok" x="250" y="140" font-size="60" fill="#2563eb">b</text>
+    <text class="tok" x="300" y="140" font-size="60" fill="#1f2433">+</text>
+    <text class="tok" x="350" y="140" font-size="60" fill="#16a34a">c</text>
+    <text class="tok" x="385" y="140" font-size="60" fill="#1f2433">)</text>
+    <text class="tok" x="440" y="140" font-size="60" fill="#1f2433">=</text>
+    <text class="tok" x="495" y="140" font-size="60" fill="#e11d48">a</text>
+    <text class="tok" x="530" y="140" font-size="60" fill="#1f2433">·</text>
+    <text class="tok" x="562" y="140" font-size="60" fill="#2563eb">b</text>
+    <text class="tok" x="612" y="140" font-size="60" fill="#1f2433">+</text>
+    <text class="tok" x="662" y="140" font-size="60" fill="#e11d48">a</text>
+    <text class="tok" x="697" y="140" font-size="60" fill="#1f2433">·</text>
+    <text class="tok" x="730" y="140" font-size="60" fill="#16a34a">c</text>
+  </g>
+</svg>
+</template>
+
+<!-- ======================= ANIMATION 2: שיפוע ======================= -->
+<template id="t-slope">
+<svg viewBox="0 0 820 560">
+  <defs>
+    <marker id="aG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker>
+    <marker id="aO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ea580c"/></marker>
+    <marker id="aK" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1f2433"/></marker>
+  </defs>
+<g data-step="0" data-hide="9">
+  <!-- step 0: two slides (hook) -->
+  <g data-step="0" data-hide="1">
+    <g class="fx-up" data-step="0">
+      <path d="M60,480 L400,480 L400,330 Z" fill="#dcfce7" stroke="#16a34a" stroke-width="5" stroke-linejoin="round"/>
+      <circle cx="392" cy="318" r="14" fill="#16a34a"/>
+      <text class="lbl" x="230" y="520" font-size="30" fill="#16a34a">מגלשה א</text>
+    </g>
+    <g class="fx-up" data-step="0" style="--d:.3s">
+      <path d="M470,480 L740,480 L740,110 Z" fill="#ffedd5" stroke="#ea580c" stroke-width="5" stroke-linejoin="round"/>
+      <circle cx="732" cy="98" r="14" fill="#ea580c"/>
+      <text class="lbl" x="605" y="520" font-size="30" fill="#ea580c">מגלשה ב</text>
+    </g>
+  </g>
+
+  <!-- step 1: grid + line  (origin 120,500 ; unit 55) -->
+  <g data-step="1" class="fx-fade">
+    <g stroke="#e5e0d4" stroke-width="2">
+      <line x1="175" y1="60" x2="175" y2="500"/><line x1="230" y1="60" x2="230" y2="500"/>
+      <line x1="285" y1="60" x2="285" y2="500"/><line x1="340" y1="60" x2="340" y2="500"/>
+      <line x1="395" y1="60" x2="395" y2="500"/>
+      <line x1="120" y1="445" x2="420" y2="445"/><line x1="120" y1="390" x2="420" y2="390"/>
+      <line x1="120" y1="335" x2="420" y2="335"/><line x1="120" y1="280" x2="420" y2="280"/>
+      <line x1="120" y1="225" x2="420" y2="225"/><line x1="120" y1="170" x2="420" y2="170"/>
+      <line x1="120" y1="115" x2="420" y2="115"/><line x1="120" y1="60" x2="420" y2="60"/>
+    </g>
+    <line x1="120" y1="500" x2="440" y2="500" stroke="#16a34a" stroke-width="3.5" marker-end="url(#aG)"/>
+    <line x1="120" y1="500" x2="120" y2="40" stroke="#ea580c" stroke-width="3.5" marker-end="url(#aO)"/>
+    <g class="tok" font-size="20" fill="#6b7280">
+      <text x="175" y="522">1</text><text x="230" y="522">2</text><text x="285" y="522">3</text><text x="340" y="522">4</text><text x="395" y="522">5</text>
+      <text x="102" y="445">1</text><text x="102" y="390">2</text><text x="102" y="335">3</text><text x="102" y="280">4</text>
+      <text x="102" y="225">5</text><text x="102" y="170">6</text><text x="102" y="115">7</text><text x="102" y="60">8</text>
+      <text x="102" y="520">0</text>
+    </g>
+    <text class="tok" x="450" y="520" font-size="24" fill="#16a34a">x</text>
+    <text class="tok" x="120" y="24" font-size="24" fill="#ea580c">y</text>
+  </g>
+  <line data-step="1" class="fx-draw" style="--d:.4s" pathLength="1" x1="120" y1="445" x2="312.5" y2="60" stroke="#7c3aed" stroke-width="6" stroke-linecap="round"/>
+
+  <!-- step 2: point A -->
+  <g data-step="2" class="fx-pop">
+    <circle cx="120" cy="445" r="10" fill="#1f2433"/>
+    <text class="tok" x="72" y="430" font-size="24" fill="#1f2433">(<tspan fill="#16a34a">0</tspan>,<tspan fill="#ea580c">1</tspan>)</text>
+  </g>
+
+  <!-- step 3: one right -->
+  <g data-step="3">
+    <line class="fx-draw" data-step="3" pathLength="1" x1="122" y1="445" x2="170" y2="445" stroke="#16a34a" stroke-width="6" marker-end="url(#aG)"/>
+    <text class="tok fx-fade" data-step="3" style="--d:.5s" x="148" y="470" font-size="26" fill="#16a34a">+1</text>
+  </g>
+
+  <!-- step 4: two up -->
+  <g data-step="4">
+    <line class="fx-draw" data-step="4" pathLength="1" x1="175" y1="445" x2="175" y2="342" stroke="#ea580c" stroke-width="6" marker-end="url(#aO)"/>
+    <text class="tok fx-fade" data-step="4" style="--d:.5s" x="205" y="392" font-size="26" fill="#ea580c">+2</text>
+    <circle class="fx-pop" data-step="4" style="--d:.8s" cx="175" cy="335" r="10" fill="#1f2433"/>
+    <g class="fx-fade" data-step="4" style="--d:.9s"><rect x="122" y="292" width="56" height="26" rx="6" fill="#f4f1ea"/><text class="tok" x="150" y="306" font-size="24" fill="#1f2433">(<tspan fill="#16a34a">1</tspan>,<tspan fill="#ea580c">3</tspan>)</text></g>
+  </g>
+
+  <!-- step 5: staircase -->
+  <g data-step="5">
+    <line class="fx-draw" data-step="5" style="--d:0s" pathLength="1" x1="177" y1="335" x2="225" y2="335" stroke="#16a34a" stroke-width="6" marker-end="url(#aG)"/>
+    <line class="fx-draw" data-step="5" style="--d:.5s" pathLength="1" x1="230" y1="335" x2="230" y2="232" stroke="#ea580c" stroke-width="6" marker-end="url(#aO)"/>
+    <circle class="fx-pop" data-step="5" style="--d:1s" cx="230" cy="225" r="10" fill="#1f2433"/>
+    <line class="fx-draw" data-step="5" style="--d:1.3s" pathLength="1" x1="232" y1="225" x2="280" y2="225" stroke="#16a34a" stroke-width="6" marker-end="url(#aG)"/>
+    <line class="fx-draw" data-step="5" style="--d:1.8s" pathLength="1" x1="285" y1="225" x2="285" y2="122" stroke="#ea580c" stroke-width="6" marker-end="url(#aO)"/>
+    <circle class="fx-pop" data-step="5" style="--d:2.3s" cx="285" cy="115" r="10" fill="#1f2433"/>
+  </g>
+
+  <!-- step 6: slope fraction (reads right-to-left: שיפוע = 2/1 = 2) -->
+  <g data-step="6" class="fx-right">
+    <text class="lbl" x="735" y="250" font-size="40" fill="#1f2433">שיפוע</text>
+    <text class="tok" x="660" y="250" font-size="48" fill="#1f2433">=</text>
+    <text class="tok" x="595" y="205" font-size="56" fill="#ea580c">2</text>
+    <line x1="560" y1="250" x2="630" y2="250" stroke="#1f2433" stroke-width="4"/>
+    <text class="tok" x="595" y="298" font-size="56" fill="#16a34a">1</text>
+    <text class="tok" x="525" y="250" font-size="48" fill="#1f2433">=</text>
+    <text class="tok" x="480" y="250" font-size="56" fill="#7c3aed">2</text>
+    <text class="lbl" x="705" y="205" font-size="24" fill="#ea580c">למעלה</text>
+    <text class="lbl" x="705" y="298" font-size="24" fill="#16a34a">ימינה</text>
+  </g>
+
+  <!-- step 7: common error -->
+  <g data-step="7" data-hide="8" class="fx-up">
+    <rect x="470" y="345" width="320" height="150" rx="18" fill="#fef2f2" stroke="#dc2626" stroke-width="4"/>
+    <text class="tok" x="580" y="385" font-size="44" fill="#16a34a">1</text>
+    <line x1="550" y1="420" x2="610" y2="420" stroke="#1f2433" stroke-width="4"/>
+    <text class="tok" x="580" y="458" font-size="44" fill="#ea580c">2</text>
+    <line x1="530" y1="455" x2="630" y2="385" stroke="#dc2626" stroke-width="6"/>
+    <text class="lbl" x="710" y="420" font-size="72" fill="#dc2626">✗</text>
+  </g>
+
+  <!-- step 8: y = mx + b -->
+  <g data-step="8" class="fx-up">
+    <rect x="460" y="350" width="340" height="120" rx="18" fill="#fff" stroke="#7c3aed" stroke-width="4"/>
+    <g class="tok" font-size="56" fill="#1f2433"><text x="530" y="412">y</text><text x="575" y="412">=</text><text x="625" y="412" fill="#7c3aed">2</text><text x="664" y="412">x</text><text x="712" y="412">+</text><text x="757" y="412">1</text></g>
+    <circle class="fx-pop" data-step="8" style="--d:.6s" cx="625" cy="412" r="34" fill="none" stroke="#7c3aed" stroke-width="4" stroke-dasharray="8 6"/>
+    <text class="lbl fx-fade" data-step="8" style="--d:.8s" x="625" y="510" font-size="28" fill="#7c3aed">זה השיפוע</text>
+  </g>
+</g>
+<g data-step="9" class="fx-up"><rect x="555" y="40" width="255" height="500" rx="18" fill="#fff" stroke="#d9d4c7" stroke-width="3"/><text class="lbl" x="683" y="88" font-size="34" fill="#dc2626">ישר יורד</text><g data-grid="595,400,28,0,6,0,8"></g><line x1="595" y1="232" x2="679" y2="400" stroke="#7c3aed" stroke-width="6" stroke-linecap="round"/><line x1="595" y1="232" x2="617" y2="232" stroke="#16a34a" stroke-width="5" marker-end="url(#aG)"/><line x1="623" y1="232" x2="623" y2="282" stroke="#ea580c" stroke-width="5" marker-end="url(#aO)"/><circle cx="595" cy="232" r="7" fill="#1f2433"/><circle cx="623" cy="288" r="7" fill="#1f2433"/><text class="lbl" x="745" y="462" font-size="30" fill="#1f2433">שיפוע</text><text class="tok" x="687" y="462" font-size="30" fill="#1f2433">=</text><text class="tok" x="645" y="462" font-size="32" fill="#dc2626">−2</text><text class="tok" x="683" y="512" font-size="30" fill="#1f2433">y = −2x + 6</text></g>
+<g data-step="10" class="fx-up"><rect x="285" y="40" width="255" height="500" rx="18" fill="#fff" stroke="#d9d4c7" stroke-width="3"/><text class="lbl" x="413" y="88" font-size="34" fill="#16a34a">ישר אופקי</text><text class="lbl" x="413" y="124" font-size="22" fill="#16a34a">מקביל לציר x</text><g data-grid="325,400,28,0,6,0,8"></g><line x1="325" y1="316" x2="493" y2="316" stroke="#16a34a" stroke-width="6" stroke-linecap="round"/><text class="lbl" x="475" y="452" font-size="30" fill="#1f2433">שיפוע</text><text class="tok" x="417" y="452" font-size="30" fill="#1f2433">=</text><text class="tok" x="375" y="452" font-size="32" fill="#16a34a">0</text><text class="tok" x="413" y="494" font-size="32" fill="#1f2433"><tspan fill="#ea580c">y</tspan> = 3</text><text class="lbl" x="413" y="526" font-size="19" fill="#16a34a">רק y במשוואה</text></g>
+<g data-step="11" class="fx-up"><rect x="15" y="40" width="255" height="500" rx="18" fill="#fff" stroke="#d9d4c7" stroke-width="3"/><text class="lbl" x="143" y="88" font-size="34" fill="#ea580c">ישר אנכי</text><text class="lbl" x="143" y="124" font-size="22" fill="#ea580c">מקביל לציר y</text><g data-grid="55,400,28,0,6,0,8"></g><line x1="111" y1="400" x2="111" y2="176" stroke="#ea580c" stroke-width="6" stroke-linecap="round"/><text class="lbl" x="143" y="452" font-size="26" fill="#ea580c">שיפוע לא מוגדר</text><text class="tok" x="143" y="494" font-size="32" fill="#1f2433"><tspan fill="#16a34a">x</tspan> = 2</text><text class="lbl" x="143" y="526" font-size="19" fill="#ea580c">רק x במשוואה</text></g>
+</svg>
+</template>
+
+<template id="t-points">
+<svg viewBox="0 0 820 560"><defs><marker id="pG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker><marker id="pO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ea580c"/></marker></defs><g data-step="0" class="fx-fade" data-grid="260,280,36,-6,6,-6,6"></g><circle data-step="0" class="fx-pop" style="--d:.4s" cx="260" cy="280" r="9" fill="#7c3aed"/><line data-step="1" data-hide="2" class="fx-draw" style="--d:0s" pathLength="1" x1="260" y1="280" x2="362" y2="280" stroke="#16a34a" stroke-width="6" marker-end="url(#pG)"/><line data-step="1" data-hide="2" class="fx-draw" style="--d:.7s" pathLength="1" x1="368" y1="280" x2="368" y2="214" stroke="#ea580c" stroke-width="6" marker-end="url(#pO)"/><circle data-step="1" class="fx-pop" style="--d:1.3s" cx="368" cy="208" r="10" fill="#1f2433"/><g data-step="1" class="fx-fade" style="--d:1.5s"><rect x="368.0" y="170" width="84" height="32" rx="7" fill="#f4f1ea"/><text class="tok" x="410" y="186" font-size="26" fill="#1f2433">A(<tspan fill="#16a34a">3</tspan>,<tspan fill="#ea580c">2</tspan>)</text></g><line data-step="2" data-hide="3" class="fx-draw" style="--d:0s" pathLength="1" x1="260" y1="280" x2="158" y2="280" stroke="#16a34a" stroke-width="6" marker-end="url(#pG)"/><line data-step="2" data-hide="3" class="fx-draw" style="--d:.7s" pathLength="1" x1="152" y1="280" x2="152" y2="214" stroke="#ea580c" stroke-width="6" marker-end="url(#pO)"/><circle data-step="2" class="fx-pop" style="--d:1.3s" cx="152" cy="208" r="10" fill="#1f2433"/><g data-step="2" class="fx-fade" style="--d:1.5s"><rect x="58.0" y="170" width="100" height="32" rx="7" fill="#f4f1ea"/><text class="tok" x="108" y="186" font-size="26" fill="#1f2433">B(<tspan fill="#16a34a">−3</tspan>,<tspan fill="#ea580c">2</tspan>)</text></g><line data-step="3" class="fx-fade" x1="44" y1="208" x2="476" y2="208" stroke="#16a34a" stroke-width="4" stroke-dasharray="12 8"/><g data-step="3" class="fx-right"><rect x="500" y="50" width="305" height="170" rx="16" fill="#fff" stroke="#16a34a" stroke-width="4"/><text class="lbl" x="652" y="92" font-size="26" fill="#1f2433">לשתי הנקודות אותו <tspan fill="#ea580c">y</tspan></text><text class="lbl" x="652" y="132" font-size="24" fill="#16a34a">הן על קו מקביל לציר x</text></g><text data-step="4" class="tok fx-pop" style="--d:0.0s" x="170" y="232" font-size="20" fill="#e11d48">1</text><text data-step="4" class="tok fx-pop" style="--d:0.25s" x="206" y="232" font-size="20" fill="#e11d48">2</text><text data-step="4" class="tok fx-pop" style="--d:0.5s" x="242" y="232" font-size="20" fill="#e11d48">3</text><text data-step="4" class="tok fx-pop" style="--d:0.75s" x="278" y="232" font-size="20" fill="#e11d48">4</text><text data-step="4" class="tok fx-pop" style="--d:1.0s" x="314" y="232" font-size="20" fill="#e11d48">5</text><text data-step="4" class="tok fx-pop" style="--d:1.25s" x="350" y="232" font-size="20" fill="#e11d48">6</text><text data-step="4" class="tok fx-up" style="--d:1.6s" x="652" y="185" font-size="30" fill="#1f2433">AB = |3 − (−3)| = 6</text><line data-step="5" data-hide="6" class="fx-draw" style="--d:0s" pathLength="1" x1="260" y1="280" x2="362" y2="280" stroke="#16a34a" stroke-width="6" marker-end="url(#pG)"/><line data-step="5" data-hide="6" class="fx-draw" style="--d:.7s" pathLength="1" x1="368" y1="280" x2="368" y2="382" stroke="#ea580c" stroke-width="6" marker-end="url(#pO)"/><circle data-step="5" class="fx-pop" style="--d:1.3s" cx="368" cy="388" r="10" fill="#1f2433"/><g data-step="5" class="fx-fade" style="--d:1.5s"><rect x="368.0" y="394" width="100" height="32" rx="7" fill="#f4f1ea"/><text class="tok" x="418" y="410" font-size="26" fill="#1f2433">C(<tspan fill="#16a34a">3</tspan>,<tspan fill="#ea580c">−3</tspan>)</text></g><line data-step="6" class="fx-fade" x1="368" y1="64" x2="368" y2="496" stroke="#ea580c" stroke-width="4" stroke-dasharray="12 8"/><g data-step="6" class="fx-right"><rect x="500" y="240" width="305" height="170" rx="16" fill="#fff" stroke="#ea580c" stroke-width="4"/><text class="lbl" x="652" y="282" font-size="26" fill="#1f2433">לשתי הנקודות אותו <tspan fill="#16a34a">x</tspan></text><text class="lbl" x="652" y="322" font-size="24" fill="#ea580c">הן על קו מקביל לציר y</text></g><text data-step="7" class="tok fx-pop" style="--d:0.0s" x="388" y="226" font-size="20" fill="#e11d48">1</text><text data-step="7" class="tok fx-pop" style="--d:0.25s" x="388" y="262" font-size="20" fill="#e11d48">2</text><text data-step="7" class="tok fx-pop" style="--d:0.5s" x="388" y="298" font-size="20" fill="#e11d48">3</text><text data-step="7" class="tok fx-pop" style="--d:0.75s" x="388" y="334" font-size="20" fill="#e11d48">4</text><text data-step="7" class="tok fx-pop" style="--d:1.0s" x="388" y="370" font-size="20" fill="#e11d48">5</text><text data-step="7" class="tok fx-up" style="--d:1.4s" x="652" y="375" font-size="30" fill="#1f2433">AC = |2 − (−3)| = 5</text><g data-step="8" data-hide="9" class="fx-pop"><circle cx="332" cy="172" r="10" fill="#dc2626"/><rect x="262" y="124" width="74" height="32" rx="7" fill="#fef2f2"/><text class="tok" x="299" y="140" font-size="26" fill="#dc2626">(2,3)</text><text class="lbl" x="240" y="140" font-size="40" fill="#dc2626">✗</text></g><g data-step="9" class="fx-up"><rect x="500" y="428" width="305" height="120" rx="16" fill="#fff" stroke="#7c3aed" stroke-width="4"/><text class="lbl" x="745" y="466" font-size="24" fill="#ea580c">אותו y:</text><text class="tok" x="595" y="466" font-size="30" fill="#16a34a">|x₁ − x₂|</text><text class="lbl" x="745" y="514" font-size="24" fill="#16a34a">אותו x:</text><text class="tok" x="595" y="514" font-size="30" fill="#ea580c">|y₁ − y₂|</text></g></svg>
+</template>
+<template id="t-lab">
+<svg viewBox="0 0 820 560"><defs><clipPath id="labClip"><rect x="170" y="40" width="480" height="480"/></clipPath>
+<marker id="lG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker>
+<marker id="lO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ea580c"/></marker></defs>
+<g data-grid="410,280,40,-6,6,-6,6"></g>
+<g clip-path="url(#labClip)"><path id="ln1" stroke="#2563eb" d="M0,0 L0,0" style="opacity:0"/><path id="ln0" stroke="#7c3aed" d="M0,0 L0,0"/><g id="stair"></g></g>
+<g id="labPts"></g></svg>
+</template>
+<template id="t-gcf"><svg viewBox="0 0 820 560"><defs><marker id="gR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#e11d48"/></marker></defs><g data-step="0" data-hide="4"><g data-step="0" class="fx-up"><text class="tok" x="170" y="120" font-size="60" fill="#1f2433">35</text><text class="tok" x="222" y="120" font-size="60" fill="#1f2433">·</text><text class="tok" x="290" y="120" font-size="60" fill="#1f2433">13.7</text><text class="tok" x="375" y="120" font-size="60" fill="#1f2433">+</text><text class="tok" x="440" y="120" font-size="60" fill="#1f2433">35</text><text class="tok" x="492" y="120" font-size="60" fill="#1f2433">·</text><text class="tok" x="555" y="120" font-size="60" fill="#1f2433">6.3</text><text class="tok" x="660" y="120" font-size="60" fill="#ea580c">= ?</text></g><g data-step="1" class="fx-pop"><circle cx="170" cy="120" r="40" fill="none" stroke="#e11d48" stroke-width="5"/><circle cx="440" cy="120" r="40" fill="none" stroke="#e11d48" stroke-width="5"/></g><g data-step="2" class="fx-up" style="--d:.8s"><text class="tok" x="150" y="260" font-size="60" fill="#1f2433">=</text><text class="tok" x="210" y="260" font-size="60" fill="#e11d48">35</text><text class="tok" x="255" y="260" font-size="60" fill="#1f2433">·</text><text class="tok" x="285" y="260" font-size="60" fill="#1f2433">(</text><text class="tok" x="345" y="260" font-size="60" fill="#1f2433">13.7</text><text class="tok" x="415" y="260" font-size="60" fill="#1f2433">+</text><text class="tok" x="470" y="260" font-size="60" fill="#1f2433">6.3</text><text class="tok" x="515" y="260" font-size="60" fill="#1f2433">)</text></g><path data-step="2" class="fx-draw" style="--d:0s" pathLength="1" d="M170,163 Q185,195 205,215" fill="none" stroke="#e11d48" stroke-width="5" stroke-linecap="round" marker-end="url(#gR)"/><path data-step="2" class="fx-draw" style="--d:.3s" pathLength="1" d="M440,165 Q330,190 225,218" fill="none" stroke="#e11d48" stroke-width="5" stroke-linecap="round" marker-end="url(#gR)"/><g data-step="3" class="fx-up"><text class="tok" x="150" y="380" font-size="60" fill="#1f2433">=</text><text class="tok" x="210" y="380" font-size="60" fill="#e11d48">35</text><text class="tok" x="255" y="380" font-size="60" fill="#1f2433">·</text><text class="tok" x="300" y="380" font-size="60" fill="#2563eb">20</text><text class="tok" x="370" y="380" font-size="60" fill="#1f2433">=</text><text class="tok" x="450" y="380" font-size="60" fill="#16a34a">700</text><rect x="395" y="335" width="110" height="80" rx="14" fill="none" stroke="#16a34a" stroke-width="4"/></g></g><g data-step="4" data-hide="7"><g data-step="4" class="fx-up"><text class="tok" x="250" y="110" font-size="60" fill="#1f2433">5x</text><text class="tok" x="340" y="110" font-size="60" fill="#1f2433">+</text><text class="tok" x="420" y="110" font-size="60" fill="#1f2433">10</text></g><g data-step="4" class="fx-up" style="--d:.6s"><text class="tok" x="220" y="220" font-size="60" fill="#e11d48">5</text><text class="tok" x="255" y="220" font-size="60" fill="#1f2433">·</text><text class="tok" x="290" y="220" font-size="60" fill="#2563eb">x</text><text class="tok" x="350" y="220" font-size="60" fill="#1f2433">+</text><text class="tok" x="410" y="220" font-size="60" fill="#e11d48">5</text><text class="tok" x="445" y="220" font-size="60" fill="#1f2433">·</text><text class="tok" x="480" y="220" font-size="60" fill="#16a34a">2</text></g><g data-step="5" class="fx-up" style="--d:.8s"><text class="tok" x="160" y="340" font-size="60" fill="#1f2433">=</text><text class="tok" x="220" y="340" font-size="60" fill="#e11d48">5</text><text class="tok" x="260" y="340" font-size="60" fill="#1f2433">(</text><text class="tok" x="300" y="340" font-size="60" fill="#2563eb">x</text><text class="tok" x="350" y="340" font-size="60" fill="#1f2433">+</text><text class="tok" x="400" y="340" font-size="60" fill="#16a34a">2</text><text class="tok" x="440" y="340" font-size="60" fill="#1f2433">)</text></g><path data-step="5" class="fx-draw" style="--d:0s" pathLength="1" d="M220,255 L220,290" fill="none" stroke="#e11d48" stroke-width="5" stroke-linecap="round" marker-end="url(#gR)"/><path data-step="5" class="fx-draw" style="--d:.3s" pathLength="1" d="M410,255 Q320,280 232,298" fill="none" stroke="#e11d48" stroke-width="5" stroke-linecap="round" marker-end="url(#gR)"/><path data-step="6" class="fx-draw" pathLength="1" d="M222,300 Q262,262 300,300" fill="none" stroke="#e11d48" stroke-width="5"/><path data-step="6" class="fx-draw" style="--d:.4s" pathLength="1" d="M222,300 Q312,245 400,300" fill="none" stroke="#e11d48" stroke-width="5"/><g data-step="6" class="fx-up" style="--d:.9s"><text class="tok" x="160" y="450" font-size="60" fill="#1f2433">=</text><text class="tok" x="270" y="450" font-size="60" fill="#2563eb">5x</text><text class="tok" x="350" y="450" font-size="60" fill="#1f2433">+</text><text class="tok" x="420" y="450" font-size="60" fill="#16a34a">10</text><text class="tok" x="510" y="450" font-size="60" fill="#16a34a">✓</text><text class="lbl" x="680" y="450" font-size="30" fill="#16a34a">בדיקה:</text></g></g><g data-step="7" data-hide="9"><g data-step="7" class="fx-up"><text class="tok" x="250" y="110" font-size="60" fill="#e11d48">9</text><text class="tok" x="300" y="110" font-size="60" fill="#1f2433">+</text><text class="tok" x="355" y="110" font-size="60" fill="#e11d48">9</text><text class="tok" x="392" y="110" font-size="60" fill="#2563eb">x</text></g><g data-step="7" class="fx-up" style="--d:.6s"><text class="tok" x="220" y="220" font-size="60" fill="#e11d48">9</text><text class="tok" x="255" y="220" font-size="60" fill="#1f2433">·</text><text class="tok" x="290" y="220" font-size="60" fill="#ea580c">1</text><text class="tok" x="345" y="220" font-size="60" fill="#1f2433">+</text><text class="tok" x="400" y="220" font-size="60" fill="#e11d48">9</text><text class="tok" x="435" y="220" font-size="60" fill="#1f2433">·</text><text class="tok" x="470" y="220" font-size="60" fill="#2563eb">x</text><circle cx="290" cy="220" r="34" fill="none" stroke="#ea580c" stroke-width="4" class="fx-pop" data-step="7" style="--d:1.2s"/></g><g data-step="8" class="fx-up"><text class="tok" x="160" y="340" font-size="60" fill="#1f2433">=</text><text class="tok" x="220" y="340" font-size="60" fill="#e11d48">9</text><text class="tok" x="255" y="340" font-size="60" fill="#1f2433">(</text><text class="tok" x="290" y="340" font-size="60" fill="#ea580c">1</text><text class="tok" x="340" y="340" font-size="60" fill="#1f2433">+</text><text class="tok" x="390" y="340" font-size="60" fill="#2563eb">x</text><text class="tok" x="430" y="340" font-size="60" fill="#1f2433">)</text></g><g data-step="8" class="fx-right" style="--d:.7s"><rect x="520" y="290" width="270" height="140" rx="16" fill="#fef2f2" stroke="#dc2626" stroke-width="4"/><text class="tok" x="620" y="345" font-size="48" fill="#1f2433">9(x)</text><line x1="570" y1="345" x2="670" y2="345" stroke="#dc2626" stroke-width="6"/><text class="lbl" x="730" y="345" font-size="56" fill="#dc2626">✗</text><text class="lbl" x="655" y="400" font-size="28" fill="#dc2626">נשאר 1, לא 0!</text></g></g><g data-step="9" data-hide="11"><g data-step="9" class="fx-up"><text class="tok" x="250" y="110" font-size="60" fill="#1f2433">12y³</text><text class="tok" x="350" y="110" font-size="60" fill="#1f2433">−</text><text class="tok" x="450" y="110" font-size="60" fill="#1f2433">36y⁵</text></g><g data-step="9" class="fx-up" style="--d:.7s"><text class="tok" x="270" y="215" font-size="40" fill="#1f2433">36 = <tspan fill="#e11d48">12</tspan>·3</text><text class="lbl" x="630" y="215" font-size="24" fill="#e11d48">במספרים: המחלק המשותף הגדול</text></g><g data-step="9" class="fx-up" style="--d:1.4s"><text class="tok" x="270" y="295" font-size="40" fill="#1f2433">y⁵ = <tspan fill="#7c3aed">y³</tspan>·y²</text><text class="lbl" x="630" y="295" font-size="24" fill="#7c3aed">באותיות: החזקה הקטנה</text></g><g data-step="10" class="fx-pop"><text class="tok" x="380" y="410" font-size="60" fill="#1f2433">= <tspan fill="#e11d48">12</tspan><tspan fill="#7c3aed">y³</tspan>(1 − 3y²)</text><rect x="150" y="360" width="460" height="96" rx="16" fill="none" stroke="#16a34a" stroke-width="4"/></g></g><g data-step="11" data-hide="12"><g data-step="11" class="fx-up"><text class="tok" x="410" y="120" font-size="60" fill="#1f2433"><tspan fill="#e11d48">−2a</tspan>b + 6ac</text></g><g data-step="11" class="fx-up" style="--d:.8s"><text class="tok" x="410" y="240" font-size="60" fill="#1f2433">= <tspan fill="#e11d48">−2a</tspan>(b <tspan fill="#ea580c">−</tspan> 3c)</text></g><g data-step="11" class="fx-fade" style="--d:1.6s"><text class="lbl" x="410" y="340" font-size="28" fill="#ea580c">הוצאנו גורם שלילי ← כל סימן בסוגריים מתהפך</text></g><g data-step="11" class="fx-up" style="--d:2.2s"><text class="tok" x="410" y="440" font-size="32" fill="#1f2433"><tspan fill="#e11d48">−2a</tspan>·b = −2ab ✓     <tspan fill="#e11d48">−2a</tspan>·(−3c) = +6ac ✓</text></g></g><g data-step="12" class="fx-up"><rect x="40" y="70" width="740" height="360" rx="20" fill="#fff" stroke="#7c3aed" stroke-width="4"/><text class="lbl" x="410" y="140" font-size="36" fill="#7c3aed">גורם משותף גדול ביותר =</text><text class="lbl" x="410" y="205" font-size="30" fill="#e11d48">המחלק המשותף הגדול של המספרים</text><text class="lbl" x="410" y="255" font-size="28" fill="#7c3aed">כפול כל אות שבכל האיברים, בחזקה הקטנה ביותר</text><text class="lbl" x="410" y="345" font-size="28" fill="#16a34a">בדיקה: פותחים סוגריים ← חוזרים לביטוי המקורי ✓</text></g></svg></template>
+<script>
+/* ===== registry: to add an animation, add a <template> above and an entry here ===== */
+const M = s => `<bdi class="m">${s}</bdi>`;
+const SCENES = [
+  { id:'dist', fam:'אלגברה', title:'חוק הפילוג', ex:M('<span class="c-mult">3</span>·(<span class="c-t1">x</span>+<span class="c-t2">4</span>)'),
+    why:'למה צריך? כדי לחשב הכול בבת אחת, בלי לפתוח כל שקית',
+    steps:[
+      `יש 3 שקיות זהות. בכל שקית יש ${M('<span class="c-t1">x</span>')} תפוחים ו־${M('<span class="c-t2">4</span>')} בננות. כמה פירות יש בסך הכול?`,
+      `כותבים תרגיל: 3 שקיות, ובכל שקית ${M('(<span class="c-t1">x</span>+<span class="c-t2">4</span>)')}. הכופל <span class="c-mult">3</span> באדום, כי הוא כופל את כל מה שבתוך הסוגריים.`,
+      `קשת ראשונה: ה־<span class="c-mult">3</span> כופל את ה־${M('<span class="c-t1">x</span>')}. קיבלנו ${M('<span class="c-mult">3</span>·<span class="c-t1">x</span>')}.`,
+      `קשת שנייה: ה־<span class="c-mult">3</span> כופל גם את ה־<span class="c-t2">4</span>. קיבלנו ${M('<span class="c-mult">3</span>·<span class="c-t2">4</span>')}.`,
+      `מסדרים: ${M('3·x')} כותבים ${M('3x')}, ו־${M('3·4 = 12')}. התשובה: ${M('<span class="c-t1">3x</span> + <span class="c-t2">12</span>')}.`,
+      {err:true, t:`⚠ טעות נפוצה: כופלים רק את האיבר הראשון וכותבים ${M('3x + 4')}. ה־<span class="c-mult">3</span> חייב להגיע לכל איבר בסוגריים: לכל איבר יש קשת.`},
+      `הכלל: הכופל שמחוץ לסוגריים כופל כל איבר שבפנים.<br>${M('<span class="c-mult">a</span>·(<span class="c-t1">b</span>+<span class="c-t2">c</span>) = <span class="c-mult">a</span>·<span class="c-t1">b</span> + <span class="c-mult">a</span>·<span class="c-t2">c</span>')}`
+    ]},
+  { id:'slope', fam:'פונקציה קווית', title:'שיפוע של ישר', ex:M('<span class="c-up">2</span> ÷ <span class="c-t2">1</span>'),
+    why:'למה צריך? כדי לדעת כמה ישר תלול, כמו מגלשה או עלייה בכביש',
+    steps:[
+      `שתי מגלשות. איזו מהן תלולה יותר? את התלילות של ישר מודדים במספר אחד, שנקרא <b>שיפוע</b>.`,
+      `זה הישר שלנו במערכת הצירים.`,
+      `מתחילים מנקודה על הישר: ${M('(0,1)')}.`,
+      `זזים צעד אחד <span class="c-t2"><b>ימינה</b></span> (בירוק).`,
+      `כדי לחזור אל הישר עולים 2 <span class="c-up"><b>למעלה</b></span> (בכתום). הגענו לנקודה ${M('(1,3)')}.`,
+      `חוזרים על המדרגה: על כל צעד ימינה עולים 2. הישר בנוי ממדרגות שוות!`,
+      `<b>שיפוע</b> = השינוי בשיעור ה־<span class="c-up">y</span> חלקי השינוי בשיעור ה־<span class="c-t2">x</span>, כלומר כמה עולים <span class="c-up">למעלה</span> על כל צעד <span class="c-t2">ימינה</span>: 2 חלקי 1 שווה 2.`,
+      {err:true, t:`⚠ טעות נפוצה: להפוך את השבר ולכתוב ${M('½')}. בשבר של השיפוע, <span class="c-up">למעלה</span> תמיד במונה (למעלה), ו<span class="c-t2">ימינה</span> במכנה (למטה).`},
+      `בתבנית ${M('y = mx + b')}, המספר שליד ${M('x')} הוא השיפוע. כאן ${M('y = <span style="color:#7c3aed">2</span>x + 1')}, ולכן השיפוע הוא 2.`
+    ]}
+];
+SCENES[1].steps.push(
+  `ישר <b>יורד</b>: על כל צעד ימינה <b>יורדים</b> 2, כלומר השינוי ב־y הוא ${M('−2')}. לכן <b>השיפוע שלילי</b>: ${M('−2')}.`,
+  `ישר <b>אופקי</b>, מקביל לציר x: זזים ימינה ולא עולים בכלל. לכן <b>השיפוע שווה 0</b>. המשוואה ${M('y = 3')}: <b>יש בה רק y</b>, וזה הסימן שהישר מקביל לציר x.`,
+  `ישר <b>אנכי</b>, מקביל לציר y: אי אפשר לזוז ימינה ולהישאר על הישר. לכן <b>השיפוע של ישר כזה אינו מוגדר</b> (ישר כזה גם אינו פונקציה). המשוואה ${M('x = 2')}: <b>יש בה רק x</b>, וזה הסימן שהישר מקביל לציר y. כל הנקודות עליו הן עם ${M('x = 2')}.`);
+SCENES.push(
+  { id:'points', fam:'מערכת צירים', title:'נקודות ומרחקים', ex:M('|3 − (−3)| = 6'),
+    why:'למה צריך? כדי לתת לכל מקום "כתובת" מדויקת, כמו במפה',
+    steps:[
+      `זו מערכת צירים: ציר x אופקי, ציר y אנכי. הנקודה שבה הם נפגשים היא ראשית הצירים ${M('(0,0)')}. לכל נקודה יש "כתובת" של שני מספרים, שנקראים <b>שיעורי הנקודה</b>: שיעור ה־x ושיעור ה־y.`,
+      `נקודה ${M('A(3,2)')}: קודם <b>שיעור ה־x</b>, כמה זזים ימינה (<span class="c-t2">3</span>). אחר כך <b>שיעור ה־y</b>, כמה עולים (<span class="c-up">2</span>).`,
+      `נקודה ${M('B(−3,2)')}: ה־x שלילי, ולכן זזים 3 <b>שמאלה</b>. אחר כך עולים 2.`,
+      `ל־A ול־B יש <b>אותו שיעור y</b>, והוא 2. לכן הן על קו <b>אופקי</b>, מקביל לציר x.`,
+      `המרחק ביניהן: סופרים משבצות, ויוצא 6. בחשבון: ההפרש בין ערכי ה־x בערך מוחלט, ${M('|3 − (−3)| = 6')}. <b>ערך מוחלט</b> של מספר הוא המרחק שלו מ־0, ולכן הוא אף פעם לא שלילי, בדיוק כמו מרחק.`,
+      `נקודה ${M('C(3,−3)')}: זזים 3 ימינה. ה־y שלילי, ולכן <b>יורדים</b> 3.`,
+      `ל־A ול־C יש <b>אותו שיעור x</b>, והוא 3. לכן הן על קו <b>אנכי</b>, מקביל לציר y.`,
+      `המרחק ביניהן: ההפרש בין ערכי ה־y בערך מוחלט, ${M('|2 − (−3)| = 5')}.`,
+      {err:true, t:`⚠ טעות נפוצה: להחליף את הסדר ולכתוב ${M('(2,3)')} במקום ${M('(3,2)')}. זו נקודה אחרת לגמרי! תמיד קודם x ואחר כך y.`},
+      `הכלל: <b>אותו y</b> ← קו אופקי, והמרחק הוא ${M('|x₁ − x₂|')}. <b>אותו x</b> ← קו אנכי, והמרחק הוא ${M('|y₁ − y₂|')}.`
+    ]},
+  { id:'lab', fam:'פונקציה קווית · אינטראקטיבי', title:'מעבדת הישר', ex:M('y = mx + b'),
+    why:'משנים את הישר ורואים מה קורה לנקודות החיתוך', mount:mountLab }
+);
+
+SCENES.push({ id:'gcf', fam:'אלגברה', title:'הוצאת גורם משותף', ex:M('<span class="c-mult">5</span>x + <span class="c-mult">5</span>·2 = <span class="c-mult">5</span>(x + 2)'),
+  why:'למה צריך? כדי לחשב מהר ולפשט ביטויים',
+  steps:[
+    `למה צריך? נסו לחשב בלי מחשבון: ${M('35·13.7 + 35·6.3')}. נראה קשה...`,
+    `שימו לב: ה־<span class="c-mult">35</span> מופיע <b>בשני האיברים</b>. מספר כזה נקרא <b>גורם משותף</b>.`,
+    `מוציאים את ה־<span class="c-mult">35</span> אל מחוץ לסוגריים. זה <b>חוק הפילוג בכיוון ההפוך</b>.`,
+    `בתוך הסוגריים: ${M('13.7 + 6.3 = 20')}. ועכשיו קל: ${M('35·20 = 700')}. 🎉`,
+    `אותו רעיון עם אותיות: ${M('5x + 10')}. כותבים כל איבר ככפל, ומחפשים מה משותף לשניהם: <span class="c-mult">5</span>.`,
+    `מוציאים את ה־<span class="c-mult">5</span> החוצה. בסוגריים נשאר מה שהיה כפול בו: ${M('5(x + 2)')}. כתיבת ביטוי ככפל נקראת <b>פירוק לגורמים</b>.`,
+    `<b>תמיד בודקים:</b> פותחים סוגריים בחוק הפילוג, וצריך לחזור בדיוק לביטוי המקורי: ${M('5x + 10')} ✓`,
+    `${M('9 + 9x')}: מה משותף? <span class="c-mult">9</span>. אבל האיבר הראשון הוא <b>רק</b> 9, ולכן כותבים אותו ${M('9·<span class="c-up">1</span>')}.`,
+    {err:true, t:`⚠ טעות נפוצה: לכתוב ${M('9(x)')} ולשכוח את ה־1. כשמוציאים איבר שלם, במקומו נשאר <b>1</b>, לא 0! בדיקה: ${M('9·1 + 9·x = 9 + 9x')} ✓`},
+    `<b>הגורם המשותף הגדול ביותר</b> של ${M('12y³ − 36y⁵')}: במספרים, המחלק המשותף הגדול הוא <span class="c-mult">12</span>. באותיות, לוקחים את <b>החזקה הקטנה</b>: <span style="color:#7c3aed">${M('y³')}</span>.`,
+    `מוציאים ${M('12y³')} ומקבלים ${M('12y³(1 − 3y²)')}. בדיקה: ${M('12y³·3y² = 36y⁵')} ✓`,
+    `אפשר להוציא גם <b>גורם שלילי</b>: ${M('−2ab + 6ac = −2a(b − 3c)')}. כשמוציאים גורם שלילי, <span class="c-up">כל סימן בתוך הסוגריים מתהפך</span>.`,
+    `הכלל: <b>הגורם המשותף הגדול ביותר</b> הוא המחלק המשותף הגדול של המספרים, כפול כל אות שמופיעה בכל האיברים, בחזקה הקטנה ביותר. ותמיד בודקים בפתיחת סוגריים.`
+  ]});
+/* ===== engine ===== */
+const $ = id => document.getElementById(id);
+let scene = null, step = 0, els = [];
+
+function fit(){
+  const s = Math.min(innerWidth/1280, innerHeight/720);
+  $('deck').style.transform = `translate(-50%,-50%) scale(${s})`;
+}
+addEventListener('resize', fit); fit();
+
+/* grid builder: data-grid="ox,oy,unit,xmin,xmax,ymin,ymax" */
+const NS = n => n<0 ? '−'+(-n) : ''+n;
+function gridSVG(ox,oy,u,x0,x1,y0,y1){
+  const X=x=>ox+u*x, Y=y=>oy-u*y, fs=Math.max(13,Math.round(u*.45));
+  let g='<g class="grid">';
+  for(let x=x0;x<=x1;x++) if(x) g+=`<line x1="${X(x)}" y1="${Y(y0)}" x2="${X(x)}" y2="${Y(y1)}"/>`;
+  for(let y=y0;y<=y1;y++) if(y) g+=`<line x1="${X(x0)}" y1="${Y(y)}" x2="${X(x1)}" y2="${Y(y)}"/>`;
+  g+='</g>';
+  const xe=X(x1)+16, ye=Y(y1)-16;
+  g+=`<line x1="${X(x0)}" y1="${oy}" x2="${xe}" y2="${oy}" stroke="#16a34a" stroke-width="3.5"/><path d="M${xe+8},${oy} l-12,-6 v12 z" fill="#16a34a"/>`;
+  g+=`<line x1="${ox}" y1="${Y(y0)}" x2="${ox}" y2="${ye}" stroke="#ea580c" stroke-width="3.5"/><path d="M${ox},${ye-8} l-6,12 h12 z" fill="#ea580c"/>`;
+  g+=`<g class="tok" font-size="${fs}">`;
+  for(let x=x0;x<=x1;x++) if(x) g+=`<text x="${X(x)}" y="${oy+fs+6}" fill="#15803d">${NS(x)}</text>`;
+  for(let y=y0;y<=y1;y++) if(y) g+=`<text x="${ox-fs}" y="${Y(y)}" fill="#c2410c">${NS(y)}</text>`;
+  g+=`<text x="${ox-fs*.8}" y="${oy+fs+4}" fill="#6b7280">0</text></g>`;
+  g+=`<text class="tok" x="${xe+22}" y="${oy}" font-size="${fs+6}" fill="#16a34a">x</text><text class="tok" x="${ox}" y="${ye-24}" font-size="${fs+6}" fill="#ea580c">y</text>`;
+  return g;
+}
+function buildGrids(root){ root.querySelectorAll('[data-grid]').forEach(g=>g.insertAdjacentHTML('afterbegin', gridSVG(...g.dataset.grid.split(',').map(Number)))); }
+
+/* ===== interactive line lab ===== */
+const SL=[-3,-2,-1,-0.5,0,0.5,1,2,3], COL=['#7c3aed','#2563eb'];
+const LX=x=>410+40*x, LY=y=>280-40*y;
+let LAB;
+function fmt(n){ if(Math.abs(n)<1e-9) n=0; let r=Math.round(n*100)/100; const t=Math.abs(r-n)<1e-9 ? ''+Math.abs(r) : '≈'+Math.abs(Math.round(n*10)/10); return (n<0?'−':'')+t; }
+function eqOf(L){ if(L.v) return `x = ${fmt(L.k)}`; const m=L.m, b=L.b;
+  if(m===0) return `y = ${fmt(b)}`;
+  const mp = m===1?'x': m===-1?'−x': fmt(m)+'x';
+  return `y = ${mp}${b>0?' + '+fmt(b) : b<0?' − '+fmt(-b):''}`; }
+function mountLab(){
+  LAB={lines:[{v:false,m:2,b:1,k:2}],act:0};
+  $('say').innerHTML=`<div class="lab">
+    <div class="row" id="seg" style="display:none"><button data-ln="0">ישר 1</button><button data-ln="1">ישר 2</button></div>
+    <div class="row"><input id="eqIn" dir="ltr" placeholder="x = 5" autocomplete="off"><button data-a="go" class="main">צייר ✏️</button></div><div id="eqErr"></div>
+    <div class="eq"><bdi class="m" id="eq"></bdi></div>
+    <div class="row"><span>שיפוע</span><button data-a="m-">−</button><b id="mv"></b><button data-a="m+">+</button></div>
+    <div class="row"><span id="bl">חיתוך עם ציר y</span><button data-a="b-">−</button><b id="bv"></b><button data-a="b+">+</button></div>
+    <div class="row presets"><button data-p="up">עולה</button><button data-p="down">יורד</button><button data-p="h">אופקי</button><button data-p="v">אנכי</button></div>
+    <button data-a="two" id="two">➕ ישר שני</button>
+    <div id="pts"></div></div>`;
+  $('say').onclick=labClick; $('eqIn').onkeydown=e=>{ if(e.key==='Enter') labParse(); }; labDraw();
+}
+function labClick(e){
+  const b=e.target.closest('button'); if(!b) return;
+  const L=LAB.lines[LAB.act];
+  if(b.dataset.ln) LAB.act=+b.dataset.ln;
+  const a=b.dataset.a, p=b.dataset.p;
+  if(a==='m-'&&!L.v){ const lo=SL.filter(v=>v<L.m-1e-9); if(lo.length) L.m=lo[lo.length-1]; }
+  if(a==='m+'&&!L.v){ const hi=SL.filter(v=>v>L.m+1e-9); if(hi.length) L.m=hi[0]; }
+  if(a==='go'){ labParse(); return; }
+  if(a==='b-'){ if(L.v) L.k=Math.max(-5,L.k-1); else L.b=Math.max(-5,L.b-1); }
+  if(a==='b+'){ if(L.v) L.k=Math.min(5,L.k+1); else L.b=Math.min(5,L.b+1); }
+  if(p==='up') Object.assign(L,{v:false,m:2,b:1});
+  if(p==='down') Object.assign(L,{v:false,m:-2,b:4});
+  if(p==='h') Object.assign(L,{v:false,m:0,b:3});
+  if(p==='v') Object.assign(L,{v:true,k:2});
+  if(a==='two'){ if(LAB.lines.length===1){ LAB.lines.push({v:false,m:-1,b:-2,k:-2}); LAB.act=1; } else { LAB.lines.pop(); LAB.act=0; } }
+  labDraw();
+}
+
+function labParse(){
+  const raw=$('eqIn').value, t=raw.replace(/\s+/g,'').replace(/[−–]/g,'-').replace(/[·*]/g,'').toLowerCase();
+  const N='(-?\\d+(?:\\.\\d+)?(?:/\\d+)?)';
+  const num=v=>{ if(v.includes('/')){ const [a,b]=v.split('/'); return parseFloat(a)/parseFloat(b); } return parseFloat(v); };
+  let L=null, m;
+  if(m=t.match(new RegExp('^x='+N+'$'))) L={v:true,k:num(m[1])};
+  else if(m=t.match(new RegExp('^y='+N+'$'))) L={v:false,m:0,b:num(m[1])};
+  else if(m=t.match(/^y=(-?\d*(?:\.\d+)?(?:\/\d+)?)x(?:([+-]\d+(?:\.\d+)?(?:\/\d+)?))?$/)){
+    const c=m[1]; const mm = c===''?1 : c==='-'?-1 : num(c);
+    L={v:false,m:mm,b:m[2]?num(m[2]):0}; }
+  const err=$('eqErr');
+  if(!L || [L.k,L.m,L.b].some(v=>v!==undefined && !isFinite(v))){ err.textContent='לא הבנתי 🙂 כתבו למשל: x = 5  או  y = 3  או  y = 2x + 1'; return; }
+  err.textContent='';
+  Object.assign(LAB.lines[LAB.act], {k:2,m:0,b:0}, L, {v:L.v});
+  labDraw();
+}
+function setD(el,d){ el.setAttribute('d',d); el.style.d=`path("${d}")`; }
+function lineD(L){ if(L.v) return `M${LX(L.k)},${LY(7)} L${LX(L.k)},${LY(-7)}`; const m=L.m; return `M${LX(-7)},${LY(-7*m+L.b)} L${LX(7)},${LY(7*m+L.b)}`; }
+function labDraw(){
+  const Ls=LAB.lines, A=Ls[LAB.act];
+  const lc=(L,i)=> L.v?'#ea580c' : L.m===0?'#16a34a' : COL[i];
+  setD($('ln0'),lineD(Ls[0])); $('ln0').style.stroke=lc(Ls[0],0); if(Ls[1]) $('ln1').style.stroke=lc(Ls[1],1);
+  if(Ls[1]){ setD($('ln1'),lineD(Ls[1])); $('ln1').style.opacity=1; } else $('ln1').style.opacity=0;
+  // staircase on active line
+  let st='';
+  if(!A.v && A.m!==0){ const m=A.m, b=A.b;
+    st=`<line x1="${LX(0)}" y1="${LY(b)}" x2="${LX(1)-5}" y2="${LY(b)}" stroke="#16a34a" stroke-width="5" marker-end="url(#lG)"/>
+        <line x1="${LX(1)}" y1="${LY(b)}" x2="${LX(1)}" y2="${LY(b+m)+(m>0?5:-5)}" stroke="#ea580c" stroke-width="5" marker-end="url(#lO)"/>`; }
+  $('stair').innerHTML=st;
+  // intersections
+  const pts=[], rows=[];
+  Ls.forEach((L,i)=>{
+    const c=COL[i]; let xi, yi;
+    if(L.v){ xi=[L.k,0]; yi = L.k===0 ? 'הישר הוא ציר y' : 'אין (מקביל לציר y)'; }
+    else { const m=L.m; yi=[0,L.b]; xi = m===0 ? (L.b===0?'הישר הוא ציר x':'אין (מקביל לציר x)') : [-L.b/m,0]; }
+    const show=v=> Array.isArray(v) ? (pts.push([...v,c]), `<bdi class="m">(${fmt(v[0])},${fmt(v[1])})</bdi>`) : v;
+    const note = L.v ? ` <span style="color:#ea580c">· מקביל לציר y</span>` : L.m===0 ? ` <span style="color:#16a34a">· מקביל לציר x</span>` : '';
+    rows.push(`<div class="pl" style="border-color:${c}"><b style="color:${c}">ישר ${i+1}: <bdi class="m">${eqOf(L)}</bdi></b>${note}<br>חיתוך עם ציר x: ${show(xi)}<br>חיתוך עם ציר y: ${show(yi)}</div>`);
+  });
+  if(Ls[1]){ const [P,Q]=Ls; let r;
+    if(P.v&&Q.v) r = P.k===Q.k?'אותו ישר':'אין, הישרים מקבילים (אותו שיפוע)';
+    else if(P.v||Q.v){ const V=P.v?P:Q, N=P.v?Q:P; r=[V.k, N.m*V.k+N.b]; }
+    else { const m1=P.m, m2=Q.m; if(m1===m2) r = P.b===Q.b?'אותו ישר':'אין, הישרים מקבילים (אותו שיפוע)'; else { const x=(Q.b-P.b)/(m1-m2); r=[x,m1*x+P.b]; } }
+    const txt = Array.isArray(r) ? (pts.push([...r,'#ea580c']), `<bdi class="m">(${fmt(r[0])},${fmt(r[1])})</bdi>`) : r;
+    rows.push(`<div class="pl" style="border-color:#ea580c"><b style="color:#ea580c">חיתוך בין הישרים:</b> ${txt}</div>`);
+  }
+  $('pts').innerHTML=rows.join('');
+  $('labPts').innerHTML=pts.filter(([x,y])=>Math.abs(x)<=6&&Math.abs(y)<=6).map(([x,y,c])=>{
+    const t=`(${fmt(x)},${fmt(y)})`, w=t.length*12+12, right=x<=3, tx=LX(x)+(right?16:-16-w), ty=(Math.abs(y)<1e-9||LY(y)-34<44)?LY(y)+12:LY(y)-34;
+    return `<g class="pt"><circle cx="${LX(x)}" cy="${LY(y)}" r="10" fill="${c}" stroke="#fff" stroke-width="3"/><rect x="${tx}" y="${ty}" width="${w}" height="28" rx="7" fill="#fff" stroke="${c}" stroke-width="2"/><text class="tok" x="${tx+w/2}" y="${ty+15}" font-size="21" fill="${c}">${t}</text></g>`;
+  }).join('');
+  // panel
+  $('eq').textContent=eqOf(A); $('eq').style.color=COL[LAB.act];
+  $('mv').textContent = A.v ? 'לא מוגדר' : fmt(A.m);
+  $('bv').textContent = fmt(A.v?A.k:A.b);
+  $('bl').textContent = A.v ? 'מיקום על ציר x' : 'חיתוך עם ציר y';
+  $('say').querySelectorAll('[data-a="m-"],[data-a="m+"]').forEach(b=>b.disabled=A.v);
+  $('seg').style.display = Ls[1]?'flex':'none';
+  $('seg').querySelectorAll('button').forEach(b=>b.classList.toggle('on', +b.dataset.ln===LAB.act));
+  $('two').textContent = Ls[1] ? '✖ הסר ישר שני' : '➕ ישר שני';
+}
+
+
+$('cards').innerHTML = SCENES.map((s,i)=>
+  `<div class="card" data-i="${i}"><div class="fam">${s.fam}</div><h2>${s.title}</h2><div class="ex">${s.ex}</div></div>`).join('');
+$('cards').onclick = e => { const c = e.target.closest('.card'); if(c) open(+c.dataset.i); };
+
+function open(i){
+  scene = SCENES[i];
+  $('stage').innerHTML = '';
+  $('stage').appendChild(document.getElementById('t-'+scene.id).content.cloneNode(true));
+  buildGrids($('stage'));
+  els = [...$('stage').querySelectorAll('[data-step]')];
+  $('title').textContent = scene.title;
+  $('why').textContent = scene.why;
+  $('dots').innerHTML = (scene.steps||[]).map(()=>'<i></i>').join('');
+  $('menu').style.display = 'none'; $('player').style.display = 'block';
+  location.hash = scene.id;
+  const lab = !!scene.mount;
+  ['count','dots','prev','next','hint'].forEach(x=>$(x).style.display = lab?'none':'');
+  $('asideH').textContent = lab ? 'שליטה בישר' : 'מה עשינו?';
+  $('say').classList.remove('err'); $('say').onclick=null;
+  if(lab){ scene.mount(); return; }
+  go(0, true);
+}
+
+function go(k, animate){
+  const n = scene.steps.length;
+  step = Math.max(0, Math.min(n-1, k));
+  for(const el of els){
+    const s = +el.dataset.step, h = el.dataset.hide ? +el.dataset.hide : Infinity;
+    const show = s <= step && step < h;
+    el.classList.toggle('on', show);
+    el.classList.remove('enter');
+    if(show && animate && s === step){ void el.getBoundingClientRect(); el.classList.add('enter'); }
+  }
+  const st = scene.steps[step], say = $('say');
+  say.innerHTML = typeof st === 'string' ? st : st.t;
+  say.classList.toggle('err', typeof st !== 'string' && st.err);
+  say.classList.remove('enter'); void say.offsetWidth; say.classList.add('enter');
+  $('count').textContent = `שלב ${step+1} מתוך ${n}`;
+  [...$('dots').children].forEach((d,i)=>d.classList.toggle('on', i<=step));
+  $('prev').disabled = step===0; $('next').disabled = step===n-1;
+}
+
+const next = () => scene && step < scene.steps.length-1 && go(step+1, true);
+const prev = () => scene && step > 0 && go(step-1, false);
+function toMenu(){ scene=null; $('player').style.display='none'; $('menu').style.display='block'; history.replaceState(null,'',location.pathname); }
+
+$('next').onclick = next; $('prev').onclick = prev; $('toMenu').onclick = toMenu;
+$('stageWrap').onclick = () => { if(scene && !scene.mount) next(); };
+$('fs').onclick = () => { try{ document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); }catch(e){} };
+addEventListener('keydown', e => {
+  if(!scene) return;
+  if(scene.mount){ if(e.key==='Escape') toMenu(); return; }
+  if(['ArrowLeft','ArrowDown','PageDown',' ','Enter'].includes(e.key)){ e.preventDefault(); next(); }
+  else if(['ArrowRight','ArrowUp','PageUp','Backspace'].includes(e.key)){ e.preventDefault(); prev(); }
+  else if(e.key==='Escape') toMenu();
+});
+
+const start = SCENES.findIndex(s => '#'+s.id === location.hash);
+if(start >= 0) open(start);
+</script>
+</body>
+</html>
