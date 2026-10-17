@@ -1,0 +1,308 @@
+<title>ט׳ א2 · הוצאת גורם משותף</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;900&family=Heebo:wght@400;500;700&display=swap">
+<style>
+/* Layout: one 16:9 stage, content flush right, one dominant visual per slide. Single dark "classroom board" theme. */
+:root{
+  --bg:#0f1b2d; --stage:#13233a; --ink:#f3f6fb; --muted:#9fb3cc; --line:#2b4466;
+  --accent:#ffb020; --ray:#5ec8ff; --ray2:#ff7a8a; --ok:#4fd18b; --chip:#1c3352;
+  --display:"Rubik","Heebo",Arial,sans-serif; --body:"Heebo","Rubik",Arial,sans-serif;
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);margin:0;direction:rtl;overflow:hidden}
+.app{height:100%;display:flex;flex-direction:column;padding-inline:16px;padding-block:10px;box-sizing:border-box;gap:8px}
+.bar{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--muted)}
+.bar .t{font-family:var(--display);font-weight:700;color:var(--ink);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar button{background:var(--chip);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:6px 12px;font:inherit;cursor:pointer}
+.bar button:focus-visible,.nav button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.prog{height:4px;background:var(--line);border-radius:4px;overflow:hidden}.prog i{display:block;height:100%;background:var(--accent);transition:width .4s}
+.stageWrap{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+.stage{aspect-ratio:16/9;width:min(100%,calc((100vh - 120px)*16/9));max-width:100%;background:var(--stage);border:1px solid var(--line);border-radius:14px;position:relative;overflow:hidden;container-type:inline-size}
+.slide{position:absolute;inset:0;padding:4.5cqw 5cqw;display:none;flex-direction:column;gap:2cqw}
+.slide.on{display:flex;animation:in .5s ease}
+@keyframes in{from{opacity:.0;transform:translateY(1.5cqw)}to{opacity:1;transform:none}}
+.eyebrow{font-family:var(--display);font-weight:500;color:var(--accent);font-size:1.7cqw;letter-spacing:.04em}
+h1{font-family:var(--display);font-weight:900;font-size:5.2cqw;line-height:1.1;margin:0;text-wrap:balance}
+h2{font-family:var(--display);font-weight:700;font-size:3.4cqw;line-height:1.2;margin:0;text-wrap:balance}
+p,li{font-size:2.15cqw;line-height:1.45;margin:0}
+.muted{color:var(--muted)}
+.row{display:flex;gap:3cqw;align-items:center;flex:1;min-height:0}
+.col{display:flex;flex-direction:column;gap:1.4cqw;flex:1;min-width:0}
+.vis{flex:1.15;min-width:0;display:flex;align-items:center;justify-content:center}
+.vis svg{width:100%;height:auto;max-height:34cqw}
+.step{opacity:.0;translate:-1cqw 0;transition:opacity .45s,translate .45s}
+.step.shown{opacity:1;translate:none}
+svg .step{translate:none}
+.card{font-size:1.9cqw;line-height:1.4;background:var(--chip);border:1px solid var(--line);border-radius:1.2cqw;padding:1.4cqw 1.8cqw}
+.what{border-right:.5cqw solid var(--accent)}
+.what b{color:var(--accent)}
+.lvl{display:inline-flex;gap:.6cqw;align-items:center;font-family:var(--display);font-weight:700;color:var(--accent);font-size:1.9cqw}
+.big{font-family:var(--display);font-weight:900;font-size:7cqw;color:var(--accent);line-height:1}
+.ans{color:var(--ok);font-weight:700}
+ol,ul{margin:0;padding-right:2.4cqw;display:flex;flex-direction:column;gap:1cqw}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1.6cqw}
+.menu{display:flex;flex-direction:column;gap:1.4cqw}.menu button{all:unset;cursor:pointer;display:flex;gap:2cqw;align-items:center;background:var(--chip);border:1px solid var(--line);border-radius:1.2cqw;padding:1.4cqw 2cqw;font-size:2.2cqw}.menu button:hover,.menu button:focus-visible{border-color:var(--accent)}.menu small{color:var(--muted);font-size:1.6cqw;margin-inline-start:auto}
+.cover h1{font-size:6cqw}.cover .num{font-family:var(--display);font-weight:900;font-size:12cqw;color:var(--accent);line-height:.9}
+.ft{border-collapse:collapse;font-size:2cqw}.ft th,.ft td{border:1px solid var(--line);padding:.6cqw 1.6cqw;text-align:center}.ft th{background:var(--chip);color:var(--accent)}
+.chip{display:inline-block;background:var(--accent);color:#1b1300;border-radius:99px;padding:.3cqw 1.2cqw;font-weight:700;font-size:1.7cqw}
+.nav{display:flex;gap:8px;justify-content:center}
+.nav button{background:var(--chip);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:6px 18px;font:inherit;font-size:15px;cursor:pointer}
+.hint{font-size:13px;color:var(--muted);text-align:center}
+svg text{font-family:var(--display);fill:var(--ink)}
+.rot{transform-box:view-box;transition:transform 1.6s cubic-bezier(.6,.05,.3,1)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-width:560px){.bar .t{font-size:12px}.bar button{padding:5px 8px}}
+</style>
+
+<div class="app">
+  <div class="bar">
+    <img alt="שחקים" style="height:26px" src="data:image/png;base64,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">
+    <span class="t">ט׳ א2 · פירוק לגורמים: הוצאת גורם משותף · אפשר גם אחרת עמ׳ 129–131</span>
+    <span id="cnt" aria-live="polite"></span>
+    <button id="fs" type="button">מסך מלא</button>
+    <button id="cp" type="button">העתקת קישור</button>
+  </div>
+  <div class="prog"><i id="pg"></i></div>
+  <div class="stageWrap"><div class="stage" id="stage"></div></div>
+  <div class="nav"><button id="prev" type="button">→ הקודם</button><button id="next" type="button">הבא ←</button></div>
+  <div class="hint">לחיצה, רווח או חץ שמאלה – השלב הבא · <b>ערכה: רוני מודן</b> · © כל הזכויות שמורות. אין להעביר או להפיץ ללא אישור.</div>
+</div>
+
+<script>
+/* ===== WOW engine v1 – Roni Modan. Content = SLIDES array; engine = everything below it. ===== */
+const C={ray:'#5ec8ff',ray2:'#ff7a8a',acc:'#ffb020',ok:'#4fd18b',line:'#2b4466',ink:'#f3f6fb'};
+// angle(deg, rot, opts): SVG group of an angle with vertex at (0,0); rot = direction of first ray (degrees, CCW from east)
+function angle(deg,rot=0,o={}){
+  const L=o.len||120,col=o.col||C.ray,r=o.arc||38,rad=a=>a*Math.PI/180;
+  const x1=L*Math.cos(rad(rot)),y1=-L*Math.sin(rad(rot)),x2=L*Math.cos(rad(rot+deg)),y2=-L*Math.sin(rad(rot+deg));
+  const ax1=r*Math.cos(rad(rot)),ay1=-r*Math.sin(rad(rot)),ax2=r*Math.cos(rad(rot+deg)),ay2=-r*Math.sin(rad(rot+deg));
+  const lr=o.lr||r+22;const lab=o.label!=null?`<text x="${lr*Math.cos(rad(rot+deg/2))}" y="${-lr*Math.sin(rad(rot+deg/2))+7}" font-size="${o.fs||20}" text-anchor="middle" style="fill:${o.lc||C.acc}">${o.label}</text>`:'';
+  return `<g ${o.attr||''}><path d="M0 0 L${ax1} ${ay1} A${r} ${r} 0 ${deg>180?1:0} 0 ${ax2} ${ay2} Z" fill="${col}" fill-opacity=".22"/>
+  <line x1="0" y1="0" x2="${x1}" y2="${y1}" stroke="${col}" stroke-width="${o.w||5}" stroke-linecap="round"/>
+  <line x1="0" y1="0" x2="${x2}" y2="${y2}" stroke="${col}" stroke-width="${o.w||5}" stroke-linecap="round"/>
+  <circle r="5" fill="${C.ink}"/>${lab}</g>`;
+}
+const svg=(vb,inner)=>`<svg viewBox="${vb}" role="img" aria-hidden="true">${inner}</svg>`;
+const what=(n,t)=>`<div class="card what step"><b>מה עשינו? שלב ${n}:</b> ${t}</div>`;
+const stars=n=>'★'.repeat(n);
+
+/* ===== HELPERS+ ===== */
+// ratio bar: parts=[{n:2,col,label}], unit width u
+function ratioBar(parts,o={}){const u=o.u||46,h=o.h||46;let x=0,out='';
+ parts.forEach(p=>{for(let i=0;i<p.n;i++){out+=`<rect x="${x}" y="0" width="${u-4}" height="${h}" rx="8" fill="${p.col}" fill-opacity=".85"/>`;x+=u;}
+  if(p.label)out+=`<text x="${x-u*p.n/2-2}" y="${h+30}" font-size="22" text-anchor="middle" style="fill:${p.col}">${p.label}</text>`;x+=u*.5;});
+ return `<g>${out}</g>`;}
+// distribution: coef applied to terms, arcs from coef to each term (multiplier in accent colour)
+let _mk=0;function dist(coef,terms,result){const mid='ah'+(++_mk);result=result&&result.replace(/<[^>]+>/g,'');const cw=coef.length*15+30;let x=cw+22,pos=[],body='';
+ terms.forEach((t,i)=>{const w=t.length*15+18;pos.push(x+w/2);body+=`<text x="${x+w/2}" y="0" font-size="30" text-anchor="middle" direction="ltr">${t}</text>`;x+=w+(i<terms.length-1?14:0);});
+ const arcs=pos.map((p,i)=>`<path class="step" d="M${cw/2} -30 Q${(cw/2+p)/2} -${95+i*18} ${p} -32" fill="none" stroke="${C.acc}" stroke-width="3.5" marker-end="url(#${mid})"/>`).join('');
+ const W=x+20;
+ return svg(`-10 -130 ${Math.max(W,320)} ${result?190:150}`,`<defs><marker id="${mid}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="${C.acc}"/></marker></defs>
+ <g direction="ltr"><text x="${cw/2}" y="0" font-size="30" text-anchor="middle" style="fill:${C.acc};font-weight:700">${coef}</text><text x="${cw+8}" y="0" font-size="34">(</text>${body}<text x="${x}" y="0" font-size="34">)</text>${arcs}
+ ${result?`<text class="step" x="0" y="52" font-size="30" style="fill:${C.ok}">= ${result}</text>`:''}</g>`);}
+// kite ABCD with head vertices A (top) and C (bottom); ticks show equal pairs
+function kite(o={}){const pA=[150,20],pB=[60,110],pC=[150,300],pD=[240,110];const P={A:pA,B:pB,C:pC,D:pD};
+ const seg=(p,q,col,w=5)=>`<line x1="${p[0]}" y1="${p[1]}" x2="${q[0]}" y2="${q[1]}" stroke="${col}" stroke-width="${w}" stroke-linecap="round"/>`;
+ const tick=(p,q,n,col)=>{const mx=(p[0]+q[0])/2,my=(p[1]+q[1])/2,dx=q[0]-p[0],dy=q[1]-p[1],L=Math.hypot(dx,dy),nx=-dy/L*9,ny=dx/L*9,tx=dx/L*6,ty=dy/L*6;let s='';for(let i=0;i<n;i++){const k=(i-(n-1)/2);s+=`<line x1="${mx+tx*k-nx}" y1="${my+ty*k-ny}" x2="${mx+tx*k+nx}" y2="${my+ty*k+ny}" stroke="${col}" stroke-width="3"/>`;}return s;};
+ let g=seg(pA,pB,C.ray)+seg(pA,pD,C.ray)+seg(pB,pC,C.ray2)+seg(pD,pC,C.ray2);
+ if(o.ticks!==false)g+=`<g class="${o.tickStep?'step':''}">${tick(pA,pB,1,C.ink)+tick(pA,pD,1,C.ink)+tick(pB,pC,2,C.ink)+tick(pD,pC,2,C.ink)}</g>`;
+ if(o.diag)g+=`<g class="${o.diagStep?'step':''}">${seg(pA,pC,C.acc,4)}</g>`;
+ g+=Object.entries(P).map(([k,p])=>`<circle cx="${p[0]}" cy="${p[1]}" r="5" fill="${C.ink}"/><text x="${p[0]+(k==='B'?-26:k==='D'?20:-6)}" y="${p[1]+(k==='A'?-8:k==='C'?30:6)}" font-size="24">${k}</text>`).join('');
+ return svg('0 -20 320 360',g);}
+// two parallel lines cut by a transversal; marks = [{at:'top'|'bot', pos:0..3, col, label}]
+function parallels(marks=[],o={}){const y1=90,y2=230,k=0.55; // transversal x = 150 + (y-160)*k ... slope
+ const X=y=>200-(y-160)*0.75, P1=[X(y1),y1],P2=[X(y2),y2];
+ let g=`<line x1="0" y1="${y1}" x2="420" y2="${y1}" stroke="${C.ray}" stroke-width="5"/><line x1="0" y1="${y2}" x2="420" y2="${y2}" stroke="${C.ray}" stroke-width="5"/>
+ <line x1="${X(10)}" y1="10" x2="${X(310)}" y2="310" stroke="${C.ink}" stroke-width="4"/>
+ <text x="400" y="${y1-10}" font-size="20" style="fill:${C.ray}">a</text><text x="400" y="${y2-10}" font-size="20" style="fill:${C.ray}">b</text>`;
+ const dirAng=Math.atan2(-(310-10),X(310)-X(10))*180/Math.PI; // transversal downward direction (deg, CCW)
+ const sectors=[[0,180+dirAng],[180+dirAng,180],[180,360+dirAng],[dirAng+360,360]]; // 0: up-right,1: up-left,2: down-left,3: down-right
+ marks.forEach(m=>{const c=m.at==='top'?P1:P2;const [s0,s1]=sectors[m.pos];let a0=s0,a1=s1;if(a1<a0)a1+=360;
+  const r=34,rad=a=>a*Math.PI/180,pt=a=>[c[0]+r*Math.cos(rad(a)),c[1]-r*Math.sin(rad(a))],p0=pt(a0),p1=pt(a1),mid=(a0+a1)/2;
+  g+=`<g class="${m.step?'step':''}"><path d="M${c[0]} ${c[1]} L${p0[0]} ${p0[1]} A${r} ${r} 0 0 0 ${p1[0]} ${p1[1]} Z" fill="${m.col}" fill-opacity=".45"/>${m.label?`<text x="${c[0]+(r+26)*Math.cos(rad(mid))}" y="${c[1]-(r+26)*Math.sin(rad(mid))+8}" font-size="22" text-anchor="middle" style="fill:${m.col}">${m.label}</text>`:''}</g>`;});
+ return svg('-10 0 440 320',g);}
+const eq=t=>`<span dir="ltr" style="unicode-bidi:isolate;font-family:var(--display)">${t}</span>`;
+
+// weekly deck: menu + per-lesson cover
+function menu(title,items){return {html:`<div class="eyebrow">${title}</div><h1>נושאי השבוע</h1><div class="menu">${items.map(i=>`<button type="button" data-to="${i.id}"><span class="chip">${i.n}</span> ${i.t}<small>${i.d}</small></button>`).join('')}</div>`};}
+function cover(id,n,t,d,idea){return {html:`<div class="cover row" id="${id}"><div class="col"><div class="num">שיעור ${n}</div><h1>${t}</h1><p class="muted">${d}</p><p class="step">${idea}</p></div></div>`};}
+// area model for (a+b)(c+d): top labels c,d ; side labels a,b ; cells = products (each a step)
+function areaModel(a,b,c,d,cells,o={}){const W1=o.w1||170,W2=o.w2||90,H1=o.h1||150,H2=o.h2||80,x0=60,y0=50;
+ const cols=[[c,W1],[d,W2]],rows=[[a,H1],[b,H2]],fills=['#5ec8ff','#4fd18b','#ffb020','#ff7a8a'];let g='',k=0,y=y0;
+ cols.reduce((x,[t,w])=>{g+=`<text x="${x+w/2}" y="${y0-14}" font-size="24" text-anchor="middle" direction="ltr">${t}</text>`;return x+w;},x0);
+ rows.forEach(([t,h],ri)=>{g+=`<text x="${x0-16}" y="${y+h/2+8}" font-size="24" text-anchor="end" direction="ltr">${t}</text>`;let x=x0;
+  cols.forEach(([,w],ci)=>{g+=`<g class="step"><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fills[k]}" fill-opacity=".28" stroke="${fills[k]}" stroke-width="3"/><text x="${x+w/2}" y="${y+h/2+9}" font-size="26" text-anchor="middle" direction="ltr">${cells[k]}</text></g>`;x+=w;k++;});y+=h;});
+ return svg(`0 0 ${x0+W1+W2+20} ${y0+H1+H2+20}`,g);}
+// number line with labelled ticks and highlighted points [{v,label,col}]
+function numberLine(min,max,pts=[],o={}){const W=560,s=v=>30+(v-min)/(max-min)*(W-60);let g=`<line x1="20" y1="60" x2="${W-20}" y2="60" stroke="${C.ink}" stroke-width="3"/>`;
+ for(let v=min;v<=max;v++)g+=`<line x1="${s(v)}" y1="50" x2="${s(v)}" y2="70" stroke="${C.ink}" stroke-width="2"/><text x="${s(v)}" y="98" font-size="22" text-anchor="middle">${v}</text>`;
+ pts.forEach(p=>g+=`<g class="${p.step?'step':''}"><circle cx="${s(p.v)}" cy="60" r="9" fill="${p.col||C.acc}"/><text x="${s(p.v)}" y="32" font-size="22" text-anchor="middle" style="fill:${p.col||C.acc}" direction="ltr">${p.label||''}</text></g>`);
+ return svg(`0 0 ${W} 110`,g);}
+// kite with both diagonals, right angle at intersection and equal halves of BD
+function kiteDiag(o={}){const A=[150,20],B=[60,110],Cc=[150,300],D=[240,110],M=[150,110];const P={A,B,C:Cc,D};
+ const seg=(p,q,col,w=5,da='')=>`<line x1="${p[0]}" y1="${p[1]}" x2="${q[0]}" y2="${q[1]}" stroke="${col}" stroke-width="${w}" stroke-linecap="round" ${da?`stroke-dasharray="${da}"`:''}/>`;
+ let g=seg(A,B,C.ray)+seg(A,D,C.ray)+seg(B,Cc,C.ray2)+seg(D,Cc,C.ray2)+seg(A,Cc,C.acc,4)+`<g class="step">${seg(B,D,C.ok,4,'8 6')}</g>`;
+ g+=`<g class="step"><path d="M150 96 H164 V110" fill="none" stroke="${C.ink}" stroke-width="2.5"/></g>`;
+ g+=`<g class="step"><line x1="103" y1="100" x2="107" y2="120" stroke="${C.ok}" stroke-width="3"/><line x1="193" y1="100" x2="197" y2="120" stroke="${C.ok}" stroke-width="3"/><text x="160" y="140" font-size="22" style="fill:${C.ok}">M</text></g>`;
+ g+=Object.entries(P).map(([k,p])=>`<circle cx="${p[0]}" cy="${p[1]}" r="5" fill="${C.ink}"/><text x="${p[0]+(k==='B'?-26:k==='D'?20:-6)}" y="${p[1]+(k==='A'?-8:k==='C'?30:6)}" font-size="24">${k}</text>`).join('');
+ return svg('0 -20 320 360',g);}
+// simple frequency table
+const ftable=(rows,h=['ערך','שכיחות'])=>`<table class="ft"><tr>${h.map(x=>`<th>${x}</th>`).join('')}</tr>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</table>`;
+
+/* ===== CONTENT ===== */
+// TITLE: ט׳ א2 · הוצאת גורם משותף
+// BAR: ט׳ א2 · פירוק לגורמים: הוצאת גורם משותף · אפשר גם אחרת עמ׳ 129–131
+const A=t=>`<span style="color:${C.acc};font-weight:700">${t}</span>`;
+const B=t=>`<span style="color:${C.ray}">${t}</span>`;
+const G=t=>`<span style="color:${C.ok}">${t}</span>`;
+const R=t=>`<span style="color:${C.ray2}">${t}</span>`;
+const W=(n,t)=>`<div class="card what"><b>מה עשינו? שלב ${n}:</b> ${t}</div>`;
+const P=(e,n,t)=>`<div class="pair step"><div class="eqc">${e}</div>${W(n,t)}</div>`;
+const START=e=>`<div class="pair"><div class="eqc" style="color:var(--ink)">${e}</div><div style="flex:1.25"></div></div>`;
+const CSS=`<style>span[dir=ltr]{white-space:nowrap}.pair{display:flex;gap:2cqw;align-items:center}.pair>.eqc{flex:1;font-family:var(--display);font-weight:900;font-size:4cqw;color:var(--accent)}.pair>.card{flex:1.25}</style>`;
+const mainSvg=svg('0 0 520 330',`<defs><marker id="mA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="${C.acc}"/></marker></defs>
+<g direction="ltr" font-size="42" text-anchor="middle">
+ <text x="200" y="60">5x</text><text x="262" y="60">+</text><text x="325" y="60">10</text>
+ <g class="step"><text x="150" y="145" style="fill:${C.acc};font-weight:700">5</text><text x="176" y="145">·</text><text x="202" y="145" style="fill:${C.ray}">x</text><text x="252" y="145">+</text><text x="302" y="145" style="fill:${C.acc};font-weight:700">5</text><text x="328" y="145">·</text><text x="354" y="145" style="fill:${C.ok}">2</text></g>
+ <g class="step"><path d="M150 160 L160 205" stroke="${C.acc}" stroke-width="4" fill="none" marker-end="url(#mA)"/><path d="M300 160 Q240 190 176 210" stroke="${C.acc}" stroke-width="4" fill="none" marker-end="url(#mA)"/>
+  <text x="115" y="245">=</text><text x="160" y="245" style="fill:${C.acc};font-weight:700">5</text><text x="190" y="245">(</text><text x="222" y="245" style="fill:${C.ray}">x</text><text x="260" y="245">+</text><text x="298" y="245" style="fill:${C.ok}">2</text><text x="328" y="245">)</text></g>
+ <g class="step"><text x="235" y="315" font-size="34" style="fill:${C.ok}">= 5x + 10 ✓</text></g>
+</g>
+<g class="step"><text x="440" y="315" font-size="28" text-anchor="middle" style="fill:${C.ok}">בדיקה</text></g>`);
+
+const SLIDES=[
+menu('ט׳ א2 · אלגברה',[{id:'l1',n:1,t:'הוצאת גורם משותף',d:'שיעור 45 דק׳'}]),
+cover('l1',1,'הוצאת גורם משותף','אפשר גם אחרת · עמ׳ 129–131','לפרק לגורמים = לכתוב ביטוי ככפל, בעזרת חוק הפילוג בכיוון ההפוך'),
+
+{html:CSS+`<div class="eyebrow">כרטיס כניסה · 5 דקות</div><h2>נזכרים בחוק הפילוג</h2>
+<div class="row"><div class="col">
+<ol>
+<li>${eq(A('5')+'(x + 2) =')} <span class="ans step">${eq('5x + 10')}</span></li>
+<li>${eq(A('3a')+'(a − 4) =')} <span class="ans step">${eq('3a² − 12a')}</span></li>
+<li>${eq(A('−2')+'(x − 3) =')} <span class="ans step">${eq('−2x + 6')}</span></li>
+<li>מהו המחלק המשותף הגדול של 12 ושל 18? <span class="ans step">6</span></li>
+</ol></div>
+<div class="vis">${dist('5',['x','+ 2'],'5x + 10')}</div></div>`},
+
+{html:`<div class="eyebrow">למה צריך את זה?</div><h2>חשבו בלי מחשבון</h2>
+<div class="col" style="justify-content:center">
+<p class="big" style="font-size:5cqw;color:var(--ink)">${eq(A('35')+'·13.7 + '+A('35')+'·6.3 = ?')}</p>
+<p class="step">ה־${A('35')} מופיע <b>בשני האיברים</b>. הוא <b>גורם משותף</b>.</p>
+<p class="step big" style="font-size:4.4cqw;color:var(--ink)">${eq('= '+A('35')+'·(13.7 + 6.3)')}</p>
+<p class="step big" style="font-size:4.4cqw">${eq('= '+A('35')+'·20 = '+G('700'))}</p>
+</div>`},
+
+{html:`<div class="eyebrow">מטרות השיעור</div><h1>היום נדע…</h1>
+<ol>
+<li class="step">לזהות <b>גורם משותף</b> שמופיע בכל האיברים</li>
+<li class="step">להוציא אותו אל מחוץ לסוגריים, כלומר <b>לפרק לגורמים</b></li>
+<li class="step">למצוא את <b>הגורם המשותף הגדול ביותר</b></li>
+<li class="step">לבדוק את עצמנו בעזרת פתיחת סוגריים</li>
+</ol>`},
+
+{html:`<div class="eyebrow">מסלול השיעור</div><h2>מה עושים היום בכיתה</h2>
+<div class="grid2">
+<div class="card">כרטיס כניסה · 5 דק׳</div><div class="card">רעיון ודוגמאות · 15 דק׳</div>
+<div class="card">תרגול בספר · 18 דק׳</div><div class="card">כרטיס יציאה · 7 דק׳</div>
+</div>`},
+
+{html:`<div class="eyebrow">הרעיון המרכזי</div><h2>חוק הפילוג בכיוון ההפוך</h2>
+<div class="row"><div class="col">
+<div class="card">חוק הפילוג: ${eq(A('a')+'(b + c) = '+A('a')+'b + '+A('a')+'c')}</div>
+<div class="card step">הוצאת גורם משותף: ${eq(A('a')+'b + '+A('a')+'c = '+A('a')+'(b + c)')}</div>
+<p class="step">כותבים כל איבר ככפל, מוצאים מה <b>משותף לכולם</b>, ומוציאים אותו החוצה.</p>
+<p class="step muted">כתיבת ביטוי ככפל נקראת <b>פירוק לגורמים</b>.</p>
+</div><div class="vis">${mainSvg}</div></div>`},
+
+{html:`<div class="eyebrow">הטעות הנפוצה</div><h2>כשמוציאים איבר שלם, נשאר 1</h2>
+<div class="row"><div class="col">
+<p class="big" style="font-size:5cqw;color:var(--ink)">${eq(A('9')+' + '+A('9')+'x = ?')}</p>
+<div class="card step">${R('✗')} ${eq(A('9')+'(x)')} שכחו את ה־1</div>
+<div class="card step">${eq(A('9')+'·'+R('1')+' + '+A('9')+'·x = '+A('9')+'('+R('1')+' + x)')} ${G('✓')}</div>
+<p class="step">במקום האיבר שהוצאנו נשאר <b>1</b>, לא 0. בדיקה: ${eq('9·1 + 9·x = 9 + 9x')} ${G('✓')}</p>
+</div></div>`},
+
+{html:`<div class="lvl">${stars(1)} ידע</div><h2>פרקו לגורמים: ${eq('7x + 7y')}</h2>
+${START(eq(A('7')+'x + '+A('7')+'y'))}
+${P(eq(A('7')+' ?'),1,'מחפשים מה מופיע <b>בשני</b> האיברים: '+A('7')+'.')}
+${P(eq('= '+A('7')+'(x + y)'),2,'מוציאים את ה־7 החוצה. בסוגריים נשאר מה שהיה כפול בו: '+eq('x + y')+'.')}
+${P(eq(G('7x + 7y ✓')),3,'בודקים בפתיחת סוגריים: '+eq('7·x + 7·y = 7x + 7y')+'.')}`},
+
+{html:`<div class="lvl">${stars(2)} יישום</div><h2>פרקו לגורמים: ${eq('12m + 36')}</h2>
+${START(eq('12m + 36'))}
+${P(eq('= '+A('12')+'·m + '+A('12')+'·3'),1,'כותבים את 36 ככפל: '+eq('36 = 12·3')+'. המחלק המשותף הגדול של 12 ושל 36 הוא '+A('12')+'.')}
+${P(eq('= '+A('12')+'(m + 3)'),2,'מוציאים את 12 החוצה, ובסוגריים נשאר '+eq('m + 3')+'.')}
+${P(eq(G('12m + 36 ✓')),3,'בדיקה: '+eq('12·m + 12·3 = 12m + 36')+'.')}`},
+
+{html:`<div class="lvl">${stars(3)} הבנה וניתוח טעות</div><h2>דנה כתבה: ${eq('12y³ − 36y⁵ = 4y²(3y − 9y³)')}</h2>
+<p>האם דנה צודקת? האם זה <b>הגורם המשותף הגדול ביותר</b>?</p>
+${P(eq(G('נכון ✓')),1,'פותחים סוגריים: '+eq('4y²·3y = 12y³')+' ו־'+eq('4y²·9y³ = 36y⁵')+'. התשובה נכונה.')}
+${P(eq(R('לא הגדול')),2,'אבל בתוך הסוגריים '+eq('(3y − 9y³)')+' עוד יש גורם משותף, '+eq('3y')+'.')}
+${P(eq('= '+A('12y³')+'(1 − 3y²)'),3,'במספרים: המחלק המשותף הגדול הוא '+A('12')+'. באותיות: לוקחים את <b>החזקה הקטנה</b>, '+A('y³')+'.')}`},
+
+{html:`<div class="lvl">${stars(4)} חשיבה ואוריינות</div><h2>חשבו בדרך הנוחה: ${eq('a²y + a³')}</h2>
+<p>נתון: ${eq('a = 3.5')} , ${eq('y = 6.5')}. בלי מחשבון!</p>
+${P(eq(A('a²')+'(y + a)'),1,'מוציאים גורם משותף: '+A('a²')+' מופיע בשני האיברים, כי '+eq('a³ = a²·a')+'.')}
+${P(eq('= 12.25·10'),2,'בסוגריים: '+eq('6.5 + 3.5 = 10')+'. וגם '+eq('3.5² = 12.25')+'.')}
+${P(eq('= '+G('122.5')),3,'כפל ב־10 קל. הוצאת גורם משותף הפכה חישוב קשה לקל.')}`},
+
+{html:`<div class="eyebrow">עוד מקרה</div><h2>הוצאת גורם שלילי</h2>
+<div class="row"><div class="col">
+<p class="big" style="font-size:4.6cqw;color:var(--ink)">${eq(A('−2a')+'b + 6ac')}</p>
+<p class="step big" style="font-size:4.6cqw;color:var(--ink)">${eq('= '+A('−2a')+'(b '+R('−')+' 3c)')}</p>
+<p class="step">כשמוציאים גורם <b>שלילי</b>, ${R('כל סימן בתוך הסוגריים מתהפך')}.</p>
+<p class="step">בדיקה: ${eq('−2a·b = −2ab')} ו־${eq('−2a·(−3c) = +6ac')} ${G('✓')}</p>
+</div></div>`},
+
+{html:`<div class="eyebrow">הכלל</div><h2>הגורם המשותף הגדול ביותר</h2>
+<div class="card">המחלק המשותף הגדול של <b>המספרים</b></div>
+<div class="card step">כפול כל <b>אות</b> שמופיעה בכל האיברים, <b>בחזקה הקטנה ביותר</b></div>
+<div class="card step what"><b>תמיד בודקים:</b> פותחים סוגריים וחוזרים לביטוי המקורי.</div>`},
+
+{html:`<div class="eyebrow">תרגול בכיתה · 18 דקות</div><h2>אפשר גם אחרת</h2>
+<ul>
+<li>${stars(1)} עמ׳ 129, תרגיל 7: סעיפים 1–6</li>
+<li>${stars(2)} עמ׳ 129, תרגיל 9: סעיפים 1–8</li>
+<li>${stars(3)} עמ׳ 130, תרגיל 12: סעיפים 6–10 (הגורם המשותף הגדול ביותר)</li>
+<li>${stars(3)} עמ׳ 130, תרגיל 14: סעיפים 1–4</li>
+</ul>
+<p class="muted">סיימתם? בדקו כל תשובה בפתיחת סוגריים.</p>`},
+
+{html:`<div class="eyebrow">כרטיס יציאה</div><h2>פרקו לגורמים</h2>
+<ol>
+<li>${eq('6a + 6b =')} <span class="ans step">${eq('6(a + b)')}</span></li>
+<li>${eq('8x − 12 =')} <span class="ans step">${eq('4(2x − 3)')}</span></li>
+<li>${eq('x³ + x² =')} <span class="ans step">${eq('x²(x + 1)')}</span></li>
+</ol>`},
+
+{html:`<div class="eyebrow">שיעורי בית</div><h2>אפשר גם אחרת</h2>
+<ul>
+<li>עמ׳ 129, תרגיל 10: סעיפים 1–12</li>
+<li>עמ׳ 131, תרגיל 15: סעיפים א–ב (חשבו בדרך הנוחה)</li>
+<li>עמ׳ 131, תרגיל 17: סעיפים 1–6</li>
+<li>${stars(4)} אתגר: עמ׳ 131, תרגיל 18: סעיפים 1–3</li>
+</ul>`}
+];
+
+/* ===== ENGINE ===== */
+const stage=document.getElementById('stage');
+stage.innerHTML=SLIDES.map((s,i)=>`<section class="slide" aria-label="שקופית ${i+1}">${s.html}</section>`).join('');
+const els=[...stage.children];let cur=0;
+function steps(el){return [...el.querySelectorAll('.step')];}
+function rots(el){return [...el.querySelectorAll('.rot')];}
+function go(i){i=Math.max(0,Math.min(els.length-1,i));els.forEach(e=>e.classList.remove('on'));const e=els[i];e.classList.add('on');
+  steps(e).forEach(s=>s.classList.remove('shown'));rots(e).forEach(r=>{r.style.transform=r.dataset.init||(r.dataset.init=r.style.transform||'none');});
+  cur=i;document.getElementById('cnt').textContent=`${i+1} / ${els.length}`;document.getElementById('pg').style.width=((i+1)/els.length*100)+'%';
+  try{history.replaceState(null,'','#s'+(i+1))}catch(_){}}
+function next(){const e=els[cur],h=steps(e).find(s=>!s.classList.contains('shown'));
+  if(h){h.classList.add('shown');const idx=steps(e).indexOf(h);const r=rots(e);if(r.length&&idx===0)r.forEach(x=>x.style.transform=x.dataset.rot);return;}
+  if(cur<els.length-1)go(cur+1);}
+function prev(){const e=els[cur],sh=steps(e).filter(s=>s.classList.contains('shown'));if(sh.length){sh.at(-1).classList.remove('shown');return;}if(cur>0){go(cur-1);steps(els[cur]).forEach(s=>s.classList.add('shown'));}}
+document.getElementById('next').onclick=next;document.getElementById('prev').onclick=prev;
+stage.onclick=e=>{const t=e.target.closest('[data-to]');if(t){e.stopPropagation();const k=els.findIndex(x=>x.querySelector('#'+t.dataset.to));if(k>=0)go(k);return;}next();};
+addEventListener('keydown',e=>{if(['ArrowLeft',' ','Enter','PageDown'].includes(e.key)){e.preventDefault();next();}if(['ArrowRight','Backspace','PageUp'].includes(e.key)){e.preventDefault();prev();}});
+document.getElementById('fs').onclick=()=>{const d=document.documentElement;(document.fullscreenElement?document.exitFullscreen():d.requestFullscreen?.())?.catch?.(()=>{});};
+document.getElementById('cp').onclick=e=>{const b=e.currentTarget;navigator.clipboard?.writeText(location.href.split('#')[0]).then(()=>{b.textContent='הקישור הועתק';setTimeout(()=>b.textContent='העתקת קישור',1800)}).catch(()=>{b.textContent='לא הועתק – העתיקו מהדפדפן'});};
+const m=(location.hash||'').match(/^#s(\d+)$/);go(m?(+m[1]-1):0);
+</script>
