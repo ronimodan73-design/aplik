@@ -157,10 +157,11 @@ const A=t=>`<span style="color:${C.acc};font-weight:700">${t}</span>`;
 const B=t=>`<span style="color:${C.ray}">${t}</span>`;
 const G=t=>`<span style="color:${C.ok}">${t}</span>`;
 const R=t=>`<span style="color:${C.ray2}">${t}</span>`;
+const PU=t=>`<span style="color:#c084fc;font-weight:700">${t}</span>`;
 const W=(n,t)=>`<div class="card what"><b>מה עשינו? שלב ${n}:</b> ${t}</div>`;
 const P=(e,n,t)=>`<div class="pair step"><div class="eqc">${e}</div>${W(n,t)}</div>`;
 const START=e=>`<div class="pair"><div class="eqc" style="color:var(--ink)">${e}</div><div style="flex:1.25"></div></div>`;
-const CSS=`<style>span[dir=ltr]{white-space:nowrap}.pair{display:flex;gap:2cqw;align-items:center}.pair>.eqc{flex:1;font-family:var(--display);font-weight:900;font-size:4cqw;color:var(--accent)}.pair>.card{flex:1.25}</style>`;
+const CSS=`<style>span[dir=ltr]{white-space:nowrap}.pair{display:flex;gap:2cqw;align-items:center}.pair .card{padding:.8cqw 1.4cqw;font-size:1.65cqw}.pair>.eqc{flex:1;font-family:var(--display);font-weight:900;font-size:3.3cqw;color:var(--accent)}.pair>.card{flex:1.25}</style>`;
 const mainSvg=svg('0 0 520 330',`<defs><marker id="mA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="${C.acc}"/></marker></defs>
 <g direction="ltr" font-size="42" text-anchor="middle">
  <text x="200" y="60">5x</text><text x="262" y="60">+</text><text x="325" y="60">10</text>
@@ -236,16 +237,18 @@ ${P(eq('= '+A('12')+'(m + 3)'),2,'מוציאים את 12 החוצה, ובסוג�
 ${P(eq(G('12m + 36 ✓')),3,'בדיקה: '+eq('12·m + 12·3 = 12m + 36')+'.')}`},
 
 {html:`<div class="lvl">${stars(3)} הבנה וניתוח טעות</div><h2>דנה כתבה: ${eq('12y³ − 36y⁵ = 4y²(3y − 9y³)')}</h2>
-<p>האם דנה צודקת? האם זה <b>הגורם המשותף הגדול ביותר</b>?</p>
+<p style="font-size:1.8cqw">האם דנה צודקת? האם זה <b>הגורם המשותף הגדול ביותר</b>?</p>
 ${P(eq(G('נכון ✓')),1,'פותחים סוגריים: '+eq('4y²·3y = 12y³')+' ו־'+eq('4y²·9y³ = 36y⁵')+'. התשובה נכונה.')}
 ${P(eq(R('לא הגדול')),2,'אבל בתוך הסוגריים '+eq('(3y − 9y³)')+' עוד יש גורם משותף, '+eq('3y')+'.')}
-${P(eq('= '+A('12y³')+'(1 − 3y²)'),3,'במספרים: המחלק המשותף הגדול הוא '+A('12')+'. באותיות: לוקחים את <b>החזקה הקטנה</b>, '+A('y³')+'.')}`},
+${P(eq(A('12')+'·'+PU('y³')+' − '+A('12')+'·3·'+PU('y³')+'·y²'),3,'צובעים באותו צבע את מה שמשותף לשני האיברים: '+A('12')+' ו־'+PU('y³')+'.')}
+${P(eq('= '+A('12')+PU('y³')+'(1 − 3y²)'),4,'מוציאים את כל מה שצבוע: 12 (המחלק המשותף הגדול) ו־y³ (החזקה הקטנה).')}`},
 
 {html:`<div class="lvl">${stars(4)} חשיבה ואוריינות</div><h2>חשבו בדרך הנוחה: ${eq('a²y + a³')}</h2>
-<p>נתון: ${eq('a = 3.5')} , ${eq('y = 6.5')}. בלי מחשבון!</p>
-${P(eq(A('a²')+'(y + a)'),1,'מוציאים גורם משותף: '+A('a²')+' מופיע בשני האיברים, כי '+eq('a³ = a²·a')+'.')}
-${P(eq('= 12.25·10'),2,'בסוגריים: '+eq('6.5 + 3.5 = 10')+'. וגם '+eq('3.5² = 12.25')+'.')}
-${P(eq('= '+G('122.5')),3,'כפל ב־10 קל. הוצאת גורם משותף הפכה חישוב קשה לקל.')}`},
+<p style="font-size:1.8cqw">נתון: ${eq('a = 3.5')} , ${eq('y = 6.5')}. בלי מחשבון!</p>
+${P(eq(A('a²')+'·y + '+A('a²')+'·a'),1,'כותבים כל איבר ככפל וצובעים את המשותף: '+A('a²')+' מופיע בשני האיברים, כי '+eq('a³ = a²·a')+'.')}
+${P(eq('= '+A('a²')+'(y + a)'),2,'מוציאים את '+A('a²')+' החוצה.')}
+${P(eq('= 12.25·10'),3,'בסוגריים: '+eq('6.5 + 3.5 = 10')+'. וגם '+eq('3.5² = 12.25')+'.')}
+${P(eq('= '+G('122.5')),4,'כפל ב־10 קל. הוצאת גורם משותף הפכה חישוב קשה לקל.')}`},
 
 {html:`<div class="eyebrow">עוד מקרה</div><h2>הוצאת גורם שלילי</h2>
 <div class="row"><div class="col">
