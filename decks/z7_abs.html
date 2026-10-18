@@ -304,6 +304,63 @@ const mainSvg=svg('0 50 800 180',
  arrowDraw(0,-5,-6,6,110,NEG)+countDots(0,-5,-6,6,110,NEG)+
  arrowDraw(0,5,-6,6,110,POS)+countDots(0,5,-6,6,110,POS));
 
+/* ---------- double rotation: -(-3)=3 ---------- */
+const SPIN_CSS=`<style>
+.spin{transform-box:view-box;transition:rotate 1.6s cubic-bezier(.6,.05,.3,1)}
+.t1.shown ~ .spin1{rotate:180deg}
+.t2.shown ~ .spin1{rotate:360deg}
+.t2.shown ~ .spin2{rotate:180deg}
+.l1,.l2{opacity:0;transition:opacity .45s ease-out var(--d,1.4s)}
+.t1.shown ~ .l1{opacity:1}
+.t2.shown ~ .l2{opacity:1}
+.t2.shown ~ .dim1{opacity:.3}
+.t2.shown ~ .hide1{opacity:0}
+.fly1{transform-box:fill-box;transform-origin:center;transition:translate 1s ease-in,rotate 1s ease-in,opacity 1s ease-in}
+.t1.shown ~ .fly1{translate:-40px -140px;rotate:-40deg;opacity:0}
+.pulse{transform-box:fill-box;transform-origin:center;transition:scale .5s cubic-bezier(.3,1.7,.5,1)}
+.t2.shown ~ .pulse{scale:1.25}
+</style>`;
+function arrowAt(x0,x1,y,col){return `<line x1="${x0}" y1="${y}" x2="${x1-16}" y2="${y}" stroke="${col}" stroke-width="9" stroke-linecap="round"/><path d="M${x1-26} ${y-15}L${x1} ${y}L${x1-26} ${y+15}z" fill="${col}"/>`;}
+function doubleSpin(){const mn=-5,mx=5,Y=190,AY=135,x0=nlX(0,mn,mx),x3=nlX(3,mn,mx),xm3=nlX(-3,mn,mx);let g=nlBase(mn,mx,Y);
+ g+=`<circle cx="${x3}" cy="${Y}" r="11" fill="${POS}"/>`;
+ g+=`<g class="step t1"></g><g class="step t2"></g><circle cx="${xm3}" cy="${Y}" r="11" fill="${NEG}" class="l1"/>`;
+ g+=`<g class="spin spin1" style="transform-origin:${x0}px ${AY}px">${arrowAt(x0,x3,AY,DST)}</g>`;
+ g+=`<path class="l1 dim1" style="--d:0s" d="M${x0+40} ${AY-30} A 90 70 0 0 0 ${x0-40} ${AY-30}" fill="none" stroke="${OPP}" stroke-width="4" stroke-dasharray="8 7"/>`;
+ g+=`<text class="l1 dim1" x="${xm3}" y="40" font-size="30" text-anchor="middle" direction="ltr" style="fill:${NEG};font-weight:900">${M}3</text>`;
+ g+=`<text class="l1 dim1" x="${xm3}" y="74" font-size="22" text-anchor="middle" direction="rtl" style="fill:${OPP}">סיבוב 1: הנגדי של 3</text>`;
+ g+=`<text class="l2" x="${x3}" y="40" font-size="30" text-anchor="middle" direction="ltr" style="fill:${POS};font-weight:900">${M}(${M}3) = 3</text>`;
+ g+=`<text class="l2" x="${x3}" y="74" font-size="22" text-anchor="middle" direction="rtl" style="fill:${OPP}">סיבוב 2: חזרנו!</text>`;
+ return svg('0 0 800 250',g);}
+function swallow(){const mn=-5,mx=5,Y=300,AY=250,x0=nlX(0,mn,mx),x3=nlX(3,mn,mx),xm3=nlX(-3,mn,mx);let g='';
+ g+=`<g direction="ltr" font-size="96" text-anchor="middle" style="font-weight:900">`;
+ g+=`<text x="230" y="120" style="fill:${OPP}">${M}</text><text x="300" y="120" style="fill:${DST}">|</text><text x="470" y="120" style="fill:${DST}">|</text><text x="410" y="120">3</text></g>`;
+ g+=nlBase(mn,mx,Y);
+ g+=`<g class="step t1"></g><g class="step t2"></g>`;
+ g+=`<text class="fly1" x="350" y="120" font-size="96" text-anchor="middle" style="fill:${NEG};font-weight:900">${M}</text>`;
+ g+=`<text class="pulse" x="230" y="120" font-size="96" text-anchor="middle" style="fill:${OPP};font-weight:900;opacity:0">${M}</text>`;
+ g+=`<text class="l1 hide1" x="640" y="80" font-size="26" text-anchor="middle" direction="rtl" style="fill:${DST};--d:.8s">הקווים בלעו</text><text class="l1 hide1" x="640" y="114" font-size="26" text-anchor="middle" direction="rtl" style="fill:${DST};--d:.8s">את המינוס שבפנים</text>`;
+ g+=`<g class="l1 spin spin2" style="--d:.9s;transform-origin:${x0}px ${AY}px">${arrowAt(x0,x3,AY,DST)}</g>`;
+ g+=`<text class="l1 dim1" x="${x3}" y="${AY-28}" font-size="26" text-anchor="middle" direction="rtl" style="fill:${DST};--d:1.2s">מרחק 3</text>`;
+ g+=`<circle class="l2" cx="${xm3}" cy="${Y}" r="12" fill="${NEG}"/>`;
+ g+=`<text class="l2" x="640" y="80" font-size="26" text-anchor="middle" direction="rtl" style="fill:${OPP}">המינוס שבחוץ:</text><text class="l2" x="640" y="114" font-size="26" text-anchor="middle" direction="rtl" style="fill:${OPP}">סיבוב אחד בלבד</text>`;
+ g+=`<text class="l2" x="${xm3}" y="${AY-28}" font-size="30" text-anchor="middle" direction="ltr" style="fill:${NEG};font-weight:900">${M}|${M}3| = ${M}3</text>`;
+ return svg('0 0 800 360',g);}
+function submarine(){const y=d=>80+d*42,ax=170;let g='';
+ g+=`<rect x="${ax}" y="${y(0)}" width="600" height="${y(6.4)-y(0)}" fill="#12385c" opacity=".55"/>`;
+ g+=`<path d="M${ax} ${y(0)} q25 -14 50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0" fill="none" stroke="#5ec8ff" stroke-width="4"/>`;
+ g+=`<text x="${ax+300}" y="${y(0)-18}" font-size="24" text-anchor="middle" style="fill:#5ec8ff">פני הים · 0</text>`;
+ g+=`<line x1="${ax}" y1="${y(0)}" x2="${ax}" y2="${y(6.2)}" stroke="${C.ink}" stroke-width="3"/>`;
+ for(let d=0;d<=6;d++){g+=`<line x1="${ax-10}" y1="${y(d)}" x2="${ax+10}" y2="${y(d)}" stroke="${C.ink}" stroke-width="2.5"/><text x="${ax-22}" y="${y(d)+9}" font-size="24" text-anchor="end" direction="ltr" style="fill:${d?NEG:C.ink};font-weight:700">${d?M+d:'0'}</text>`;}
+ const sx=330,sy=y(5);
+ g+=`<g><ellipse cx="${sx}" cy="${sy}" rx="70" ry="24" fill="#ffd166"/><rect x="${sx-8}" y="${sy-46}" width="34" height="26" rx="6" fill="#ffd166"/><circle cx="${sx-30}" cy="${sy}" r="7" fill="#0f1b2d"/><circle cx="${sx}" cy="${sy}" r="7" fill="#0f1b2d"/><circle cx="${sx+30}" cy="${sy}" r="7" fill="#0f1b2d"/></g>`;
+ g+=`<g class="step"><line x1="${sx+100}" y1="${y(0)}" x2="${sx+100}" y2="${y(5)}" stroke="${DST}" stroke-width="6"/><line x1="${sx+86}" y1="${y(0)}" x2="${sx+114}" y2="${y(0)}" stroke="${DST}" stroke-width="5"/><line x1="${sx+86}" y1="${y(5)}" x2="${sx+114}" y2="${y(5)}" stroke="${DST}" stroke-width="5"/>
+  <text x="${sx+250}" y="${y(2)}" font-size="30" text-anchor="middle" direction="ltr" style="fill:${DST};font-weight:900">|${M}5| = 5</text>
+  <text x="${sx+250}" y="${y(2)+36}" font-size="24" text-anchor="middle" direction="rtl" style="fill:${DST}">המרחק: 5 מטרים</text></g>`;
+ g+=`<g class="step"><line x1="${ax+16}" y1="${y(5)}" x2="${sx-80}" y2="${y(5)}" stroke="${OPP}" stroke-width="4" stroke-dasharray="8 6"/><circle cx="${ax}" cy="${y(5)}" r="11" fill="${OPP}"/>
+  <text x="${sx+250}" y="${y(4.3)}" font-size="30" text-anchor="middle" direction="ltr" style="fill:${OPP};font-weight:900">${M}|${M}5| = ${M}5</text>
+  <text x="${sx+250}" y="${y(4.3)+36}" font-size="24" text-anchor="middle" direction="rtl" style="fill:${OPP}">המיקום: מתחת לפני הים</text></g>`;
+ return svg('0 0 800 370',g);}
+
 const SLIDES=[
 cover('l1',1,'ערך מוחלט','כיתה ז׳ · מספרים מכוונים','ערך מוחלט עונה על השאלה "כמה רחוק מ־0?" ולא על "לאיזה כיוון?"'),
 
@@ -404,6 +461,18 @@ ${P(AB(N(-3))+' = 3',2,'רק עכשיו ערך מוחלט: המרחק של −3 
 <tr class="step"><td>${eq(OP+AB(N(-3)))}</td><td>${PUR('הנגדי של')} הערך המוחלט של מינוס 3</td><td>${eq(N(-3))}</td></tr>
 </table>
 <p class="step">${PUR('המינוס שבחוץ')} פועל <b>אחרי</b> הקווים. קודם המרחק, ואחר כך הנגדי.</p>`},
+{html:CSS+SPIN_CSS+`<div class="eyebrow">למה מינוס מינוס זה פלוס?</div><h2>כל מינוס = "הנגדי של" = חצי סיבוב סביב 0</h2>
+${doubleSpin()}
+<div class="rule step">שני סיבובים מחזירים למקום. לכן ${eq(OP+'('+N(-3)+') = 3')}: הנגדי של הנגדי.</div>`},
+
+{html:CSS+SPIN_CSS+`<div class="eyebrow">ולמה ${eq(OP+AB(N(-3)))} לא יוצא פלוס?</div><h2>הקווים בולעים את המינוס שבפנים</h2>
+${swallow()}
+<div class="rule step">שני המינוסים לא נפגשים: קודם הקווים, ואז נשאר מינוס <b>אחד</b>.</div>`},
+
+{html:CSS+`<div class="eyebrow">למה בכלל לשים מינוס לפני ערך מוחלט?</div><h2>צוללת ירדה 5 מטרים</h2>
+${submarine()}
+<p class="step">הערך המוחלט נותן ${DT('מרחק')}. המינוס שבחוץ ${PUR('מחזיר כיוון')}: למטה.</p>`},
+
 
 {html:CSS+`<div class="lvl">${stars(1)} ידע</div><h2>חשבו: ${eq(AB(N(-7)))}</h2>
 ${svg('0 0 800 170',nlBase(-8,1,120)+pt(-7,-8,1,120,NEG)+arrowDraw(0,-7,-8,1,70,NEG,{cls:'step'})+countDots(0,-7,-8,1,70,NEG,{cls:'step'}))}
