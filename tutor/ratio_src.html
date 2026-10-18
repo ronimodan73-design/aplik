@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>המורה הפרטי · יחס</title>
+<style>
+/*FONTS*/
+:root{--bg:#fff8ee;--card:#fff;--ink:#1f2433;--muted:#6b7280;--line:#eadfcd;--acc:#ff8a00;--q1:#e0364d;--q2:#2563eb;--ok:#16a34a;--warn:#eab308;--bad:#dc2626;--na:#cbd5e1;--purple:#7c3aed}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:"Rubik","Heebo",Arial,sans-serif;font-size:18px;line-height:1.5}
+.wrap{max-width:560px;margin:0 auto;padding:14px 16px 16px}
+header{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+header b{font-size:17px}
+header small{color:var(--muted);font-size:13px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 2px 0 var(--line)}
+h1{font-size:28px;margin:0 0 8px;line-height:1.2}
+h2{font-size:22px;margin:0 0 10px;line-height:1.3}
+p{margin:0 0 10px}
+.muted{color:var(--muted)}
+.btn{display:block;width:100%;border:0;border-radius:14px;padding:14px 16px;font:inherit;font-weight:700;font-size:19px;cursor:pointer;margin-top:10px;text-align:center}
+.btn.main{background:var(--acc);color:#fff;box-shadow:0 4px 0 #c76a00}
+.btn.main:active{transform:translateY(3px);box-shadow:0 1px 0 #c76a00}
+.btn.ghost{background:#fff;border:2px solid var(--line);color:var(--ink)}
+.btn:disabled{opacity:.45}
+input[type=text]{width:100%;font:inherit;font-size:20px;padding:12px 14px;border:2px solid var(--line);border-radius:12px;margin:6px 0 2px;background:#fff}
+input[type=text]:focus{outline:none;border-color:var(--acc)}
+.prog{height:10px;background:#f1e6d4;border-radius:10px;overflow:hidden;margin:4px 0 12px}
+.prog i{display:block;height:100%;background:linear-gradient(90deg,var(--acc),#ffb347);border-radius:10px;transition:width .5s}
+.tag{display:inline-block;background:#fff1dc;color:#b45309;border-radius:99px;padding:2px 10px;font-size:14px;font-weight:700;margin-bottom:8px}
+.q{font-size:20px;margin-bottom:12px}
+.r{color:var(--q1);font-weight:700}.b{color:var(--q2);font-weight:700}
+.m{direction:ltr;unicode-bidi:isolate;display:inline-block;white-space:nowrap;font-weight:700}
+.opts{display:grid;gap:10px}
+.opt{display:flex;align-items:center;gap:12px;width:100%;text-align:right;background:#fff;border:2px solid var(--line);border-radius:14px;padding:12px 14px;font:inherit;font-size:19px;cursor:pointer;color:var(--ink)}
+.opt .k{flex:none;width:30px;height:30px;border-radius:50%;background:#fff1dc;color:#b45309;display:grid;place-items:center;font-weight:700;font-size:15px}
+.opt:hover,.opt:focus-visible{border-color:var(--acc);outline:none}
+.opt.sel{border-color:var(--acc);background:#fff7ec}
+.dk{background:transparent;border:0;color:var(--muted);text-decoration:underline;font:inherit;font-size:16px;margin-top:12px;cursor:pointer;display:block;width:100%}
+.vis{display:flex;justify-content:center;margin:4px 0 14px}
+.vis svg{max-width:100%;height:auto}
+.conf{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
+.conf button{border:2px solid var(--line);background:#fff;border-radius:14px;padding:12px 4px;font:inherit;font-size:16px;font-weight:700;cursor:pointer;color:var(--ink)}
+.conf button span{display:block;font-size:26px}
+.pop{animation:pop .35s cubic-bezier(.3,1.6,.5,1)}
+@keyframes pop{from{transform:scale(.92);opacity:0}to{transform:none;opacity:1}}
+.tower{display:grid;gap:10px}
+.floor{border-radius:16px;padding:10px;background:#fff;border:1px solid var(--line)}
+.floor h3{margin:0 0 8px;font-size:16px;color:var(--muted)}
+.tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.tile{border-radius:12px;padding:10px 10px;font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px;min-height:52px;border:2px solid transparent}
+.tile i{font-style:normal;font-size:20px}
+.t-green{background:#dcfce7;border-color:#86efac;color:#14532d}
+.t-yellow{background:#fef9c3;border-color:#fde047;color:#713f12}
+.t-red{background:#fee2e2;border-color:#fca5a5;color:#7f1d1d}
+.t-na{background:#f1f5f9;border-color:#e2e8f0;color:#475569}
+.t-root{box-shadow:0 0 0 3px var(--bad) inset}
+.legend{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:14px;color:var(--muted);margin:8px 0 2px}
+.legend span::before{content:"";display:inline-block;width:12px;height:12px;border-radius:4px;margin-left:5px;vertical-align:-1px;background:var(--c)}
+ol.path{margin:6px 0 0;padding-right:22px}
+ol.path li{margin-bottom:6px}
+.mis{border-right:5px solid var(--q1);background:#fff5f5;border-radius:10px;padding:8px 12px;margin-top:8px;font-size:16px}
+.root{border:2px solid var(--bad);background:#fff5f5;border-radius:14px;padding:12px;margin:10px 0}
+.small{font-size:14px}
+footer{text-align:center;font-size:13px;color:var(--muted);padding:6px 8px 18px}
+.hero{font-size:56px;text-align:center;margin:4px 0}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<footer>ערכה: רוני מודן · שחקים</footer>
+<script>
+/* ===== Ratio private tutor · stage 1: skill map + diagnosis ===== */
+const NODES={
+ F1:{n:'כפל וחילוק',f:0,pre:[]}, F2:{n:'שבר: חלק מהשלם',f:0,pre:[]}, F3:{n:'הרחבה וצמצום',f:0,pre:[]}, F4:{n:'מחלק משותף',f:0,pre:[]},
+ R1:{n:'מה זה יחס',f:1,pre:['F1']}, R2:{n:'יחס מצומצם',f:1,pre:['F4','F3']}, R3:{n:'חלק אחד ידוע',f:1,pre:['R1','F1']},
+ R4:{n:'חלק מהשלם',f:1,pre:['R3','F2']}, R5:{n:'יחס של 3 כמויות',f:1,pre:['R3']}, R6:{n:'שבר ↔ יחס',f:1,pre:['F2','R1']},
+ A1:{n:'פרופורציה',f:2,pre:['R3','F3']}, A2:{n:'כדאיות קנייה',f:2,pre:['F1','R1']}, A3:{n:'יחס ישר והפוך',f:2,pre:['R1']}, A4:{n:'קנה מידה',f:2,pre:['R3']}
+};
+const FLOORS=['קומת היסודות','לב היחס','קומת השימושים'];
+const LV=['','★ ידע','★★ יישום','★★★ הבנה ונימוק','★★★★ חשיבה ואוריינות'];
+const M=t=>`<span class="m">${t}</span>`, R=t=>`<span class="r">${t}</span>`, B=t=>`<span class="b">${t}</span>`;
+function squares(a,b,o={}){const s=o.s||30,g=o.g||6;let x=0,out='';const tot=a+b;
+ for(let i=0;i<tot;i++){const c=i<a?(o.c1||'#e0364d'):(o.c2||'#2563eb');out+=`<rect x="${x}" y="2" width="${s}" height="${s}" rx="6" fill="${c}"/>`;x+=s+g+(o.split&&i===a-1?14:0);}
+ return `<svg viewBox="0 0 ${x} ${s+4}" width="${Math.min(x,380)}" aria-hidden="true">${out}</svg>`;}
+const Q={
+ R1:{lv:3,t:`יחס התפוחים ${R('האדומים')} לתפוחים ${B('הירוקים')} בקערה הוא ${M('2 : 3')}. מה זה אומר?`,
+   v:()=>squares(2,3,{split:1}),
+   o:[{t:`על כל ${R('2 אדומים')} יש ${B('3 ירוקים')}`,ok:1},
+      {t:`יש בקערה בדיוק 2 אדומים ו־3 ירוקים`,mis:'חשבת שהיחס הוא הכמות המדויקת. יחס אומר "על כל" — יכולים להיות 4 ו־6, או 20 ו־30.'},
+      {t:`יש ירוק אחד יותר מאדומים`,mis:'השווית בחיבור (בכמה יותר). ביחס משווים בכפל: כמה פעמים.'},
+      {t:`יש בקערה 5 תפוחים`,mis:'חיברת את חלקי היחס וחשבת שזו הכמות. 2 + 3 הם 5 חלקים, לא 5 תפוחים.'}]},
+ F1:{lv:1,t:`כמה פעמים ${M('4')} נכנס ב־${M('36')}?`,
+   o:[{t:M('9'),ok:1},{t:M('8'),mis:'טעות בעובדת חילוק: 4 · 9 = 36.'},{t:M('32'),mis:'חיסרת (36 פחות 4) במקום לחלק.'},{t:M('40'),mis:'חיברת במקום לחלק.'}]},
+ R3:{lv:2,t:`יחס ${R('הבנים')} ל${B('בנות')} בכיתה הוא ${M('3 : 4')}. בכיתה יש ${R('12 בנים')}. כמה ${B('בנות')} יש?`,
+   v:()=>squares(3,4,{split:1}),
+   o:[{t:M('16'),ok:1},{t:M('13'),mis:'הוספת 1 כמו ב־3 ו־4 (חשיבה חיבורית). ביחס כופלים: 3 · 4 = 12, ולכן 4 · 4 = 16.'},
+      {t:M('9'),mis:'הפכת את היחס: התאמת את 12 הבנים למספר של הבנות.'},{t:M('28'),mis:'חישבת את כל התלמידים (השלם) ולא רק את הבנות.'}]},
+ F2:{lv:1,t:`איזה חלק מהמלבן צבוע ${R('באדום')}?`,
+   v:()=>squares(3,5,{c2:'#e5e7eb'}),
+   o:[{t:M('3/8'),ok:1},{t:M('3/5'),mis:'השווית חלק לחלק (צבוע מול לא צבוע). שבר משווה חלק לשלם: 3 מתוך 8.'},{t:M('5/8'),mis:'ספרת את החלק שאינו צבוע.'},{t:M('8/3'),mis:'הפכת מונה ומכנה.'}]},
+ R4:{lv:2,t:`יחס ${R('הבנים')} ל${B('בנות')} בכיתה הוא ${M('3 : 5')}. בכיתה <b>40 תלמידים</b>. כמה ${R('בנים')} יש?`,
+   v:()=>squares(3,5,{split:1}),
+   o:[{t:M('15'),ok:1},{t:M('25'),mis:'חישבת את הבנות במקום את הבנים.'},
+      {t:M('24'),mis:'התייחסת ל־40 כאילו הם הבנות. 40 הם כל התלמידים: 3 + 5 = 8 חלקים.'},{t:M('5'),mis:'מצאת את הגודל של חלק אחד (5) ועצרת. צריך עוד לכפול ב־3.'}]},
+ F4:{lv:1,t:`מהו המחלק המשותף <b>הגדול</b> של ${M('12')} ושל ${M('18')}?`,
+   o:[{t:M('6'),ok:1},{t:M('3'),mis:'3 הוא מחלק משותף, אבל לא הגדול ביותר.'},{t:M('2'),mis:'2 הוא מחלק משותף, אבל לא הגדול ביותר.'},{t:M('36'),mis:'36 הוא כפולה משותפת, לא מחלק.'}]},
+ F3:{lv:1,t:`איזה שבר <b>שווה</b> ל־${M('2/3')}?`,
+   o:[{t:M('8/12'),ok:1},{t:M('4/5'),mis:'הוספת 2 למונה ולמכנה. מרחיבים בכפל: כופלים את שניהם באותו מספר.'},{t:M('3/2'),mis:'הפכת מונה ומכנה.'},{t:M('2/6'),mis:'שינית רק את המכנה. מרחיבים את המונה ואת המכנה יחד.'}]},
+ R2:{lv:2,t:`צמצמו את היחס ${M('12 : 18')}`,
+   o:[{t:M('2 : 3'),ok:1},{t:M('6 : 9'),mis:'צמצמת, אבל לא עד הסוף: אפשר לחלק עוד ב־3.'},{t:M('3 : 2'),mis:'הפכת את סדר היחס.'},{t:M('1 : 6'),mis:'חיסרת (18 פחות 12). מצמצמים בחילוק, לא בחיסור.'}]},
+ R6:{lv:3,t:`${M('3/7')} מהכדורים ${R('אדומים')}, והשאר ${B('כחולים')}. מה יחס ה${R('אדומים')} ל${B('כחולים')}?`,
+   v:()=>squares(3,4,{split:1}),
+   o:[{t:M('3 : 4'),ok:1},{t:M('3 : 7'),mis:'כתבת חלק מול שלם. יחס משווה חלק מול חלק: 3 אדומים מול 4 כחולים.'},
+      {t:M('7 : 3'),mis:'כתבת שלם מול חלק, ובסדר הפוך.'},{t:M('4 : 3'),mis:'הפכת את סדר היחס: האדומים צריכים להיות ראשונים.'}]},
+ R5:{lv:2,t:`יחס הכסף של ${R('דנה')}, ${B('יוסי')} ו<span style="color:#16a34a;font-weight:700">רון</span> הוא ${M('1 : 2 : 3')}. יחד יש להם <b>60 ₪</b>. כמה כסף יש ל${B('יוסי')}?`,
+   o:[{t:M('20 ₪'),ok:1},{t:M('30 ₪'),mis:'חישבת את הכסף של רון במקום של יוסי.'},{t:M('10 ₪'),mis:'מצאת את הגודל של חלק אחד ועצרת. ליוסי יש 2 חלקים.'},
+      {t:M('40 ₪'),mis:'חילקת לשלושה אנשים במקום ל־6 חלקים (1 + 2 + 3).'}]},
+ A1:{lv:2,t:`פתרו את הפרופורציה: ${M('x : 6 = 10 : 15')}`,
+   o:[{t:M('x = 4'),ok:1},{t:M('x = 1'),mis:'חיפשת בכמה גדל המספר (חיבור). בפרופורציה פי כמה: 15 הוא פי 1.5 מ־10.'},
+      {t:M('x = 9'),mis:'הכפלת בהצלבה לא נכונה. בודקים: 4 : 6 שווה ל־10 : 15?'},{t:M('x = 25'),mis:'חיברת את המספרים. בפרופורציה שני היחסים שווים.'}]},
+ A2:{lv:4,t:`🛒 חבילה א: <b>3 מחברות ב־12 ₪</b>. חבילה ב: <b>5 מחברות ב־18 ₪</b>. איזו חבילה כדאית יותר?`,
+   o:[{t:`ב, כי מחברת אחת עולה בה 3.6 ₪`,ok:1},{t:`א, כי היא עולה פחות כסף`,mis:'השווית מחיר כולל. בודקים כמה עולה מחברת אחת בכל חבילה.'},
+      {t:`ב, כי יש בה יותר מחברות`,mis:'הבחירה נכונה אבל הנימוק לא: כמות לבד לא מספיקה, צריך מחיר למחברת.'},{t:`שתיהן כדאיות באותה מידה`,mis:'בחבילה א מחברת עולה 4 ₪, ובחבילה ב 3.6 ₪.'}]},
+ A3:{lv:3,t:`👷 4 פועלים צובעים קיר ב־6 שעות. כמה שעות ייקח ל־8 פועלים (באותו קצב)?`,
+   o:[{t:M('3'),ok:1},{t:M('12'),mis:'חישבת כמו יחס ישר. יותר פועלים — פחות זמן: זה יחס הפוך.'},{t:M('10'),mis:'חיברת (6 + 4). ביחס משתמשים בכפל ובחילוק.'},{t:M('6'),mis:'יותר פועלים מסיימים מהר יותר — הזמן משתנה.'}]},
+ A4:{lv:4,t:`🗺️ במפה בקנה מידה ${M('1 : 100,000')}, המרחק בין שני כפרים הוא 3 ס״מ. מה המרחק במציאות?`,
+   o:[{t:`3 ק״מ`,ok:1},{t:`300 מטר`,mis:'טעות בהמרת יחידות: 300,000 ס״מ הם 3,000 מטר, כלומר 3 ק״מ.'},{t:`30 ק״מ`,mis:'טעות בהמרת יחידות: 300,000 ס״מ הם 3 ק״מ.'},{t:M('33,333')+` ס״מ`,mis:'חילקת במקום לכפול: 1 ס״מ במפה הוא 100,000 ס״מ במציאות.'}]}
+};
+const CORE=['R1','R3','R4','R2','R6','R5','A1','A2','A3','A4'];
+let S={name:'',queue:[],i:0,ans:{},pending:null};
+const KEY='roni_ratio_tutor_v1';
+function save(){try{localStorage.setItem(KEY,JSON.stringify({name:S.name,ans:S.ans,done:S.done||false,date:Date.now()}))}catch(e){}}
+function load(){try{return JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){return null}}
+const app=document.getElementById('app');
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function welcome(){const prev=load();
+ app.innerHTML=`<header><b>🧭 המורה הפרטי · יחס</b><small>שלב 1: מאיפה מתחילים?</small></header>
+ <div class="card pop"><div class="hero">🗝️</div><h1>מגדל היחס מחכה לך</h1>
+ <p>בכל מגדל יש קומות. לפני שעולים, צריך לדעת <b>מאיפה מתחיל המסע שלך</b>.</p>
+ <p class="muted">זה <b>לא מבחן ואין ציון</b>. כ־12 שאלות קצרות, 5–7 דקות. אם לא יודעים — לוחצים "אני עוד לא יודע/ת". זה עוזר לנו למצוא בדיוק מה ללמוד.</p>
+ <label for="nm"><b>איך קוראים לך?</b></label>
+ <input id="nm" type="text" maxlength="30" autocomplete="off" placeholder="השם שלך" value="${prev?esc(prev.name||''):''}">
+ <button class="btn main" id="go">יוצאים למסע ←</button>
+ ${prev&&prev.done?'<button class="btn ghost" id="last">להציג את המגדל שלי מהפעם הקודמת</button>':''}
+ </div>`;
+ const nm=document.getElementById('nm'),go=document.getElementById('go');
+ const chk=()=>go.disabled=!nm.value.trim();chk();nm.oninput=chk;
+ go.onclick=()=>{S={name:nm.value.trim(),queue:CORE.slice(),i:0,ans:{}};save();ask();};
+ const last=document.getElementById('last');if(last)last.onclick=()=>{S={name:prev.name,ans:prev.ans,queue:[],i:0};results();};
+}
+function ask(){
+ if(S.i>=S.queue.length){S.done=true;save();return results();}
+ const id=S.queue[S.i],q=Q[id],total=S.queue.length;
+ const opts=shuffle(q.o);
+ app.innerHTML=`<header><b>🧭 ${esc(S.name)}</b><small>שאלה ${S.i+1} מתוך ${total}</small></header>
+ <div class="prog"><i style="width:${(S.i/total*100).toFixed(0)}%"></i></div>
+ <div class="card pop"><span class="tag">${LV[q.lv]} · ${NODES[id].n}</span>
+ <div class="q">${q.t}</div>${q.v?`<div class="vis">${q.v()}</div>`:''}
+ <div class="opts">${opts.map((o,k)=>`<button class="opt" data-k="${k}"><span class="k">${'אבגד'[k]}</span><span>${o.t}</span></button>`).join('')}</div>
+ <button class="dk" id="dk">אני עוד לא יודע/ת 🤔</button></div>`;
+ app.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{b.classList.add('sel');setTimeout(()=>confidence(id,opts[+b.dataset.k]),180);});
+ document.getElementById('dk').onclick=()=>record(id,{dk:1});
+}
+function confidence(id,o){
+ app.querySelector('.card').insertAdjacentHTML('beforeend',`<div class="pop" style="margin-top:14px"><b>כמה את/ה בטוח/ה?</b>
+ <div class="conf"><button data-c="sure"><span>💪</span>בטוח/ה</button><button data-c="think"><span>🙂</span>חושב/ת שכן</button><button data-c="guess"><span>🎲</span>ניחשתי</button></div></div>`);
+ app.querySelectorAll('.opt,.dk').forEach(b=>b.disabled=true);
+ app.querySelectorAll('.conf button').forEach(b=>b.onclick=()=>record(id,{ok:!!o.ok,mis:o.mis||'',conf:b.dataset.c}));
+ app.querySelector('.conf').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function record(id,a){S.ans[id]=a;
+ const fail=a.dk||!a.ok||a.conf==='guess';
+ if(fail){ // descending ladder: check foundations of this skill right away
+  const add=NODES[id].pre.filter(p=>p[0]==='F'&&!S.queue.includes(p));
+  S.queue.splice(S.i+1,0,...add);
+ }
+ S.i++;save();
+ const msgs=['ממשיכים! 🚀','מעולה, עוד צעד 👣','תודה! ממשיכים 🧭','יופי של ריכוז ✨'];
+ app.innerHTML=`<div class="card pop" style="text-align:center;margin-top:30px"><div class="hero">${['🚀','👣','🧭','✨'][S.i%4]}</div><h2>${msgs[S.i%4]}</h2></div>`;
+ setTimeout(ask,550);
+}
+function status(id){const a=S.ans[id];if(!a)return 'na';if(a.dk||!a.ok)return 'red';if(a.conf==='guess')return 'yellow';return 'green';}
+function results(){
+ const st={};Object.keys(NODES).forEach(k=>st[k]=status(k));
+ const isRoot=k=>(st[k]==='red'||st[k]==='yellow')&&!NODES[k].pre.some(p=>st[p]==='red'||st[p]==='yellow');
+ const weak=Object.keys(NODES).filter(k=>st[k]==='red'||st[k]==='yellow');
+ const allRoots=weak.filter(isRoot);
+ const minF=Math.min(...allRoots.map(k=>NODES[k].f));
+ const roots=allRoots.filter(k=>NODES[k].f===minF).slice(0,2);
+ // path: topological by floor, roots first
+ const path=weak.slice().sort((a,b)=>(NODES[a].f-NODES[b].f)||((roots.includes(b)?1:0)-(roots.includes(a)?1:0)));
+ const icon={green:'✅',yellow:'🟡',red:'🔒',na:'◻️'};
+ const tile=k=>`<div class="tile t-${st[k]}${roots.includes(k)?' t-root':''}"><i>${icon[st[k]]}</i>${NODES[k].n}</div>`;
+ const fl=f=>`<div class="floor"><h3>${FLOORS[f]}</h3><div class="tiles">${Object.keys(NODES).filter(k=>NODES[k].f===f).map(tile).join('')}</div></div>`;
+ const greens=Object.keys(NODES).filter(k=>st[k]==='green');
+ const mis=Object.keys(S.ans).filter(k=>S.ans[k].mis).map(k=>`<div class="mis"><b>${NODES[k].n}:</b> ${S.ans[k].mis}</div>`).join('');
+ const deepRoots=roots.filter(k=>NODES[k].f===0);
+ app.innerHTML=`<header><b>🏰 המגדל של ${esc(S.name)}</b><small>תוצאות האבחון</small></header>
+ <div class="card pop">
+  <h2>${weak.length===0?'וואו! כל המגדל דולק 🎉':`${greens.length} אבנים כבר דולקות אצלך! 💪`}</h2>
+  <p class="muted small">כל אבן היא מיומנות. עולים מלמטה למעלה: היסודות מחזיקים את כל המגדל.</p>
+  <div class="tower">${fl(2)}${fl(1)}${fl(0)}</div>
+  <div class="legend"><span style="--c:#86efac">שולט/ת</span><span style="--c:#fde047">כמעט — ניחוש</span><span style="--c:#fca5a5">עוד לא — נלמד יחד</span><span style="--c:#e2e8f0">לא היה צריך לבדוק</span></div>
+ </div>
+ ${roots.length?`<div class="card pop" style="margin-top:12px"><h2>🔑 מאיפה מתחילים?</h2>
+  <div class="root"><b>שורש הקושי:</b> ${roots.map(k=>NODES[k].n).join(' · ')}</div>
+  <p>${deepRoots.length?'הקושי מתחיל ביסודות. זה החדשות הטובות: כשמתקנים את האבן הזו, הרבה קומות למעלה נדלקות יחד.':'היסודות שלך חזקים! עכשיו בונים את הקומה הבאה.'}</p>
+  <b>המסלול האישי שלך:</b><ol class="path">${path.map(k=>`<li>${NODES[k].n} ${k===path[0]?'<span class="small" style="color:#dc2626">← מתחילים כאן</span>':''}</li>`).join('')}</ol>
+  <button class="btn main" disabled>לתחנה הראשונה (בקרוב) ←</button></div>`:''}
+ ${mis?`<div class="card pop" style="margin-top:12px"><h2>🔍 מה גילינו על הדרך שלך</h2><p class="muted small">אלה לא "טעויות" — אלה רמזים שמראים לנו מה ללמד.</p>${mis}</div>`:''}
+ <div class="card pop" style="margin-top:12px"><h2>📨 לשלוח למורה</h2>
+  <p class="muted small">המורה תקבל סיכום קצר ותדע איך לעזור לך.</p>
+  <div class="row2"><button class="btn main" id="wa">וואטסאפ</button><button class="btn ghost" id="cp">העתקה</button></div>
+  <button class="btn ghost" id="again">לעשות שוב את האבחון</button></div>`;
+ const rep=report(st,roots,path);
+ document.getElementById('wa').onclick=()=>{location.href='https://wa.me/?text='+encodeURIComponent(rep);};
+ document.getElementById('cp').onclick=e=>{const b=e.currentTarget;(navigator.clipboard?navigator.clipboard.writeText(rep):Promise.reject()).then(()=>b.textContent='הועתק ✓').catch(()=>{prompt('העתיקו את הטקסט:',rep)});};
+ document.getElementById('again').onclick=()=>{try{localStorage.removeItem(KEY)}catch(e){};welcome();};
+}
+function report(st,roots,path){const by=s=>Object.keys(NODES).filter(k=>st[k]===s).map(k=>NODES[k].n).join(', ')||'—';
+ const errs=Object.keys(S.ans).filter(k=>S.ans[k].mis).map(k=>`• ${NODES[k].n}: ${S.ans[k].mis}`).join('\n');
+ return `📊 אבחון יחס – ${S.name}\n✅ שולט/ת: ${by('green')}\n🟡 ניחוש: ${by('yellow')}\n🔒 חסר: ${by('red')}\n🔑 שורש הקושי: ${roots.map(k=>NODES[k].n).join(', ')||'—'}\n🧭 מסלול: ${path.map(k=>NODES[k].n).join(' ← ')||'—'}${errs?`\n🔍 מה זוהה:\n${errs}`:''}\n(המורה הפרטי · יחס · ערכה: רוני מודן · שחקים)`;}
+welcome();
+</script>
+</body>
+</html>
