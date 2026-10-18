@@ -1,5 +1,5 @@
-// TITLE: ז׳ · ערך מוחלט
-// BAR: כיתה ז׳ · מספרים מכוונים · ערך מוחלט – המרחק מ־0
+// TITLE: ז׳ · ערך מוחלט | שפה אחת לכל המינוסים
+// BAR: כיתה ז׳ · מספרים מכוונים · ערך מוחלט | שפה אחת לכל המינוסים
 const M='−';
 const POS=C.ok, NEG=C.ray2, DST=C.acc, OPP='#c084fc';
 const num=v=>(v<0?M+(-v):''+v);
@@ -185,7 +185,7 @@ function swallow(){const mn=-5,mx=5,Y=300,AY=250,x0=nlX(0,mn,mx),x3=nlX(3,mn,mx)
  g+=`<circle class="l2" cx="${xm3}" cy="${Y}" r="12" fill="${NEG}"/>`;
  g+=`<text class="l2" x="640" y="80" font-size="26" text-anchor="middle" direction="rtl" style="fill:${OPP}">המינוס שבחוץ:</text><text class="l2" x="640" y="114" font-size="26" text-anchor="middle" direction="rtl" style="fill:${OPP}">סיבוב אחד בלבד</text>`;
  g+=`<text class="l2" x="${xm3}" y="${AY-28}" font-size="30" text-anchor="middle" direction="ltr" style="fill:${NEG};font-weight:900">${M}|${M}3| = ${M}3</text>`;
- return svg('0 0 800 360',g);}
+ return svg('0 0 800 360',g).replace('<svg ','<svg style="max-height:28cqw" ');}
 function submarine(){const y=d=>80+d*42,ax=170;let g='';
  g+=`<rect x="${ax}" y="${y(0)}" width="600" height="${y(6.4)-y(0)}" fill="#12385c" opacity=".55"/>`;
  g+=`<path d="M${ax} ${y(0)} q25 -14 50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0" fill="none" stroke="#5ec8ff" stroke-width="4"/>`;
@@ -202,7 +202,60 @@ function submarine(){const y=d=>80+d*42,ax=170;let g='';
   <text x="${sx+250}" y="${y(4.3)+36}" font-size="24" text-anchor="middle" direction="rtl" style="fill:${OPP}">המיקום: מתחת לפני הים</text></g>`;
  return svg('0 0 800 370',g);}
 
+/* ===== lesson 2: one language for every minus ===== */
+const colOf=v=>v<0?NEG:v>0?POS:C.ink;
+const PN=v=>`(${v>0?'+':''}${num(v)})`;
+const PNc=v=>`<span style="color:${colOf(v)};font-weight:700">${PN(v)}</span>`;
+const SUB=`<span style="color:${OPP};font-weight:900"> ${M} </span>`;
+const L2CSS=`<style>
+.out1{transition:opacity .4s}
+.t1.shown ~ .out1{opacity:0}
+.mv1{transition:translate 1.2s cubic-bezier(.55,0,.35,1)}
+.t1.shown ~ .mv1{translate:var(--tx) var(--ty,0px)}
+</style>`;
+function walker(a,b,min,max,o={}){const s=a+b,Y=175,y1=118,y2=72;let g=nlBase(min,max,Y,{only:o.only});
+ const mid=(p,q)=>(nlX(p,min,max)+nlX(q,min,max))/2;
+ g+=`<g class="step">${arrowDraw(0,a,min,max,y1,colOf(a),{cls:''})}<text x="${mid(0,a)}" y="${y1-20}" font-size="26" text-anchor="middle" direction="ltr" style="fill:${colOf(a)};font-weight:900">${PN(a)}</text></g>`;
+ g+=`<g class="step"><line x1="${nlX(a,min,max)}" y1="${y1}" x2="${nlX(a,min,max)}" y2="${y2}" stroke="${C.muted}" stroke-width="2" stroke-dasharray="5 5"/>${arrowDraw(a,s,min,max,y2,colOf(b),{cls:''})}<text x="${mid(a,s)}" y="${y2-20}" font-size="26" text-anchor="middle" direction="ltr" style="fill:${colOf(b)};font-weight:900">${PN(b)}</text></g>`;
+ g+=`<g class="step"><line x1="${nlX(s,min,max)}" y1="${y2}" x2="${nlX(s,min,max)}" y2="${Y}" stroke="${DST}" stroke-width="2" stroke-dasharray="5 5"/><circle class="pop" cx="${nlX(s,min,max)}" cy="${Y}" r="13" fill="${DST}"/></g>`;
+ return svg('0 20 800 205',g);}
+function chipsGen(p,n){const r=22,x=i=>660-i*64;let g='';
+ for(let i=0;i<p;i++)g+=`<circle cx="${x(i)}" cy="55" r="${r}" fill="${POS}"/><text x="${x(i)}" y="65" font-size="28" text-anchor="middle" style="fill:#0f1b2d;font-weight:900">+</text>`;
+ for(let i=0;i<n;i++)g+=`<circle cx="${x(i)}" cy="125" r="${r}" fill="${NEG}"/><text x="${x(i)}" y="135" font-size="28" text-anchor="middle" direction="ltr" style="fill:#0f1b2d;font-weight:900">${M}</text>`;
+ g+=`<text x="745" y="64" font-size="22" text-anchor="middle" direction="ltr" style="fill:${POS}">${PN(p)}</text><text x="745" y="134" font-size="22" text-anchor="middle" direction="ltr" style="fill:${NEG}">${PN(-n)}</text>`;
+ g+=`<g class="step trig"></g>`;
+ for(let i=0;i<Math.min(p,n);i++){g+=`<rect class="lit" x="${x(i)-r-5}" y="26" width="${2*r+10}" height="130" style="fill:var(--stage);--d:${(.15+i*.18).toFixed(2)}s"/><text class="lit" x="${x(i)}" y="98" font-size="24" text-anchor="middle" style="fill:${DST};font-weight:700;--d:${(.25+i*.18).toFixed(2)}s">0</text>`;}
+ return svg('0 0 800 170',g);}
+/* arrow of b turns around: "the opposite of b" */
+function spinOne(b,min,max){const Y=170,AY=118,x0=nlX(0,min,max),xb=nlX(b,min,max);let g=nlBase(min,max,Y);
+ g+=`<g class="step t1"></g>`;
+ g+=`<g class="spin spin1" style="transform-origin:${x0}px ${AY}px">${arrowAt(x0,xb,AY,colOf(b))}</g>`;
+ g+=`<text class="out1" x="${xb}" y="${AY-28}" font-size="28" text-anchor="middle" direction="ltr" style="fill:${colOf(b)};font-weight:900">${PN(b)}</text>`;
+ g+=`<text class="l1" x="${nlX(-b,min,max)}" y="${AY-28}" font-size="28" text-anchor="middle" direction="ltr" style="fill:${colOf(-b)};font-weight:900">${PN(-b)}</text>`;
+ g+=`<text class="l1" x="${x0}" y="42" font-size="24" text-anchor="middle" direction="rtl" style="fill:${OPP}">המינוס הפך את הכיוון: הנגדי של ${b<0?'⁦'+num(b)+'⁩':b}</text>`;
+ return svg('0 15 800 205',g);}
+function threeMinus(){let g='';const cols=[[650,'7 − 3','פחות'],[400,'−3','מינוס 3'],[150,'−x','?']];
+ g+=`<g class="step t1"></g><g class="step t2"></g>`;
+ cols.forEach(([x,e,l],i)=>{g+=`<text x="${x}" y="90" font-size="64" text-anchor="middle" direction="ltr" style="font-weight:900;fill:${C.ink}">${e.replace('−',`<tspan style="fill:${OPP}">−</tspan>`)}</text>`;
+  g+=`<text class="out1" x="${x}" y="150" font-size="28" text-anchor="middle" style="fill:${C.muted}">${l}</text>`;
+  g+=`<text class="l1" x="${x}" y="150" font-size="28" text-anchor="middle" style="fill:${OPP};font-weight:700;--d:${(.3+i*.35).toFixed(2)}s">הנגדי של</text>`;});
+ const tr=[[650,'7 + (−3)'],[400,'הנגדי של 3'],[150,'הנגדי של x']];
+ tr.forEach(([x,t],i)=>g+=`<text class="l2" x="${x}" y="200" font-size="26" text-anchor="middle" direction="${i?'rtl':'ltr'}" style="fill:${DST};--d:${(.2+i*.3).toFixed(2)}s">${t}</text>`);
+ return svg('0 20 800 200',g);}
+function boxSub(){let g='';const mn=-5,mx=5,Y=280,AY=230,x0=nlX(0,mn,mx);
+ g+=`<text x="300" y="110" font-size="96" text-anchor="middle" style="fill:${OPP};font-weight:900">${M}</text>`;
+ g+=`<rect x="345" y="35" width="170" height="100" rx="14" fill="none" stroke="${C.ink}" stroke-width="4" stroke-dasharray="10 8"/>`;
+ g+=`<text x="680" y="42" font-size="32" text-anchor="middle" direction="rtl" style="fill:${C.ink};font-weight:700">מציבים: x =</text>`;
+ g+=nlBase(mn,mx,Y);
+ g+=`<g class="step t1"></g><g class="step t2"></g>`;
+ g+=`<text class="out1" x="430" y="105" font-size="56" text-anchor="middle" style="fill:${C.muted};font-style:italic">x</text>`;
+ g+=`<text class="mv1" x="680" y="110" font-size="64" text-anchor="middle" direction="ltr" style="fill:${NEG};font-weight:900;--tx:-250px">(${M}3)</text>`;
+ g+=`<g class="l1 spin spin2" style="--d:1.1s;transform-origin:${x0}px ${AY}px">${arrowAt(x0,nlX(-3,mn,mx),AY,NEG)}</g>`;
+ g+=`<text class="l2" x="${nlX(3,mn,mx)}" y="${AY-30}" font-size="30" text-anchor="middle" direction="ltr" style="fill:${POS};font-weight:900;--d:1.4s">−(−3) = 3</text>`;
+ return svg('0 0 800 340',g).replace('<svg ','<svg style="max-height:28cqw" ');}
+
 const SLIDES=[
+menu('כיתה ז׳ · מספרים מכוונים',[{id:'l1',n:1,t:'ערך מוחלט – המרחק מ־0',d:'שיעור 1'},{id:'l2',n:2,t:'שפה אחת לכל המינוסים',d:'שיעור 2 · חיבור, חיסור, סוגריים, הצבה'}]),
 cover('l1',1,'ערך מוחלט','כיתה ז׳ · מספרים מכוונים','ערך מוחלט עונה על השאלה "כמה רחוק מ־0?" ולא על "לאיזה כיוון?"'),
 
 {html:CSS+`<div class="eyebrow">כרטיס כניסה · 5 דקות</div><h2>נזכרים במספרים מכוונים</h2>
@@ -387,5 +440,161 @@ ${P(BAR+'?'+BAR+' = '+N(-2),3,'ויש מספר שהערך המוחלט שלו �
 <ul>
 <li class="step">בתוך הקווים יש תרגיל? <b>קודם מחשבים בפנים.</b></li>
 <li class="step">מינוס <b>מחוץ</b> לקווים? זה ${PUR('"הנגדי של"')}, והוא פועל בסוף.</li>
+</ul>`},
+cover('l2',2,'שפה אחת לכל המינוסים','כיתה ז׳ · חיבור, חיסור, סוגריים, ערך מוחלט והצבה','שני משפטים במקום כל החוקים: "כל מינוס = הנגדי של" · "קודם מה שבפנים"'),
+
+{html:CSS+`<div class="eyebrow">כרטיס כניסה · 5 דקות</div><h2>נזכרים</h2>
+<ol class="qlist">
+<li>מהו הנגדי של ${eq(N(6))}? ומהו הנגדי של ${eq(N(-6))}? <span class="ans step">${eq(N(-6))} ו־${eq('6')}</span></li>
+<li>${eq(AB(N(-9))+' =')} <span class="ans step">${eq('9')}</span></li>
+<li>${eq(PNc(4)+' + '+PNc(-4)+' =')} <span class="ans step">${eq('0')} – זוג אפס</span></li>
+<li>${eq(PNc(-2)+' + '+PNc(-3)+' =')} <span class="ans step">${eq(PNc(-5))}</span></li>
+</ol>`},
+
+{html:CSS+`<div class="eyebrow">היום נדע…</div><h2>המטרות שלנו</h2>
+<ul>
+<li class="step">היום נדע לקרוא <b>כל מינוס</b> באותה דרך: "הנגדי של".</li>
+<li class="step">היום נדע לחבר ולחסר מספרים מכוונים, ולפתוח מינוס לפני סוגריים.</li>
+<li class="step">היום נדע להציב מספר שלילי בתוך ביטוי, בלי להתבלבל.</li>
+</ul>`},
+
+{html:CSS+L2CSS+SPIN_CSS+`<div class="eyebrow">למה מתבלבלים?</div><h2>למינוס יש שלושה שמות. בעצם יש לו רק אחד</h2>
+${threeMinus()}
+<p class="step">בכל מקום שיש מינוס, קוראים: ${PUR('"הנגדי של"')}.</p>`},
+
+{html:CSS+`<div class="eyebrow">השפה שלנו · מכאן ועד כיתה ט׳</div><h2>שני משפטים במקום כל החוקים</h2>
+<div class="rule step" style="font-size:2.8cqw">1. כל מינוס = ${PUR('הנגדי של')}</div>
+<div class="rule step" style="font-size:2.8cqw">2. ${DT('קודם מה שבפנים')}: סוגריים וקווי ערך מוחלט</div>
+<div class="card step"><b>השגרה:</b> קוראים בקול ← מתרגמים לחיבור ← רק אז מחשבים.</div>`},
+
+{html:CSS+SPIN_CSS+`<div class="eyebrow">מינוס מינוס</div><h2>הנגדי של הנגדי = חוזרים לעצמנו</h2>
+${doubleSpin()}
+${P('3 → '+N(-3)+' → 3',1,'פעם אחת הנגדי: עוברים לצד השני. פעם שנייה: חוזרים בדיוק למקום.')}
+${P(OP+'('+N(-7)+') = 7',2,'הנגדי של הנגדי של 7 הוא 7 עצמו.')}
+${P(OP+'('+OP+'x) = x',3,'זה נכון לכל מספר: הנגדי של הנגדי של x הוא x.')}`},
+
+{html:CSS+`<div class="eyebrow">1 · חיבור · אותו כיוון</div><h2>חיבור = הולכים צעד אחרי צעד</h2>
+${walker(-4,-3,-9,1)}
+${P(PNc(-4)+' + '+PNc(-3),1,'שני הצעדים שמאלה: 4 ועוד 3.')}
+${P(PNc(-4)+' + '+PNc(-3)+' = '+PNc(-7),2,'אותו כיוון: המרחקים מתחברים, והכיוון נשאר.')}`},
+
+{html:CSS+`<div class="eyebrow">1 · חיבור · כיוונים הפוכים</div><h2>ירוק ואדום נפגשים: זוג אפס נעלם</h2>
+${chipsGen(6,4)}
+${P(PNc(6)+' + '+PNc(-4),1,'4 זוגות אפס נעלמים.')}
+${P(PNc(6)+' + '+PNc(-4)+' = '+PNc(2),2,'נשארו 2 ירוקים. מנצח מי שרחוק יותר מ־0.')}`},
+
+{html:CSS+L2CSS+SPIN_CSS+`<div class="eyebrow">2 · חיסור</div><h2>"פחות" = ועוד ${PUR('הנגדי של')}</h2>
+${spinOne(2,-5,7)}
+${P('5'+SUB+'2',1,'קוראים: "5 ועוד הנגדי של 2".')}
+${P('5 + '+PNc(-2)+' = 3',2,'עכשיו זה חיבור רגיל: 5 ימינה, 2 שמאלה.')}`},
+
+{html:CSS+L2CSS+SPIN_CSS+`<div class="eyebrow">2 · חיסור של מספר שלילי</div><h2>${eq('5'+SUB+PNc(-2))}: הנגדי של הנגדי</h2>
+${spinOne(-2,-5,9)}
+${P('5'+SUB+PNc(-2),1,'קוראים: "5 ועוד הנגדי של מינוס 2".')}
+${P('5 + '+PNc(2)+' = 7',2,'הנגדי של −2 הוא 2. שני מינוסים, שני סיבובים: חזרנו לפלוס.')}`},
+
+{html:CSS+`<div class="eyebrow">2 · זהירות!</div><h2>${eq(PNc(-3)+SUB+'5')}: כאן אין "מינוס מינוס"</h2>
+${walker(-3,-5,-10,1)}
+${P(PNc(-3)+' + '+PNc(-5),1,'מתרגמים: ועוד הנגדי של 5.')}
+${P(PNc(-3)+' + '+PNc(-5)+' = '+PNc(-8),2,'אותו כיוון: שני חובות. התוצאה שלילית!')}
+<div class="rule step">מינוס הופך לפלוס <b>רק כשהוא פועל על מינוס</b>, כלומר הנגדי של הנגדי.</div>`},
+
+{html:CSS+`<div class="eyebrow">3 · מינוס לפני סוגריים</div><h2>הנגדי של <u>כל</u> מה שבפנים</h2>
+<p class="big2">${eq(OP+'('+N(-4)+' + 1)')}</p>
+${P(N(-4)+' + 1 = '+N(-3),1,'קודם מה שבפנים: −4 ועוד 1.')}
+${P(OP+'('+N(-3)+') = 3',2,'עכשיו המינוס שבחוץ: הנגדי של −3 הוא 3.')}
+<div class="card step"><b>דרך שנייה, שנצטרך בכיתה ח׳:</b> הנגדי של כל איבר: ${eq('4 + ('+N(-1)+') = 3')}. אותה תשובה!</div>`},
+
+{html:CSS+SPIN_CSS+`<div class="eyebrow">4 · מינוס לפני ערך מוחלט</div><h2>הקווים קודם, המינוס שבחוץ בסוף</h2>
+${swallow()}
+<div class="rule step">${eq(OP+AB(N(-3))+' = '+N(-3))}: קודם המרחק, ואחר כך הנגדי.</div>`},
+
+{html:CSS+L2CSS+SPIN_CSS+`<div class="eyebrow">5 · הצבה</div><h2>${eq(OP+'x')} הוא <u>לא</u> בהכרח שלילי!</h2>
+${boxSub()}
+<p class="step">${eq(OP+'x')} = "הנגדי של x". כש־x שלילי, ${eq(OP+'x')} חיובי.</p>`},
+
+{html:CSS+`<div class="eyebrow">5 · הצבה · ${eq('x = '+N(-4))}</div><h2>מציבים בסוגריים, קוראים בקול</h2>
+<table class="tbl">
+<tr><th>הביטוי</th><th>מציבים וקוראים</th><th>התוצאה</th></tr>
+<tr class="step"><td>${eq(OP+'x')}</td><td>הנגדי של ${eq(PNc(-4))}</td><td>${eq('4')}</td></tr>
+<tr class="step"><td>${eq(AB('x'))}</td><td>המרחק של ${eq(PNc(-4))} מ־0</td><td>${eq('4')}</td></tr>
+<tr class="step"><td>${eq(OP+AB('x'))}</td><td>הנגדי של המרחק</td><td>${eq(N(-4))}</td></tr>
+<tr class="step"><td>${eq('x + 6')}</td><td>${eq(PNc(-4)+' + 6')}</td><td>${eq('2')}</td></tr>
+<tr class="step"><td>${eq('6'+SUB+'x')}</td><td>${eq('6')} ועוד הנגדי של ${eq(PNc(-4))}</td><td>${eq('10')}</td></tr>
+</table>`},
+
+{html:CSS+`<div class="eyebrow">טעויות נפוצות</div><h2>איפה השפה שלנו מצילה אותנו?</h2>
+<table class="tbl">
+<tr><th>כתבו</th><th>קוראים נכון</th><th>נכון</th></tr>
+<tr class="step"><td><span class="wrong">${eq(N(-3)+' − 5 = 8')}</span></td><td>הנגדי של 3 ועוד הנגדי של 5</td><td>${eq(N(-8))}</td></tr>
+<tr class="step"><td><span class="wrong">${eq('5 − ('+N(-2)+') = 3')}</span></td><td>5 ועוד הנגדי של מינוס 2</td><td>${eq('7')}</td></tr>
+<tr class="step"><td><span class="wrong">${eq('−|−3| = 3')}</span></td><td>הנגדי של המרחק 3</td><td>${eq(N(-3))}</td></tr>
+<tr class="step"><td>"${eq('−x')} תמיד שלילי"</td><td>הנגדי של x</td><td>אם ${eq('x = '+N(-4))}: ${eq('4')}</td></tr>
+</table>`},
+
+{html:CSS+`<div class="lvl">${stars(1)} ידע</div><h2>חשבו: ${eq(PNc(-7)+SUB+'4')}</h2>
+${walker(-7,-4,-12,1)}
+${P(PNc(-7)+' + '+PNc(-4),1,'מתרגמים: ועוד הנגדי של 4.')}
+${P(PNc(-7)+' + '+PNc(-4)+' = '+PNc(-11),2,'אותו כיוון: 7 ועוד 4 צעדים שמאלה.')}`},
+
+{html:CSS+`<div class="lvl">${stars(2)} יישום</div><h2>חשבו: ${eq('6'+SUB+PNc(-9))}</h2>
+${walker(6,9,-1,16,{only:[0,5,6,10,15]})}
+${P('6 + '+PNc(9),1,'קוראים: 6 ועוד הנגדי של מינוס 9, כלומר ועוד 9.')}
+${P('6 + '+PNc(9)+' = 15',2,'אותו כיוון: 6 ועוד 9.')}`},
+
+{html:CSS+`<div class="lvl">${stars(3)} הבנה ונימוק · ניתוח טעות</div><h2>ליאור כתב: ${eq(OP+'('+N(-5)+' + 2) = '+N(-7))}. מה הטעות?</h2>
+${P(N(-5)+' + 2 = '+N(-3),1,'קודם מה שבפנים: −5 ועוד 2. ליאור דילג על השלב הזה.')}
+${P(OP+'('+N(-3)+') = 3',2,'הנגדי של −3 הוא 3.')}
+<div class="rule step">ליאור "הוריד את הסוגריים" וחיבר את המרחקים. הכלל: <b>קודם מה שבפנים</b>, ורק אז הנגדי.</div>`},
+
+{html:CSS+`<div class="lvl">${stars(4)} חשיבה מסדר גבוה · הצבה</div><h2>${eq('a = '+N(-2))}, &nbsp; ${eq('b = '+N(-5))}. חשבו:</h2>
+${P('a'+SUB+'b = '+PNc(-2)+' + 5 = 3',1,'מציבים בסוגריים: −2 ועוד הנגדי של −5.')}
+${P(AB('a + b')+' = '+AB(N(-7))+' = 7',2,'קודם בפנים: −2 ועוד −5 הם −7. המרחק: 7.')}
+${P(OP+AB('b')+SUB+'a = '+N(-5)+' + 2 = '+N(-3),3,'הנגדי של המרחק של b הוא −5. ועוד הנגדי של a, כלומר 2.')}`},
+
+{html:CSS+`<div class="eyebrow">תרגול בכיתה</div><h2>קוראים בקול, מתרגמים, מחשבים</h2>
+<div class="two"><ol class="qlist">
+<li>${stars(1)} ${eq(PNc(-8)+' + '+PNc(-5)+' =')} <span class="ans step">${eq(N(-13))}</span></li>
+<li>${stars(1)} ${eq(PNc(9)+' + '+PNc(-12)+' =')} <span class="ans step">${eq(N(-3))}</span></li>
+<li>${stars(2)} ${eq('4'+SUB+'10 =')} <span class="ans step">${eq(N(-6))}</span></li>
+<li>${stars(2)} ${eq(PNc(-6)+SUB+PNc(-6)+' =')} <span class="ans step">${eq('0')}</span></li>
+<li>${stars(2)} ${eq(OP+'('+N(-8)+' + 3) =')} <span class="ans step">${eq('5')}</span></li>
+</ol><ol class="qlist" start="6">
+<li>${stars(2)} ${eq(OP+AB(N(-7))+' + 10 =')} <span class="ans step">${eq('3')}</span></li>
+<li>${stars(3)} ${eq('x = '+N(-3))}: ${eq(OP+'x + '+AB('x')+' =')} <span class="ans step">${eq('6')}</span></li>
+<li>${stars(3)} ${eq('x = '+N(-3))}: ${eq('1'+SUB+'x =')} <span class="ans step">${eq('4')}</span></li>
+<li>${stars(4)} מצאו מספר ${eq('x')} כך ש־${eq(OP+'x')} גדול מ־${eq('x')}. <span class="ans step">כל מספר שלילי, למשל ${eq(N(-1))}</span></li>
+</ol></div>`},
+
+{html:CSS+`<div class="eyebrow">כרטיס יציאה</div><h2>שלוש שאלות, בלי עזרה</h2>
+<ol class="qlist">
+<li>${eq(PNc(-4)+SUB+'6 =')} <span class="ans step">${eq(N(-10))}</span></li>
+<li>${eq('2'+SUB+PNc(-7)+' =')} <span class="ans step">${eq('9')}</span></li>
+<li>${eq('x = '+N(-5))}. נועה אמרה: "${eq('−x')} שלילי, כי יש בו מינוס". צדקה? נמקו. <span class="ans step">לא. ${eq('−x')} = הנגדי של ${eq(N(-5))} = 5, חיובי.</span></li>
+</ol>`},
+
+{html:CSS+`<div class="eyebrow">שיעורי בית</div><h2>קוראים בקול לפני שמחשבים</h2>
+<div class="two"><ol class="qlist">
+<li>${eq(PNc(-9)+' + '+PNc(-6)+' =')}</li>
+<li>${eq(PNc(15)+' + '+PNc(-20)+' =')}</li>
+<li>${eq('3'+SUB+'11 =')}</li>
+<li>${eq(PNc(-5)+SUB+'5 =')}</li>
+<li>${eq('8'+SUB+PNc(-4)+' =')}</li>
+<li>${eq(PNc(-10)+SUB+PNc(-3)+' =')}</li>
+</ol><ol class="qlist" start="7">
+<li>${eq(OP+'('+N(-6)+' + 2) =')}</li>
+<li>${eq(OP+AB(N(-12))+' + 4 =')}</li>
+<li>הציבו ${eq('x = '+N(-2))}: ${eq(OP+'x')}, &nbsp; ${eq(AB('x'))}, &nbsp; ${eq('5'+SUB+'x')}</li>
+<li>הסבירו במילים: מתי ${eq('−x')} הוא מספר חיובי?</li>
+</ol></div>`},
+
+{html:CSS+`<div class="eyebrow">מה לקחנו מהשיעור?</div><h2>השפה שלנו</h2>
+<div class="rule">1. כל מינוס = ${PUR('הנגדי של')} &nbsp;·&nbsp; 2. ${DT('קודם מה שבפנים')}</div>
+<ul>
+<li class="step"><b>חיבור:</b> אותו כיוון? המרחקים מתחברים. כיוונים הפוכים? זוגות אפס נעלמים.</li>
+<li class="step"><b>חיסור:</b> "פחות" = ועוד הנגדי.</li>
+<li class="step"><b>מינוס מינוס:</b> הנגדי של הנגדי, שני סיבובים, ולכן פלוס.</li>
+<li class="step"><b>הצבה:</b> מציבים בסוגריים, וקוראים בקול.</li>
 </ul>`}
+
 ];
