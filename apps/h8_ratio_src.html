@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>בחן את עצמך · יחס, פרופורציה, קנה מידה · ח׳ א2</title>
+<style>
+/*FONTS*/
+:root{--bg:#0f1b2d;--card:#13233a;--chip:#1c3352;--ink:#f3f6fb;--muted:#9fb3cc;--line:#2b4466;--acc:#ffb020;--blue:#5ec8ff;--red:#ff7a8a;--ok:#4fd18b;--pu:#c084fc}
+*{box-sizing:border-box}html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:"Heebo","Rubik",Arial,sans-serif;direction:rtl}
+.app{max-width:860px;margin:0 auto;padding:14px 16px 30px;display:flex;flex-direction:column;gap:14px;min-height:100%}
+.top{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--muted)}
+.top b{color:var(--ink);font-family:Rubik;font-size:17px;flex:1}
+.top button{background:var(--chip);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:6px 12px;font:inherit;cursor:pointer}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}
+h1{font-family:Rubik;font-weight:900;font-size:34px;margin:0 0 6px}
+h2{font-family:Rubik;font-size:24px;margin:0 0 10px}
+p{font-size:19px;line-height:1.55;margin:0}
+.levels{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.tabs{display:flex;gap:8px;margin-top:14px}.tabs button{flex:1;font:700 18px Rubik;padding:10px;border-radius:12px;border:2px solid var(--line);background:var(--chip);color:var(--ink);cursor:pointer}.tabs button.on{border-color:var(--acc);color:var(--acc)}
+.levels button{all:unset;cursor:pointer;background:var(--chip);border:2px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:4px}
+.levels button:hover,.levels button:focus-visible{border-color:var(--acc)}
+.levels .st{color:var(--acc);font-size:22px}.levels .t{font-family:Rubik;font-weight:700;font-size:19px}.levels .d{color:var(--muted);font-size:15px}
+.levels .best{color:var(--ok);font-size:14px}
+.prog{height:8px;background:var(--line);border-radius:6px;overflow:hidden}.prog i{display:block;height:100%;background:var(--acc);transition:width .4s}
+.meta{display:flex;justify-content:space-between;color:var(--muted);font-size:15px}
+.kind{display:inline-block;background:var(--chip);color:var(--acc);border-radius:99px;padding:3px 12px;font-size:14px;font-family:Rubik;margin-bottom:10px}
+.qtext{font-size:23px;line-height:1.6}
+.m{direction:ltr;unicode-bidi:isolate;white-space:nowrap;font-family:Rubik;font-weight:700}
+.inputs{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;align-items:flex-end}
+.inp{display:flex;flex-direction:column;gap:4px;font-size:17px;font-weight:700}
+.inp input{width:120px;font:700 26px Rubik;text-align:center;padding:8px;border-radius:10px;border:2px solid var(--line);background:#0b1626;color:var(--ink);direction:ltr}
+.inp input.bad{border-color:var(--red)}.inp input.good{border-color:var(--ok)}
+.choices{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+.choices button{all:unset;cursor:pointer;background:var(--chip);border:2px solid var(--line);border-radius:12px;padding:12px 16px;font-size:19px}
+.choices button.sel{border-color:var(--acc)}
+.btns{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+.btn{font:700 19px Rubik;border:none;border-radius:12px;padding:12px 22px;cursor:pointer}
+.btn.main{background:var(--acc);color:#1b1300}.btn.sec{background:var(--chip);color:var(--ink);border:1px solid var(--line)}
+.fb{margin-top:16px;border-radius:12px;padding:14px 16px;font-size:19px;line-height:1.5;display:none}
+.fb.ok{display:block;background:#4fd18b22;border:2px solid var(--ok)}
+.fb.no{display:block;background:#ff7a8a1c;border:2px solid var(--red)}
+.fb b{font-family:Rubik}
+.sol{margin-top:16px;display:none}
+.sol.on{display:block}
+table.at{border-collapse:separate;border-spacing:0;font-family:Rubik;font-weight:700;margin:10px auto}
+.at th,.at td{border:2px solid var(--line);padding:8px 16px;text-align:center;font-size:24px;min-width:84px;height:52px}
+.at th{background:var(--chip);font-size:18px}.at td.lab{border:none;font-size:15px;color:var(--muted);min-width:0;font-weight:500}
+.at th.lab{border:none;background:none}
+.at .giv{background:#ffb02040;color:#ffd27a}.at .anc{box-shadow:inset 0 0 0 5px var(--ok)}
+.at .v{opacity:0;transition:opacity .4s;direction:ltr;unicode-bidi:isolate;display:inline-block;white-space:nowrap}.at .v.show{opacity:1}.at .calc{color:var(--ok)}
+.sline{font-size:20px;text-align:center;margin:8px 0;opacity:0;transition:opacity .5s}.sline.show{opacity:1}
+.rule{background:var(--acc);color:#1b1300;border-radius:12px;padding:10px 14px;font-weight:700;font-size:17px;margin-top:10px}
+.big{font-family:Rubik;font-weight:900;font-size:64px;color:var(--acc);text-align:center}
+.foot{text-align:center;color:var(--muted);font-size:13px;margin-top:auto}
+.pop{animation:pop .45s ease-out}@keyframes pop{0%{transform:scale(.85)}70%{transform:scale(1.06)}100%{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-width:560px){.levels{grid-template-columns:1fr}.qtext{font-size:20px}.at th,.at td{padding:4px 4px;min-width:0;font-size:15px;height:40px}.at th{font-size:13px}.at td.lab{font-size:12px}.card{padding:14px}}
+.sol{overflow-x:auto}
+</style></head><body>
+<div class="app">
+ <div class="top"><b>בחן את עצמך · יחס · פרופורציה · קנה מידה</b><span id="sc"></span><button id="home" type="button">תפריט</button></div>
+ <div id="view"></div>
+ <div class="foot"><b>ערכה: רוני מודן · שחקים</b> · © כל הזכויות שמורות</div>
+</div>
+<script>
+const $=s=>document.querySelector(s);const V=$('#view');
+const M=t=>`<span class="m">${t}</span>`;
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const gcd=(a,b)=>b?gcd(b,a%b):a;
+const COL=['#ffb020','#5ec8ff','#ff7a8a'],PU='#c084fc';
+const C2=(t,i)=>`<b style="color:${COL[i]}">${t}</b>`;
+const PAIRS=[['דנה','נועם','מדבקות'],['מיכל','יונתן','קלפים'],['שירה','עומר','סוכריות'],['אלה','רון','גולות'],['תמר','איתי','ש״ח']];
+const RATIOS=[[1,2],[1,3],[2,3],[3,4],[2,5],[3,5],[4,5],[1,4],[5,3],[3,2],[4,3],[5,2],[7,3]];
+const GROUPS=[['בנים','בנות','תלמידים בכיתה'],['כלבים','חתולים','בעלי חיים במקלט'],['עטים','עפרונות','כלי כתיבה בקלמר'],['תפוחים','אגסים','פירות בסל'],['מכוניות','אופנועים','כלי רכב בחניון']];
+// spec: cols[{h,c}], r[], q[], giv:[[row,col]], anc, part, ans: [{label,col,val}] | choice
+function genWhole(){const [a,b]=pick(RATIOS),[n1,n2,u]=pick(PAIRS),k=R(2,9),T=(a+b)*k;
+ return {kind:'נתון השלם',text:`${C2(n1,0)} ו${C2(n2,1)} מתחלקים ב־${M(T)} ${u} ביחס ${M(a+' : '+b)} (${n1} : ${n2}). כמה מקבל כל אחד?`,
+ cols:[{h:n1,c:COL[0]},{h:n2,c:COL[1]},{h:'שלם',c:PU}],r:[a,b,a+b],q:[a*k,b*k,T],giv:[[0,0],[0,1],[1,2]],anc:2,part:k,
+ ans:[{label:n1,col:COL[0],val:a*k},{label:n2,col:COL[1],val:b*k}],diag:(x)=>diagWhole(x,a,b,T,k)};}
+function diagWhole([x,y],a,b,T,k){
+ if(x===T/2&&y===T/2)return 'חילקתם ל<b>שני אנשים</b>. מחלקים ב<b>מספר החלקים</b>: '+M(a+' + '+b+' = '+(a+b))+'.';
+ if(x===a&&y===b)return 'כתבתם את <b>החלקים</b>, לא את <b>הכמות</b>. צריך למצוא כמה שווה חלק אחד.';
+ if(x===b*k&&y===a*k)return 'החשבון נכון, אבל <b>הסדר הפוך</b>! הראשון ביחס הוא הראשון בשאלה.';
+ if(x+y===T)return 'הסכום נכון, אבל זה לא ביחס '+M(a+' : '+b)+'. בדקו: האם הצמצום מחזיר ליחס?';
+ return null;}
+function genPart(withWhole){const [a,b]=pick(RATIOS),[g1,g2,w]=pick(GROUPS),k=R(2,9),first=Math.random()<.5;
+ const known=first?0:1,kv=(first?a:b)*k;
+ const text=`היחס בין ${C2(g1,0)} ל${C2(g2,1)} הוא ${M(a+' : '+b)}. יש ${M(kv)} ${first?g1:g2}. כמה ${first?g2:g1} יש?`+(withWhole?` וכמה ${w}?`:'');
+ const ans=[{label:first?g2:g1,col:COL[first?1:0],val:(first?b:a)*k}];if(withWhole)ans.push({label:'שלם',col:PU,val:(a+b)*k});
+ return {kind:withWhole?'נתון חלק · מוצאים חלק ושלם':'נתון חלק',text,cols:[{h:g1,c:COL[0]},{h:g2,c:COL[1]},{h:'שלם',c:PU}],r:[a,b,a+b],q:[a*k,b*k,(a+b)*k],
+ giv:[[0,0],[0,1],[1,known]],anc:known,part:k,ans,diag:([x])=>{const o=first?b:a,m=first?a:b;
+   if(x===kv*o)return 'כפלתם את '+M(kv)+' ב־'+o+'. קודם מוצאים <b>חלק אחד</b>: '+M(kv+' : '+m+' = '+k)+'.';
+   if(x===kv+(o-m))return 'הוספתם את ההפרש בחלקים. אבל חלק אחד שווה '+M(k)+', לא 1!';
+   if(x===(a+b)*k)return 'זה <b>השלם</b>, לא החלק השני.';return null;}};}
+function genRatio(){const [a,b]=pick(RATIOS.filter(([a,b])=>gcd(a,b)===1)),[g1,g2]=pick(GROUPS),k=R(2,8);
+ return {kind:'מוצאים את היחס',text:`יש ${M(a*k)} ${C2(g1,0)} ו־${M(b*k)} ${C2(g2,1)}. מה היחס בין ה${g1} ל${g2}? (מצומצם)`,
+ cols:[{h:g1,c:COL[0]},{h:g2,c:COL[1]}],r:[a,b],q:[a*k,b*k],giv:[[1,0],[1,1]],anc:-1,part:k,ratio:true,
+ ans:[{label:g1,col:COL[0],val:a},{label:g2,col:COL[1],val:b}],diag:([x,y])=>{
+  if(x*b===y*a&&(x!==a))return 'היחס שווה, אבל <b>אפשר לצמצם עוד</b>! מחלקים את שני המספרים במחלק המשותף הגדול.';
+  if(x===b&&y===a)return '<b>הסדר הפוך</b>: קודם '+g1+', אחר כך '+g2+'.';return null;}};}
+function genDiff(){let [a,b]=pick(RATIOS.filter(([a,b])=>a!==b));if(a<b)[a,b]=[b,a];const [g1,g2,w]=pick(GROUPS),k=R(2,8),d=(a-b)*k;
+ return {kind:'נתון ההפרש',text:`היחס בין ${C2(g1,0)} ל${C2(g2,1)} הוא ${M(a+' : '+b)}. יש ${M(d)} ${g1} יותר מ${g2}. כמה ${w}?`,
+ cols:[{h:g1,c:COL[0]},{h:g2,c:COL[1]},{h:'הפרש',c:'#ffd27a'},{h:'שלם',c:PU}],r:[a,b,a-b,a+b],q:[a*k,b*k,d,(a+b)*k],giv:[[0,0],[0,1],[1,2]],anc:2,part:k,
+ ans:[{label:'שלם',col:PU,val:(a+b)*k}],diag:([x])=>{
+  if(x===d*(a+b))return 'כפלתם את ההפרש בסכום החלקים. קודם <b>חלק אחד</b>: '+M(d+' : '+(a-b)+' = '+k)+'.';
+  if(x===d/(a+b))return 'חילקתם את ההפרש בסכום החלקים. ההפרש שייך לעמודת <b>ההפרש</b>: '+M(a+' − '+b+' = '+(a-b))+' חלקים.';
+  if(x===a*k||x===b*k)return 'זה רק חלק אחד מהשלם. מה עם השני?';return null;}};}
+function genRect(){const [a,b]=pick([[2,1],[3,1],[3,2],[4,1],[5,3],[4,3]]),k=R(2,6),P=2*(a+b)*k;
+ return {kind:'היקף מלבן · מה השלם?',text:`היקף מלבן ${M(P)} ס״מ. היחס בין ${C2('האורך',0)} ל${C2('רוחב',1)} הוא ${M(a+' : '+b)}. מה אורכי הצלעות?`,
+ cols:[{h:'אורך',c:COL[0]},{h:'רוחב',c:COL[1]},{h:'חצי היקף',c:PU}],r:[a,b,a+b],q:[a*k,b*k,P/2],giv:[[0,0],[0,1],[1,2]],anc:2,part:k,rect:P,
+ ans:[{label:'אורך',col:COL[0],val:a*k},{label:'רוחב',col:COL[1],val:b*k}],diag:([x,y])=>{
+  if(x+y===P)return 'השתמשתם בכל ההיקף. אבל <b>אורך + רוחב = חצי היקף</b> = '+M(P+' : 2 = '+P/2)+'.';
+  if(x===a*k/2&&y===b*k/2)return 'חילקתם פעמיים. השלם הוא חצי היקף: '+M(P/2)+'.';return null;}};}
+function genThree(){const [a,b,c]=pick([[1,2,3],[2,3,5],[1,1,2],[3,4,5],[1,2,5]]),k=R(2,6),T=(a+b+c)*k;
+ return {kind:'שלושה חלקים',text:`שלושה אחים מתחלקים ב־${M(T)} ש״ח ביחס ${M(a+' : '+b+' : '+c)}. כמה מקבל כל אחד?`,
+ cols:[{h:'אח א׳',c:COL[0]},{h:'אח ב׳',c:COL[1]},{h:'אח ג׳',c:COL[2]},{h:'שלם',c:PU}],r:[a,b,c,a+b+c],q:[a*k,b*k,c*k,T],giv:[[0,0],[0,1],[0,2],[1,3]],anc:3,part:k,
+ ans:[{label:'אח א׳',col:COL[0],val:a*k},{label:'אח ב׳',col:COL[1],val:b*k},{label:'אח ג׳',col:COL[2],val:c*k}],diag:([x,y,z])=>{
+  if(x===T/3&&y===T/3)return 'חילקתם לשלושה אנשים. מחלקים ב<b>מספר החלקים</b>: '+M(a+' + '+b+' + '+c+' = '+(a+b+c))+'.';return null;}};}
+function genWhy(){const [a,b]=pick(RATIOS),s=a+b;let N=R(15,60);const ok=N%s===0;const [g1,g2]=pick(GROUPS);
+ return {kind:'חשיבה · האם ייתכן?',text:`בקבוצה ${M(N)} ${g1} ו${g2} יחד. האם ייתכן שהיחס בין ה${g1} ל${g2} הוא ${M(a+' : '+b)}?`,
+ choice:[`כן, כי ${N} מתחלק ב־${s} (מספר החלקים)`,`לא, כי ${N} לא מתחלק ב־${s} (מספר החלקים)`,`כן, תמיד אפשר לחלק לפי יחס`,`לא, כי ${N} לא מתחלק ב־${a}`],correct:ok?0:1,
+ cols:[{h:g1,c:COL[0]},{h:g2,c:COL[1]},{h:'שלם',c:PU}],r:[a,b,s],q:ok?[a*N/s,b*N/s,N]:['?','?',N],giv:[[0,0],[0,1],[1,2]],anc:2,part:ok?N/s:null,why:true};}
+const LEVELS=[
+ {n:1,t:'מוצאים יחס, ונתון השלם',d:'מספרים קטנים, שני חלקים',g:()=>Math.random()<.5?genRatio():genWhole()},
+ {n:2,t:'נתון השלם או נתון חלק',d:'איפה העוגן?',g:()=>pick([genWhole,()=>genPart(false),()=>genPart(true)])()},
+ {n:3,t:'הפרש ושלושה חלקים',d:'עמודת הפרש, יחס של 3',g:()=>pick([genDiff,genThree,()=>genPart(true)])()},
+ {n:4,t:'חשיבה ואוריינות',d:'היקף מלבן, האם ייתכן?, הכול מעורבב',g:()=>pick([genRect,genWhy,genDiff,genThree,()=>genPart(true),genRatio])()}];
+
+const ITEMS=[['מחברות','מחברת'],['עטים','עט'],['ק״ג תפוחים','ק״ג'],['כרטיסים','כרטיס'],['יוגורטים','יוגורט']];
+const fmt=n=>(+n.toFixed(3)).toLocaleString('en-US');
+function genUnit(small){const [it,one]=pick(ITEMS),n1=R(2,small?4:6),u=R(2,small?6:9);let n2=R(2,small?8:12);if(n2===n1)n2++;const p1=n1*u;
+ return {kind:'פרופורציה · מחיר ליחידה',text:`${M(n1)} ${it} עולים ${M(p1)} ש״ח. כמה עולים ${M(n2)} ${it} (באותו מחיר)?`,ans:[{label:'מחיר (ש״ח)',col:COL[1],val:n2*u}],
+ custom:1,cols:[{h:'ידוע',c:'#f3f6fb'},{h:'שואלים',c:'#f3f6fb'},{h:one+' 1',c:'#4fd18b'}],rl:[it,'מחיר (ש״ח)'],anc:0,
+ rows:[[n1,n2,1],[p1,`${n2} · ${u} = ${n2*u}`,`${p1} : ${n1} = ${u}`]],k:[[0,0,1],[0,2,1]],
+ lines:[`העוגן: עמודת "ידוע". מחיר של ${one} אחד: ${M(p1+' : '+n1+' = '+u)}`,`כופלים: ${M(n2+' · '+u+' = '+n2*u)}. בדיקה בהצלבה: ${M(n1+'/'+p1+' = '+n2+'/'+n2*u)}`],rule:'חלק אחד (מחיר ליחידה) ← כופלים ← בודקים. בפרופורציה כופלים, לא מוסיפים!',
+ diag:([x])=>{if(x===p1+(n2-n1))return '<b>הוספתם</b> במקום לכפול. מחיר של '+one+' אחד הוא '+M(u)+', לא 1.';if(x===p1*n2)return 'כפלתם את כל המחיר. קודם מוצאים מחיר של '+one+' אחד: '+M(p1+' : '+n1)+'.';return null;}};}
+function genMissing(){const [a0,b0]=pick(RATIOS),k1=R(2,6);let k2=R(2,9);if(k2===k1)k2++;const a=a0*k1,b=b0*k1,c=a0*k2,x=b0*k2;
+ return {kind:'פרופורציה · מספר חסר',text:`מצאו את x: ${M(a+'/'+b+' = '+c+'/x')}`,ans:[{label:'x',col:COL[0],val:x}],custom:1,
+ lines:[`כפל בהצלבה: ${M(a+' · x = '+b+' · '+c)}`,`${M(a+'x = '+b*c)} ← מחלקים ב־${a}: ${M('x = '+x)}`,`בדיקה: ${M(c+'/'+x+' = '+a0+'/'+b0)} וגם ${M(a+'/'+b+' = '+a0+'/'+b0)} ✓`],rule:'a/b = c/d ← a · d = b · c',
+ diag:([y])=>{if(y===b+(c-a))return 'הוספתם את ההפרש. בפרופורציה <b>כופלים</b>: כפל בהצלבה.';if(y===a*c/b)return 'כפלתם בהצלבה לא נכון: x עומד מול '+a+', ולכן '+M(a+' · x = '+b+' · '+c)+'.';return null;}};}
+function genIsProp(){const [a0,b0]=pick(RATIOS),k=R(2,6),ok=Math.random()<.5;const a=a0,b=b0,c=a0*k,d=ok?b0*k:b0*k+pick([1,-1]);
+ return {kind:'האם זו פרופורציה?',text:`האם היחסים ${M(a+' : '+b)} ו־${M(c+' : '+d)} יוצרים פרופורציה?`,choice:['כן, היחסים שווים','לא, היחסים לא שווים'],correct:ok?0:1,custom:1,
+ lines:[`כפל בהצלבה: ${M(a+' · '+d+' = '+a*d)} ו־${M(b+' · '+c+' = '+b*c)}`,ok?'המכפלות שוות ← <b>כן</b>, זו פרופורציה.':'המכפלות שונות ← <b>לא</b>, זו לא פרופורציה.'],rule:'פרופורציה ⇔ שתי המכפלות בהצלבה שוות (או: מצמצמים לאותו יחס).'};}
+function genTrap(){const [x1,y1]=pick([[2,3],[3,5],[2,5],[4,3],[3,2]]),f=R(2,5);const pairs=[['עוגות','ביצים'],['כוסות לימונדה','כפות סוכר'],['שעות','עמודים'],['חולצות','כפתורים']];const [g1,g2]=pick(pairs);
+ return {kind:'פרופורציה · פי כמה?',text:`ל־${M(x1)} ${g1} צריך ${M(y1)} ${g2}. כמה ${g2} צריך ל־${M(x1*f)} ${g1}?`,ans:[{label:g2,col:COL[1],val:y1*f}],custom:1,
+ cols:[{h:'ידוע',c:'#f3f6fb'},{h:'שואלים',c:'#f3f6fb'}],rl:[g1,g2],anc:0,rows:[[x1,x1*f],[y1,`${y1} · ${f} = ${y1*f}`]],k:[[0,0],[0,2]],
+ lines:[`מ־${x1} ל־${x1*f}: <b>פי ${f}</b>.`,`ולכן גם ${g2}: ${M(y1+' · '+f+' = '+y1*f)}`],rule:'שואלים "פי כמה?", לא "כמה יותר?"',
+ diag:([x])=>x===y1+(x1*f-x1)?'<b>הוספתם</b> '+(x1*f-x1)+' כמו שהוסיפו '+g1+'. אבל הגדילו פי '+f+', ולכן גם '+g2+' פי '+f+'.':null};}
+function genBest(){const [it,one]=pick(ITEMS);const n1=R(2,5),n2=R(3,8),ua=R(3,9);let ub=ua+pick([1,-1]);const p1=n1*ua,p2=n2*ub;
+ return {kind:'איפה משתלם?',text:`בחנות א׳: ${M(n1)} ${it} ב־${M(p1)} ש״ח. בחנות ב׳: ${M(n2)} ${it} ב־${M(p2)} ש״ח. איפה ${one} אחד זול יותר?`,choice:['בחנות א׳','בחנות ב׳','המחיר זהה'],correct:ua<ub?0:1,custom:1,
+ cols:[{h:'חנות א׳',c:'#f3f6fb'},{h:'חנות ב׳',c:'#f3f6fb'}],rl:[it,'מחיר (ש״ח)'],anc:-1,rows:[[n1,n2],[p1,p2]],k:[[0,0],[0,0]],
+ lines:[`חנות א׳: ${M(p1+' : '+n1+' = '+ua)} ש״ח ל${one}`,`חנות ב׳: ${M(p2+' : '+n2+' = '+ub)} ש״ח ל${one}`,`זול יותר: <b>${ua<ub?'חנות א׳':'חנות ב׳'}</b>`],rule:'משווים חלק אחד: מחיר ליחידה.'};}
+const KS=[100,200,500,1000,2000,5000,10000,20000,25000,50000,100000];
+function genReal(big){const k=big?pick([10000,20000,25000,50000,100000]):pick([100,200,500,1000]),d=R(2,9),cm=d*k,useKm=cm>=100000;const v=useKm?cm/100000:cm/100,u=useKm?'ק״מ':'מטר';
+ return {kind:'קנה מידה · מוצאים מציאות',text:`במפה בקנה מידה ${M('1 : '+fmt(k))} המרחק ${M(d)} ס״מ. מה המרחק במציאות, ב${u}?`,ans:[{label:u,col:COL[1],val:v}],custom:1,
+ cols:[{h:'קנה המידה',c:'#4fd18b'},{h:'המרחק',c:'#f3f6fb'}],rl:['שרטוט (ס״מ)','מציאות (ס״מ)'],anc:0,rows:[[1,d],[fmt(k),`${d} · ${fmt(k)} = ${fmt(cm)}`]],k:[[0,0],[0,2]],
+ lines:[`שרטוט ← מציאות: <b>כופלים</b>. ${M(d+' · '+fmt(k)+' = '+fmt(cm))} ס״מ`,`ממירים: ${M(fmt(cm)+' : '+(useKm?'100,000':'100')+' = '+fmt(v))} ${u}`],rule:'כופלים ← ממירים בסוף ← האם זה הגיוני?',
+ diag:([x])=>{if(x===cm)return 'זה <b>בס״מ</b>! צריך להמיר ל'+u+'.';if(x===d/k||x===cm/1000)return 'בדקו את ההמרה: ס״מ ← מטר זה '+M(': 100')+', מטר ← ק״מ זה '+M(': 1000')+'.';if(Math.abs(x-cm/100)<1e-9&&useKm)return 'זה במטרים. ביקשו ק״מ: עוד '+M(': 1000')+'.';return null;}};}
+function genDraw(){const k=pick([50,100,200,500,1000]),d=R(2,9),m=d*k/100;
+ return {kind:'קנה מידה · מוצאים שרטוט',text:`אורך במציאות ${M(fmt(m))} מטר. מה האורך בשרטוט בקנה מידה ${M('1 : '+fmt(k))}, בס״מ?`,ans:[{label:'ס״מ',col:COL[0],val:d}],custom:1,
+ cols:[{h:'קנה המידה',c:'#4fd18b'},{h:'האורך',c:'#f3f6fb'}],rl:['שרטוט (ס״מ)','מציאות (ס״מ)'],anc:0,rows:[[1,`${fmt(m*100)} : ${fmt(k)} = ${d}`],[fmt(k),fmt(m*100)]],k:[[0,2],[0,1]],
+ lines:[`קודם ממירים לס״מ: ${M(fmt(m)+' מ׳ = '+fmt(m*100)+' ס״מ')}`,`מציאות ← שרטוט: <b>מחלקים</b>. ${M(fmt(m*100)+' : '+fmt(k)+' = '+d)} ס״מ`],rule:'ממירים לס״מ ← מחלקים ← בודקים.',
+ diag:([x])=>{if(Math.abs(x-m/k)<1e-9)return 'שכחתם להמיר קודם <b>לס״מ</b>: '+M(fmt(m)+' מ׳ = '+fmt(m*100)+' ס״מ')+'.';if(x===m*k||x===m*100*k)return 'מציאות ← שרטוט: <b>מחלקים</b>, לא כופלים. השרטוט קטן יותר!';return null;}};}
+function genFindScale(){const k=pick([50,100,200,250,500,1000]),d=R(2,6),m=d*k/100;
+ return {kind:'קנה מידה · מוצאים קנה מידה',text:`בשרטוט אורך ${M(d)} ס״מ, ובמציאות ${M(fmt(m))} מטר. מה קנה המידה? כתבו ${M('1 : ?')}`,ans:[{label:'1 : ?',col:COL[1],val:k}],custom:1,
+ lines:[`אותן יחידות: ${M(fmt(m)+' מ׳ = '+fmt(m*100)+' ס״מ')}`,`${M(d+' : '+fmt(m*100))} ← מחלקים את שניהם ב־${d}: ${M('1 : '+fmt(k))}`],rule:'קנה מידה = שרטוט : מציאות, באותן יחידות, ומצמצמים ל־1 : ?',
+ diag:([x])=>Math.abs(x-m/d)<1e-9?'שכחתם להמיר <b>לס״מ</b>. קנה מידה רק באותן יחידות!':null};}
+function genConvert(){const t=pick([['cm','m'],['m','km'],['km','m'],['m','cm']]),N={cm:'ס״מ',m:'מטר',km:'ק״מ'};let v,a,f;
+ if(t[0]==='cm'){v=R(2,90)*100;a=v/100;f=': 100';}else if(t[0]==='m'&&t[1]==='km'){v=R(1,40)*500;a=v/1000;f=': 1000';}else if(t[0]==='km'){v=pick([1,2,3,1.5,2.5,4,0.5]);a=v*1000;f='· 1000';}else{v=R(2,30);a=v*100;f='· 100';}
+ return {kind:'המרת יחידות',text:`${M(fmt(v))} ${N[t[0]]} = ? ${N[t[1]]}`,ans:[{label:N[t[1]],col:COL[1],val:a}],custom:1,lines:[`${M(fmt(v)+' '+f+' = '+fmt(a))}`],rule:'ס״מ ← (: 100) ← מטר ← (: 1000) ← ק״מ. יחידה גדולה יותר ← מספר קטן יותר.',
+ diag:([x])=>Math.abs(x-(f[0]===':'?v*(t[0]==='cm'?100:1000):v/(t[0]==='km'?1000:100)))<1e-9?'הפוך! '+(f[0]===':'?'ליחידה גדולה יותר מחלקים.':'ליחידה קטנה יותר כופלים.'):null};}
+function genCompare(){const k=pick([10000,20000,50000]),d=R(2,8),A=d*k/100000;let B=+(A+pick([-.4,-.3,-.2,.2,.3,.5])).toFixed(1);if(B<=0)B=+(A+.3).toFixed(1);const diff=Math.round(Math.abs(A-B)*1000);
+ return {kind:'קנה מידה · משווים',text:`מסלול א׳: ${M(d)} ס״מ במפה בקנה מידה ${M('1 : '+fmt(k))}. מסלול ב׳: ${M(B)} ק״מ במציאות. בכמה מטרים הארוך ארוך יותר?`,ans:[{label:'מטר',col:COL[1],val:diff}],custom:1,
+ lines:[`מסלול א׳: ${M(d+' · '+fmt(k)+' = '+fmt(d*k))} ס״מ = ${M(fmt(A))} ק״מ`,`ההפרש: ${M(fmt(Math.max(A,B))+' − '+fmt(Math.min(A,B))+' = '+fmt(Math.abs(A-B)))} ק״מ = ${M(diff)} מטר`],rule:'משווים רק באותה יחידה!',
+ diag:([x])=>Math.abs(x-Math.abs(A-B))<1e-9?'זה ההפרש <b>בק״מ</b>. ביקשו מטרים: '+M('· 1000')+'.':null};}
+const TOPICS=[
+ {name:'יחס',levels:LEVELS},
+ {name:'פרופורציה',levels:[
+  {n:1,t:'האם זו פרופורציה? מחיר ליחידה',d:'מספרים קטנים',g:()=>pick([genIsProp,()=>genUnit(true)])()},
+  {n:2,t:'מחיר ליחידה ומספר חסר',d:'טבלה וכפל בהצלבה',g:()=>pick([()=>genUnit(false),genMissing])()},
+  {n:3,t:'פי כמה? מספר חסר',d:'לא מוסיפים, כופלים',g:()=>pick([genTrap,genMissing,genIsProp])()},
+  {n:4,t:'איפה משתלם? הכול מעורבב',d:'משווים מחיר ליחידה',g:()=>pick([genBest,genBest,genTrap,genMissing,()=>genUnit(false)])()}]},
+ {name:'קנה מידה',levels:[
+  {n:1,t:'המרות ומציאות',d:'ס״מ, מטר, ק״מ',g:()=>pick([genConvert,()=>genReal(false)])()},
+  {n:2,t:'מציאות ושרטוט',d:'כופלים או מחלקים?',g:()=>pick([()=>genReal(false),genDraw,()=>genReal(true)])()},
+  {n:3,t:'מוצאים קנה מידה',d:'אותן יחידות!',g:()=>pick([genFindScale,genDraw,()=>genReal(true)])()},
+  {n:4,t:'משווים מסלולים, הכול מעורבב',d:'מפות אמיתיות',g:()=>pick([genCompare,genCompare,genFindScale,()=>genReal(true),genDraw,genConvert])()}]}];
+const TOTAL=20;let S={t:0};
+const store={get:k=>{try{return JSON.parse(localStorage.getItem('h8ratio_'+k))}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem('h8ratio_'+k,JSON.stringify(v))}catch(e){}}};
+let CT=0;const LV=()=>TOPICS[S.t!=null?S.t:CT].levels;
+function menu(){$('#sc').textContent='';V.innerHTML=`<div class="card"><h1>בחן את עצמך</h1><p>בכל רמה ${TOTAL} שאלות. טעיתם? לא נורא: לוחצים על <b>"הראו לי"</b> ורואים את הפתרון נבנה צעד אחר צעד.</p>
+<div class="tabs">${TOPICS.map((t,i)=>`<button type="button" data-t="${i}" class="${i===CT?'on':''}">${t.name}</button>`).join('')}</div>
+<div class="levels">${TOPICS[CT].levels.map((l,i)=>{const b=store.get('best'+CT+'_'+i);return `<button type="button" data-l="${i}"><span class="st">${'★'.repeat(l.n)}</span><span class="t">${l.t}</span><span class="d">${l.d}</span>${b!=null?`<span class="best">השיא שלי: ${b} מתוך ${TOTAL}</span>`:''}</button>`}).join('')}</div></div>`;
+ V.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>start(+b.dataset.l));V.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{CT=+b.dataset.t;menu();});}
+function start(l){S={t:CT,l,i:0,score:0,first:true};next();}
+function next(){if(S.q)S.i++;if(S.i>=TOTAL)return end();S.q=LV()[S.l].g();S.tries=0;S.done=false;draw();}
+function draw(){const q=S.q;$('#sc').textContent=`נקודות: ${S.score}`;
+ V.innerHTML=`<div class="meta"><span>${TOPICS[S.t].name} · ${'★'.repeat(LV()[S.l].n)} · שאלה ${S.i+1} מתוך ${TOTAL}</span><span>${S.score} נכונות</span></div><div class="prog"><i style="width:${S.i/TOTAL*100}%"></i></div>
+ <div class="card pop"><span class="kind">${q.kind}</span><div class="qtext">${q.text}</div>
+ ${q.choice?`<div class="choices">${q.choice.map((c,i)=>`<button type="button" data-c="${i}">${c}</button>`).join('')}</div>`:
+ (q.ratio?`<div class="inputs" style="direction:ltr;justify-content:flex-end">${q.ans.map((a,i)=>`<label class="inp" style="direction:rtl"><span style="color:${a.col}">${a.label}</span><input inputmode="decimal" data-i="${i}" aria-label="${a.label}"></label>`).join('<span style="font:900 34px Rubik;padding-bottom:10px">:</span>')}</div>`:`<div class="inputs">${q.ans.map((a,i)=>`<label class="inp"><span style="color:${a.col}">${a.label||'&nbsp;'}</span><input inputmode="decimal" data-i="${i}" aria-label="${a.label||'תשובה'}"></label>`).join('')}</div>`)}
+ <div class="btns"><button class="btn main" id="chk" type="button">בדיקה</button><button class="btn sec" id="show" type="button">הראו לי</button></div>
+ <div class="fb" id="fb"></div><div class="sol" id="sol"></div></div>`;
+ let sel=-1;V.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{V.querySelectorAll('[data-c]').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');sel=+b.dataset.c;});
+ const f=V.querySelector('input');if(f)f.focus();
+ V.querySelectorAll('input').forEach(x=>x.onkeydown=e=>{if(e.key==='Enter')$('#chk').click();});
+ $('#chk').onclick=()=>{if(S.done)return next();check(q,sel);};
+ $('#show').onclick=()=>solve(q);}
+function check(q,sel){const fb=$('#fb');S.tries++;let ok,msg=null;
+ if(q.choice){if(sel<0){fb.className='fb no';fb.innerHTML='בחרו תשובה.';S.tries--;return;}ok=sel===q.correct;
+  if(!ok)msg=q.custom?'בדקו שוב בעזרת <b>חלק אחד</b> (מחיר ליחידה) או כפל בהצלבה.':'בדקו: '+(q.part?`${M(q.q[2]+' : '+q.r[2]+' = '+q.part)}, כלומר כן אפשר.`:`מחלקים את ${q.q[2]} ב־${q.r[2]} חלקים, ולא יוצא מספר שלם.`)+' כדי לחלק לפי יחס, השלם צריך להתחלק ב<b>מספר החלקים</b>.';}
+ else{const ins=[...V.querySelectorAll('input')];const vals=ins.map(x=>parseFloat(x.value.replace(',','.')));
+  if(vals.some(isNaN)){fb.className='fb no';fb.innerHTML='מלאו את כל התשובות.';S.tries--;return;}
+  ins.forEach((x,i)=>x.className=vals[i]===q.ans[i].val?'good':'bad');ok=vals.every((v,i)=>v===q.ans[i].val);if(!ok)msg=q.diag?q.diag(vals):null;}
+ if(ok){if(S.tries===1)S.score++;S.done=true;fb.className='fb ok pop';fb.innerHTML=`<b>${pick(['מעולה!','בדיוק!','יפה מאוד!','נכון!'])}</b> ${S.tries===1?'הצלחתם בניסיון הראשון.':'תיקנתם, וזה מה שחשוב.'}`;$('#chk').textContent='לשאלה הבאה';$('#show').style.display='none';}
+ else{fb.className='fb no pop';fb.innerHTML=`<b>כמעט!</b> ${msg||(S.q.custom?'בואו נבנה טבלה: מה ידוע? מה <b>החלק האחד</b>? ובאילו יחידות?':'בואו נבנה טבלת עוגן: איפה ידועים <b>גם היחס וגם הכמות</b>?')} ${S.tries>=2?'<br>לחצו על <b>"הראו לי"</b> כדי לראות את הפתרון.':' נסו שוב.'}`;}}
+function solve(q){const sol=$('#sol');sol.className='sol on';
+ if(q.custom){const hd=q.cols?q.cols.map((c,i)=>`<th class="${i===q.anc?'anc':''}" style="color:${c.c}">${c.h}</th>`).join(''):'';
+  const rows=q.rows?q.rows.map((row,ri)=>`<tr><td class="lab">${q.rl[ri]}</td>${row.map((v,ci)=>{const k=q.k[ri][ci],a=ci===q.anc?' anc':'';return `<td class="${k===0?'giv':''}${a}"><span class="v ${k===0?'':'calc'}" data-k="${k}">${v}</span></td>`}).join('')}</tr>`).join(''):'';
+  sol.innerHTML=(q.rows?`<table class="at"><tr><th class="lab"></th>${hd}</tr>${rows}</table>`:'')+q.lines.map(l=>`<div class="sline">${l}</div>`).join('')+`<div class="rule sline">${q.rule}</div>`;
+  const lns=[...sol.querySelectorAll('.sline')],rule=lns.pop();const order=[...sol.querySelectorAll('[data-k="0"]'),...sol.querySelectorAll('[data-k="1"]'),...lns,...sol.querySelectorAll('[data-k="2"]'),rule];
+  order.forEach((el,i)=>setTimeout(()=>el.classList.add('show'),250+i*480));
+  S.tries=Math.max(S.tries,2);if(!S.done){S.done=true;$('#chk').textContent='לשאלה הבאה';$('#show').style.display='none';}return;}
+ const cell=(row,ci,v)=>{const g=q.giv.some(([r,c])=>r===row&&c===ci),a=ci===q.anc?' anc':'';return `<td class="${g?'giv':''}${a}"><span class="v ${g?'':'calc'}" data-k="${g?0:(row===0?1:2)}">${row===1&&!g&&ci===q.anc?'':v}</span></td>`;};
+ const hd=q.cols.map((c,i)=>`<th class="${i===q.anc?'anc':''}" style="color:${c.c}">${c.h}</th>`).join('');
+ const lines=[];
+ if(q.ratio){lines.push(`מצמצמים: מחלקים את שתי הכמויות ב־${M(q.part)}.`,`${M(q.q[0]+' : '+q.q[1]+' = '+q.r[0]+' : '+q.r[1])}`);}
+ else if(q.why){lines.push(`מספר החלקים: ${M(q.r.slice(0,-1).join(' + ')+' = '+q.r[q.r.length-1])}.`,q.part?`חלק אחד: ${M(q.q[2]+' : '+q.r[2]+' = '+q.part)} ✓ כן, ייתכן.`:`${M(q.q[2]+' : '+q.r[2])} לא יוצא מספר שלם, ולכן לא ייתכן.`);}
+ else{lines.push(`העוגן: עמודת <b>${q.cols[q.anc].h}</b>. שם ידועים ${M(q.r[q.anc])} חלקים וגם ${M(q.q[q.anc])}.`,`חלק אחד: ${M(q.q[q.anc]+' : '+q.r[q.anc]+' = '+q.part)}`,`כופלים את החלק האחד בכל עמודה, ובודקים.`);}
+ sol.innerHTML=`<table class="at"><tr><th class="lab"></th>${hd}</tr><tr><td class="lab">יחס (חלקים)</td>${q.r.map((v,i)=>cell(0,i,v)).join('')}</tr><tr><td class="lab">כמות</td>${q.q.map((v,i)=>cell(1,i,(q.giv.some(([r,c])=>r===1&&c===i)||q.ratio||q.why)?v:`${q.r[i]} · ${q.part} = ${v}`)).join('')}</tr></table>
+ ${lines.map(l=>`<div class="sline">${l}</div>`).join('')}<div class="rule sline">${q.ratio?'שתי כמויות ← מצמצמים ליחס.':'טבלה ← עוגן ← חלק אחד ← כופלים ובודקים.'}</div>`;
+ const seq=[...sol.querySelectorAll('[data-k="0"]'),...sol.querySelectorAll('[data-k="1"]'),...sol.querySelectorAll('.sline'),...sol.querySelectorAll('[data-k="2"]')];
+ // order: givens, ratio-row calc, explanation lines (except last rule), then quantity calc, then rule
+ const lns=[...sol.querySelectorAll('.sline')],rule=lns.pop();const order=[...sol.querySelectorAll('[data-k="0"]'),...sol.querySelectorAll('[data-k="1"]'),...lns,...sol.querySelectorAll('[data-k="2"]'),rule];
+ order.forEach((el,i)=>setTimeout(()=>el.classList.add('show'),250+i*480));
+ S.tries=Math.max(S.tries,2);if(!S.done){S.done=true;$('#chk').textContent='לשאלה הבאה';$('#show').style.display='none';}}
+function end(){$('#sc').textContent=`נקודות: ${S.score}`;const best=store.get('best'+S.t+'_'+S.l);if(best==null||S.score>best)store.set('best'+S.t+'_'+S.l,S.score);
+ const st=S.score>=18?3:S.score>=14?2:S.score>=10?1:0;
+ V.innerHTML=`<div class="card pop" style="text-align:center"><h2>סיימתם: ${TOPICS[S.t].name} ${'★'.repeat(LV()[S.l].n)}</h2><div class="big">${S.score} / ${TOTAL}</div>
+ <p>${['ממשיכים להתאמן: חוזרים לשקופית "הטבלה מצילה תמיד".','התחלה טובה! עוד סבב אחד ותהיו שם.','יפה מאוד! אתם שולטים בטבלה.','מצוין! אפשר לעלות רמה.'][st]}</p>
+ <div class="btns" style="justify-content:center"><button class="btn main" id="again" type="button">עוד סבב</button>${S.l<3?'<button class="btn sec" id="up" type="button">לרמה הבאה</button>':''}<button class="btn sec" id="m" type="button">תפריט</button></div></div>`;
+ $('#again').onclick=()=>start(S.l);if($('#up'))$('#up').onclick=()=>start(S.l+1);$('#m').onclick=menu;}
+$('#home').onclick=menu;menu();
+</script></body></html>
