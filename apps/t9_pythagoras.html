@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>משפט פיתגורס – בחנו את עצמכם</title>
+<style>
+:root{--a:#2563eb;--b:#ea580c;--c:#9333ea;--ok:#16a34a;--bad:#dc2626;--ink:#1e293b;--soft:#64748b;--bg:#f5f3ff;--card:#fff}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:linear-gradient(160deg,#ede9fe,#e0f2fe);color:var(--ink);min-height:100vh;font-size:18px;line-height:1.55}
+header.top{position:sticky;top:0;z-index:5;display:flex;justify-content:space-between;align-items:center;padding:8px 14px;background:#4c1d95;color:#fff}
+.brand{font-weight:800;font-size:19px}
+.tools button{background:rgba(255,255,255,.15);border:0;color:#fff;font-size:19px;border-radius:10px;padding:5px 10px;margin-inline-start:4px;cursor:pointer}
+main{max-width:760px;margin:0 auto;padding:14px 16px 30px}
+footer{text-align:center;color:var(--soft);font-size:14px;padding:10px 0 18px}
+.card{background:var(--card);border-radius:20px;padding:18px;box-shadow:0 6px 22px rgba(76,29,149,.12);margin-bottom:14px;animation:pop .35s ease}
+@keyframes pop{from{transform:translateY(12px);opacity:0}to{transform:none;opacity:1}}
+h1{font-size:28px;margin:4px 0 8px;color:#4c1d95}
+h2{font-size:22px;margin:4px 0 10px;color:#4c1d95}
+.btn{display:inline-block;border:0;border-radius:14px;padding:12px 20px;font-size:18px;font-weight:700;cursor:pointer;background:#7c3aed;color:#fff;margin:6px 0 0 8px;font-family:inherit}
+.btn.sec{background:#e9e5ff;color:#4c1d95}
+.btn.big{font-size:21px;padding:14px 26px}
+.btn:active{transform:scale(.97)}
+input.ans{font-size:24px;padding:10px 12px;width:150px;border:3px solid #c4b5fd;border-radius:14px;text-align:center;direction:ltr;font-family:inherit}
+input.name{font-size:20px;padding:10px;border:2px solid #c4b5fd;border-radius:12px;width:100%;max-width:320px;font-family:inherit}
+.m{direction:ltr;unicode-bidi:isolate;display:inline-block;white-space:nowrap;font-weight:600}
+.ca{color:var(--a)}.cb{color:var(--b)}.cc{color:var(--c)}
+.fig{max-width:100%;height:auto;direction:ltr;display:block;margin:6px 0}
+.figwrap{display:flex;justify-content:flex-start}
+.draw{stroke-dasharray:1;stroke-dashoffset:1;animation:draw .7s ease forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.fade{opacity:0;animation:fade .5s ease forwards}
+@keyframes fade{to{opacity:1}}
+.cell{opacity:0;transition:opacity .25s}
+.cell.on{opacity:1}
+.prompt{font-size:20px;font-weight:600;margin:6px 0 10px}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opt{border:3px solid #c4b5fd;background:#faf5ff;border-radius:14px;padding:10px 16px;font-size:19px;cursor:pointer;font-family:inherit;color:var(--ink);text-align:right}
+.opt.wrong{border-color:var(--bad);background:#fef2f2;opacity:.75}
+.opt.right{border-color:var(--ok);background:#f0fdf4}
+.fb{border-radius:14px;padding:12px 14px;margin-top:12px;font-size:18px}
+.fb.good{background:#f0fdf4;border:2px solid #86efac}
+.fb.bad{background:#fff7ed;border:2px solid #fdba74}
+.steps{margin-top:10px}
+.step{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:baseline;padding:7px 10px;border-right:4px solid #c4b5fd;background:#faf5ff;border-radius:8px;margin:6px 0;opacity:0;animation:fade .5s ease forwards}
+.step .mline{font-size:21px}
+.step .why{color:var(--soft);font-size:15px}
+.step .why:before{content:"מה עשינו? "}
+.bar{height:12px;background:#ede9fe;border-radius:8px;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#a78bfa,#7c3aed);border-radius:8px;transition:width .4s}
+.stage{display:flex;gap:12px;align-items:center;cursor:pointer}
+.stage .ic{font-size:30px;width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;background:#ede9fe;flex:none}
+.stage .t{flex:1}
+.small{font-size:15px;color:var(--soft)}
+.warn{background:#fef2f2;border:2px dashed #fca5a5;border-radius:14px;padding:10px 12px;margin-top:10px}
+.def{background:#eff6ff;border-radius:14px;padding:10px 12px;margin-top:10px}
+.big-formula{font-size:34px;text-align:center;margin:8px 0}
+.note{background:#1e293b;color:#f8fafc;border-radius:12px;padding:10px 14px;font-size:20px;direction:ltr;text-align:left;font-family:'Segoe UI',Arial}
+.note div{margin:3px 0}
+.chips span{display:inline-block;background:#ede9fe;border-radius:10px;padding:4px 12px;margin:3px;font-weight:700;direction:ltr}
+.counter{font-size:22px;font-weight:800;text-align:center;min-height:34px}
+.qtop{display:flex;flex-wrap:wrap;gap:6px;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:15px;color:var(--soft)}
+.badge{white-space:nowrap;background:#ede9fe;color:#4c1d95;border-radius:10px;padding:2px 10px;font-weight:700}
+table.rep{width:100%;border-collapse:collapse;margin-top:8px}
+table.rep td,table.rep th{border-bottom:1px solid #e5e7eb;padding:8px 4px;text-align:right}
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:10px 18px;border-radius:12px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:9}
+.fly{position:fixed;font-size:30px;pointer-events:none;animation:fly 1.1s ease-out forwards;z-index:8}
+@keyframes fly{to{transform:translateY(-140px) scale(1.4);opacity:0}}
+@media print{header.top,.noprint,footer .noprint,#toast{display:none!important}body{background:#fff}.card{box-shadow:none;border:1px solid #ddd}}
+</style>
+</head>
+<body>
+<header class="top"><div class="brand">📐 משפט פיתגורס</div>
+<div class="tools noprint"><button onclick="goMap()" title="מפת המסע">🗺️</button><button onclick="fs()" title="מסך מלא">⛶</button><button onclick="printReport()" title="הדפסת דוח">🖨️</button><button onclick="share()" title="שיתוף">📤</button></div></header>
+<main id="app"></main>
+<footer>ערכה: רוני מודן · בית ספר שחקים</footer>
+<div id="toast"></div>
+<script>
+"use strict";
+/* ===== עזרים ===== */
+const COL={a:'#2563eb',b:'#ea580c',c:'#9333ea',n:'#334155',g:'#16a34a'};
+const M=s=>`<span class="m" dir="ltr">${s}</span>`;
+const A=s=>`<b class="ca">${s}</b>`,B=s=>`<b class="cb">${s}</b>`,C=s=>`<b class="cc">${s}</b>`;
+const rnd=n=>Math.floor(Math.random()*n), pick=a=>a[rnd(a.length)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]]}return a};
+const near=(v,x)=>isFinite(x)&&Math.abs(v-x)<0.06;
+const eqs=r=>Number.isInteger(r)?`= ${r}`:`≈ ${r.toFixed(1)}`;
+const fmt=r=>Number.isInteger(r)?String(r):r.toFixed(1);
+const r1=x=>Math.round(x*10)/10;
+const $=id=>document.getElementById(id);
+let TIMERS=[];const later=(f,ms)=>TIMERS.push(setTimeout(f,ms));const clearT=()=>{TIMERS.forEach(clearTimeout);TIMERS=[]};
+function toast(t){const e=$('toast');e.textContent=t;e.style.opacity=1;setTimeout(()=>e.style.opacity=0,2200)}
+
+/* ===== שרטוטים ===== */
+function svg(W,H,inner){return `<div class="figwrap"><svg class="fig" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">${inner}</svg></div>`}
+function seg(p,q,col,w=5,delay=0,dash=false){
+  if(dash) return `<path d="M${p[0]},${p[1]} L${q[0]},${q[1]}" stroke="${col}" stroke-width="${w}" stroke-dasharray="7 6" fill="none" class="fade" style="animation-delay:${delay}s"/>`;
+  return `<path d="M${p[0]},${p[1]} L${q[0]},${q[1]}" stroke="${col}" stroke-width="${w}" stroke-linecap="round" fill="none" pathLength="1" class="draw" style="animation-delay:${delay}s"/>`}
+function tx(x,y,t,col=COL.n,size=18,delay=0.6){return `<text x="${x}" y="${y}" fill="${col}" font-size="${size}" font-weight="700" text-anchor="middle" dominant-baseline="central" font-family="Segoe UI,Arial" class="fade" style="animation-delay:${delay}s">${t}</text>`}
+const unit=(v)=>{const l=Math.hypot(v[0],v[1])||1;return[v[0]/l,v[1]/l]};
+function rmark(P,Q,R,s=12,col=COL.n){const u=unit([Q[0]-P[0],Q[1]-P[1]]),v=unit([R[0]-P[0],R[1]-P[1]]);
+  const a=[P[0]+u[0]*s,P[1]+u[1]*s],b=[a[0]+v[0]*s,a[1]+v[1]*s],c=[P[0]+v[0]*s,P[1]+v[1]*s];
+  return `<path d="M${a[0]},${a[1]} L${b[0]},${b[1]} L${c[0]},${c[1]}" stroke="${col}" stroke-width="2" fill="none" class="fade" style="animation-delay:.5s"/>`}
+function fitPts(P,W,H,pad){const xs=P.map(p=>p[0]),ys=P.map(p=>p[1]);const x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys);
+  const s=Math.min((W-2*pad)/((x1-x0)||1),(H-2*pad)/((y1-y0)||1));const ox=(W-(x1-x0)*s)/2,oy=(H-(y1-y0)*s)/2;
+  return P.map(([x,y])=>[ox+(x-x0)*s,oy+(y-y0)*s])}
+/* משולש ישר-זווית: a,b ניצבים, c יתר */
+function triSVG(o){let va=o.a,vb=o.b;const k=2.2;if(va/vb>k)vb=va/k;if(vb/va>k)va=vb/k;
+  const t=(o.rot||0)*Math.PI/180,f=o.flip?-1:1;
+  let P=[[0,0],[va,0],[0,vb]].map(([x,y])=>{x*=f;return[x*Math.cos(t)-y*Math.sin(t),-(x*Math.sin(t)+y*Math.cos(t))]});
+  const W=280,H=200;P=fitPts(P,W,H,40);
+  const cen=[(P[0][0]+P[1][0]+P[2][0])/3,(P[0][1]+P[1][1]+P[2][1])/3];
+  const cols=o.col===false?[COL.n,COL.n,COL.n]:[COL.a,COL.b,COL.c];
+  const sides=[[0,1,o.la],[0,2,o.lb],[1,2,o.lc]];let s='';
+  sides.forEach(([i,j,l],k)=>{s+=seg(P[i],P[j],cols[k],5,k*0.25);
+    const mid=[(P[i][0]+P[j][0])/2,(P[i][1]+P[j][1])/2],d=unit([mid[0]-cen[0],mid[1]-cen[1]]);
+    if(l!==undefined&&l!=='') s+=tx(mid[0]+d[0]*20,mid[1]+d[1]*20,l,cols[k],19)});
+  s+=rmark(P[0],P[1],P[2]);return svg(W,H,s)}
+/* ריבועים על הצלעות (צורה קבועה 3-4-5) */
+const SQ={u:22,X:x=>14+(x+3)*22,Y:y=>14+(7-y)*22};
+function sqPolys(){const bu=[-0.8,0.6],bn=[0.6,0.8],Bp=[4,0];
+  const cellsA=[],cellsB=[],cellsC=[];
+  for(let j=0;j<3;j++)for(let i=0;i<3;i++)cellsA.push([[-3+i,j],[-2+i,j],[-2+i,j+1],[-3+i,j+1]]);
+  for(let j=0;j<4;j++)for(let i=0;i<4;i++)cellsB.push([[i,-1-j],[i+1,-1-j],[i+1,-j],[i,-j]]);
+  const pt=(i,j)=>[Bp[0]+i*bu[0]+j*bn[0],Bp[1]+i*bu[1]+j*bn[1]];
+  for(let j=0;j<5;j++)for(let i=0;i<5;i++)cellsC.push([pt(i,j),pt(i+1,j),pt(i+1,j+1),pt(i,j+1)]);
+  return{cellsA,cellsB,cellsC,sqA:[[-3,0],[0,0],[0,3],[-3,3]],sqB:[[0,0],[4,0],[4,-4],[0,-4]],sqC:[[4,0],[0,3],[3,7],[7,4]]}}
+const poly=(pts,fill,stroke,extra='')=>`<polygon points="${pts.map(p=>SQ.X(p[0])+','+SQ.Y(p[1])).join(' ')}" fill="${fill}" stroke="${stroke}" stroke-width="1.5" ${extra}/>`;
+function sqFig(o){const g=sqPolys();let s='';
+  s+=poly(g.sqA,'#2563eb22',COL.a)+poly(g.sqB,'#ea580c22',COL.b)+poly(g.sqC,'#9333ea22',COL.c);
+  if(o&&o.grid){g.cellsA.forEach((c,i)=>s+=poly(c,COL.a,'#fff',`class="cell" id="ca${i}"`));
+    g.cellsB.forEach((c,i)=>s+=poly(c,COL.b,'#fff',`class="cell" id="cb${i}"`));
+    g.cellsC.forEach((c,i)=>s+=poly(c,COL.c,'#fff',`class="cell" id="cc${i}"`));}
+  const T=[[0,0],[4,0],[0,3]].map(p=>[SQ.X(p[0]),SQ.Y(p[1])]);
+  s+=`<polygon points="${T.map(p=>p.join(',')).join(' ')}" fill="#fff" stroke="none"/>`;
+  s+=seg(T[0],T[1],COL.b,5,0)+seg(T[0],T[2],COL.a,5,.2)+seg(T[1],T[2],COL.c,5,.4)+rmark(T[0],T[1],T[2]);
+  if(o&&o.labels){s+=tx(SQ.X(-1.5),SQ.Y(1.5),o.labels[0],COL.a,22)+tx(SQ.X(2),SQ.Y(-2),o.labels[1],COL.b,22)+tx(SQ.X(3.5),SQ.Y(3.5),o.labels[2],COL.c,24)}
+  if(o&&o.sides){s+=tx(SQ.X(0.45),SQ.Y(1.5),'3',COL.a,16)+tx(SQ.X(2),SQ.Y(0.45),'4',COL.b,16)+tx(SQ.X(1.7),SQ.Y(1.2),'5',COL.c,16)}
+  return svg(248,270,s)}
+function gridSquare(k,lab){const cs=Math.min(20,150/k),W=k*cs+50,H=k*cs+46;let s='';
+  for(let j=0;j<k;j++)for(let i=0;i<k;i++)s+=`<rect x="${10+i*cs}" y="${10+j*cs}" width="${cs}" height="${cs}" fill="#bfdbfe" stroke="#2563eb" stroke-width="1" class="fade" style="animation-delay:${((j*k+i)*0.025).toFixed(2)}s"/>`;
+  s+=tx(10+k*cs/2,k*cs+30,lab||k,COL.a,18,.3)+tx(k*cs+30,10+k*cs/2,lab||k,COL.a,18,.3);return svg(W,H,s)}
+function ladderSVG(d,h,L){const F=[70,180],T=[210,52],G=[210,180];let s='';
+  s+=`<rect x="212" y="20" width="26" height="162" fill="#e2e8f0" stroke="#94a3b8"/><text x="225" y="40" font-size="20" text-anchor="middle">🪟</text>`;
+  s+=`<path d="M10,182 L245,182" stroke="#94a3b8" stroke-width="3"/>`;
+  s+=seg(F,G,COL.a,5,0)+seg(G,T,COL.b,5,.2);
+  const dv=unit([T[0]-F[0],T[1]-F[1]]),p=[-dv[1]*6,dv[0]*6];
+  s+=seg([F[0]+p[0],F[1]+p[1]],[T[0]+p[0],T[1]+p[1]],COL.c,3,.4)+seg([F[0]-p[0],F[1]-p[1]],[T[0]-p[0],T[1]-p[1]],COL.c,3,.4);
+  for(let t=.12;t<.95;t+=.12){const q=[F[0]+(T[0]-F[0])*t,F[1]+(T[1]-F[1])*t];s+=seg([q[0]+p[0],q[1]+p[1]],[q[0]-p[0],q[1]-p[1]],COL.c,2,.6)}
+  s+=rmark(G,F,T);s+=tx(140,198,d,COL.a)+tx(194,124,h,COL.b)+tx(118,100,L,COL.c);return svg(250,210,s)}
+function rectSVG(w,h,d){let s=`<rect x="30" y="30" width="200" height="120" fill="#f8fafc" stroke="none"/>`;
+  s+=seg([30,150],[230,150],COL.a,4,0)+seg([230,150],[230,30],COL.b,4,.2)+seg([30,30],[230,30],COL.n,2,.1)+seg([30,30],[30,150],COL.n,2,.1)+seg([30,150],[230,30],COL.c,4,.4);
+  s+=rmark([230,150],[30,150],[230,30])+tx(130,170,w,COL.a)+tx(252,90,h,COL.b)+tx(118,78,d,COL.c);return svg(275,185,s)}
+function isoSVG(side,base,hl){const T=[130,25],L=[40,170],R=[220,170],F=[130,170];let s='';
+  s+=seg(L,T,COL.n,3,0)+seg(T,R,COL.c,5,.1)+seg(L,F,COL.n,3,0)+seg(F,R,COL.a,5,.2)+seg(T,F,COL.b,4,.3,true);
+  s+=rmark(F,R,T)+tx(70,92,side,COL.n)+tx(192,92,side,COL.c)+tx(130,192,base,COL.n)+tx(143,108,hl,COL.b);return svg(260,205,s)}
+function rhombSVG(d1,d2){const O=[130,100],Tp=[130,25],R=[230,100],Bt=[130,175],Lf=[30,100];let s='';
+  s+=seg(Tp,R,COL.c,5,0)+seg(R,Bt,COL.n,3,0)+seg(Bt,Lf,COL.n,3,0)+seg(Lf,Tp,COL.n,3,0);
+  s+=seg(Lf,O,COL.n,2,.2,true)+seg(O,R,COL.a,4,.2)+seg(Tp,O,COL.b,4,.3)+seg(O,Bt,COL.n,2,.3,true);
+  s+=rmark(O,R,Tp)+tx(78,88,d1,COL.n,16)+tx(146,150,d2,COL.n,16)+tx(196,50,'?',COL.c,22);return svg(260,200,s)}
+function twoTriSVG(p,q,sd){const ac=Math.hypot(p,q),n=[p/ac,q/ac];
+  let P=[[0,p],[0,0],[q,0],[q+sd*n[0],sd*n[1]]].map(([x,y])=>[x,-y]);P=fitPts(P,280,230,32);
+  const [Ap,Bp,Cp,Dp]=P,cen=[(Ap[0]+Bp[0]+Cp[0]+Dp[0])/4,(Ap[1]+Bp[1]+Cp[1]+Dp[1])/4];let s='';
+  s+=seg(Ap,Bp,COL.a,4,0)+seg(Bp,Cp,COL.b,4,.1)+seg(Ap,Cp,COL.g,3,.3,true)+seg(Cp,Dp,COL.n,4,.2)+seg(Ap,Dp,COL.c,5,.4);
+  s+=rmark(Bp,Ap,Cp)+rmark(Cp,Ap,Dp);
+  const lab=(X,Y,t,c)=>{const m=[(X[0]+Y[0])/2,(X[1]+Y[1])/2];let d=unit([m[0]-cen[0],m[1]-cen[1]]);return tx(m[0]+d[0]*16,m[1]+d[1]*16,t,c,17)};
+  s+=lab(Ap,Bp,p,COL.a)+lab(Bp,Cp,q,COL.b)+lab(Cp,Dp,sd,COL.n)+lab(Ap,Dp,'?',COL.c);
+  [['A',Ap],['B',Bp],['C',Cp],['D',Dp]].forEach(([l,X])=>{const d=unit([X[0]-cen[0],X[1]-cen[1]]);s+=tx(X[0]+d[0]*14,X[1]+d[1]*14,l,'#0f172a',15,.2)});
+  return svg(280,230,s)}
+function gridSVG(P,Q){const c=20,o=36,X=x=>o+x*c,Y=y=>o+(10-y)*c;let s='';
+  for(let i=0;i<=10;i++){s+=`<path d="M${X(i)},${Y(0)} L${X(i)},${Y(10)}" stroke="${i?'#e2e8f0':'#64748b'}" stroke-width="${i?1:2}"/><path d="M${X(0)},${Y(i)} L${X(10)},${Y(i)}" stroke="${i?'#e2e8f0':'#64748b'}" stroke-width="${i?1:2}"/>`;
+    if(i%2===0){s+=`<text x="${X(i)}" y="${Y(0)+13}" font-size="11" text-anchor="middle" fill="#64748b">${i}</text>`;if(i)s+=`<text x="${X(0)-10}" y="${Y(i)+4}" font-size="11" text-anchor="middle" fill="#64748b">${i}</text>`}}
+  s+=seg([X(P[0]),Y(P[1])],[X(Q[0]),Y(Q[1])],COL.c,4,.2);
+  s+=`<circle cx="${X(P[0])}" cy="${Y(P[1])}" r="5" fill="#0f172a"/><circle cx="${X(Q[0])}" cy="${Y(Q[1])}" r="5" fill="#0f172a"/>`;
+  const lx=(Pt,Ot)=>{const dx=Pt[0]>=Ot[0]?18:-18,dy=Pt[1]>=Ot[1]?-12:12;return[X(Pt[0])+dx,Y(Pt[1])+dy]};
+  const a=lx(P,Q),b=lx(Q,P);
+  s+=`<text x="${a[0]}" y="${a[1]}" font-size="14" font-weight="700" text-anchor="middle" fill="#0f172a">A(${P[0]},${P[1]})</text><text x="${b[0]}" y="${b[1]}" font-size="14" font-weight="700" text-anchor="middle" fill="#0f172a">B(${Q[0]},${Q[1]})</text>`;
+  return svg(272,272,s)}
+
+/* ===== יצירת שאלות ===== */
+const numQ=o=>Object.assign({type:'num',tol:1e-9},o);
+const mcQ=o=>Object.assign({type:'mc'},o);
+const ROTS=[0,35,90,150,200,270,320];
+function stepsHyp(a,b){const s=a*a+b*b,r=Math.sqrt(s);return[
+ {m:`${A('a')}² + ${B('b')}² = ${C('c')}²`,w:'כותבים את משפט פיתגורס'},
+ {m:`${A(a)}² + ${B(b)}² = ${C('c')}²`,w:'מציבים את הניצבים'},
+ {m:`${a*a} + ${b*b} = ${C('c')}²`,w:'מחשבים כל ריבוע'},
+ {m:`${s} = ${C('c')}²`,w:'מחברים'},
+ {m:`${C('c')} = √${s} ${eqs(r)}`,w:'מוציאים שורש – וזה היתר'}]}
+function stepsLeg(c,b){const d=c*c-b*b,r=Math.sqrt(d);return[
+ {m:`${A('a')}² + ${B('b')}² = ${C('c')}²`,w:'כותבים את משפט פיתגורס'},
+ {m:`${A('a')}² + ${B(b)}² = ${C(c)}²`,w:'מציבים: היתר לבד באגף ימין'},
+ {m:`${A('a')}² + ${b*b} = ${c*c}`,w:'מחשבים ריבועים'},
+ {m:`${A('a')}² = ${c*c} − ${b*b} = ${d}`,w:'מחפשים ניצב ← מחסרים'},
+ {m:`${A('a')} = √${d} ${eqs(r)}`,w:'מוציאים שורש'}]}
+function diagHyp(a,b){return v=>{const s=a*a+b*b;
+ if(near(v,a+b))return{tag:'addsides',msg:`חיברתם את הצלעות עצמן (${M(a+' + '+b)}). מחברים את <b>הריבועים</b>: ${M(a+'² + '+b+'²')}.`};
+ if(near(v,s))return{tag:'noroot',msg:`כמעט! ${M(s)} זה ${M(C('c')+'²')}. נשאר להוציא שורש: ${M('√'+s)}.`};
+ if(near(v,Math.sqrt(Math.abs(a*a-b*b)))||near(v,Math.abs(a*a-b*b)))return{tag:'legsub',msg:'חיסרתם במקום לחבר. מחפשים את היתר – הצלע הארוכה – ולכן מחברים.'};
+ if(near(v,2*a+2*b)||near(v,Math.sqrt(2*a+2*b)))return{tag:'square',msg:`זהירות: ${M(a+'²')} זה ${M(a+'·'+a)} ולא ${M(a+'·2')}.`};
+ if(v<=Math.max(a,b))return{tag:'hyp',msg:'התשובה קטנה מאחד הניצבים – אבל היתר הוא הצלע <b>הארוכה ביותר</b>.'};
+ return null}}
+function diagLeg(c,b){return v=>{const d=c*c-b*b;
+ if(near(v,c-b))return{tag:'addsides',msg:`חיסרתם את הצלעות עצמן. מחסרים את <b>הריבועים</b>: ${M(c+'² − '+b+'²')}.`};
+ if(near(v,d))return{tag:'noroot',msg:`כמעט! ${M(d)} זה ${M(A('a')+'²')}. נשאר להוציא שורש.`};
+ if(near(v,Math.sqrt(c*c+b*b))||near(v,c+b)||near(v,c*c+b*b))return{tag:'legsub',msg:'חיברתם – אבל מחפשים <b>ניצב</b>, והוא קצר מהיתר. לכן מחסרים: הריבוע של היתר פחות הריבוע של הניצב.'};
+ if(near(v,2*c-2*b)||near(v,Math.sqrt(2*c-2*b)))return{tag:'square',msg:`זהירות: ${M(c+'²')} זה ${M(c+'·'+c)} ולא ${M(c+'·2')}.`};
+ if(v>=c)return{tag:'hyp',msg:'ניצב תמיד <b>קצר</b> מהיתר – התשובה גדולה מדי.'};
+ return null}}
+const YN=(yes,msgY,msgN,tag)=>[{t:'כן',ok:yes,msg:msgY,tag},{t:'לא',ok:!yes,msg:msgN,tag}];
+
+function gen(st){const L=[];
+ if(st===0){
+  shuffle([3,4,5,6,7,8,9,11,12,15]).slice(0,6).sort((x,y)=>x-y).forEach((n,i)=>L.push(numQ({p:`כמה זה ${M(n+'²')}?`,fig:i<2?gridSquare(n):'',ans:n*n,tag:'square',
+    diag:v=>(near(v,2*n))?{tag:'square',msg:`זהירות! ${M(n+'²')} זה ${M(n+'·'+n)} ולא ${M(n+'·2')}.`}:null,steps:[{m:`${n}² = ${n}·${n} = ${n*n}`,w:'כופלים את המספר בעצמו'}]})));
+  shuffle([4,5,6,7,8,9,10,12]).slice(0,6).sort((x,y)=>x-y).forEach(n=>L.push(numQ({p:`כמה זה ${M('√'+n*n)}?`,ans:n,tag:'root',
+    diag:v=>near(v,n*n/2)?{tag:'root',msg:`שורש זה לא חצי! מחפשים מספר שכפול עצמו נותן ${M(n*n)}.`}:near(v,n*n)?{tag:'root',msg:'זה המספר שבתוך השורש. מחפשים מספר שכפול עצמו נותן אותו.'}:null,
+    steps:[{m:`${n}·${n} = ${n*n}`,w:`מחפשים מספר שכפול עצמו נותן ${n*n}`},{m:`√${n*n} = ${n}`,w:'זה השורש'}]})));
+  [6,8].forEach(k=>L.push(numQ({p:`לריבוע יש צלע באורך ${k} ס״מ. מה שטח הריבוע (בסמ״ר)?`,fig:gridSquare(k),ans:k*k,tag:'square',
+    diag:v=>near(v,4*k)?{tag:'read',msg:'זה ההיקף (סכום 4 הצלעות). שטח = צלע·צלע.'}:near(v,2*k)?{tag:'square',msg:`שטח = ${M(k+'·'+k)} ולא ${M(k+'·2')}.`}:null,steps:[{m:`${k}·${k} = ${k}² = ${k*k}`,w:'שטח ריבוע = צלע בריבוע'}]})));
+  L.push(numQ({p:'שטח של ריבוע הוא 49 סמ״ר. מה אורך הצלע שלו?',fig:gridSquare(7,'?'),ans:7,tag:'root',diag:v=>near(v,24.5)?{tag:'root',msg:'לא חצי! איזה מספר כפול עצמו נותן 49?'}:null,steps:[{m:'?·? = 49',w:'מחפשים מספר שכפול עצמו נותן 49'},{m:'√49 = 7',w:'זה השורש – אורך הצלע'}]}));
+  L.push(mcQ({p:'במשולש ישר־זווית, היתר הוא תמיד הצלע…',tag:'concept',opts:shuffle([{t:'הארוכה ביותר',ok:true},{t:'הקצרה ביותר',msg:'היתר מול הזווית הגדולה ביותר (90°), ולכן הוא הארוך ביותר.'},{t:'האמצעית',msg:'היתר מול הזווית הגדולה ביותר (90°), ולכן הוא הארוך ביותר.'}]),steps:[{t:'מול הזווית הגדולה נמצאת הצלע הגדולה. הזווית הישרה היא הגדולה במשולש – ולכן היתר הוא הארוך ביותר.'}]}));
+  L.push(mcQ({p:'היתר נמצא…',tag:'concept',opts:shuffle([{t:'מול הזווית הישרה',ok:true},{t:'ליד הזווית הישרה',msg:'הצלעות שליד הזווית הישרה הן הניצבים.'},{t:'אין לו קשר לזווית',msg:'יש קשר! היתר תמיד מול הזווית הישרה.'}]),steps:[{t:'מסמנים את הזווית הישרה ⌐. הצלע ש"מסתכלת" עליה מהצד השני – היא היתר.'}]}));
+  L.push(mcQ({p:'שתי הצלעות שיוצרות את הזווית הישרה נקראות…',tag:'concept',opts:shuffle([{t:'ניצבים',ok:true},{t:'יתרים',msg:'יש רק יתר אחד – מול הזווית הישרה.'},{t:'אלכסונים',msg:'אלכסונים יש במצולעים כמו מלבן, לא במשולש.'}]),steps:[{t:'הן "ניצבות" זו לזו – יוצרות 90°. לכן הן ניצבים.'}]}));
+  L.push(mcQ({p:`${M('√50')} נמצא…`,tag:'root',opts:shuffle([{t:'בין 7 ל־8',ok:true},{t:'בין 6 ל־7',msg:`${M('7² = 49')}, כלומר 50 כבר גדול מ־49.`},{t:'בין 25 ל־26',msg:'שורש זה לא חצי! מחפשים מספר שכפול עצמו קרוב ל־50.'}]),steps:[{m:'7² = 49 , 8² = 64',w:'מחפשים ריבועים מסביב ל־50'},{m:'49 < 50 < 64 → 7 < √50 < 8',w:'לכן השורש בין 7 ל־8'}]}));
+  L.push(mcQ({p:`${M('√20')} נמצא…`,tag:'root',opts:shuffle([{t:'בין 4 ל־5',ok:true},{t:'בין 3 ל־4',msg:`${M('4² = 16')} – ו־20 גדול מ־16.`},{t:'בין 10 ל־11',msg:'שורש זה לא חצי!'}]),steps:[{m:'4² = 16 , 5² = 25',w:'מחפשים ריבועים מסביב ל־20'},{m:'16 < 20 < 25 → 4 < √20 < 5',w:'לכן השורש בין 4 ל־5'}]}));
+ }
+ if(st===1){
+  const LET=[['p','q','r'],['x','y','z'],['k','m','n'],['d','e','f'],['s','t','w'],['g','h','j']];
+  const SH=[[3,4],[4,3],[5,12],[12,5],[6,8],[8,15]];
+  for(let i=0;i<6;i++){const lt=shuffle(LET[i]);const [a,b]=pick(SH);
+   const bad='הצלע הזו יוצאת מהזווית הישרה – היא ניצב. היתר נמצא <b>מול</b> הזווית הישרה.';
+   L.push(mcQ({p:'איזו צלע היא היתר?',fig:triSVG({a,b,la:lt[0],lb:lt[1],lc:lt[2],col:false,rot:pick(ROTS),flip:Math.random()<.5}),tag:'hyp',
+    opts:shuffle([{t:M(lt[2]),ok:true},{t:M(lt[0]),msg:bad,tag:'hyp'},{t:M(lt[1]),msg:bad,tag:'hyp'}]),
+    steps:[{t:'מוצאים את הזווית הישרה (הריבוע הקטן בפינה).'},{t:`הצלע שמולה – ${M(lt[2])} – היא היתר. היא גם הארוכה ביותר.`}]}))}
+  for(let i=0;i<5;i++){const lt=shuffle(LET[(i+2)%6]);const [a,b]=pick(SH);const [x,y,z]=lt;
+   const bad='בצד שעומד לבד בשוויון צריך להיות <b>היתר</b> – הצלע שמול הזווית הישרה.';
+   L.push(mcQ({p:'איזה שוויון נכון במשולש שבשרטוט?',fig:triSVG({a,b,la:x,lb:y,lc:z,col:false,rot:pick(ROTS),flip:Math.random()<.5}),tag:'hyp',
+    opts:shuffle([{t:M(`${x}² + ${y}² = ${z}²`),ok:true},{t:M(`${x}² + ${z}² = ${y}²`),msg:bad,tag:'hyp'},{t:M(`${y}² + ${z}² = ${x}²`),msg:bad,tag:'hyp'},{t:M(`${x} + ${y} = ${z}`),msg:'מחברים את <b>הריבועים</b> של הצלעות, לא את הצלעות עצמן.',tag:'addsides'}]),
+    steps:[{t:`היתר (מול הזווית הישרה) הוא ${M(z)}.`},{m:`${x}² + ${y}² = ${z}²`,w:'ניצב² + ניצב² = יתר²'}]}))}
+  shuffle([[3,4],[6,8],[5,12],[8,6],[9,12]]).forEach(([a,b])=>L.push(numQ({p:`השלימו: ${M(`${A(a)}² + ${B(b)}² = ?`)}`,fig:triSVG({a,b,la:a,lb:b,lc:'',rot:pick([0,90,180,270])}),ans:a*a+b*b,tag:'square',
+    diag:v=>near(v,a+b)?{tag:'addsides',msg:`חיברתם את הצלעות. צריך לחבר את הריבועים: ${M(a+'·'+a+' + '+b+'·'+b)}.`}:near(v,2*a+2*b)?{tag:'square',msg:`${M(a+'²')} זה ${M(a+'·'+a)} ולא ${M(a+'·2')}.`}:near(v,Math.sqrt(a*a+b*b))?{tag:'read',msg:'זה כבר היתר עצמו (אחרי שורש). כאן מבקשים רק את סכום הריבועים.'}:null,
+    steps:[{m:`${A(a)}² + ${B(b)}² = ${a*a} + ${b*b} = ${C(a*a+b*b)}`,w:'מחשבים כל ריבוע ומחברים'}]})));
+  [[9,16],[36,64],[25,144]].forEach(([x,y])=>L.push(numQ({p:'על כל ניצב בנו ריבוע, והשטחים רשומים בשרטוט. מה שטח הריבוע שעל היתר?',fig:sqFig({labels:[x,y,'?']})+'<div class="small">השרטוט להמחשה בלבד</div>',ans:x+y,tag:'concept',
+    diag:v=>near(v,Math.sqrt(x+y))?{tag:'read',msg:'זה אורך היתר. שאלו על <b>שטח</b> הריבוע – פשוט מחברים את שני השטחים.'}:near(v,Math.sqrt(x)+Math.sqrt(y))?{tag:'addsides',msg:'חיברתם צלעות. כאן נתונים שטחים – מחברים את השטחים.'}:null,
+    steps:[{m:`${A(x)} + ${B(y)} = ${C(x+y)}`,w:'שטח הריבוע הגדול = סכום שני הריבועים הקטנים – זה בדיוק משפט פיתגורס!'}]})));
+  L.push(numQ({p:'שטח הריבוע שעל היתר הוא 100, ושטח הריבוע שעל ניצב אחד הוא 36. מה שטח הריבוע שעל הניצב השני?',fig:sqFig({labels:['36','?','100']})+'<div class="small">השרטוט להמחשה בלבד</div>',ans:64,tag:'legsub',
+    diag:v=>near(v,136)?{tag:'legsub',msg:'חיברתם – אבל הריבוע הגדול הוא הסכום. כדי למצוא ריבוע קטן מחסרים: 100 פחות 36.'}:null,steps:[{m:`${C(100)} − ${A(36)} = ${B(64)}`,w:'הגדול = שני הקטנים יחד, לכן קטן = גדול פחות הקטן השני'}]}));
+ }
+ if(st===2){
+  [[3,4],[6,8],[5,12],[8,6],[9,12],[8,15],[12,16],[7,24]].forEach(([a,b])=>L.push(numQ({p:'מה אורך היתר? (בס״מ)',fig:triSVG({a,b,la:a,lb:b,lc:'?',rot:pick(ROTS),flip:Math.random()<.5}),ans:Math.sqrt(a*a+b*b),tag:'noroot',diag:diagHyp(a,b),steps:stepsHyp(a,b)})));
+  [[5,3],[10,6],[13,12],[10,8],[17,8],[15,9],[25,7],[26,10]].forEach(([c,b])=>L.push(numQ({p:'מה אורך הניצב החסר? (בס״מ)',fig:triSVG({a:Math.sqrt(c*c-b*b),b,la:'?',lb:b,lc:c,rot:pick(ROTS),flip:Math.random()<.5}),ans:Math.sqrt(c*c-b*b),tag:'legsub',diag:diagLeg(c,b),steps:stepsLeg(c,b)})));
+  shuffle([[2,3],[4,7],[5,6],[3,5]]).slice(0,2).forEach(([a,b])=>L.push(numQ({p:'מה אורך היתר? (עגלו לספרה אחת אחרי הנקודה)',fig:triSVG({a,b,la:a,lb:b,lc:'?',rot:pick(ROTS)}),ans:r1(Math.sqrt(a*a+b*b)),tol:.06,tag:'noroot',diag:diagHyp(a,b),steps:stepsHyp(a,b)})));
+  shuffle([[6,4],[9,5],[7,3],[8,5]]).slice(0,2).forEach(([c,b])=>L.push(numQ({p:'מה אורך הניצב החסר? (עגלו לספרה אחת אחרי הנקודה)',fig:triSVG({a:Math.sqrt(c*c-b*b),b,la:'?',lb:b,lc:c,rot:pick(ROTS)}),ans:r1(Math.sqrt(c*c-b*b)),tol:.06,tag:'legsub',diag:diagLeg(c,b),steps:stepsLeg(c,b)})));
+ }
+ if(st===3){
+  shuffle([[3,4,5,1],[5,12,13,1],[4,5,6,0],[6,7,9,0],[9,12,15,1],[5,6,8,0],[8,15,17,1]]).slice(0,5).forEach(([x,y,z,yes])=>{const sides=shuffle([x,y,z]);const s=x*x+y*y,zz=z*z;
+   L.push(mcQ({p:`למשולש צלעות באורכים: <span class="chips">${sides.map(v=>`<span>${v}</span>`).join('')}</span><br>האם המשולש ישר־זווית?`,tag:'converse',
+    opts:YN(!!yes,'בדקו שוב: האם סכום הריבועים של שתי הצלעות הקצרות שווה לריבוע של הארוכה?','בדקו שוב: האם סכום הריבועים של שתי הצלעות הקצרות שווה לריבוע של הארוכה?','converse'),
+    steps:[{t:`הצלע הארוכה (${z}) היא "המועמדת" להיות יתר.`},{m:`${A(x)}² + ${B(y)}² = ${x*x} + ${y*y} = ${s}`,w:'מחשבים את סכום הריבועים של הקצרות'},{m:`${C(z)}² = ${zz}`,w:'מחשבים את ריבוע הארוכה'},{t:yes?`${M(s+' = '+zz)} ← שווה, ולכן המשולש ישר־זווית ✓`:`${M(s+' ≠ '+zz)} ← לא שווה, ולכן המשולש אינו ישר־זווית ✗`}]}))});
+  L.push(numQ({p:'סולם נשען על קיר. רגל הסולם רחוקה 6 מ׳ מהקיר, והסולם מגיע לגובה 8 מ׳. מה אורך הסולם?',fig:ladderSVG(6,8,'?'),ans:10,tag:'noroot',diag:diagHyp(6,8),steps:stepsHyp(6,8)}));
+  L.push(numQ({p:'סולם באורך 13 מ׳ נשען על קיר. רגל הסולם רחוקה 5 מ׳ מהקיר. לאיזה גובה מגיע הסולם?',fig:ladderSVG(5,'?',13),ans:12,tag:'legsub',diag:diagLeg(13,5),steps:stepsLeg(13,5).map(s=>Object.assign({},s,{m:s.m.replace(/<b class="ca">a<\/b>/g,B('h')).replace(/<b class="cb">b<\/b>/g,A('d')).replace(/<b class="cb">5<\/b>/g,A('5'))}))}));
+  L.push(numQ({p:'סולם כבאים באורך 25 מ׳ מגיע לחלון בגובה 24 מ׳. כמה מטרים רחוקה רגל הסולם מהבניין?',fig:ladderSVG('?',24,25),ans:7,tag:'legsub',diag:diagLeg(25,24),steps:stepsLeg(25,24)}));
+  [['מסך טלוויזיה ברוחב 80 ס״מ ובגובה 60 ס״מ. גודל מסך נמדד לפי האלכסון. מה אורך האלכסון?',80,60],['מסך טלפון ברוחב 9 ס״מ ובגובה 12 ס״מ. מה אורך אלכסון המסך?',9,12],['מגרש בצורת מלבן, 30 מ׳ על 40 מ׳. דנה רצה באלכסון מפינה לפינה. כמה מטרים רצה?',30,40]]
+   .forEach(([p,w,h])=>L.push(numQ({p,fig:rectSVG(w,h,'?'),ans:Math.hypot(w,h),tag:'noroot',diag:diagHyp(w,h),steps:[{t:'האלכסון מחלק את המלבן לשני משולשים ישרי־זווית – והוא היתר.'}].concat(stepsHyp(w,h))})));
+  const OP=[{k:'addsides',t:'חיבור הצלעות במקום הריבועים'},{k:'noroot',t:'שכחה להוציא שורש בסוף'},{k:'legsub',t:'חיבור במקום חיסור'},{k:'square',t:'חישוב ריבוע ככפל ב־2'}];
+  const NAMES=['נועה','יואב','מאיה','איתי','שירה'];
+  const T={addsides:()=>{const [a,b]=pick([[6,8],[5,12],[9,12]]);return{fig:triSVG({a,b,la:a,lb:b,lc:'?'}),lines:[`${a} + ${b} = c`,`c = ${a+b}`],steps:stepsHyp(a,b)}},
+   noroot:()=>{const [a,b]=pick([[3,4],[6,8],[8,15]]);return{fig:triSVG({a,b,la:a,lb:b,lc:'?'}),lines:[`${a}² + ${b}² = c²`,`${a*a} + ${b*b} = c²`,`c = ${a*a+b*b}`],steps:stepsHyp(a,b)}},
+   legsub:()=>{const [c,b]=pick([[10,6],[13,5],[17,8]]);return{fig:triSVG({a:Math.sqrt(c*c-b*b),b,la:'?',lb:b,lc:c}),lines:[`x² = ${c}² + ${b}²`,`x² = ${c*c} + ${b*b} = ${c*c+b*b}`,`x = √${c*c+b*b}`],steps:stepsLeg(c,b)}},
+   square:()=>{const [a,b]=pick([[3,4],[6,8],[5,12]]);return{fig:triSVG({a,b,la:a,lb:b,lc:'?'}),lines:[`${a}² + ${b}² = c²`,`${2*a} + ${2*b} = c²`,`c = √${2*a+2*b}`],steps:stepsHyp(a,b)}}};
+  shuffle(['addsides','noroot','legsub','square']).concat([pick(['noroot','legsub'])]).forEach((k,i)=>{const t=T[k]();
+   L.push(mcQ({p:`הנה הפתרון של ${NAMES[i]}. איפה הטעות?`,fig:t.fig+`<div class="note">${t.lines.map(l=>`<div>${l}</div>`).join('')}</div>`,tag:k,
+    hint:{t:'עברו שורה אחרי שורה: האם חישבו כל ריבוע נכון? חיברו או חיסרו? הוציאו שורש בסוף?'},opts:OP.map(o=>({t:o.t,ok:o.k===k,tag:k,msg:'לא זו הטעות. עברו שורה אחרי שורה ובדקו כל חישוב.'})),steps:[{t:'כך פותרים נכון:'}].concat(t.steps)}))});
+  [[10,12,0],[13,12,1],[8,8,0],[25,24,1]].forEach(([c,x,yes])=>L.push(mcQ({p:`במשולש ישר־זווית היתר הוא ${c} ס״מ. האם אחד הניצבים יכול להיות באורך ${x} ס״מ?`,tag:'hyp',
+   opts:YN(!!yes,'היתר הוא הצלע הארוכה ביותר – וניצב באורך הזה קצר ממנו, אז זה אפשרי.','היתר הוא תמיד הצלע הארוכה ביותר – ניצב לא יכול להיות שווה לו או ארוך ממנו.','hyp'),
+   steps:[{m:`${C('c')}² = ${A('a')}² + ${B('b')}²`,w:'הריבוע של היתר גדול מכל ריבוע של ניצב'},{t:yes?`${M(x+' < '+c)} ← אפשרי ✓`:`${M(x+' ≥ '+c)} ← לא אפשרי ✗`}]})));
+ }
+ if(st===4){
+  shuffle([[3,4],[4,3],[6,8],[8,6],[2,5]]).forEach(([dx,dy])=>{const px=rnd(11-dx),py=rnd(11-dy),down=Math.random()<.5;
+   const P=[px,down?py+dy:py],Q=[px+dx,down?py:py+dy];const exact=Math.sqrt(dx*dx+dy*dy),dec=!Number.isInteger(exact);
+   L.push(numQ({p:`מה המרחק בין הנקודות ${M('A')} ו־${M('B')}?<br><span class="small">כל משבצת היא 1.${dec?' עגלו לספרה אחת אחרי הנקודה.':''}</span>`,fig:gridSVG(P,Q),ans:dec?r1(exact):exact,tol:dec?.06:1e-9,tag:'multi',
+    diag:v=>near(v,dx+dy)?{tag:'addsides',msg:'ספרתם משבצות ימינה ולמעלה – זו דרך "במדרגות". המרחק הוא קו ישר: היתר של משולש.'}:near(v,dx*dx+dy*dy)?{tag:'noroot',msg:'כמעט! נשאר להוציא שורש.'}:null,
+    steps:[{t:'משלימים משולש ישר־זווית: הולכים אופקית ואז אנכית.'},{m:`${A('a')} = ${Q[0]} − ${P[0]} = ${dx}`,w:'הפרש ה־x – ניצב אופקי'},{m:`${B('b')} = |${Q[1]} − ${P[1]}| = ${dy}`,w:'הפרש ה־y – ניצב אנכי'},{m:`AB² = ${dx}² + ${dy}² = ${dx*dx+dy*dy}`,w:'פיתגורס'},{m:`AB = √${dx*dx+dy*dy} ${eqs(exact)}`,w:'מוציאים שורש'}]}))});
+  shuffle([[10,6],[13,5],[25,7],[17,8]]).slice(0,3).forEach(([d,w])=>{const h=Math.sqrt(d*d-w*w),P=2*(w+h);
+   L.push(numQ({p:`במלבן צלע אחת ${w} ס״מ והאלכסון ${d} ס״מ. מה <b>היקף</b> המלבן?`,fig:rectSVG(w,'?',d),ans:P,tag:'read',
+    diag:v=>near(v,h)?{tag:'read',msg:'מצאתם את הצלע החסרה – מצוין! אבל שאלו על <b>ההיקף</b>.'}:near(v,w+h)?{tag:'read',msg:'זה חצי היקף – למלבן יש 4 צלעות.'}:null,
+    steps:[{t:'שלב 1: האלכסון יוצר משולש ישר־זווית – מוצאים את הצלע החסרה.'},{m:`${B('h')}² = ${d}² − ${w}² = ${d*d} − ${w*w} = ${h*h}`,w:'מחפשים ניצב ← מחסרים'},{m:`${B('h')} = √${h*h} = ${h}`,w:'מוציאים שורש'},{m:`P = 2·(${w} + ${h}) = ${P}`,w:'שלב 2: היקף = 2·(אורך + רוחב)'}]}))});
+  shuffle([[5,6],[13,10],[10,12],[17,16]]).slice(0,3).forEach(([s,b])=>{const hb=b/2,h=Math.sqrt(s*s-hb*hb);
+   L.push(numQ({p:`משולש שווה־שוקיים: כל שוק ${s} ס״מ והבסיס ${b} ס״מ. מה אורך הגובה לבסיס?`,fig:isoSVG(s,b,'h'),ans:h,tag:'multi',
+    diag:v=>near(v,Math.sqrt(Math.max(0,s*s-b*b)))&&s>b?{tag:'multi',msg:'השתמשתם בכל הבסיס. הגובה חוצה את הבסיס לשניים – לוקחים <b>חצי</b>.'}:near(v,s-hb)?{tag:'addsides',msg:'חיסרתם צלעות. מחסרים את הריבועים.'}:near(v,s*s-hb*hb)?{tag:'noroot',msg:'כמעט! נשאר להוציא שורש.'}:null,
+    steps:[{t:'הגובה חוצה את הבסיס ויוצר משולש ישר־זווית.'},{m:`${A(b)} : 2 = ${A(hb)}`,w:'חצי בסיס – ניצב'},{m:`${B('h')}² = ${C(s)}² − ${A(hb)}² = ${s*s} − ${hb*hb} = ${h*h}`,w:'השוק היא היתר ← מחסרים'},{m:`${B('h')} = √${h*h} = ${h}`,w:'מוציאים שורש'}]}))});
+  shuffle([[6,8],[10,24],[16,12],[18,24]]).slice(0,3).forEach(([d1,d2])=>{const x=d1/2,y=d2/2,s=Math.hypot(x,y);
+   L.push(numQ({p:`אורכי האלכסונים של מעוין הם ${d1} ס״מ ו־${d2} ס״מ. מה אורך צלע המעוין?`,fig:rhombSVG(d1,d2),ans:s,tag:'multi',
+    diag:v=>near(v,Math.hypot(d1,d2))?{tag:'multi',msg:'במעוין האלכסונים חוצים זה את זה – לוקחים <b>חצי</b> מכל אלכסון.'}:near(v,x+y)?{tag:'addsides',msg:'חיברתם צלעות. מחברים את הריבועים.'}:near(v,x*x+y*y)?{tag:'noroot',msg:'כמעט! נשאר להוציא שורש.'}:null,
+    steps:[{t:'במעוין האלכסונים מאונכים וחוצים זה את זה – נוצרים 4 משולשים ישרי־זווית.'},{m:`${A(x)} , ${B(y)}`,w:'חצאי האלכסונים – הניצבים'},{m:`${C('s')}² = ${x}² + ${y}² = ${x*x+y*y}`,w:'פיתגורס'},{m:`${C('s')} = √${x*x+y*y} = ${s}`,w:'מוציאים שורש'}]}))});
+  shuffle([[9,12,20],[6,8,24],[3,4,12],[12,16,21]]).slice(0,3).forEach(([p,q,sd])=>{const ac=Math.hypot(p,q),ad=Math.hypot(ac,sd);
+   L.push(numQ({p:'בשרטוט שני משולשים ישרי־זווית. מה אורך AD?',fig:twoTriSVG(p,q,sd),ans:ad,tag:'multi',
+    diag:v=>near(v,ac)?{tag:'multi',msg:'מצאתם את AC – זה שלב 1! עכשיו משתמשים ב־AC כניצב במשולש ACD.'}:near(v,p+q+sd)?{tag:'addsides',msg:'חיברתם צלעות. כאן צריך פיתגורס פעמיים.'}:near(v,Math.hypot(q,sd))||near(v,Math.hypot(p,sd))?{tag:'multi',msg:'במשולש השני הניצבים הם AC ו־CD – קודם צריך למצוא את AC.'}:null,
+    steps:[{t:'שלב 1 – במשולש ABC:'},{m:`AC² = ${A(p)}² + ${B(q)}² = ${p*p+q*q} → AC = ${ac}`,w:'מוצאים את הצלע המשותפת'},{t:'שלב 2 – במשולש ACD:'},{m:`AD² = ${ac}² + ${sd}² = ${ac*ac+sd*sd} → AD = ${ad}`,w:'AC הוא עכשיו ניצב'}]}))});
+  shuffle([[13,5],[10,6],[17,8],[15,9]]).slice(0,3).forEach(([c,a])=>{const b=Math.sqrt(c*c-a*a),S=a*b/2;
+   L.push(numQ({p:`במשולש ישר־זווית היתר ${c} ס״מ וניצב אחד ${a} ס״מ. מה <b>שטח</b> המשולש (בסמ״ר)?`,fig:triSVG({a,b,la:a,lb:'?',lc:c,rot:pick([0,90,180,270])}),ans:S,tag:'read',
+    diag:v=>near(v,b)?{tag:'read',msg:'מצאתם את הניצב השני – מצוין! עכשיו מחשבים <b>שטח</b>.'}:near(v,a*b)?{tag:'read',msg:'שכחתם לחלק ב־2: שטח משולש = ניצב·ניצב : 2.'}:near(v,a*c/2)?{tag:'multi',msg:'היתר אינו גובה. בשטח משולש ישר־זווית כופלים את שני <b>הניצבים</b>.'}:null,
+    steps:[{m:`${B('b')}² = ${c}² − ${a}² = ${c*c-a*a} → ${B('b')} = ${b}`,w:'שלב 1: מוצאים את הניצב השני'},{m:`S = ${A(a)}·${B(b)} : 2 = ${S}`,w:'שלב 2: שטח = ניצב·ניצב : 2'}]}))});
+ }
+ return L}
+
+/* ===== שלבים ===== */
+const STAGES=[
+ {ic:'🧠',name:'תזכורת',lvl:'שלב 0',min:8,goals:['מה זה מספר בריבוע (חזקה 2)','מה זה שורש','מה הם ניצבים ויתר'],
+  ex:()=>({fig:gridSquare(5),steps:[{m:'5² = 5·5 = 25',w:'ריבוע = מספר כפול עצמו (כמו שטח ריבוע)'},{m:'√25 = 5',w:'שורש = הדרך חזרה: איזה מספר כפול עצמו נותן 25?'},{t:'⚠️ שורש זה לא חצי: √25 הוא 5, לא 12.5'}]})},
+ {ic:'⭐',name:'ידע',lvl:'★',min:10,goals:['לזהות את היתר – גם כשהמשולש מסובב','לכתוב את משפט פיתגורס נכון'],
+  ex:()=>({fig:triSVG({a:4,b:3,la:'p',lb:'q',lc:'r',col:false,rot:150}),steps:[{t:'1. מוצאים את הזווית הישרה (הריבוע הקטן).'},{t:`2. הצלע שמולה – ${M('r')} – היא היתר.`},{m:'p² + q² = r²',w:'ניצב² + ניצב² = יתר²'}]})},
+ {ic:'⭐⭐',name:'יישום',lvl:'★★',min:14,goals:['למצוא יתר','למצוא ניצב (מחסרים!)','לעגל תשובה'],
+  ex:()=>({fig:triSVG({a:12,b:5,la:'?',lb:5,lc:13}),steps:stepsLeg(13,5)})},
+ {ic:'⭐⭐⭐',name:'הבנה',lvl:'★★★',min:14,goals:['לבדוק אם משולש הוא ישר־זווית','לפתור בעיות מהחיים','לזהות טעויות בפתרון'],
+  ex:()=>({fig:'<span class="chips"><span>9</span><span>15</span><span>12</span></span>',steps:[{t:'האם המשולש ישר־זווית? הצלע הארוכה (15) היא "המועמדת" ליתר.'},{m:`${A(9)}² + ${B(12)}² = 81 + 144 = 225`,w:'סכום הריבועים של הקצרות'},{m:`${C(15)}² = 225`,w:'ריבוע הארוכה'},{t:'שווה ← כן, ישר־זווית ✓'}]})},
+ {ic:'🏆',name:'חשיבה גבוהה',lvl:'★★★★',min:16,goals:['מרחק בין נקודות במערכת צירים','למצוא משולש ישר־זווית "מוסתר" בצורה','שאלות של כמה שלבים'],
+  ex:()=>({fig:gridSVG([1,1],[4,5]),steps:[{t:'משלימים משולש: הולכים אופקית ואז אנכית.'},{m:`${A('a')} = 4 − 1 = 3`,w:'ניצב אופקי'},{m:`${B('b')} = 5 − 1 = 4`,w:'ניצב אנכי'},{m:'AB² = 3² + 4² = 25',w:'פיתגורס'},{m:'AB = √25 = 5',w:'מוציאים שורש'}]})}];
+const TIPS={square:'חזקה 2: מספר כפול עצמו (7² = 7·7), לא כפול 2.',root:'שורש: מחפשים מספר שכפול עצמו נותן את המספר שבתוך השורש.',hyp:'היתר נמצא מול הזווית הישרה, והוא הצלע הארוכה ביותר.',addsides:'מחברים את הריבועים – לא את הצלעות עצמן.',noroot:'בסוף מוציאים שורש – אחרת מקבלים את c² ולא את c.',legsub:'מחפשים ניצב? מחסרים: הריבוע של היתר פחות הריבוע של הניצב.',converse:'בדיקה: האם סכום הריבועים של שתי הצלעות הקצרות שווה לריבוע של הארוכה?',read:'קוראים את השאלה עד הסוף: מה שואלים – צלע? היקף? שטח?',multi:'בשאלה מורכבת: מסמנים בשרטוט משולש ישר־זווית ופותרים שלב אחר שלב.',concept:'מושגים: ניצבים, יתר, זווית ישרה.'};
+
+/* ===== מצב ושמירה ===== */
+let S={name:'',best:[null,null,null,null,null],tags:{}};
+try{const x=JSON.parse(localStorage.getItem('pyth_rm_v1')||'null');if(x)S=x}catch(e){}
+const save=()=>{try{localStorage.setItem('pyth_rm_v1',JSON.stringify(S))}catch(e){}};
+let Q=[],qi=0,cur=0,firstOK=0;
+const app=()=>$('app');
+const starsOf=n=>n==null?'':n>=18?'⭐⭐⭐':n>=14?'⭐⭐':n>=10?'⭐':'💪';
+
+/* ===== מסכים ===== */
+function show(h){clearT();app().innerHTML=h;window.scrollTo(0,0)}
+function startScreen(){show(`<div class="card"><h1>משפט פיתגורס 📐</h1>
+ <p>שעה של אימון – מהקל אל המאתגר.<br>כל אחד מתקדם בקצב שלו, ובכל טעות מקבלים הסבר.</p>
+ <p><b>איך קוראים לך?</b><br><input class="name" id="nm" value="${S.name||''}" placeholder="שם התלמיד/ה"></p>
+ <button class="btn big" onclick="saveName();hook(1)">יוצאים לדרך 🚀</button>
+ ${S.name?'<button class="btn sec" onclick="saveName();goMap()">ישר למפת המסע</button>':''}</div>`)}
+function saveName(){const v=($('nm')||{}).value;if(v!==undefined){S.name=v.trim();save()}}
+function hook(n){
+ if(n===1)show(`<div class="card"><h2>🚒 שריפה!</h2><p>יש חלון בגובה <b class="cb">12 מטר</b>. משאית הכבאים לא יכולה להתקרב – היא עומדת <b class="ca">5 מטרים</b> מהבניין.</p>
+  <p class="prompt">כמה ארוך צריך להיות הסולם? 🤔</p>${ladderSVG(5,12,'?')}<p>אי אפשר למדוד באוויר… אבל לפני כ־2,500 שנה, פיתגורס גילה סוד שפותר את זה בלי למדוד.</p>
+  <button class="btn big" onclick="hook(2)">גלו את הסוד ✨</button></div>`);
+ if(n===2){show(`<div class="card"><h2>הסוד של פיתגורס</h2><p>על כל צלע של משולש ישר־זווית בונים ריבוע. בואו נספור משבצות:</p>
+  ${sqFig({grid:true,sides:true})}<div class="counter" id="cnt"></div><div id="h2more"></div></div>`);
+  const sets=[['ca',9,COL.a],['cb',16,COL.b]];let t=600;
+  sets.forEach(([p,n,col],k)=>{for(let i=0;i<n;i++){later(()=>{$(p+i).classList.add('on');$('cnt').innerHTML=k?`${M(A(9)+' + '+B(i+1))}`:M(A(i+1))},t);t+=110}t+=500});
+  for(let i=0;i<25;i++){later(()=>{$('cc'+i).classList.add('on');$('cnt').innerHTML=M(`${A(9)} + ${B(16)} = ${C(i+1)}`)},t);t+=90}
+  later(()=>{$('h2more').innerHTML=`<div class="step"><span>שני הריבועים הקטנים ממלאים <b>בדיוק</b> את הגדול!</span></div>
+   <div class="big-formula fade">${M(`${A('3')}² + ${B('4')}² = ${C('5')}²`)}</div><div class="big-formula fade" style="animation-delay:.6s">${M(`${A('a')}² + ${B('b')}² = ${C('c')}²`)}</div>
+   <button class="btn big" onclick="hook(3)">חזרה לסולם 🚒</button>`},t+400)}
+ if(n===3){show(`<div class="card"><h2>פותרים את בעיית הסולם</h2>${ladderSVG(5,12,'?')}<div class="steps" id="hs"></div>
+  <div id="h3more"></div></div>`);
+  const st=stepsHyp(5,12);st.forEach((s,i)=>later(()=>{$('hs').insertAdjacentHTML('beforeend',stepHTML(s,0))},500+i*1100));
+  later(()=>{$('h3more').innerHTML=`<p class="prompt">🎉 הסולם צריך להיות באורך <b class="cc">13 מטר</b>!</p>
+   <div class="def"><b>ניצבים</b> (${M(A('a')+' , '+B('b'))}) – שתי הצלעות שיוצרות את הזווית הישרה.<br><b>יתר</b> (${M(C('c'))}) – הצלע שמול הזווית הישרה. היא הארוכה ביותר.</div>
+   <div class="warn">⚠️ <b>טעות נפוצה:</b> ${M('5 + 12 = 17')} ✗<br>מחברים את <b>הריבועים</b> – לא את הצלעות!</div>
+   <button class="btn big" onclick="goMap()">למפת המסע 🗺️</button>`},500+st.length*1100)}}
+function stepHTML(s,i){return `<div class="step" style="animation-delay:${i*0.45}s">${s.m?`<span class="mline">${M(s.m)}</span>`:`<span>${s.t}</span>`}${s.w?`<span class="why">${s.w}</span>`:''}</div>`}
+function goMap(){saveName();show(`<div class="card"><h2>🗺️ מפת המסע${S.name?' של '+S.name:''}</h2><p class="small">מומלץ לעבור לפי הסדר. ⭐⭐ ומעלה = שולטים בשלב.</p></div>`+
+ STAGES.map((g,i)=>{const b=S.best[i];return `<div class="card stage" onclick="intro(${i})"><div class="ic">${g.ic}</div><div class="t"><b>${g.lvl} · ${g.name}</b>
+  <div class="small">${g.goals.join(' · ')} · כ־${g.min} דק׳</div><div class="bar"><i style="width:${b==null?0:b*5}%"></i></div></div>
+  <div>${b==null?'':b+'/20<br>'+starsOf(b)}</div></div>`}).join('')+
+ `<div class="card"><button class="btn big" onclick="summary()">📊 בחנו את עצמכם – הסיכום שלי</button><button class="btn sec" onclick="hook(1)">צפייה שוב בפתיחה</button></div>`)}
+function intro(i){cur=i;const g=STAGES[i],ex=g.ex();
+ show(`<div class="card"><h2>${g.ic} ${g.lvl} · ${g.name}</h2><b>בשלב הזה נדע:</b><ul>${g.goals.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+ <div class="card"><h2>📝 דוגמה פתורה</h2>${ex.fig}<div class="steps" id="exs"></div>
+ <button class="btn" id="nxs" onclick="nextEx()">הצעד הבא ▶</button><button class="btn sec" onclick="startStage()">דלגו – לתרגול</button></div>`);
+ window._ex=ex.steps;window._exi=0;nextEx()}
+function nextEx(){const s=window._ex;if(window._exi<s.length){$('exs').insertAdjacentHTML('beforeend',stepHTML(s[window._exi++],0))}
+ if(window._exi>=s.length){const b=$('nxs');b.textContent='מתחילים לתרגל! 💪';b.onclick=startStage}}
+function startStage(){Q=gen(cur);qi=0;firstOK=0;Q.forEach(q=>{q.att=0;q.done=false});renderQ()}
+function renderQ(){const q=Q[qi],g=STAGES[cur];
+ show(`<div class="card"><div class="qtop"><span class="badge">${g.lvl} ${g.name}</span><span style="white-space:nowrap">שאלה ${qi+1} מתוך ${Q.length} · ✅ ${firstOK}</span></div>
+ <div class="bar"><i style="width:${qi/Q.length*100}%"></i></div>
+ <div class="prompt">${q.p}</div>${q.fig||''}
+ <div id="ansArea">${q.type==='num'?`<input class="ans" id="inp" inputmode="decimal" autocomplete="off" placeholder="?"> <button class="btn" onclick="check($('inp').value)">בדיקה ✔</button>`:
+  `<div class="opts">${q.opts.map((o,i)=>`<button class="opt" id="o${i}" onclick="check(${i})">${o.t}</button>`).join('')}</div>`}</div>
+ <div id="fb"></div></div>`);
+ const inp=$('inp');if(inp){inp.focus({preventScroll:true});inp.onkeydown=e=>{if(e.key==='Enter')check(inp.value)}}}
+const PRAISE=['מעולה! 🌟','בדיוק! 💪','אלופים! 🎯','יפה מאוד! ✨','ככה עושים את זה! 🚀'];
+function check(v){const q=Q[qi];if(q.done)return;let res;
+ if(q.type==='num'){const x=parseFloat(String(v).replace(',','.'));if(isNaN(x)){toast('כתבו מספר 🙂');return}
+  res=Math.abs(x-q.ans)<=q.tol?{ok:true}:((q.diag&&q.diag(x))||{tag:q.tag,msg:'עדיין לא. בדקו את החישוב שוב – אפשר להיעזר ברמז.'})}
+ else{const o=q.opts[v];if(o.ok){res={ok:true};$('o'+v).classList.add('right')}else{res={tag:o.tag||q.tag,msg:o.msg||'לא בדיוק. נסו שוב.'};$('o'+v).classList.add('wrong');$('o'+v).disabled=true}}
+ q.att++;const fb=$('fb');
+ if(res.ok){q.done=true;if(q.att===1)firstOK++;fly();
+  fb.innerHTML=`<div class="fb good"><b>${q.att===1?pick(PRAISE):'הצלחתם בניסיון השני – ככה לומדים! 💡'}</b><div class="steps">${q.steps.map(stepHTML).join('')}</div></div>${nextBtn()}`}
+ else{S.tags[res.tag]=(S.tags[res.tag]||0)+1;save();
+  if(q.att>=2){q.done=true;
+   fb.innerHTML=`<div class="fb bad">${res.msg}<br><b>הנה הפתרון המלא${q.type==='num'?` – התשובה: ${M(fmt(q.ans))}`:''}:</b><div class="steps">${q.steps.map(stepHTML).join('')}</div></div>${nextBtn()}`;
+   if(q.type==='mc')q.opts.forEach((o,i)=>{if(o.ok)$('o'+i).classList.add('right')})}
+  else fb.innerHTML=`<div class="fb bad">${res.msg}<br><b>💡 רמז:</b>${stepHTML(q.hint||q.steps[0],0)}<b>נסו שוב!</b></div>`}
+ fb.scrollIntoView({behavior:'smooth',block:'nearest'})}
+function nextBtn(){return `<button class="btn big" onclick="nextQ()">${qi+1<Q.length?'לשאלה הבאה ←':'סיום השלב 🏁'}</button>`}
+function nextQ(){qi++;if(qi<Q.length)renderQ();else endStage()}
+function endStage(){const b=S.best[cur];S.best[cur]=b==null?firstOK:Math.max(b,firstOK);save();
+ const msg=firstOK>=18?'שליטה מלאה! 🏆':firstOK>=14?'שולטים בשלב! 🎉':firstOK>=10?'בדרך הנכונה! כדאי לתרגל שוב.':'כל ניסיון מחזק את המוח 💪 – נסו את השלב שוב.';
+ for(let i=0;i<6;i++)setTimeout(fly,i*150);
+ show(`<div class="card"><h2>${STAGES[cur].ic} סיימתם את שלב ${STAGES[cur].lvl}!</h2><div class="big-formula">${firstOK}/20 ${starsOf(firstOK)}</div><p class="prompt">${msg}</p>
+ ${cur<4?`<button class="btn big" onclick="intro(${cur+1})">לשלב הבא: ${STAGES[cur+1].lvl} ${STAGES[cur+1].name} ←</button>`:`<button class="btn big" onclick="summary()">📊 לסיכום שלי</button>`}
+ <button class="btn sec" onclick="intro(${cur})">לתרגל שוב את השלב</button><button class="btn sec" onclick="goMap()">למפה</button></div>`)}
+function fly(){const e=document.createElement('div');e.className='fly';e.textContent=pick(['⭐','🌟','✨','💜']);e.style.left=(20+Math.random()*60)+'%';e.style.top=(55+Math.random()*25)+'%';document.body.appendChild(e);setTimeout(()=>e.remove(),1200)}
+function levelText(){let lv=-1;S.best.forEach((b,i)=>{if(b!=null&&b>=14)lv=i});return lv<0?'עוד לא נקבעה – סיימו לפחות שלב אחד עם ⭐⭐':`${STAGES[lv].lvl} ${STAGES[lv].name}`}
+function summary(){saveName();const tags=Object.entries(S.tags).sort((a,b)=>b[1]-a[1]).slice(0,3);
+ show(`<div class="card"><h2>📊 בחנו את עצמכם – הסיכום</h2><p><b>שם:</b> ${S.name||'__________'} &nbsp; <b>תאריך:</b> ${new Date().toLocaleDateString('he-IL')}</p>
+ <table class="rep"><tr><th>שלב</th><th>ציון</th><th></th></tr>${STAGES.map((g,i)=>`<tr><td>${g.lvl} ${g.name}</td><td>${S.best[i]==null?'—':S.best[i]+'/20'}</td><td>${starsOf(S.best[i])}</td></tr>`).join('')}</table>
+ <p class="prompt">הרמה שלי: ${levelText()}</p>
+ ${tags.length?`<div class="def"><b>מה כדאי לחזק:</b><ul>${tags.map(([k])=>`<li>${TIPS[k]||k}</li>`).join('')}</ul></div>`:''}
+ <div class="noprint"><button class="btn" onclick="window.print()">🖨️ הדפסה</button><button class="btn sec" onclick="goMap()">למפה</button><button class="btn sec" onclick="resetAll()">התחלה מחדש</button></div></div>`)}
+function resetAll(){if(confirm('למחוק את כל ההתקדמות ולהתחיל מחדש?')){S={name:S.name,best:[null,null,null,null,null],tags:{}};save();goMap()}}
+function printReport(){summary();setTimeout(()=>window.print(),400)}
+function fs(){const d=document;if(!d.fullscreenElement){(d.documentElement.requestFullscreen||d.documentElement.webkitRequestFullscreen||function(){}).call(d.documentElement)}else{(d.exitFullscreen||d.webkitExitFullscreen).call(d)}}
+function share(){const u=location.href;if(navigator.share&&!u.startsWith('file')){navigator.share({title:'משפט פיתגורס – בחנו את עצמכם',url:u}).catch(()=>{})}
+ else if(u.startsWith('file'))toast('כדי לשתף – שלחו את הקישור מהדרייב בוואטסאפ');
+ else{try{navigator.clipboard.writeText(u);toast('הקישור הועתק ✔')}catch(e){toast(u)}}}
+startScreen();
+</script>
+</body>
+</html>
