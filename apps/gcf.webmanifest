@@ -1,0 +1,1 @@
+{"name": "הוצאת גורם משותף", "short_name": "גורם משותף", "lang": "he", "dir": "rtl", "start_url": "gcf.html", "scope": "./", "display": "standalone", "background_color": "#0f1b2d", "theme_color": "#0f1b2d", "icons": [{"src": "icon-gcf-192.png", "sizes": "192x192", "type": "image/png"}, {"src": "icon-gcf-512.png", "sizes": "512x512", "type": "image/png"}]}

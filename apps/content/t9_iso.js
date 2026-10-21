@@ -3,7 +3,6 @@ const APP={key:'t9iso',topic:'משולש שווה שוקיים',sub:'כותבי�
 /* ===== geometry: triangle ===== */
 const W=400,H=300,CM='ס״מ';
 const P2=(x,y)=>({x,y});
-const f=n=>(+n).toFixed(1);
 const rad=d=>d*Math.PI/180,degOf=r=>r*180/Math.PI;
 /* triangle from the two base angles B (left) and C (right); apex on top */
 function tri(Bd,Cd,names){let L=P2(70,252),Rr=P2(330,252);const base=Rr.x-L.x,A=180-Bd-Cd;

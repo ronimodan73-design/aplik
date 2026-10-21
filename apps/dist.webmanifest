@@ -1,0 +1,1 @@
+{"name": "חוק הפילוג", "short_name": "פילוג", "lang": "he", "dir": "rtl", "start_url": "dist.html", "scope": "./", "display": "standalone", "background_color": "#0f1b2d", "theme_color": "#0f1b2d", "icons": [{"src": "icon-dist-192.png", "sizes": "192x192", "type": "image/png"}, {"src": "icon-dist-512.png", "sizes": "512x512", "type": "image/png"}]}

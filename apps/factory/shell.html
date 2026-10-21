@@ -37,6 +37,7 @@ p{font-size:19px;line-height:1.55;margin:0}
 .inputs{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px;align-items:flex-end}
 .inp{display:flex;flex-direction:column;gap:4px;font-size:17px;font-weight:700}
 .inp input{width:120px;font:700 26px Rubik;text-align:center;padding:8px;border-radius:10px;border:2px solid var(--line);background:#0b1626;color:var(--ink);direction:ltr}
+.inputs.tpl{direction:ltr;justify-content:center;align-items:center;gap:5px;font:800 28px Rubik;flex-wrap:nowrap}.tin{width:68px;font:700 26px Rubik;text-align:center;padding:8px;border-radius:10px;border:3px solid var(--line);background:#0b1626;color:var(--ink);direction:ltr}.tin.bad{border-color:var(--red)!important;background:#ff7a8a22}.tin.good{border-color:var(--ok)!important}
 .inp input.bad{border-color:var(--red)}.inp input.good{border-color:var(--ok)}
 .choices{display:flex;flex-direction:column;gap:10px;margin-top:12px}
 .choices .lab{font-size:16px;color:var(--muted);font-weight:700}
@@ -75,7 +76,7 @@ p{font-size:19px;line-height:1.55;margin:0}
 .nameIn{font:700 22px Rubik;padding:10px;border-radius:10px;border:2px solid var(--line);background:#0b1626;color:var(--ink);width:100%;max-width:340px;text-align:center}
 .legend{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;font-size:15px}.legend span{border-radius:99px;padding:3px 10px;font-weight:700}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv,.drawl{opacity:1;stroke-dashoffset:0}}
-@media (max-width:560px){.levels,.hero{grid-template-columns:1fr}.qtext{font-size:20px}.card{padding:14px}.btns .btn{padding:11px 16px;font-size:18px}.lvrow .nm{width:112px;font-size:15px}.say{font-size:18px}.inp input{width:104px}}
+@media (max-width:560px){.tin{width:56px!important;font-size:22px!important;padding:6px 2px!important}.inputs.tpl{font-size:24px;gap:3px}.levels,.hero{grid-template-columns:1fr}.qtext{font-size:20px}.card{padding:14px}.btns .btn{padding:11px 16px;font-size:18px}.lvrow .nm{width:112px;font-size:15px}.say{font-size:18px}.inp input{width:104px}}
 </style></head>
 <body>
 <div class="app">
@@ -92,6 +93,7 @@ const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math
 const OR='#ffb020',BL='#5ec8ff',GR='#4fd18b',PU='#c084fc',RD='#ff7a8a';
 const store={get:k=>{try{return JSON.parse(localStorage.getItem(APP.key+'_'+k))}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem(APP.key+'_'+k,JSON.stringify(v))}catch(e){}}};
 const deg='°';
+const f=n=>(+n).toFixed(1);
 /*CONTENT*/
 const TL=['★ ידע','★★ יישום','★★★ הבנה ונימוק','★★★★ חשיבה ואוריינות'],TCOL=[GR,BL,OR,PU];
 const TOTAL=20;let S={};
@@ -111,7 +113,8 @@ function qDia(q,hl){return typeof QDIA==='function'?QDIA(q,hl):(q.dia?q.dia(hl):
 function draw(){const q=S.q,T=S.mode==='test';$('#sc').textContent=T?'':`נקודות: ${S.score}`;
  V.innerHTML=`<div class="meta"><span>${lab()} · שאלה ${S.i+1} מתוך ${S.n}</span><span>${!T&&S.streak>=3?'🔥 '+S.streak+' ברצף':''}</span></div><div class="prog"><i style="width:${S.i/S.n*100}%"></i></div>
  <div class="card pop"><span class="kind">${q.kind}</span>${(()=>{const d=qDia(q,false);return d?`<div class="dia">${d}</div>`:''})()}<div class="qtext">${q.text}</div>
- ${q.ans?`<div class="inputs">${q.ans.map((a,i)=>`<label class="inp"><span style="color:${a.col}">${a.label==='x ='||a.lt?M(a.label):a.label}</span><input inputmode="decimal" data-i="${i}" aria-label="${a.label}"></label>`).join('')}</div>`:''}
+ ${q.ans&&q.tpl?`<div class="inputs tpl">${q.tpl.split('[]').map((p,i,arr)=>`<span class="tp">${p}</span>`+(i<arr.length-1?`<input class="tin" inputmode="${q.ans[i].neg?'text':'decimal'}" data-i="${i}" aria-label="${q.ans[i].label}" style="border-color:${q.ans[i].col}">`:'')).join('')}</div>`:''}
+ ${q.ans&&!q.tpl?`<div class="inputs">${q.ans.map((a,i)=>`<label class="inp"><span style="color:${a.col}">${a.label==='x ='||a.lt?M(a.label):a.label}</span><input inputmode="${a.neg?'text':'decimal'}" data-i="${i}" aria-label="${a.label}"></label>`).join('')}</div>`:''}
  ${q.choice?`<div class="choices">${q.choiceLab?`<span class="lab">${q.choiceLab}</span>`:''}${q.choice.map((c,i)=>`<button type="button" data-c="${i}">${c}</button>`).join('')}</div>`:''}
  <div class="btns"><button class="btn main" id="chk" type="button">${T?'שמירת התשובה':'בדיקה'}</button>${T?'':'<button class="btn sec" id="show" type="button">הראו לי</button>'}</div>
  <div class="fb" id="fb" role="status" aria-live="polite"></div><div class="sol" id="sol"></div></div>`;
@@ -119,13 +122,13 @@ function draw(){const q=S.q,T=S.mode==='test';$('#sc').textContent=T?'':`נקו�
  V.querySelectorAll('input').forEach(x=>x.onkeydown=e=>{if(e.key==='Enter')$('#chk').click();});
  $('#chk').onclick=()=>{if(S.done)return next();check(q);};if($('#show'))$('#show').onclick=()=>solve(q);}
 function check(q){const fb=$('#fb');const ins=[...V.querySelectorAll('input')];
- const vals=ins.map(x=>parseFloat(x.value.replace(',','.').replace('−','-')));
+ const vals=ins.map(x=>parseFloat(x.value.replace(',','.').replace(/[−–]/g,'-').replace(/\s/g,'')));
  if(q.ans&&vals.some(isNaN)){fb.className='fb no';fb.innerHTML='מלאו את כל התשובות.';return;}
  if(q.choice&&S.sel<0){fb.className='fb no';fb.innerHTML=q.ans?'בחרו גם נימוק.':'בחרו תשובה.';return;}
  const okIn=!q.ans||vals.every((v,i)=>v===q.ans[i].val),okCh=!q.choice||S.sel===q.correct,ok=okIn&&okCh;
  if(S.mode==='test'){ins.forEach(x=>x.disabled=true);S.res.push({lv:S.lv[S.i],ok,q});S.done=true;fb.className='fb saved pop';
   fb.innerHTML='<b>התשובה נשמרה ✓</b> '+(S.i+1<S.n?'ממשיכים בנחת.':'זאת הייתה השאלה האחרונה!');$('#chk').textContent=S.i+1<S.n?'לשאלה הבאה':'לדוח שלי';return;}
- S.tries++;ins.forEach((x,i)=>x.className=vals[i]===q.ans[i].val?'good':'bad');
+ S.tries++;ins.forEach((x,i)=>{x.classList.remove('good','bad');x.classList.add(vals[i]===q.ans[i].val?'good':'bad');});
  if(ok){if(S.tries===1){S.score++;S.streak=(S.streak||0)+1;}S.done=true;fb.className='fb ok pop';fb.innerHTML=`<b>${pick(['מעולה!','בדיוק!','יפה מאוד!','נכון!'])}</b> ${S.tries===1?'הצלחתם בניסיון הראשון.':'תיקנתם, וזה מה שחשוב.'}`;$('#chk').textContent='לשאלה הבאה';if($('#show'))$('#show').style.display='none';return;}
  S.streak=0;let msg=q.diag?q.diag({vals,sel:S.sel}):null;
  if(okIn&&!okCh&&q.ans)msg='החישוב נכון! אבל <b>הנימוק</b> לא מתאים. רמז: '+q.rule;
