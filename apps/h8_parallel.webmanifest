@@ -1,3 +1,1 @@
-{"name":"זוויות בין ישרים מקבילים","short_name":"זוויות","lang":"he","dir":"rtl",
- "start_url":"h8_parallel.html","scope":"./","display":"standalone","background_color":"#0f1b2d","theme_color":"#0f1b2d",
- "icons":[{"src":"icon-parallel-192.png","sizes":"192x192","type":"image/png"},{"src":"icon-parallel-512.png","sizes":"512x512","type":"image/png"}]}
+{"name": "זוויות בין ישרים מקבילים", "short_name": "זוויות", "lang": "he", "dir": "rtl", "start_url": "h8_parallel.html", "scope": "./", "display": "standalone", "background_color": "#0f1b2d", "theme_color": "#0f1b2d", "icons": [{"src": "icon-h8_parallel-192.png", "sizes": "192x192", "type": "image/png"}, {"src": "icon-h8_parallel-512.png", "sizes": "512x512", "type": "image/png"}]}

@@ -26,6 +26,9 @@ p{font-size:19px;line-height:1.55;margin:0}
 .hero button:focus-visible{outline:3px solid var(--acc)}
 .hero .ic{font-size:30px}.hero b{display:block;font-family:Rubik;font-size:21px}.hero small{color:var(--muted);font-size:15px}
 #go-recap{border-color:var(--ok)!important}#go-test{border-color:var(--pu)!important}
+.hello{margin:8px 0 10px;background:#ffb02014;border:1px solid #ffb02055;border-radius:12px;padding:10px 14px;font-size:17px;line-height:1.55}.levels button{position:relative}.levels button.rec{border-color:var(--acc);box-shadow:0 0 0 3px #ffb02033}.badge{position:absolute;top:10px;left:12px;font-size:13px;font-weight:700;color:var(--acc)}.badge.ok{color:var(--ok)}
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-family:Rubik;font-weight:700;line-height:1.15;margin:0 3px;direction:ltr}.fr>span:first-child{border-bottom:2px solid currentColor;padding:0 4px}
+.btn.mini{font-size:15px;padding:8px 12px;min-height:40px;margin-top:8px}
 .last{margin-top:10px;color:var(--muted);font-size:15px}
 .inst{margin-top:14px;background:#5ec8ff1f;border:2px dashed var(--blue);border-radius:12px;padding:10px 14px;font-size:16px;line-height:1.55}
 .prog{height:8px;background:var(--line);border-radius:6px;overflow:hidden}.prog i{display:block;height:100%;background:var(--acc);transition:width .4s}
@@ -97,14 +100,17 @@ const f=n=>(+n).toFixed(1);
 /*CONTENT*/
 const TL=['★ ידע','★★ יישום','★★★ הבנה ונימוק','★★★★ חשיבה ואוריינות'],TCOL=[GR,BL,OR,PU];
 const TOTAL=20;let S={};
+const rcOf=q=>{if(q.rc!=null)return q.rc;if(APP.rcFn){const v=APP.rcFn(q);if(v!=null)return v;}return APP.rc?APP.rc[q.kind]:null;};
+const rcBtn=q=>{const k=rcOf(q);return k!=null&&RECAP[k]?`<button type="button" class="btn sec mini" data-rc="${k}">📖 להסבר: ${RECAP[k].h}</button>`:'';};
+function bindRc(){V.querySelectorAll('[data-rc]').forEach(b=>b.onclick=()=>recap(+b.dataset.rc,true));}
 /* ===== screens ===== */
 function menu(){$('#sc').textContent='';const tl=store.get('test');
- V.innerHTML=`<div class="card"><h1>${APP.topic}</h1><p>${APP.sub} טעיתם? לוחצים על <b>"הראו לי"</b>.</p>
- <div class="hero"><button type="button" id="go-recap"><span class="ic">▶</span><span><b>מתחילים כאן</b><small>הסבר מונפש + חימום קל</small></span></button><button type="button" id="go-test"><span class="ic">📝</span><span><b>מבחן מדורג</b><small>16 שאלות · 4 רמות · דוח אישי</small></span></button></div>
+ V.innerHTML=`<div class="card"><h1>${APP.topic}</h1><div class="hello">💛 ילדים יקרים, הכנתי לכם אפליקציה שתסייע לכם ללמוד ולהבין את החומר בצורה נוספת. <b>בהצלחה! רוני</b></div><p>${APP.sub} טעיתם? לוחצים על <b>"הראו לי"</b>.</p>
+ <div class="hero"><button type="button" id="go-recap"><span class="ic">▶</span><span><b>מתחילים כאן</b><small>הסבר מונפש + חימום קל</small></span></button><button type="button" id="go-test"><span class="ic">📝</span><span><b>בחן את עצמך</b><small>מבחן מדורג · 16 שאלות · 4 רמות · ציון ודוח</small></span></button></div>
  ${tl?`<div class="last">המבחן האחרון שלי: ציון ${Math.round(tl.sc/16*100)} · ${tl.d}</div>`:''}
  ${INST?`<div class="inst">📲 <b>לעבוד גם בלי אינטרנט:</b> לחצו על כפתור השיתוף ⬆️ בתחתית ספארי, ואז על <b>"הוספה למסך הבית"</b>. פותחים מהאייקון פעם אחת כשיש אינטרנט, ומאז זה עובד גם בלי.</div>`:''}
- <h2 style="margin-top:18px">תרגול בשלבים</h2>
- <div class="levels">${LEVELS.map((l,i)=>{const b=store.get('best'+i);return `<button type="button" data-l="${i}"><span class="st">${'★'.repeat(l.n)}</span><span class="t">${l.t}</span><span class="d">${l.d}</span>${b!=null?`<span class="best">השיא שלי: ${b} מתוך ${TOTAL}</span>`:''}</button>`}).join('')}</div></div>`;
+ <h2 style="margin-top:18px">תרגול בשלבים: מתקדמים מרמה לרמה</h2><p style="font-size:16px;color:var(--muted)">עוברים שלב עם 16 נכונות מתוך 20 ✅</p>
+ <div class="levels">${LEVELS.map((l,i)=>{const b=store.get('best'+i),rec=LEVELS.findIndex((_,j)=>(store.get('best'+j)||0)<16);return `<button type="button" data-l="${i}" class="${i===rec?'rec':''}">${b>=16?'<span class="badge ok">✅ עברתי</span>':i===rec?'<span class="badge">👈 מומלץ עכשיו</span>':''}<span class="st">${'★'.repeat(l.n)}</span><span class="t">${l.t}</span><span class="d">${l.d}</span>${b!=null?`<span class="best">השיא שלי: ${b} מתוך ${TOTAL}</span>`:''}</button>`}).join('')}</div></div>`;
  $('#go-recap').onclick=()=>recap(0);$('#go-test').onclick=testIntro;V.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>start(+b.dataset.l));}
 function start(l){S={mode:'lv',l,i:0,score:0,n:TOTAL,streak:0};next();}
 function next(){if(S.q)S.i++;if(S.i>=S.n)return S.mode==='test'?endTest():S.mode==='warm'?endWarm():end();S.q=S.list?S.list[S.i]():LEVELS[S.l].g();S.tries=0;S.done=false;draw();}
@@ -133,7 +139,7 @@ function check(q){const fb=$('#fb');const ins=[...V.querySelectorAll('input')];
  S.streak=0;let msg=q.diag?q.diag({vals,sel:S.sel}):null;
  if(okIn&&!okCh&&q.ans)msg='החישוב נכון! אבל <b>הנימוק</b> לא מתאים. רמז: '+q.rule;
  if(!msg)msg=S.mode==='warm'?'רמז: '+q.rule:'רמז: '+q.rule;
- fb.className='fb no pop';fb.innerHTML=`<b>כמעט!</b> ${msg} ${S.tries>=2?'<br>לחצו על <b>"הראו לי"</b> כדי לראות את הפתרון.':' נסו שוב.'}`;}
+ fb.className='fb no pop';fb.innerHTML=`<b>כמעט!</b> ${msg} ${S.tries>=2?'<br>לחצו על <b>"הראו לי"</b> כדי לראות את הפתרון.'+(rcBtn(q)?'<br>'+rcBtn(q):''):' נסו שוב.'}`;bindRc();}
 function solve(q){const sol=$('#sol');sol.className='sol on';
  sol.innerHTML=`${(()=>{const d=qDia(q,true);return d?`<div class="dia">${d}</div>`:''})()}${q.lines.map(l=>`<div class="sline">${l}</div>`).join('')}<div class="rule sline">${q.rule}</div>`;
  [...sol.querySelectorAll('.sline')].forEach((el,i)=>setTimeout(()=>el.classList.add('show'),500+i*650));
@@ -141,16 +147,17 @@ function solve(q){const sol=$('#sol');sol.className='sol on';
 function end(){$('#sc').textContent=`נקודות: ${S.score}`;const best=store.get('best'+S.l);if(best==null||S.score>best)store.set('best'+S.l,S.score);
  const st=S.score>=18?3:S.score>=14?2:S.score>=10?1:0;
  V.innerHTML=`<div class="card pop" style="text-align:center"><h2>סיימתם: ${'★'.repeat(LEVELS[S.l].n)} ${LEVELS[S.l].t}</h2><div class="big">${S.score} / ${TOTAL}</div>
- <p>${['ממשיכים להתאמן: חוזרים להסבר ב"מתחילים כאן".','התחלה טובה! עוד סבב אחד ותהיו שם.','יפה מאוד! אתם שולטים בזה.','מצוין! אפשר לעלות שלב.'][st]}</p>
+ <p>${S.score>=16?(S.l<3?'עברתם את השלב! 🎉 ממשיכים לשלב הבא.':'עברתם את כל השלבים! 🎉 עכשיו: בחן את עצמך.'):['ממשיכים להתאמן: חוזרים להסבר ב"מתחילים כאן".','התחלה טובה! עוד סבב אחד ותהיו שם.','כמעט! צריך 16 כדי לעבור שלב. עוד סבב!'][Math.min(st,2)]}</p>
  <div class="btns" style="justify-content:center"><button class="btn main" id="again" type="button">עוד סבב</button>${S.l<3?'<button class="btn sec" id="up" type="button">לשלב הבא</button>':''}<button class="btn sec" id="m" type="button">תפריט</button></div></div>`;
  $('#again').onclick=()=>start(S.l);if($('#up'))$('#up').onclick=()=>start(S.l+1);$('#m').onclick=menu;}
-function recap(n){$('#sc').textContent='';const N=RECAP.length,c=RECAP[n],d0=c.d!=null?c.d:1.4;
+function recap(n,one){$('#sc').textContent='';const N=RECAP.length,c=RECAP[n],d0=c.d!=null?c.d:1.4;
  V.innerHTML=`<div class="card pop"><span class="kind">הסבר ${n+1} מתוך ${N}</span><h2>${c.h}</h2><div class="stage">${c.svg?`<div class="dia">${c.svg()}</div>`:''}
  ${c.says.map((t,k)=>`<div class="say rv" style="--d:${d0+k*.9}s">${t}</div>`).join('')}</div>
  ${c.def?`<div class="what rv" style="border-right-color:var(--blue);--d:${d0+c.says.length*.9}s">${c.def}</div>`:''}
  <div class="what rv" style="--d:${d0+c.says.length*.9+.6}s"><b>מה עשינו?</b> ${c.what}</div>
- <div class="btns"><button class="btn main" id="nx" type="button">${n<N-1?'הבא':'לחימום ←'}</button><button class="btn sec" id="rp" type="button">שוב ↻</button>${n?'<button class="btn sec" id="pv" type="button">הקודם</button>':''}</div>
+ <div class="btns">${one?'<button class="btn main" id="bk1" type="button">חזרה ←</button>':''}<button class="btn ${one?'sec':'main'}" id="nx" type="button">${n<N-1?'הבא':'לחימום ←'}</button><button class="btn sec" id="rp" type="button">שוב ↻</button>${n?'<button class="btn sec" id="pv" type="button">הקודם</button>':''}</div>
  <div class="dots">${RECAP.map((_,j)=>`<i class="${j===n?'on':''}"></i>`).join('')}</div></div>`;
+ const back=S&&S.mode?{...S}:null;if($('#bk1'))$('#bk1').onclick=()=>{if(back&&back.mode&&back.mode!=='test'&&back.q&&!back.done){S=back;draw();}else if(back&&back.mode==='test'&&back.res&&back.res.length===back.n){S=back;endTest();}else menu();};
  $('#nx').onclick=()=>n<N-1?recap(n+1):warm();$('#rp').onclick=()=>recap(n);if($('#pv'))$('#pv').onclick=()=>recap(n-1);window.scrollTo(0,0);}
 function warm(){S={mode:'warm',i:0,score:0,n:WARM.length,list:WARM};next();}
 function endWarm(){$('#sc').textContent='';
@@ -160,7 +167,7 @@ function endWarm(){$('#sc').textContent='';
  $('#a1').onclick=()=>start(0);$('#a2').onclick=warm;$('#a3').onclick=()=>recap(0);}
 /* ===== graded test ===== */
 function testIntro(){$('#sc').textContent='';const nm=store.get('name')||'';
- V.innerHTML=`<div class="card pop"><h1>מבחן מדורג</h1><p>16 שאלות · 4 רמות חשיבה. מתחילים קל ועולים לאט. אין זמן, אין לחץ.<br>במבחן אין "הראו לי". בסוף מקבלים <b>דוח אישי</b>: ציון, מה אני יודע/ת, מה חסר, ומה לעשות.</p>
+ V.innerHTML=`<div class="card pop"><h1>בחן את עצמך</h1><p>16 שאלות · 4 רמות חשיבה. מתחילים קל ועולים לאט. אין זמן, אין לחץ.<br>במבחן אין "הראו לי". בסוף מקבלים <b>דוח אישי</b>: ציון, מה אני יודע/ת, מה חסר, ומה לעשות.</p>
  <div class="levels" style="grid-template-columns:1fr;gap:8px">${TL.map((t,i)=>`<div style="border-right:5px solid ${TCOL[i]};padding:6px 10px;background:var(--chip);border-radius:10px">${t} · 4 שאלות</div>`).join('')}</div>
  <p style="margin-top:16px">השם שלי:</p><input class="nameIn" id="nm" value="${nm.replace(/"/g,'')}" aria-label="השם שלי">
  <div class="btns"><button class="btn main" id="go" type="button">מתחילים</button><button class="btn sec" id="bk" type="button">חזרה</button></div></div>`;
@@ -169,22 +176,23 @@ function testIntro(){$('#sc').textContent='';const nm=store.get('name')||'';
 function ansText(q){const a=[];if(q.ans)a.push(q.ans.map(x=>x.label==='x ='?M('x = '+x.val):(x.lt?M(x.label):x.label)+' '+M(x.val+(x.unit!=null?(x.unit&&x.unit!=='°'?' '+x.unit:x.unit):deg))).join(' · '));if(q.choice)a.push(q.choice[q.correct]);return a.join(' · ');}
 function endTest(){const per=[0,0,0,0];S.res.forEach(r=>{if(r.ok)per[r.lv]++;});const sc=per.reduce((a,b)=>a+b,0),grade=Math.round(sc/16*100);
  const up=sc>=14&&per.every(x=>x>=3),weak=per.findIndex(x=>x<3),d=new Date().toLocaleDateString('he-IL');store.set('test',{sc,d,per});
- const v=up?{c:'var(--ok)',t:'מוכן/ה לעלות הקבצה! 🎉 שלטת בכל ארבע הרמות.'}:sc>=10?{c:'var(--acc)',t:`קרוב מאוד! כדי לעלות הקבצה צריך לחזק את רמה ${TL[weak]}.`}:{c:'var(--red)',t:'בונים יסודות: עוברים על ההסבר, מתרגלים ★ ו־★★, ואז מנסים שוב. כל ניסיון מקרב!'};
+ const v=up?{c:'var(--ok)',t:'מוכן/ה לעלות הקבצה! 🎉 שלטת בכל ארבע הרמות.'}:sc>=10?{c:'var(--acc)',t:weak<0?'קרוב מאוד! יש הצלחה בכל הרמות. עוד קצת דיוק, ומנסים שוב.':`קרוב מאוד! כדי לעלות הקבצה צריך לחזק את רמה ${TL[weak]}.`}:{c:'var(--red)',t:'בונים יסודות: עוברים על ההסבר, מתרגלים ★ ו־★★, ואז מנסים שוב. כל ניסיון מקרב!'};
  const u1={},u2={},miss=S.res.filter(r=>!r.ok&&!u1[r.q.kind]&&(u1[r.q.kind]=1)),good=S.res.filter(r=>r.ok&&!u2[r.q.kind]&&(u2[r.q.kind]=1));
  const todo=[];if(per[0]<3)todo.push('לעבור שוב על <b>ההסבר המונפש והחימום</b> (כפתור "מתחילים כאן").');
  per.forEach((x,i)=>{if(x<3)todo.push(`לתרגל את שלב <b>${TL[i]}</b> (20 שאלות). טעיתם? לוחצים על "הראו לי".`);});
+ if(!up&&weak<0)todo.push('לעבור על <b>מה עוד חסר לי</b> למעלה (כפתור 📖), ולתרגל את שלב <b>'+TL[per.indexOf(Math.min(...per))]+'</b>.');
  todo.push(up?'לנסות שוב את שלב ★★★★, כדי להישאר חזקים.':'אחרי התרגול: <b>מבחן חוזר</b>, ולבדוק אם הציון עלה.');
  V.innerHTML=`<div class="card pop"><h2>הדוח של ${S.name.replace(/[<>&"]/g,'')}</h2><div class="meta"><span>מבחן מדורג · ${APP.topic}</span><span>${d}</span></div>
  <div class="big">ציון: ${grade}</div><div style="text-align:center;color:var(--muted)">${sc} תשובות נכונות מתוך 16</div>
  ${TL.map((t,i)=>`<div class="lvrow"><span class="nm">${t}</span><span class="bar"><i style="width:${per[i]/4*100}%;background:${TCOL[i]}"></i></span><span class="sc">${per[i]}/4</span></div>`).join('')}
  <div class="verdict" style="border:2px solid ${v.c};background:color-mix(in srgb,${v.c} 14%,transparent)">${v.t}</div>
  ${good.length?`<h2>✅ מה אני כבר יודע/ת</h2><div class="chips">${good.map(r=>`<span>${TL[r.lv].split(' ')[0]} ${r.q.kind}</span>`).join('')}</div>`:''}
- ${miss.length?`<h2 style="margin-top:14px">🔧 מה עוד חסר לי</h2>${miss.map(r=>`<div class="miss"><span class="k">${TL[r.lv].split(' ')[0]} ${r.q.kind}</span><br>${r.q.rule}<br><span style="color:var(--muted)">התשובה הנכונה הייתה: ${ansText(r.q)}</span></div>`).join('')}`:'<p>אין טעויות בכלל. כל הכבוד!</p>'}
+ ${miss.length?`<h2 style="margin-top:14px">🔧 מה עוד חסר לי כדי להבין</h2>${miss.map(r=>`<div class="miss"><span class="k">${TL[r.lv].split(' ')[0]} ${r.q.kind}</span><br>${r.q.rule}<br><span style="color:var(--muted)">התשובה הנכונה הייתה: ${ansText(r.q)}</span>${rcBtn(r.q)?'<br>'+rcBtn(r.q):''}</div>`).join('')}`:'<p>אין טעויות בכלל. כל הכבוד!</p>'}
  <h2 style="margin-top:14px">👣 מה לעשות עכשיו</h2>${todo.map((t,i)=>`<div class="miss"><b style="color:var(--acc)">${i+1}.</b> ${t}</div>`).join('')}
  <p style="margin-top:12px;color:var(--muted)">📸 צלמו את המסך ושלחו למורה.</p>
  <div class="btns"><button class="btn main" id="pr" type="button">${up?'לתפריט':'לתרגול מה שחסר'}</button><button class="btn sec" id="ag" type="button">מבחן חוזר</button></div>
  <div class="foot" style="margin-top:10px"><b>ערכה: רוני מודן · שחקים</b></div></div>`;
- $('#ag').onclick=testIntro;$('#pr').onclick=()=>up?menu():start(Math.max(0,weak));window.scrollTo(0,0);}
+ bindRc();$('#ag').onclick=testIntro;$('#pr').onclick=()=>up?menu():start(Math.max(0,weak));window.scrollTo(0,0);}
 /* ===== offline / install ===== */
 const IOS=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 const STANDALONE=window.navigator.standalone===true||matchMedia('(display-mode: standalone)').matches;

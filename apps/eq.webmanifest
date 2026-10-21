@@ -1,0 +1,1 @@
+{"name": "משוואות עם נעלם אחד", "short_name": "משוואות", "lang": "he", "dir": "rtl", "start_url": "eq.html", "scope": "./", "display": "standalone", "background_color": "#0f1b2d", "theme_color": "#0f1b2d", "icons": [{"src": "icon-eq-192.png", "sizes": "192x192", "type": "image/png"}, {"src": "icon-eq-512.png", "sizes": "512x512", "type": "image/png"}]}
