@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="he" dir="rtl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>שלוש הדלתות של היחס</title><style>/* מנוע סרטונים – רוני מודן · שחקים */
+:root{--noa:#db2777;--itai:#2563eb;--fac:#dc2626;--giv:#facc15;--anc:#16a34a;--ok:#16a34a;--ink:#1e293b;--bg:#fff8ef}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#0f172a;overflow:hidden;font-family:Rubik,Assistant,Heebo,Arial,"DejaVu Sans",sans-serif}
+#wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+#f{position:relative;width:540px;height:960px;background:var(--bg);overflow:hidden;transform-origin:center;color:var(--ink)}
+.noanim *{transition:none!important;animation:none!important}
+.o{opacity:0;transition:opacity .45s ease-out,transform .45s cubic-bezier(.2,1.4,.4,1)}
+.o.on{opacity:1}
+.o:not(.on){pointer-events:none}
+.n{color:var(--noa)}.i{color:var(--itai)}.fx{color:var(--fac)}.g{color:var(--ok)}.y{background:#fef08a;padding:0 6px;border-radius:6px}
+#chip{position:absolute;top:22px;right:24px;background:var(--ink);color:#fff;font-size:20px;font-weight:700;padding:6px 16px;border-radius:20px;z-index:3}
+#cap{position:absolute;top:64px;left:20px;right:20px;text-align:center;font-size:34px;font-weight:800;line-height:1.25;min-height:96px}
+#cap.in,#mth.in{animation:capIn .45s ease-out}
+@keyframes capIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+#stage{position:absolute;top:180px;left:0;width:540px;height:280px;transition:opacity .5s}
+#stage.dim{opacity:0}
+.cup{transform-box:fill-box;transform-origin:center bottom;transform:scale(.3)}
+.cup.on{transform:scale(1)}
+.cup.pulse{animation:pulse .7s ease-in-out 2}
+@keyframes pulse{50%{transform:scale(1.08)}}
+.cd{transform-box:fill-box;transform-origin:center;transform:translateY(-120px)}
+.cd.on{transform:none;transition:opacity .3s ease-out,transform .55s cubic-bezier(.3,1.5,.5,1)}
+.hl{fill:rgba(250,204,21,.18);stroke:var(--giv);stroke-width:5}
+.lbl{font-size:28px;font-weight:800}
+.badge{position:absolute;transform:translateX(50%) scale(.6);background:var(--giv);font-size:24px;font-weight:800;padding:3px 12px;border-radius:12px;white-space:nowrap;box-shadow:0 3px 0 #ca8a04;z-index:2}
+.badge.on{transform:translateX(50%) scale(1)}
+#mth{position:absolute;top:640px;left:0;right:0;text-align:center;font-size:44px;font-weight:800;direction:ltr;min-height:56px}
+.bubble{position:absolute;width:300px;background:#fff;border:4px solid var(--itai);border-radius:22px;padding:10px 14px;font-size:26px;font-weight:700;text-align:center;transform:scale(.6);z-index:4}
+.bubble.on{transform:scale(1)}
+.bubble:after{content:"";position:absolute;top:-30px;left:var(--tail,140px);border:14px solid transparent;border-bottom-color:var(--itai)}
+.stamp{position:absolute;font-size:120px;color:var(--fac);font-weight:900;transform:rotate(-15deg) scale(2.5);z-index:5}
+.stamp.on{transform:rotate(-15deg) scale(1)}
+.splash{position:absolute;top:230px;left:46px;right:46px;background:var(--ink);color:#fff;border-radius:28px;text-align:center;padding:28px 18px;transform:scale(.5);box-shadow:0 10px 30px rgba(0,0,0,.3);z-index:8}
+.splash.on{transform:scale(1)}
+.splash .big{font-size:54px;font-weight:900;color:var(--giv);line-height:1.15}
+.splash .sm{font-size:30px;font-weight:700;margin-top:10px}
+/* table */
+#tbl{position:absolute;top:468px;left:14px;right:14px;direction:rtl}
+#tbl table{width:100%;border-collapse:separate;border-spacing:5px;table-layout:fixed}
+#tbl td,#tbl th{background:#fff;border:3px solid #cbd5e1;border-radius:12px;height:52px;text-align:center;font-size:28px;font-weight:800;transition:all .4s}
+#tbl th{height:40px;font-size:22px;background:#f1f5f9}
+#tbl .rl{font-size:18px;background:#f1f5f9;width:92px;line-height:1.1}
+#tbl .hc{display:none}
+#tbl .giv{background:#fef08a}
+#tbl .anc{border-color:var(--anc);border-width:5px;box-shadow:0 0 0 3px rgba(22,163,74,.18)}
+#tbl .val{display:inline-block;direction:ltr}
+#tbl .val.pop{animation:pop .45s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop{from{transform:scale(.3);opacity:0}to{transform:none;opacity:1}}
+#tbl .facc{background:transparent;border:0;width:70px;color:var(--fac);font-size:24px;line-height:1.05}
+#tbl .facc .val{direction:ltr}
+.facarr{opacity:0;transition:opacity .4s}.facarr.on{opacity:1}
+/* ops */
+#ops{position:absolute;top:240px;left:0;right:0;display:flex;justify-content:center;gap:16px;direction:ltr}
+.op{position:relative;width:96px;height:96px;border-radius:22px;background:#fff;border:4px solid #94a3b8;font-size:64px;font-weight:900;display:flex;align-items:center;justify-content:center;transition:all .4s}
+.op.bad{opacity:.35;border-color:var(--fac)}
+.op.bad:after{content:"✗";position:absolute;color:var(--fac);font-size:90px;inset:0;display:flex;align-items:center;justify-content:center;opacity:1}
+.op.good{border-color:var(--ok);background:#dcfce7;transform:scale(1.12);box-shadow:0 0 0 6px rgba(22,163,74,.2)}
+/* fraction */
+#frac{position:absolute;top:172px;left:20px;width:500px;height:290px;direction:ltr}
+/* question card */
+.qcard{position:absolute;top:180px;left:24px;right:24px;background:#fff;border:4px solid var(--ink);border-radius:24px;padding:18px 20px;text-align:center;z-index:3}
+.qcard .q{font-size:30px;font-weight:800;line-height:1.35}
+.qcard .h{font-size:22px;color:#475569;margin-top:8px;font-weight:700}
+.clock{position:absolute;top:-26px;left:-14px;width:84px;height:84px;border-radius:50%;background:var(--ink);color:#fff;font-size:40px;font-weight:900;display:flex;align-items:center;justify-content:center;border:5px solid var(--giv)}
+/* tracker */
+#trk{position:absolute;top:722px;left:24px;right:24px;display:flex;gap:10px;justify-content:center}
+.door{flex:1;border:3px solid #cbd5e1;border-radius:16px 16px 6px 6px;padding:8px 4px;text-align:center;font-size:19px;font-weight:700;color:#94a3b8;background:#fff;transition:all .4s}
+.door b{display:block;font-size:22px}
+.door.cur{border-color:var(--giv);color:var(--ink);background:#fef9c3;transform:translateY(-8px)}
+.door.done{border-color:var(--ok);color:var(--ok)}
+#keyrow{position:absolute;top:822px;left:0;right:0;text-align:center;font-size:23px;font-weight:800}
+#credit{position:absolute;bottom:68px;left:0;right:0;text-align:center;font-size:15px;color:#64748b}
+#bar{position:absolute;bottom:52px;left:16px;right:16px;height:6px;background:#e2e8f0;border-radius:3px;direction:ltr}
+#prog{height:100%;width:0;background:var(--ink);border-radius:3px;margin-left:auto}
+#ctl{position:absolute;bottom:6px;left:0;right:0;display:flex;justify-content:center;gap:8px}
+#ctl button{font:inherit;font-size:20px;min-width:50px;height:40px;padding:0 8px;border:0;border-radius:12px;background:#e2e8f0;cursor:pointer}
+#cover{position:absolute;inset:0;background:var(--ink);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;z-index:20;text-align:center;padding:30px}
+#cover h1{font-size:50px;line-height:1.2}
+#cover p{font-size:25px;color:#cbd5e1}
+#cover button{font:inherit;font-size:34px;font-weight:800;background:var(--giv);color:var(--ink);border:0;border-radius:50px;padding:16px 46px;cursor:pointer}
+#teacher{position:absolute;inset:0;background:#fff;z-index:30;overflow:auto;padding:26px 26px 80px;display:none;font-size:19px;line-height:1.5}
+#teacher.show{display:block}
+#teacher h2{font-size:26px;margin:14px 0 6px 110px}
+#teacher h3{font-size:21px;margin:12px 0 4px;color:#334155}
+#teacher ul,#teacher ol{padding-right:22px}
+#teacher .close{position:sticky;top:0;float:left;font:inherit;font-size:20px;background:var(--ink);color:#fff;border:0;border-radius:12px;padding:6px 14px;cursor:pointer}
+.rec #ctl,.rec #bar,.rec #cover{display:none}
+/* וואו: דלת תלת-ממד, מפתח זהב, כוס מתנדנדת */
+.dwrap{position:absolute;top:200px;left:110px;width:320px;height:300px;perspective:900px;z-index:9}
+.dframe{position:absolute;inset:0;background:var(--ink);border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;text-align:center;padding:16px;box-shadow:0 12px 30px rgba(0,0,0,.35)}
+.dframe .big{font-size:40px;font-weight:900;color:var(--giv);line-height:1.15}
+.dframe .sm{font-size:26px;font-weight:700;margin-top:8px}
+.dpanel{position:absolute;inset:0;border-radius:18px;background:linear-gradient(90deg,#b45309,#d97706 45%,#b45309);border:6px solid #78350f;transform-origin:left center;backface-visibility:hidden;transition:transform 1s cubic-bezier(.6,.05,.3,1) .5s;display:flex;align-items:center;justify-content:center;font-size:44px;font-weight:900;color:#fff7ed;text-shadow:0 2px 0 #78350f}
+.dpanel:after{content:"";position:absolute;right:26px;top:50%;width:18px;height:18px;border-radius:50%;background:#fde68a;box-shadow:0 0 0 4px #92400e}
+.dwrap.on .dpanel{transform:rotateY(-105deg)}
+.wob{animation:wob .25s ease-in-out 6;transform-box:fill-box;transform-origin:center bottom}
+@keyframes wob{25%{transform:rotate(-7deg)}75%{transform:rotate(7deg)}}
+#key{position:absolute;top:210px;left:0;right:0;text-align:center;z-index:9}
+#key .k{font-size:120px;display:inline-block;filter:drop-shadow(0 0 18px #facc15)}
+#key.on .k{animation:spin 1.2s ease-out}
+@keyframes spin{from{transform:rotateY(0) scale(.3)}to{transform:rotateY(720deg) scale(1)}}
+#key .t{font-size:44px;font-weight:900;background:var(--ink);color:var(--giv);display:inline-block;padding:10px 26px;border-radius:20px;margin-top:6px}
+#win{position:absolute;top:200px;left:30px;right:30px;text-align:center;z-index:9;background:var(--ink);color:#fff;border-radius:28px;padding:26px 16px;transform:scale(.5)}
+#win.on{transform:scale(1)}
+#win .big{font-size:46px;font-weight:900;color:var(--giv);line-height:1.2}
+#win .row{font-size:44px;margin:8px 0}
+#win .sm{font-size:28px;font-weight:700;margin-top:6px;line-height:1.35}
+</style></head>
+<body><div id="wrap"><div id="f">
+<div id="chip" class="o on"></div><div id="cap"></div>
+<svg id="stage" viewBox="0 0 540 280"></svg>
+<div id="ops" class="o"></div><div id="frac" class="o"></div><div id="tbl" class="o"></div>
+<div id="bN" class="badge o"></div><div id="bA" class="badge o"></div><div id="bC" class="badge o"></div>
+<div id="bub" class="bubble o"></div><div id="stamp" class="stamp o">✗</div>
+<div id="qc" class="qcard o"><div class="clock" id="clk"></div><div class="q" id="qq"></div><div class="h" id="qh"></div></div>
+<div id="sp" class="splash o"><div class="big" id="spB"></div><div class="sm" id="spS"></div></div>
+<div id="dw" class="dwrap o"><div class="dframe"><div class="big" id="dwB"></div><div class="sm" id="dwS"></div></div><div class="dpanel" id="dwP"></div></div>
+<div id="key" class="o"><div class="k">🔑</div><br><div class="t" id="keyT"></div></div>
+<div id="win" class="o"></div>
+<div id="mth"></div><div id="trk"></div><div id="keyrow" class="o"></div>
+<div id="credit">ערכה: רוני מודן · שחקים</div>
+<div id="bar"><div id="prog"></div></div>
+<div id="ctl"><button onclick="V.go(-1)" title="פרק קודם">→</button><button id="pp" onclick="V.toggle()">▶</button><button onclick="V.go(1)" title="פרק הבא">←</button><button onclick="V.seekT(0);V.play()" title="מההתחלה">↻</button><button id="mute" onclick="V.toggleMute()">🔊</button><button onclick="V.fs()" title="מסך מלא">⛶</button><button onclick="V.teacher(true)">למורה</button></div>
+<div id="cover"><h1>שלוש הדלתות<br>של היחס</h1><p>שאלה אחת שפותחת כל שאלת יחס</p><button onclick="V.start()">▶ צפייה</button><p style="font-size:18px">ערכה: רוני מודן · שחקים</p></div>
+<div id="teacher"><button class="close" onclick="V.teacher(false)">סגירה ✕</button><style>.tf{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;line-height:1.1;margin:0 2px}.tf>span:last-child{border-top:2px solid #1e293b}</style>
+<h2>שלוש הדלתות של היחס — רציונל פדגוגי</h2>
+<p>ח׳ א2 · יחס ויחסים שקולים · מתאים לשיעור 1 (טבלת העוגן) ולפני שיעור 2 (פרופורציה) · כשתי דקות</p>
+<h3>הרעיון המרכזי</h3>
+<p>יחס מתאר <b>חלקים שווים</b>. כשיודעים בעמודה אחת גם את מספר החלקים וגם את הכמות (העוגן), מוצאים <b>חלק אחד</b>. החלק האחד הוא <b>גורם ההכפלה</b> בין שורת היחס לשורת הכמות. לכן ביחס משתמשים רק בכפל ובחילוק.</p>
+<h3>הטעות שהסרטון מאבחן ומפרק</h3>
+<p><b>חשיבה חיבורית במקום כפלית:</b> "נועה קיבלה 10, אז לי מגיע 11", כי ההפרש ביחס הוא 1. הסרטון לא רק אומר שזו טעות. הוא מראה אותה בכוסות: 11 סוכריות לא מתחלקות שווה ל־3 חלקים, ולכן היחס כבר אינו 2:3.</p>
+<h3>הוראה מתקנת: רצף מוחשי, ציורי, מופשט</h3>
+<ol>
+<li><b>מוחשי:</b> כוסות סוכריות. כל כוס היא חלק אחד.</li>
+<li><b>ייצוג:</b> טבלת העוגן, אותה טבלה מהדף בכיתה. הנתון בצהוב, העוגן במסגרת ירוקה.</li>
+<li><b>מופשט:</b> <span dir="ltr"><span class="tf"><span>2</span><span>3</span></span> = <span class="tf"><span>2 · 5</span><span>3 · 5</span></span> = <span class="tf"><span>10</span><span>15</span></span></span>. הכפלה ב־<span dir="ltr"><span class="tf"><span>5</span><span>5</span></span> = 1</span>, ולכן היחס נשמר.</li>
+</ol>
+<h3>שלוש הדלתות: איפה הנתון?</h3>
+<ul><li>נתון חלק: העוגן בעמודת אותו חלק.</li><li>נתון השלם: העוגן בעמודת השלם.</li><li>נתון ההפרש: מוסיפים עמודת הפרש, והעוגן שם.</li></ul>
+<p>בשלושת המקרים אותה שאלה פותחת את הפתרון: <b>כמה בחלק אחד?</b></p>
+<h3>שפה מתמטית בסרטון</h3>
+<p>יחס, חלקים, שלם, הפרש, חלק אחד, עוגן, הרחבה, צמצום, יחסים שקולים, גורם ההכפלה, מונה ומכנה.</p>
+<h3>בדיקה עצמית</h3>
+<p>שאלה עם זמן חשיבה של 10 שניות ופתרון מודרג בטבלה, כולל בדיקה: הסכום שווה לשלם.</p>
+<h3>אחרי הצפייה: שאלות לדיון</h3>
+<ol><li>למה אי אפשר להוסיף אותו מספר לשני החלקים? הראו בכוסות.</li><li>היחס 2:3 ויש 12 סוכריות יותר לאיתי. איזו דלת זו? פתרו.</li><li>דור אומר: "ביחס 2:3 יש בדיוק 5 סוכריות." האם הוא צודק?</li></ol>
+<p style="color:#64748b">ערכה: רוני מודן · שחקים</p>
+</div>
+</div></div>
+<script>/* מנוע סרטונים – רוני מודן · שחקים
+   פרק = קובץ תסריט שמשתמש ב-V.* (רכיבים) ומגדיר V.run({chapters, beats, end}).
+   מצבים: רגיל (כפתורים, למורה, השתקה) · ?rec=1 (הקלטה ל-MP4 עם פסקול) */
+(function(){
+const $=id=>document.getElementById(id), F=$('f');
+const REC=/rec=1/.test(location.search), FRAMES=/frames=1/.test(location.search); if(REC)document.body.classList.add('rec');
+const V=window.V={REC,$};
+const on=V.on=(...a)=>a.forEach(i=>$(i)&&$(i).classList.add('on'));
+const off=V.off=(...a)=>a.forEach(i=>$(i)&&$(i).classList.remove('on'));
+V.L=s=>`<span dir="ltr">${s}</span>`;
+function anim(el){el.classList.remove('in');void el.offsetWidth;el.classList.add('in')}
+V.cap=h=>{const c=$('cap');c.innerHTML=h;anim(c)};
+V.mth=h=>{const c=$('mth');c.innerHTML=h;anim(c)};
+V.chip=t=>{$('chip').textContent=t};
+V.splash=(b,s)=>{$('spB').innerHTML=b;$('spS').innerHTML=s||'';on('sp')};
+V.ratio=(a,b)=>`<span dir="ltr"><b class="n">${a}</b>:<b class="i">${b}</b></span>`;
+
+/* ---------- כוסות (חלקים) ---------- */
+const CP=[[22,182],[38,182],[54,182],[30,165],[46,165]];
+V.cups=function(groups){ // [{name,cls,color,tint,count}] – הקבוצה הראשונה בצד ימין
+  const W=76,G=14,GG=30; let tot=-GG; groups.forEach(g=>tot+=g.count*W+(g.count-1)*G+GG);
+  let x=(540+tot)/2, s='', cx=[], k=0; const gc=[];
+  groups.forEach(g=>{const st=x; for(let j=0;j<g.count;j++){x-=W;
+      s+=`<rect id="h${k}" class="hl o" x="${x-6}" y="70" width="88" height="140" rx="12"/>`;
+      s+=`<g id="c${k}" class="cup o" style="transition-delay:${k*.12}s"><path d="M${x} 80 H${x+W} L${x+W-10} 200 H${x+10} Z" fill="${g.tint}" stroke="${g.color}" stroke-width="4" stroke-linejoin="round"/>`;
+      CP.forEach(p=>{s+=`<circle class="cd o" data-c="${k}" cx="${x+p[0]}" cy="${p[1]}" r="8" fill="${g.color}" stroke="#fff" stroke-width="2"/>`});
+      s+='</g>'; cx.push(x+W/2); k++; if(j<g.count-1)x-=G;}
+    gc.push((st+x)/2); s+=`<text class="lbl o" id="lbl${gc.length-1}" x="${(st+x)/2}" y="60" text-anchor="middle" fill="${g.color}">${g.name}</text>`; x-=GG;});
+  const L=cx[cx.length-1]-38, R=cx[0]+38, M=(L+R)/2;
+  s+=`<path id="brace" class="o" d="M${L} 216 q0 14 14 14 H${M-14} q14 0 14 14 q0 -14 14 -14 H${R-14} q14 0 14 -14" fill="none" stroke="#ca8a04" stroke-width="4"/>`;
+  $('stage').innerHTML=s; V.N=k; V.cx=cx; V.gc=gc; V.mid=M;
+};
+V.cupsOn=()=>{for(let k=0;k<V.N;k++)on('c'+k);V.gc.forEach((_,i)=>on('lbl'+i))};
+V.fill=(list,counts)=>{let d=0;list.forEach((k,ii)=>{const n=counts?counts[ii]:5;
+  document.querySelectorAll(`.cd[data-c="${k}"]`).forEach((e,j)=>{if(j<n){e.style.transitionDelay=(d+j*.12)+'s';e.classList.add('on')}});d+=.4});
+  V.sfx('pop',0);V.sfx('pop',.4);if(list.length>2)V.sfx('pop',.8)};
+V.empty=()=>document.querySelectorAll('.cd.on').forEach(e=>e.classList.remove('on'));
+V.hl=list=>{for(let k=0;k<V.N;k++)$('h'+k).classList.toggle('on',list.includes(k))};
+V.pulse=()=>{for(let k=0;k<V.N;k++){const c=$('c'+k);c.classList.remove('pulse');void c.offsetWidth;c.classList.add('pulse')}};
+V.pairs=(prs)=>{let p='';prs.forEach(([a,b])=>{const xa=V.cx[a],xb=V.cx[b],dep=Math.abs(xa-xb)*.35;p+=`<path d="M${xa} 208 Q${(xa+xb)/2} ${208+dep} ${xb} 208"/>`});
+  let g=$('pairs');if(!g){g=document.createElementNS('http://www.w3.org/2000/svg','g');g.id='pairs';g.setAttribute('class','o');g.setAttribute('fill','none');g.setAttribute('stroke','#64748b');g.setAttribute('stroke-width','3');g.setAttribute('stroke-dasharray','7 6');$('stage').appendChild(g)}g.innerHTML=p;on('pairs')};
+V.badge=(id,t,x,y)=>{const b=$(id);b.innerHTML=t;b.style.right=(540-x)+'px';b.style.top=(180+y)+'px';on(id)};
+
+/* ---------- טבלת העוגן ---------- */
+V.table=function(cols,rows){ // cols:[{h,cls,hidden}] rows:['יחס (חלקים)','כמות']
+  let s='<table><tr><th class="rl"></th>';cols.forEach((c,j)=>s+=`<th id="th${j}" class="${c.cls||''} ${c.hidden?'hc':''}">${c.h}</th>`);s+='<th class="facc"></th></tr>';
+  rows.forEach((r,i)=>{s+=`<tr><td class="rl">${r}</td>`;cols.forEach((c,j)=>s+=`<td id="t${i}${j}" class="${c.cls||''} ${c.hidden?'hc':''}"></td>`);
+    s+=i==0?`<td class="facc" rowspan="${rows.length}"><div id="facarr" class="facarr"><span class="val" id="facv"></span><div style="font-size:30px">↓</div><div style="font-size:13px;color:#dc2626">גורם<br>ההכפלה</div></div></td>`:'';s+='</tr>'});
+  $('tbl').innerHTML=s+'</table>';V.cols=cols.length;V.rows=rows.length};
+V.tset=(r,c,v,cls)=>{const td=$('t'+r+c);td.innerHTML=v===''?'':`<span class="val pop">${v}</span>`;if(cls)td.classList.add(cls)};
+V.tcol=(c,show)=>{['th'+c].concat([...Array(V.rows).keys()].map(r=>'t'+r+c)).forEach(id=>{$(id).style.display=show?'table-cell':''})};
+V.anchor=c=>{document.querySelectorAll('#tbl .anc').forEach(e=>e.classList.remove('anc'));if(c>=0)for(let r=0;r<V.rows;r++)$('t'+r+c).classList.add('anc')};
+V.tclear=(row)=>{for(let r=0;r<V.rows;r++){if(row!==undefined&&r!==row)continue;for(let c=0;c<V.cols;c++){const td=$('t'+r+c);td.innerHTML='';td.classList.remove('giv','anc')}}};
+V.fac=v=>{if(v){$('facv').innerHTML='<bdi dir="ltr">'+v+'</bdi>';on('facarr')}else off('facarr')};
+
+/* ---------- שבר עם גורם הכפלה (קשתות) ---------- */
+V.fracScale=function(a,b,k){const A=String(a),B=String(b),C=String(a*k),D=String(b*k),w=s=>s.length*31;
+  const c1=70,c2=255,c3=440, nb=w(A)+47, db=w(B)+47, fxN=c2-nb/2+w(A)+24, fxD=c2-db/2+w(B)+24;
+  const fr=(x,t,u,id,col1,col2)=>`<g id="${id}" class="o"><text x="${x}" y="110" fill="${col1}">${t}</text><line x1="${x-45}" y1="126" x2="${x+45}" y2="126" stroke="#1e293b" stroke-width="5"/><text x="${x}" y="182" fill="${col2}">${u}</text></g>`;
+  $('frac').innerHTML=`<svg viewBox="0 0 500 290" width="500" height="290" font-weight="800" font-size="56" text-anchor="middle">
+  ${fr(c1,A,B,'fA','#db2777','#2563eb')}<text id="e1" class="o" x="147" y="146">=</text>
+  <g id="fB" class="o"><text x="${c2}" y="110"><tspan fill="#db2777">${A}</tspan><tspan fill="#dc2626">·${k}</tspan></text><line x1="${c2-55}" y1="126" x2="${c2+55}" y2="126" stroke="#1e293b" stroke-width="5"/><text x="${c2}" y="182"><tspan fill="#2563eb">${B}</tspan><tspan fill="#dc2626">·${k}</tspan></text></g>
+  <g id="fbadge" class="o"><rect x="${c2-33}" y="0" width="66" height="40" rx="12" fill="#dc2626"/><text x="${c2}" y="32" font-size="30" fill="#fff">·${k}</text></g>
+  <g id="farcs" class="o" fill="none" stroke="#dc2626" stroke-width="4"><path d="M${c2+14} 40 Q${fxN+8} 48 ${fxN} 66"/><path d="M${c2+33} 30 C${c2+76} 55 ${c2+76} 165 ${fxD+22} 165"/></g>
+  <text id="e2" class="o" x="352" y="146">=</text>${fr(c3,C,D,'fC','#db2777','#2563eb')}
+  <g id="one" class="o" transform="translate(40,52) scale(.8)"><text x="200" y="232" fill="#dc2626">${k}</text><line x1="175" y1="246" x2="225" y2="246" stroke="#dc2626" stroke-width="5"/><text x="200" y="290" fill="#dc2626">${k}</text><text x="262" y="262">=</text><text x="315" y="262" fill="#16a34a">1</text></g></svg>`};
+
+/* ---------- פעולות: + − · : ---------- */
+V.ops=()=>{$('ops').innerHTML=['+','−','·',':'].map((o,i)=>`<div class="op" id="op${i}">${o}</div>`).join('')};
+V.opsMark=()=>{$('op0').classList.add('bad');$('op1').classList.add('bad')};
+V.opsGood=()=>{$('op2').classList.add('good');$('op3').classList.add('good')};
+V.opsReset=()=>{document.querySelectorAll('.op').forEach(e=>e.classList.remove('bad','good'))};
+
+/* ---------- דלתות (מעקב) ---------- */
+V.tracker=labels=>{$('trk').innerHTML=labels.map((l,i)=>`<div class="door" id="d${i+1}"><b>${l[0]}</b>${l[1]}</div>`).join('');V.ND=labels.length};
+V.door=n=>{for(let k=1;k<=V.ND;k++){$('d'+k).classList.toggle('cur',k==n);$('d'+k).classList.toggle('done',k<n||n>V.ND)}};
+
+/* ---------- שעון עצר ---------- */
+V.clock=n=>{const c=$('clk');c.style.display=n===''?'none':'';c.textContent=n;if(n>0)V.sfx('tick')};
+
+/* ---------- צלילים ומוזיקה (מולחן בקוד – בלי זכויות יוצרים) ---------- */
+let AC=null,MG=null,SG=null,muted=false,musicUntil=0;
+function synth(ctx,dest,name,t){const o=(type,f,a,d,g=.3,f2)=>{const os=ctx.createOscillator(),gn=ctx.createGain();os.type=type;os.frequency.setValueAtTime(f,t+a);if(f2)os.frequency.exponentialRampToValueAtTime(f2,t+a+d);gn.gain.setValueAtTime(0,t+a);gn.gain.linearRampToValueAtTime(g,t+a+.01);gn.gain.exponentialRampToValueAtTime(.001,t+a+d);os.connect(gn);gn.connect(dest);os.start(t+a);os.stop(t+a+d+.05)};
+ const noise=(a,d,g,fq)=>{const len=Math.floor(ctx.sampleRate*d),bf=ctx.createBuffer(1,len,ctx.sampleRate),ch=bf.getChannelData(0);for(let i=0;i<len;i++)ch[i]=Math.random()*2-1;const s=ctx.createBufferSource();s.buffer=bf;const fl=ctx.createBiquadFilter();fl.type='bandpass';fl.frequency.setValueAtTime(fq,t+a);fl.frequency.exponentialRampToValueAtTime(fq*4,t+a+d);const gn=ctx.createGain();gn.gain.setValueAtTime(g,t+a);gn.gain.exponentialRampToValueAtTime(.001,t+a+d);s.connect(fl);fl.connect(gn);gn.connect(dest);s.start(t+a)};
+ if(name==='pop')o('sine',520,0,.12,.35,980);
+ if(name==='wrong'){o('square',220,0,.18,.12);o('square',165,.17,.3,.12)}
+ if(name==='right'){o('triangle',523,0,.15,.3);o('triangle',659,.09,.15,.3);o('triangle',784,.18,.35,.3)}
+ if(name==='whoosh')noise(0,.45,.35,300);
+ if(name==='tick')o('square',1400,0,.04,.08);
+ if(name==='ding'){o('sine',1047,0,.9,.3);o('sine',1568,0,.6,.12)}
+ if(name==='go'){o('triangle',392,0,.12,.25);o('triangle',523,.1,.12,.25);o('triangle',659,.2,.12,.25);o('triangle',1047,.3,.5,.3)}}
+// מוזיקת רקע: 96 BPM, C–G–Am–F, ארפג׳ רך + בס + היי-האט
+const BPM=96,BEAT=60/BPM,CH=[[48,55,60,64],[43,50,59,62],[45,52,57,60],[41,48,57,60]];
+const hz=m=>440*Math.pow(2,(m-69)/12);
+function musicNotes(t0,t1){const out=[];let b=Math.floor(t0/(BEAT/2));for(;b*(BEAT/2)<t1;b++){const t=b*BEAT/2;if(t<t0)continue;const bar=Math.floor(b/8)%4,ch=CH[bar],e=b%8;
+  out.push({t,k:'arp',f:hz(ch[[1,2,3,2,1,3,2,3][e]]+12)});if(e%4==0)out.push({t,k:'bass',f:hz(ch[0]-12)});if(e%2==1)out.push({t,k:'hat'});if(e%4==0)out.push({t,k:'kick'})}return out}
+function playNote(ctx,dest,n,at){const o=(type,f,d,g)=>{const os=ctx.createOscillator(),gn=ctx.createGain();os.type=type;os.frequency.value=f;gn.gain.setValueAtTime(0,at);gn.gain.linearRampToValueAtTime(g,at+.01);gn.gain.exponentialRampToValueAtTime(.001,at+d);os.connect(gn);gn.connect(dest);os.start(at);os.stop(at+d+.05)};
+ if(n.k==='arp')o('triangle',n.f,.28,.16);if(n.k==='bass')o('sine',n.f,.55,.3);
+ if(n.k==='kick'){const os=ctx.createOscillator(),gn=ctx.createGain();os.frequency.setValueAtTime(140,at);os.frequency.exponentialRampToValueAtTime(45,at+.15);gn.gain.setValueAtTime(.35,at);gn.gain.exponentialRampToValueAtTime(.001,at+.18);os.connect(gn);gn.connect(dest);os.start(at);os.stop(at+.2)}
+ if(n.k==='hat'){const len=Math.floor(ctx.sampleRate*.04),bf=ctx.createBuffer(1,len,ctx.sampleRate),c=bf.getChannelData(0);for(let i=0;i<len;i++)c[i]=(Math.random()*2-1)*(1-i/len);const s=ctx.createBufferSource();s.buffer=bf;const hp=ctx.createBiquadFilter();hp.type='highpass';hp.frequency.value=7000;const gn=ctx.createGain();gn.gain.value=.12;s.connect(hp);hp.connect(gn);gn.connect(dest);s.start(at)}}
+function audioInit(){if(AC||REC)return;try{AC=new (window.AudioContext||window.webkitAudioContext)();MG=AC.createGain();MG.gain.value=.22;MG.connect(AC.destination);SG=AC.createGain();SG.gain.value=.9;SG.connect(AC.destination)}catch(e){AC=null}}
+const LOG=[];let wall0=0;
+V.sfx=(name,delay=0)=>{if(REC){LOG.push({t:(FRAMES?T:performance.now()/1000)+delay,name});return}
+  if(!AC||muted||!playing||F.classList.contains('noanim'))return;synth(AC,SG,name,AC.currentTime+delay)};
+function musicPump(){if(!AC||muted||!playing)return;const ahead=T+.6;if(musicUntil<T)musicUntil=T;
+  musicNotes(musicUntil,ahead).forEach(n=>playNote(AC,MG,n,AC.currentTime+(n.t-T)));musicUntil=ahead}
+V.toggleMute=()=>{muted=!muted;$('mute').textContent=muted?'🔇':'🔊';musicUntil=T};
+// עיבוד פסקול להקלטה (WAV) – אותם צלילים בדיוק
+V.renderAudio=async(dur)=>{const sr=22050,ctx=new OfflineAudioContext(1,Math.ceil(sr*dur),sr);const mg=ctx.createGain();mg.gain.value=.22;mg.connect(ctx.destination);const sg=ctx.createGain();sg.gain.value=.9;sg.connect(ctx.destination);
+  const m0=FRAMES?0:wall0/1000;musicNotes(0,dur-m0-1.5).forEach(n=>playNote(ctx,mg,n,n.t+m0));LOG.forEach(e=>synth(ctx,sg,e.name,Math.max(0,e.t)));
+  const buf=await ctx.startRendering(),d=buf.getChannelData(0),N=d.length,ab=new ArrayBuffer(44+N*2),v=new DataView(ab);
+  const ws=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i))};ws(0,'RIFF');v.setUint32(4,36+N*2,true);ws(8,'WAVEfmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,sr,true);v.setUint32(28,sr*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);ws(36,'data');v.setUint32(40,N*2,true);
+  for(let i=0;i<N;i++)v.setInt16(44+i*2,Math.max(-1,Math.min(1,d[i]))*32767,true);
+  let bin='';const u=new Uint8Array(ab);for(let i=0;i<u.length;i+=32768)bin+=String.fromCharCode.apply(null,u.subarray(i,i+32768));return btoa(bin)};
+
+/* ---------- נגן ---------- */
+let EP,T=0,playing=false,last=0,next=0;
+function chAt(t){let c=0;EP.chapters.forEach((x,i)=>{if(x.t<=t)c=i});return c}
+function resetAll(){document.querySelectorAll('.o.on').forEach(e=>{if(e.id!=='chip')e.classList.remove('on')});
+  $('stage').classList.remove('dim');$('cap').innerHTML='';$('mth').innerHTML='';if(V.ND)V.door(0);if(EP.reset)EP.reset()}
+function enter(ci){resetAll();V.chip(EP.chapters[ci].name);EP.chapters[ci].setup()}
+V.seekT=t=>{F.classList.add('noanim');const ci=chAt(t);enter(ci);const c=EP.chapters[ci];
+  next=0;while(next<EP.beats.length&&EP.beats[next][0]<c.t)next++;
+  while(next<EP.beats.length&&EP.beats[next][0]<=t){EP.beats[next][1]();next++}
+  T=t;musicUntil=t;void F.offsetWidth;requestAnimationFrame(()=>F.classList.remove('noanim'));upd()};
+function upd(){$('prog').style.width=Math.min(100,T/EP.end*100)+'%';$('pp').textContent=playing?'⏸':'▶'}
+function tick(ts){if(playing&&!FRAMES){T+=REC?(ts-last)/1000:Math.min(.1,(ts-last)/1000);
+   while(next<EP.beats.length&&EP.beats[next][0]<=T){const bt=EP.beats[next][0],ci=chAt(bt);if(EP.chapters[ci].t===bt&&bt>0)enter(ci);EP.beats[next][1]();next++}
+   musicPump();if(T>=EP.end){T=EP.end;playing=false;window.DONE=true}upd()}
+  last=ts;requestAnimationFrame(tick)}
+V.play=()=>{audioInit();if(AC&&AC.state==='suspended')AC.resume();playing=true;musicUntil=T;upd()};
+V.toggle=()=>playing?(playing=false,upd()):V.play();
+V.go=d=>{const c=Math.max(0,Math.min(EP.chapters.length-1,chAt(T)+d));V.seekT(EP.chapters[c].t);V.play()};
+V.start=()=>{$('cover').style.display='none';V.seekT(0);V.play()};
+V.teacher=s=>{$('teacher').classList.toggle('show',s);if(s)playing=false;upd()};
+V.fs=()=>{const e=document.documentElement;document.fullscreenElement?document.exitFullscreen():(e.requestFullscreen||e.webkitRequestFullscreen||(()=>{})).call(e)};
+V.run=ep=>{EP=ep;function fit(){F.style.transform=`scale(${Math.min(innerWidth/540,innerHeight/960)})`}addEventListener('resize',fit);fit();
+  document.addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();V.toggle()}if(e.key==='ArrowLeft')V.go(1);if(e.key==='ArrowRight')V.go(-1)});
+  requestAnimationFrame(t=>{last=t;tick(t)});
+  if(REC){$('cover').style.display='none';wall0=performance.now();V.seekT(0);playing=true}};
+Object.defineProperty(V,'T',{get:()=>T});
+/* הקלטה מדויקת פריים-אחר-פריים: זמן וירטואלי לכל האנימציות */
+V.step=dt=>{T+=dt;while(next<EP.beats.length&&EP.beats[next][0]<=T){const bt=EP.beats[next][0],ci=chAt(bt);if(EP.chapters[ci].t===bt&&bt>0)enter(ci);EP.beats[next][1]();next++}
+  document.getAnimations().forEach(a=>{if(a._b===undefined){a._b=T;a.pause()}a.currentTime=(T-a._b)*1000});upd();return T>=EP.end};
+})();
+/* תוספות וואו */
+V.doorOpen=(label,big,sm)=>{const w=V.$('dw');w.classList.remove('on');V.$('dwP').textContent=label;V.$('dwB').innerHTML=big;V.$('dwS').innerHTML=sm||'';void w.offsetWidth;w.classList.add('on');V.sfx('whoosh',.5)};
+V.wobble=list=>list.forEach(k=>{const c=V.$('c'+k);c.classList.remove('wob');void c.getBBox;setTimeout(()=>c.classList.add('wob'),10)});
+</script>
+<script>/* פרק: שלוש הדלתות של היחס · ח׳ א2 · ערכה: רוני מודן */
+const {on,off,cap,mth,L,ratio,$}=V, R=ratio(2,3);
+const sp=(c,t)=>`<span class="${c}">${t}</span>`;
+V.cups([{name:'נועה',color:'#db2777',tint:'#fce7f3',count:2},{name:'איתי',color:'#2563eb',tint:'#dbeafe',count:3}]);
+V.table([{h:'נועה',cls:'n'},{h:'איתי',cls:'i'},{h:'שלם'},{h:'הפרש',hidden:1}],['יחס<br>(חלקים)','כמות']);
+V.ops(); V.fracScale(2,3,5);
+V.tracker([['דלת 1','נתון חלק'],['דלת 2','נתון השלם'],['דלת 3','נתון ההפרש']]);
+$('keyrow').innerHTML='🔑 המפתח: כמה בחלק אחד?';
+const ratioRow=()=>{V.tset(0,0,'2');V.tset(0,1,'3');V.tset(0,2,'5')};
+const all=[0,1,2,3,4];
+const bub=()=>{const b=$('bub');b.innerHTML='נועה קיבלה 10?<br>אז לי מגיע 11!';b.style.left=(V.gc[1]-150)+'px';b.style.top='405px';const s=$('stamp');s.style.left=(V.gc[1]-45)+'px';s.style.top='330px'};
+bub();
+
+const B=[
+ /* פתיחה */
+ [0.2,()=>{cap('עוד 2 דקות —<br>תפתרו <span class="y">כל</span> שאלת יחס!');V.sfx('go')}],
+ [2.8,()=>{V.cupsOn();cap('נועה ואיתי<br>מחלקים סוכריות')}],
+ [5.0,()=>{cap('ביחס '+R);mth(sp('n','2')+':'+sp('i','3'))}],
+ [7.4,()=>{mth('');cap('יחס = חלקים שווים.<br>כל כוס היא חלק אחד');V.pulse()}],
+ /* הטעות */
+ [10.2,()=>{on('bub');cap('איתי בטוח שהוא צודק…')}],
+ [12.8,()=>{V.fill([0,1]);V.badge('bN','נועה: 10',V.gc[0],212);cap('בודקים בכוסות!<br>לנועה 10 — 5 בכל כוס')}],
+ [15.2,()=>{V.fill([2,3,4],[4,4,3]);cap('ועכשיו 11 סוכריות<br>ב־3 כוסות…')}],
+ [17.4,()=>{V.wobble([2,3,4]);on('stamp');V.sfx('wrong');cap('הכוסות לא שוות!<br>זה כבר לא יחס '+R)}],
+ /* רק כפל וחילוק */
+ [20.2,()=>{$('stage').classList.add('dim');on('ops');cap('אז מה מותר<br>לעשות ביחס?')}],
+ [22.5,()=>{V.opsMark();V.sfx('wrong');cap('חיבור וחיסור —<br>מקלקלים את היחס')}],
+ [25.0,()=>{V.opsGood();V.sfx('right');cap('ביחס — רק<br><span class="y">כפל וחילוק!</span>')}],
+ [27.6,()=>{mth(sp('n','2')+':'+sp('i','3')+' = '+sp('n','4')+':'+sp('i','6')+' = '+sp('n','10')+':'+sp('i','15'));cap('הרחבה: כופלים את<br>שני החלקים באותו מספר')}],
+ [30.4,()=>{mth(sp('n','10')+':'+sp('i','15')+' = '+sp('n','2')+':'+sp('i','3'));cap('צמצום: מחלקים את<br>שני החלקים באותו מספר')}],
+ /* טבלת העוגן */
+ [33.2,()=>{on('tbl');V.sfx('whoosh');cap('הכלי שלנו:<br>טבלת העוגן')}],
+ [35.4,()=>{ratioRow();V.sfx('pop');mth('2 + 3 = 5');cap('שורת היחס:<br>כמה חלקים לכל אחד')}],
+ [38.0,()=>{mth('');cap('שורת הכמות:<br>כמה סוכריות באמת')}],
+ /* דלת 1 */
+ [40.5,()=>{V.doorOpen('1','דלת 1','נתון: חלק')}],
+ [43.1,()=>{off('dw');V.tset(1,0,'10','giv');V.badge('bN','נועה: 10',V.gc[0],212);V.hl([0,1]);cap('נתון: לנועה<br>10 סוכריות')}],
+ [45.5,()=>{V.anchor(0);V.sfx('pop');cap('העוגן: העמודה שיש בה<br>גם יחס וגם כמות')}],
+ [48.1,()=>{V.fill([0,1]);V.fac('·5');mth('10 : 2 = 5');cap('חלק אחד = 5')}],
+ [50.8,()=>{V.hl([]);V.fill([2,3,4]);V.tset(1,1,'15');V.tset(1,2,'25');mth('3 · 5 = '+sp('i','15'));cap('כופלים כל חלק ב־5')}],
+ [53.5,()=>{V.sfx('right');mth(sp('n','10')+' + '+sp('i','15')+' = 25 '+sp('g','✓'));cap('בדיקה: הסכום = השלם')}],
+ /* דלת 2 */
+ [56.0,()=>{V.doorOpen('2','דלת 2','נתון: השלם')}],
+ [58.6,()=>{off('dw');V.tset(1,2,'25','giv');on('brace');V.badge('bA','יחד: 25',V.mid,236);V.hl(all);cap('נתון: יחד<br>25 סוכריות')}],
+ [61.0,()=>{V.anchor(2);V.sfx('pop');cap('העוגן: עמודת השלם')}],
+ [63.3,()=>{V.fill(all);V.fac('·5');mth('25 : 5 = 5');cap('חלק אחד = 5')}],
+ [65.8,()=>{V.hl([]);V.tset(1,0,'10');V.tset(1,1,'15');V.sfx('right');mth('2 · 5 = '+sp('n','10')+'&emsp;&emsp;3 · 5 = '+sp('i','15'));cap('שוב נועה 10, איתי 15!')}],
+ /* דלת 3 */
+ [68.5,()=>{V.doorOpen('3','דלת 3','נתון: ההפרש')}],
+ [71.1,()=>{off('dw');V.tcol(3,true);V.tset(0,3,'1');V.pairs([[1,2],[0,3]]);V.hl([4]);mth('3 − 2 = 1');cap('עמודת הפרש: לאיתי<br>חלק אחד יותר')}],
+ [74.0,()=>{V.tset(1,3,'5','giv');V.anchor(3);V.badge('bC','עוד 5',V.cx[4],212);V.sfx('pop');cap('נתון: לאיתי<br>5 סוכריות יותר')}],
+ [76.5,()=>{V.fill([4]);V.fac('·5');mth('5 : 1 = 5');cap('ההפרש הוא חלק אחד,<br>ולכן חלק אחד = 5')}],
+ [77.9,()=>{V.fill([0,1,2,3])}],
+ [79.6,()=>{V.hl([]);V.tset(1,0,'10');V.tset(1,1,'15');V.tset(1,2,'25');V.sfx('right');mth('');cap('שלוש דלתות —<br>אותה תשובה!')}],
+ /* המפתח */
+ [82.2,()=>{on('key');$('keyT').textContent='כמה בחלק אחד?';V.sfx('ding');cap('מפתח אחד<br>לשלוש הדלתות:')}],
+ [85.4,()=>{off('key');on('keyrow');V.fac('·5');cap('החלק האחד הוא<br><span class="fx">גורם ההכפלה</span>')}],
+ /* גורם ההכפלה בשבר */
+ [88.0,()=>{on('frac','fA');cap('ועכשיו כשבר:')}],
+ [90.0,()=>{on('e1','fB','fbadge','farcs');V.sfx('whoosh');cap('כופלים מונה ומכנה<br>באותו מספר: <span class="fx">5</span>')}],
+ [92.6,()=>{on('e2','fC');mth(sp('n','2')+':'+sp('i','3')+' = '+sp('n','10')+':'+sp('i','15'));cap('אותו יחס בדיוק:<br>יחסים שקולים')}],
+ [95.2,()=>{on('one');V.sfx('ding');cap('בעצם הכפלנו ב־1 —<br>לכן היחס לא השתנה!')}],
+ /* תורכם */
+ [98.2,()=>{on('qc');V.clock(10);V.sfx('go');cap('תורכם! עצרו וחשבו')}],
+ ...[9,8,7,6,5,4,3,2,1,0].map((n,i)=>[99.2+i,()=>V.clock(n)]),
+ [109.4,()=>{$('qh').innerHTML='בודקים יחד 👇';V.clock('');V.tset(1,2,'40','giv');V.anchor(2);V.sfx('pop');cap('נתון השלם — דלת 2.<br>העוגן: עמודת השלם')}],
+ [112.0,()=>{V.fac('·8');mth('40 : 5 = 8');cap('חלק אחד = 8')}],
+ [114.5,()=>{V.tset(1,1,'24');V.tset(1,0,'16');mth('3 · 8 = '+sp('i','24'));cap('לאיתי 24 סוכריות')}],
+ [117.0,()=>{V.sfx('right');mth(sp('n','16')+' + '+sp('i','24')+' = 40 '+sp('g','✓'));cap('בדיקה: הסכום = השלם')}],
+ /* סיום */
+ [119.8,()=>{on('win');V.sfx('go');V.sfx('ding',.5)}],
+];
+V.run({end:126, beats:B,
+ reset(){V.empty();V.hl([]);V.tclear();V.anchor(-1);V.fac('');V.opsReset();V.tcol(3,false);V.clock(10);$('qh').innerHTML='איזו דלת? איפה העוגן?'},
+ chapters:[
+ {t:0,name:'יחס',setup(){}},
+ {t:10.2,name:'הטעות',setup(){V.cupsOn()}},
+ {t:20.2,name:'רק כפל וחילוק',setup(){}},
+ {t:33.2,name:'טבלת העוגן',setup(){V.cupsOn()}},
+ {t:40.5,name:'דלת 1',setup(){V.cupsOn();on('tbl');ratioRow();V.door(1)}},
+ {t:56.0,name:'דלת 2',setup(){V.cupsOn();on('tbl');ratioRow();V.door(2)}},
+ {t:68.5,name:'דלת 3',setup(){V.cupsOn();on('tbl');ratioRow();V.door(3)}},
+ {t:82.2,name:'המפתח',setup(){V.cupsOn();V.fill(all);on('tbl');ratioRow();V.tset(1,0,'10');V.tset(1,1,'15');V.tset(1,2,'25');V.door(4)}},
+ {t:88.0,name:'גורם ההכפלה',setup(){$('stage').classList.add('dim');on('tbl','keyrow');ratioRow();V.tset(1,0,'10');V.tset(1,1,'15');V.tset(1,2,'25');V.fac('·5');V.door(4)}},
+ {t:98.2,name:'תורכם',setup(){$('stage').classList.add('dim');on('tbl','keyrow');ratioRow()}},
+ {t:119.8,name:'כל הכבוד',setup(){$('stage').classList.add('dim')}}]});
+$('qq').innerHTML='סוכריות ביחס '+R+'.<br>יחד יש <span class="y">40</span> סוכריות.<br>כמה סוכריות לאיתי?';
+$('win').innerHTML='<div class="big">פתחתם את<br>שלוש הדלתות!</div><div class="row">🚪 🚪 🚪</div><div class="sm">ביחס — רק כפל וחילוק<br>🔑 כמה בחלק אחד?</div>';
+</script>
+</body></html>

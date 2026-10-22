@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="he" dir="rtl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>{{TITLE}}</title><style>{{CSS}}</style></head>
+<body><div id="wrap"><div id="f">
+<div id="chip" class="o on"></div><div id="cap"></div>
+<svg id="stage" viewBox="0 0 540 280"></svg>
+<div id="ops" class="o"></div><div id="frac" class="o"></div><div id="tbl" class="o"></div>
+<div id="bN" class="badge o"></div><div id="bA" class="badge o"></div><div id="bC" class="badge o"></div>
+<div id="bub" class="bubble o"></div><div id="stamp" class="stamp o">✗</div>
+<div id="qc" class="qcard o"><div class="clock" id="clk"></div><div class="q" id="qq"></div><div class="h" id="qh"></div></div>
+<div id="sp" class="splash o"><div class="big" id="spB"></div><div class="sm" id="spS"></div></div>
+<div id="dw" class="dwrap o"><div class="dframe"><div class="big" id="dwB"></div><div class="sm" id="dwS"></div></div><div class="dpanel" id="dwP"></div></div>
+<div id="key" class="o"><div class="k">🔑</div><br><div class="t" id="keyT"></div></div>
+<div id="win" class="o"></div>
+<div id="mth"></div><div id="trk"></div><div id="keyrow" class="o"></div>
+<div id="credit">{{CREDIT}}</div>
+<div id="bar"><div id="prog"></div></div>
+<div id="ctl"><button onclick="V.go(-1)" title="פרק קודם">→</button><button id="pp" onclick="V.toggle()">▶</button><button onclick="V.go(1)" title="פרק הבא">←</button><button onclick="V.seekT(0);V.play()" title="מההתחלה">↻</button><button id="mute" onclick="V.toggleMute()">🔊</button><button onclick="V.fs()" title="מסך מלא">⛶</button><button onclick="V.teacher(true)">למורה</button></div>
+<div id="cover"><h1>{{TITLE_HTML}}</h1><p>{{SUB}}</p><button onclick="V.start()">▶ צפייה</button><p style="font-size:18px">{{CREDIT}}</p></div>
+<div id="teacher"><button class="close" onclick="V.teacher(false)">סגירה ✕</button>{{TEACHER}}</div>
+</div></div>
+<script>{{ENGINE}}</script>
+<script>{{EPISODE}}</script>
+</body></html>
