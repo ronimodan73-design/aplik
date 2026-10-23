@@ -8,4 +8,4 @@
 קישור:   https://htmlpreview.github.io/?https://github.com/ronimodan73-design/aplik/blob/main/apps/<id>.html
          (אחרי הפעלת GitHub Pages: https://ronimodan73-design.github.io/aplik/apps/<id>.html)
 
-קבצי תוכן קיימים: t9_iso (משולש שווה שוקיים), dist (חוק הפילוג), gcf (הוצאת גורם משותף)
+קבצי תוכן קיימים: t9_iso, dist, gcf, eq, h8_parallel, h8_lines (הישר והגרף), z7_q1 (הרביע הראשון)
