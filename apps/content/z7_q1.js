@@ -110,11 +110,17 @@ function gMap(){const [p1,p2]=pick(PLACES),t=pick(['move','dist']);
   lines:[`${s.hor?'אותו y ← קטע אופקי ← מחסרים את ה־x':'אותו x ← קטע אנכי ← מחסרים את ה־y'}: ${M(s.len+' משבצות')}`,`${M(s.len+' · 100 = '+s.len*100)} מטר`],rule:'אורך במשבצות · גודל משבצת = המרחק האמיתי.',
   diag:({vals:[v]})=>v===s.len?`זה מספר המשבצות. כל משבצת היא 100 מטר: כופלים ב־100.`:null};}
 /* ===== levels ===== */
+const LAD=[
+ [{g:gAxis,n:4,h:2},{g:gOn,n:4,h:2},{g:gRead,n:4,h:1},{g:gWhich,n:4,h:1},{g:gRead,n:4,h:0}],
+ [{g:gType,n:5,h:2},{g:gLen,n:5,h:1},{g:gEnd,n:5,h:1},{g:gLen,n:5,h:0}],
+ [{g:gFourth,n:5,h:2},{g:()=>gPA(false),n:5,h:2},{g:()=>gPA(false),n:5,h:1},{g:()=>gPA(true),n:5,h:0}],
+ [{g:gIsSq,n:5,h:1},{g:gSqC,n:5,h:1},{g:gMap,n:5,h:0},{g:gErr,n:5,h:0}]];
 const LEVELS=[
- {n:1,t:'מושגים וזיהוי נקודות',d:'ציר אופקי ואנכי, ראשית, קריאה וסימון',g:()=>pick([gAxis,gRead,gRead,gWhich,gWhich,gOn])()},
- {n:2,t:'קטעים',d:'אופקי או אנכי, אורך קטע, קצה של קטע',g:()=>pick([gLen,gLen,gType,gEnd])()},
- {n:3,t:'מלבן וריבוע',d:'קדקוד חסר, היקף, שטח',g:()=>pick([gFourth,gPA,gPA])()},
- {n:4,t:'חשיבה ואוריינות',d:'האם זה ריבוע, בונים ריבוע, טעויות, מפה',g:()=>pick([gIsSq,gSqC,gSqC,gErr,gMap,gMap])()}];
+ {n:1,t:'מושגים וזיהוי נקודות',d:'הצירים ← נקודה על ציר ← קוראים נקודה ← מוצאים נקודה',ladder:LAD[0]},
+ {n:2,t:'קטעים',d:'אופקי או אנכי ← אורך קטע ← קצה של קטע',ladder:LAD[1]},
+ {n:3,t:'מלבן וריבוע',d:'קדקוד חסר ← היקף ושטח ← ריבוע',ladder:LAD[2]},
+ {n:4,t:'חשיבה ואוריינות',d:'האם זה ריבוע ← בונים ריבוע ← מפה ← טעויות',ladder:LAD[3]}];
+LEVELS.forEach(l=>l.g=()=>pick(l.ladder).g());
 const TEST=[[gAxis,gRead,gWhich,gOn],[gType,gLen,gLen,gEnd],[gFourth,()=>gPA(false),()=>gPA(true),gFourth],[gIsSq,gSqC,gErr,gMap]];
 const WARM=[gAxis,gRead,gOn,gRead,gWhich,gAxis,gRead,gOn];
 /* ===== animated explanation ===== */

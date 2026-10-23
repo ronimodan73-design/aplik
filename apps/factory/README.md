@@ -9,3 +9,10 @@
          (אחרי הפעלת GitHub Pages: https://ronimodan73-design.github.io/aplik/apps/<id>.html)
 
 קבצי תוכן קיימים: t9_iso, dist, gcf, eq, h8_parallel, h8_lines (הישר והגרף), z7_q1 (הרביע הראשון)
+
+## בנייה הדרגתית (נוסף באוקטובר 2026)
+- סולם קבוע בכל שלב: ב־LEVELS כותבים ladder:[{g, n, h, a}] – g מחולל, n כמה שאלות, h רמז (2 גלוי, 1 בלחיצה, 0 בלי), a:0 מבטל את שלב "מה השאלה שואלת".
+- "מה השאלה שואלת?": שאלה מחזירה ask:{text, choice, correct, diag} – התלמיד בוחר קודם את המשמעות, ורק אז פותר. לא מופיע במבחן.
+- שאלה בצעדים (כמו שאלת מבחן ארוכה): steps:[{text, short, ans/choice, hint, lines, rule, diag, dia?}] על גרף אחד (dia של השאלה). נקודה רק אם כל הצעדים נכונים בניסיון הראשון.
+- רמז: hint בשאלה (ברירת מחדל: rule).
+דוגמה מלאה: content/h8_lines.js (chain7, chain6, ASK_*).

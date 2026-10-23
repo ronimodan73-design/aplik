@@ -60,6 +60,11 @@ p{font-size:19px;line-height:1.55;margin:0}
 .fb b{font-family:Rubik}
 .sol{margin-top:16px;display:none}.sol.on{display:block}
 .sline{font-size:20px;text-align:center;margin:8px 0;opacity:0;transition:opacity .5s;line-height:1.5}.sline.show{opacity:1}
+.hint{background:#ffb02018;border-right:5px solid var(--acc);padding:9px 13px;border-radius:10px;margin:10px 0;font-size:18px;line-height:1.5}
+.askbox{background:#5ec8ff14;border:2px dashed var(--blue);border-radius:14px;padding:10px 12px;margin:12px 0}.askbox .ah{font-weight:800;color:var(--blue);font-size:18px;margin-bottom:6px}
+.asknote{background:#4fd18b18;border-right:5px solid var(--ok);padding:8px 12px;border-radius:10px;margin:8px 0;font-size:17px}
+.stepdone{background:var(--chip);border-radius:10px;padding:7px 12px;margin:6px 0;font-size:17px;color:var(--muted)}.stepdone b{color:var(--ok)}
+.stephead{display:inline-block;background:var(--acc);color:#0f1b2d;font-weight:800;border-radius:999px;padding:3px 12px;margin:10px 0 4px;font-size:15px}
 .rule{background:var(--acc);color:#1b1300;border-radius:12px;padding:10px 14px;font-weight:700;font-size:17px;margin-top:10px}
 .big{font-family:Rubik;font-weight:900;font-size:60px;color:var(--acc);text-align:center}
 .foot{text-align:center;color:var(--muted);font-size:14px;margin-top:auto}.foot b{color:var(--ink)}
@@ -271,21 +276,40 @@ function menu(){$('#sc').textContent='';const tl=store.get('test');
  <h2 style="margin-top:18px">תרגול בשלבים: מתקדמים מרמה לרמה</h2><p style="font-size:16px;color:var(--muted)">עוברים שלב עם 16 נכונות מתוך 20 ✅</p>
  <div class="levels">${LEVELS.map((l,i)=>{const b=store.get('best'+i),rec=LEVELS.findIndex((_,j)=>(store.get('best'+j)||0)<16);return `<button type="button" data-l="${i}" class="${i===rec?'rec':''}">${b>=16?'<span class="badge ok">✅ עברתי</span>':i===rec?'<span class="badge">👈 מומלץ עכשיו</span>':''}<span class="st">${'★'.repeat(l.n)}</span><span class="t">${l.t}</span><span class="d">${l.d}</span>${b!=null?`<span class="best">השיא שלי: ${b} מתוך ${TOTAL}</span>`:''}</button>`}).join('')}</div></div>`;
  $('#go-recap').onclick=()=>recap(0);$('#go-test').onclick=testIntro;V.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>start(+b.dataset.l));}
-function start(l){S={mode:'lv',l,i:0,score:0,n:TOTAL,streak:0};next();}
-function next(){if(S.q)S.i++;if(S.i>=S.n)return S.mode==='test'?endTest():S.mode==='warm'?endWarm():end();S.q=S.list?S.list[S.i]():LEVELS[S.l].g();S.tries=0;S.done=false;draw();}
+function start(l){const L=LEVELS[l];S={mode:'lv',l,i:0,score:0,n:TOTAL,streak:0};
+ if(L.ladder){const list=[],meta=[];L.ladder.forEach(e=>{for(let k=0;k<e.n;k++){list.push(e.g);meta.push(e);}});S.list=list;S.meta=meta;S.n=list.length;}next();}
+function next(){if(S.q)S.i++;if(S.i>=S.n)return S.mode==='test'?endTest():S.mode==='warm'?endWarm():end();S.q=S.list?S.list[S.i]():LEVELS[S.l].g();S.tries=0;S.done=false;S.si=0;S.stepNext=false;S.chainBad=false;S.askTries=0;
+ const me=S.meta?S.meta[S.i]:null;S.ph=me?(me.h||0):S.mode==='warm'?1:0;S.askDone=!S.q.ask||S.mode==='test'||(me&&me.a===0);draw();}
+const curQ=()=>S.q.steps?S.q.steps[S.si]:S.q;
+function hintHtml(c){const H=c.hint||c.rule;if(!H||S.mode==='test'||!S.ph)return '';return S.ph>=2?`<div class="hint">💡 ${H}</div>`:`<button class="btn sec mini" id="hb" type="button">💡 רמז</button><div class="hint" id="hint" hidden>${H}</div>`;}
+function choicesHtml(c){return c.choice?`<div class="choices">${c.choiceLab?`<span class="lab">${c.choiceLab}</span>`:''}${c.choice.map((x,i)=>`<button type="button" data-c="${i}">${x}</button>`).join('')}</div>`:'';}
+function bindChoices(T){S.sel=-1;V.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{if(S.done&&T)return;V.querySelectorAll('[data-c]').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');S.sel=+b.dataset.c;});}
+function drawAsk(){const q=S.q;$('#sc').textContent=`נקודות: ${S.score}`;
+ V.innerHTML=`<div class="meta"><span>${lab()} · שאלה ${S.i+1} מתוך ${S.n}</span><span></span></div><div class="prog"><i style="width:${S.i/S.n*100}%"></i></div>
+ <div class="card pop"><span class="kind">${q.kind}</span>${(()=>{const d=qDia(q,false);return d?`<div class="dia">${d}</div>`:''})()}<div class="qtext">${q.text}</div>
+ <div class="askbox"><div class="ah">🔎 לפני שפותרים: מה השאלה שואלת?</div>${q.ask.text?`<div>${q.ask.text}</div>`:''}${choicesHtml(q.ask)}</div>
+ <div class="btns"><button class="btn main" id="chk" type="button">בדיקה</button><button class="btn sec" id="show" type="button">הראו לי</button></div><div class="fb" id="fb" role="status" aria-live="polite"></div></div>`;
+ bindChoices(false);
+ $('#chk').onclick=()=>{const fb=$('#fb');if(S.sel<0){fb.className='fb no';fb.innerHTML='בחרו תשובה.';return;}
+  if(S.sel===q.ask.correct){S.askDone=true;S.askOk=true;draw();return;}
+  S.askTries++;const m=q.ask.diag?q.ask.diag({sel:S.sel}):null;fb.className='fb no pop';fb.innerHTML=`<b>לא בדיוק.</b> ${m||q.ask.why||''} ${S.askTries>=2?'<br>לחצו על <b>"הראו לי"</b>.':'נסו שוב.'}`;};
+ $('#show').onclick=()=>{S.askDone=true;S.askOk=false;draw();};}
 function lab(){return S.mode==='warm'?'חימום':S.mode==='test'?'מבחן מדורג · '+TL[S.lv[S.i]]:'★'.repeat(LEVELS[S.l].n)+' '+LEVELS[S.l].t;}
-function qDia(q,hl){return typeof QDIA==='function'?QDIA(q,hl):(q.dia?q.dia(hl):'');}
-function draw(){const q=S.q,T=S.mode==='test';$('#sc').textContent=T?'':`נקודות: ${S.score}`;
+function qDia(q,hl){return typeof QDIA==='function'?QDIA(q,hl):(q.dia?q.dia(hl):(hl&&S.q&&q!==S.q&&S.q.dia?S.q.dia(true):''));}
+function draw(){if(!S.askDone)return drawAsk();const q=S.q,c=curQ(),T=S.mode==='test',ST=q.steps;$('#sc').textContent=T?'':`נקודות: ${S.score}`;
  V.innerHTML=`<div class="meta"><span>${lab()} · שאלה ${S.i+1} מתוך ${S.n}</span><span>${!T&&S.streak>=3?'🔥 '+S.streak+' ברצף':''}</span></div><div class="prog"><i style="width:${S.i/S.n*100}%"></i></div>
  <div class="card pop"><span class="kind">${q.kind}</span>${(()=>{const d=qDia(q,false);return d?`<div class="dia">${d}</div>`:''})()}<div class="qtext">${q.text}</div>
- ${q.ans&&q.tpl?`<div class="inputs tpl">${q.tpl.split('[]').map((p,i,arr)=>`<span class="tp">${p}</span>`+(i<arr.length-1?`<input class="tin" inputmode="${q.ans[i].neg?'text':'decimal'}" data-i="${i}" aria-label="${q.ans[i].label}" style="border-color:${q.ans[i].col}">`:'')).join('')}</div>`:''}
+ ${q.ask?`<div class="asknote">${S.askOk?'✓ נכון!':'👀'} השאלה שואלת: <b>${q.ask.choice[q.ask.correct]}</b></div>`:''}
+ ${ST?ST.slice(0,S.si).map((st,k)=>`<div class="stepdone"><b>✓ צעד ${k+1}:</b> ${st.short||st.text} ← ${ansText(st)}</div>`).join('')+`<div class="stephead">צעד ${S.si+1} מתוך ${ST.length}</div><div class="qtext">${c.text}</div>`:''}
+ ${hintHtml(c)}
+ ${(q=>`${q.ans&&q.tpl?`<div class="inputs tpl">${q.tpl.split('[]').map((p,i,arr)=>`<span class="tp">${p}</span>`+(i<arr.length-1?`<input class="tin" inputmode="${q.ans[i].neg?'text':'decimal'}" data-i="${i}" aria-label="${q.ans[i].label}" style="border-color:${q.ans[i].col}">`:'')).join('')}</div>`:''}
  ${q.ans&&!q.tpl?`<div class="inputs">${q.ans.map((a,i)=>`<label class="inp"><span style="color:${a.col}">${a.label==='x ='||a.lt?M(a.label):a.label}</span><input inputmode="${a.neg?'text':'decimal'}" data-i="${i}" aria-label="${a.label}"></label>`).join('')}</div>`:''}
- ${q.choice?`<div class="choices">${q.choiceLab?`<span class="lab">${q.choiceLab}</span>`:''}${q.choice.map((c,i)=>`<button type="button" data-c="${i}">${c}</button>`).join('')}</div>`:''}
+ ${choicesHtml(q)}`)(c)}
  <div class="btns"><button class="btn main" id="chk" type="button">${T?'שמירת התשובה':'בדיקה'}</button>${T?'':'<button class="btn sec" id="show" type="button">הראו לי</button>'}</div>
  <div class="fb" id="fb" role="status" aria-live="polite"></div><div class="sol" id="sol"></div></div>`;
- S.sel=-1;V.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{if(S.done&&T)return;V.querySelectorAll('[data-c]').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');S.sel=+b.dataset.c;});
+ bindChoices(T);if($('#hb'))$('#hb').onclick=()=>{$('#hint').hidden=false;$('#hb').remove();};
  V.querySelectorAll('input').forEach(x=>x.onkeydown=e=>{if(e.key==='Enter')$('#chk').click();});
- $('#chk').onclick=()=>{if(S.done)return next();check(q);};if($('#show'))$('#show').onclick=()=>solve(q);}
+ $('#chk').onclick=()=>{if(S.stepNext){S.stepNext=false;S.si++;S.tries=0;return draw();}if(S.done)return next();check(c);};if($('#show'))$('#show').onclick=()=>solve(c);}
 function check(q){const fb=$('#fb');const ins=[...V.querySelectorAll('input')];
  const vals=ins.map(x=>parseFloat(x.value.replace(',','.').replace(/[−–]/g,'-').replace(/\s/g,'')));
  if(q.ans&&vals.some(isNaN)){fb.className='fb no';fb.innerHTML='מלאו את כל התשובות.';return;}
@@ -294,7 +318,9 @@ function check(q){const fb=$('#fb');const ins=[...V.querySelectorAll('input')];
  if(S.mode==='test'){ins.forEach(x=>x.disabled=true);S.res.push({lv:S.lv[S.i],ok,q});S.done=true;fb.className='fb saved pop';
   fb.innerHTML='<b>התשובה נשמרה ✓</b> '+(S.i+1<S.n?'ממשיכים בנחת.':'זאת הייתה השאלה האחרונה!');$('#chk').textContent=S.i+1<S.n?'לשאלה הבאה':'לדוח שלי';return;}
  S.tries++;ins.forEach((x,i)=>{x.classList.remove('good','bad');x.classList.add(vals[i]===q.ans[i].val?'good':'bad');});
- if(ok){if(S.tries===1){S.score++;S.streak=(S.streak||0)+1;}S.done=true;fb.className='fb ok pop';fb.innerHTML=`<b>${pick(['מעולה!','בדיוק!','יפה מאוד!','נכון!'])}</b> ${S.tries===1?'הצלחתם בניסיון הראשון.':'תיקנתם, וזה מה שחשוב.'}`;$('#chk').textContent='לשאלה הבאה';if($('#show'))$('#show').style.display='none';return;}
+ const lastStep=!S.q.steps||S.si===S.q.steps.length-1;
+ if(ok&&!lastStep){if(S.tries>1)S.chainBad=true;S.stepNext=true;fb.className='fb ok pop';fb.innerHTML=`<b>${pick(['נכון!','בדיוק!','יפה!'])}</b> ממשיכים לצעד הבא.`;$('#chk').textContent='לצעד הבא ←';if($('#show'))$('#show').style.display='none';return;}
+ if(ok){if(S.tries===1&&!S.chainBad){S.score++;S.streak=(S.streak||0)+1;}S.done=true;fb.className='fb ok pop';fb.innerHTML=`<b>${pick(['מעולה!','בדיוק!','יפה מאוד!','נכון!'])}</b> ${S.tries===1?'הצלחתם בניסיון הראשון.':'תיקנתם, וזה מה שחשוב.'}`;$('#chk').textContent='לשאלה הבאה';if($('#show'))$('#show').style.display='none';return;}
  S.streak=0;let msg=q.diag?q.diag({vals,sel:S.sel}):null;
  if(okIn&&!okCh&&q.ans)msg='החישוב נכון! אבל <b>הנימוק</b> לא מתאים. רמז: '+q.rule;
  if(!msg)msg=S.mode==='warm'?'רמז: '+q.rule:'רמז: '+q.rule;
@@ -302,7 +328,7 @@ function check(q){const fb=$('#fb');const ins=[...V.querySelectorAll('input')];
 function solve(q){const sol=$('#sol');sol.className='sol on';
  sol.innerHTML=`${(()=>{const d=qDia(q,true);return d?`<div class="dia">${d}</div>`:''})()}${q.lines.map(l=>`<div class="sline">${l}</div>`).join('')}<div class="rule sline">${q.rule}</div>`;
  [...sol.querySelectorAll('.sline')].forEach((el,i)=>setTimeout(()=>el.classList.add('show'),500+i*650));
- S.tries=Math.max(S.tries,2);S.streak=0;if(!S.done){S.done=true;$('#chk').textContent='לשאלה הבאה';$('#show').style.display='none';}}
+ S.tries=Math.max(S.tries,2);S.streak=0;if(S.q.steps&&S.si<S.q.steps.length-1){S.chainBad=true;S.stepNext=true;$('#chk').textContent='לצעד הבא ←';$('#show').style.display='none';return;}if(!S.done){S.done=true;$('#chk').textContent='לשאלה הבאה';$('#show').style.display='none';}}
 function end(){$('#sc').textContent=`נקודות: ${S.score}`;const best=store.get('best'+S.l);if(best==null||S.score>best)store.set('best'+S.l,S.score);
  const st=S.score>=18?3:S.score>=14?2:S.score>=10?1:0;
  V.innerHTML=`<div class="card pop" style="text-align:center"><h2>סיימתם: ${'★'.repeat(LEVELS[S.l].n)} ${LEVELS[S.l].t}</h2><div class="big">${S.score} / ${TOTAL}</div>

@@ -13,12 +13,16 @@ async def main():
         errs = []; pg.on('pageerror', lambda e: errs.append(str(e))); pg.on('console', lambda m: errs.append(m.text) if m.type == 'error' else None)
         await pg.goto(URL); await pg.wait_for_timeout(400)
         await pg.screenshot(path=f'{OUT}/00_menu.png', full_page=True)
-        bad = await pg.evaluate('''()=>{const bad=[];const gens=[...TEST.flat(),...WARM,...LEVELS.map(l=>l.g)];
+        bad = await pg.evaluate('''()=>{const bad=[];const gens=[...TEST.flat(),...WARM,...LEVELS.map(l=>l.g).filter(Boolean),...LEVELS.flatMap(l=>(l.ladder||[]).map(e=>e.g))];
           gens.forEach((g,gi)=>{for(let i=0;i<300;i++){let q;try{q=g();}catch(e){bad.push('gen'+gi+' throws '+e.message);break;}
             if(q.ans)q.ans.forEach(a=>{if(!Number.isFinite(a.val)||(!a.neg&&a.val<=0)||(!a.dec&&!Number.isInteger(a.val)))bad.push(q.kind+' ans '+a.val)});
             if(q.choice&&(q.correct==null||q.correct<0||q.correct>=q.choice.length))bad.push(q.kind+' bad correct');
             if(q.choice&&new Set(q.choice).size!==q.choice.length)bad.push(q.kind+' duplicate choices');
             if(!q.rule||!q.lines)bad.push(q.kind+' missing rule/lines');
+            if(q.ask&&(q.ask.correct==null||q.ask.correct<0||new Set(q.ask.choice).size!==q.ask.choice.length))bad.push(q.kind+' bad ask');
+            (q.steps||[]).forEach((st,k)=>{if(st.ans)st.ans.forEach(a=>{if(!Number.isFinite(a.val)||(!a.neg&&a.val<=0)||(!a.dec&&!Number.isInteger(a.val)))bad.push(q.kind+' step'+k+' ans '+a.val)});
+              if(st.choice&&(st.correct==null||st.correct<0||st.correct>=st.choice.length||new Set(st.choice).size!==st.choice.length))bad.push(q.kind+' step'+k+' bad choice');
+              if(!st.rule||!st.lines||!st.text)bad.push(q.kind+' step'+k+' missing parts');});
             if(q.check&&!q.check())bad.push(q.kind+' self-check failed');}});return [...new Set(bad)].slice(0,15)}''')
         print('generator problems:', bad)
         n = await pg.evaluate('RECAP.length')
@@ -27,9 +31,11 @@ async def main():
             await pg.wait_for_timeout(5200); await pg.screenshot(path=f'{OUT}/r{i}.png', full_page=True); await pg.click('#nx')
         for L in range(4):
             await pg.evaluate(f"start({L})"); await pg.wait_for_timeout(200)
+            if await pg.locator('.askbox').count():
+                await pg.screenshot(path=f'{OUT}/L{L+1}_ask.png', full_page=True); await pg.click('#show'); await pg.wait_for_timeout(200)
             for j in range(await pg.locator('input').count()): await pg.locator('input').nth(j).fill('1')
             if await pg.locator('[data-c]').count():
-                c = await pg.evaluate('S.q.correct'); k = await pg.locator('[data-c]').count(); await pg.click(f'[data-c="{(c+1)%k}"]')
+                c = await pg.evaluate('curQ().correct'); k = await pg.locator('[data-c]').count(); await pg.click(f'[data-c="{(c+1)%k}"]')
             await pg.click('#chk'); await pg.wait_for_timeout(250); await pg.click('#show'); await pg.wait_for_timeout(4500)
             await pg.screenshot(path=f'{OUT}/L{L+1}.png', full_page=True)
         await pg.click('#home'); await pg.click('#go-test'); await pg.fill('#nm', 'בדיקה'); await pg.click('#go')

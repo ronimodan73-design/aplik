@@ -60,6 +60,11 @@ p{font-size:19px;line-height:1.55;margin:0}
 .fb b{font-family:Rubik}
 .sol{margin-top:16px;display:none}.sol.on{display:block}
 .sline{font-size:20px;text-align:center;margin:8px 0;opacity:0;transition:opacity .5s;line-height:1.5}.sline.show{opacity:1}
+.hint{background:#ffb02018;border-right:5px solid var(--acc);padding:9px 13px;border-radius:10px;margin:10px 0;font-size:18px;line-height:1.5}
+.askbox{background:#5ec8ff14;border:2px dashed var(--blue);border-radius:14px;padding:10px 12px;margin:12px 0}.askbox .ah{font-weight:800;color:var(--blue);font-size:18px;margin-bottom:6px}
+.asknote{background:#4fd18b18;border-right:5px solid var(--ok);padding:8px 12px;border-radius:10px;margin:8px 0;font-size:17px}
+.stepdone{background:var(--chip);border-radius:10px;padding:7px 12px;margin:6px 0;font-size:17px;color:var(--muted)}.stepdone b{color:var(--ok)}
+.stephead{display:inline-block;background:var(--acc);color:#0f1b2d;font-weight:800;border-radius:999px;padding:3px 12px;margin:10px 0 4px;font-size:15px}
 .rule{background:var(--acc);color:#1b1300;border-radius:12px;padding:10px 14px;font-weight:700;font-size:17px;margin-top:10px}
 .big{font-family:Rubik;font-weight:900;font-size:60px;color:var(--acc);text-align:center}
 .foot{text-align:center;color:var(--muted);font-size:14px;margin-top:auto}.foot b{color:var(--ink)}
@@ -137,20 +142,28 @@ function G(o){const [x0,x1]=o.xr||[-6,6],[y0,y1]=o.yr||[-6,6],W=300,P=16,A=o.ani
  if(o.above){const F=o.lines[o.above[0]],H=o.lines[o.above[1]],xm=(H.b-F.b)/(F.m-H.m),rg=F.m>H.m?[xm,x1]:[x0,xm];
   s+=`<line x1="${sx(xm)}" y1="${P}" x2="${sx(xm)}" y2="${W-P}" stroke="#9fb3cc" stroke-dasharray="5 5"/>`+bar(rg[0],rg[1],F.col)+ln(seg(F,rg[0],rg[1]),F.col,9,`stroke-opacity=".4" class="rv" style="--d:${A?1.6:0}s"`);}
  o.lines.forEach((L,i)=>{const g=seg(L,x0,x1);if(!g)return;s+=ln(g,L.col||'#dfe8f5',3.2,A?`class="drawl" style="--d:${.2+i*.5}s"`:'');
-  if(L.lab){const [xe,ye]=g[1]>g[3]?[g[0],g[1]]:[g[2],g[3]],lx=sx(xe),ly=sy(ye);
-   s+=`<text x="${lx>W/2?lx-10:lx+10}" y="${Math.max(ly+18,P+14)}" text-anchor="${lx>W/2?'end':'start'}" fill="${L.col||'#dfe8f5'}" font-size="16" font-weight="800">${L.lab}</text>`;}});
+  if(L.lab){const top=g[1]>g[3],xt=top?g[0]:g[2],xb=top?g[2]:g[0],xe=xb+(xt-xb)*.8,lx=sx(xe),ly=sy(L.m*xe+L.b),rt=L.m<0;
+   s+=`<text x="${rt?lx+9:lx-9}" y="${ly+5}" text-anchor="${rt?'start':'end'}" fill="${L.col||'#dfe8f5'}" font-size="16" font-weight="800">${L.lab}</text>`;}});
  (o.pts||[]).forEach((p,i)=>{const cx=sx(p.x),cy=sy(p.y),R2=cx>W-80;
   s+=`<g ${A||p.anim?`class="rv" style="--d:${p.d!=null?p.d:1.4+i*.5}s"`:''}><circle cx="${cx}" cy="${cy}" r="5.5" fill="${p.col}" stroke="#0f1b2d" stroke-width="2"/>${p.lab?`<text x="${cx+(p.dx!=null?p.dx:R2?-8:8)}" y="${cy+(p.dy!=null?p.dy:-9)}" text-anchor="${p.ta||(R2?'end':'start')}" fill="${p.col}" font-size="14" font-weight="800" direction="ltr" unicode-bidi="bidi-override">${p.lab}</text>`:''}</g>`;});
  return s+'</svg>';}
 const yrFor=(...v)=>[Math.min(-6,...v.map(x=>x-2)),Math.max(6,...v.map(x=>x+2))];
+/* ===== "what is the question asking?" pre-steps ===== */
+const ASK_Y=()=>({text:`על ציר ${M('y')} (הקו העומד), מה תמיד נכון?`,...CH([{t:M('x = 0'),ok:1},{t:M('y = 0'),msg:`${M('y = 0')} זה על ציר <b>x</b>. על ציר y לא זזים ימינה בכלל ← ${M('x = 0')}.`},{t:`${M('x')} ו־${M('y')} שווים`,msg:`על ציר y לא זזים ימינה ← ${M('x = 0')}, וה־y יכול להיות כל מספר.`}])});
+const ASK_X=()=>({text:`על ציר ${M('x')} (הקו השוכב), מה תמיד נכון?`,...CH([{t:M('y = 0'),ok:1},{t:M('x = 0'),msg:`${M('x = 0')} זה על ציר <b>y</b>. על ציר x הגובה הוא 0 ← ${M('y = 0')}.`},{t:`${M('x')} ו־${M('y')} שווים`,msg:`על ציר x הגובה תמיד 0 ← ${M('y = 0')}.`}])});
+const ASK_F0=()=>({text:`מה פירוש ${M('f(x) = 0')}?`,...CH([{t:'איפה הגרף חותך את ציר x',ok:1},{t:'איפה הגרף חותך את ציר y',msg:`${M('f(x)')} הוא הגובה. גובה 0 ← <b>על ציר x</b>.`},{t:`כמה זה ${M('b')}`,msg:`${M('f(x)')} הוא הגובה (ה־y). ${M('f(x) = 0')} ← הגובה 0 ← על ציר x.`}])});
+const ASK_SIGN=pos=>({text:`מה פירוש ${pos?'«ערכים חיוביים» / '+M('f(x) > 0'):'«ערכים שליליים» / '+M('f(x) < 0')}?`,...CH([{t:'איפה הגרף מעל ציר x',ok:pos,msg:'שלילי = גובה מתחת ל־0 ← <b>מתחת</b> לציר x.'},{t:'איפה הגרף מתחת לציר x',ok:!pos,msg:'חיובי = גובה מעל 0 ← <b>מעל</b> ציר x.'},{t:'איפה הגרף חותך את ציר y',msg:`${M('f(x)')} הוא הגובה. ${pos?'חיובי':'שלילי'} ← ${pos?'מעל ציר x':'מתחת לציר x'}.`}])});
+const ASK_EQ=()=>({text:`מה פירוש ${M('f(x) = g(x)')}?`,...CH([{t:'איפה שני הגרפים נפגשים',ok:1},{t:'איפה f גבוה מ־g',msg:'= פירושו <b>אותו גובה</b> ← הקווים נפגשים.'},{t:'איפה f חותך את ציר x',msg:'זה היה f(x) = 0. כאן משווים את f ל־g ← נקודת המפגש.'}])});
+const ASK_GT=gt=>({text:`מה פירוש ${M('f(x) '+(gt?'>':'<')+' g(x)')}?`,...CH([{t:gt?'איפה הקו של f גבוה מהקו של g':'איפה הקו של f נמוך מהקו של g',ok:1},{t:'איפה הקווים נפגשים',msg:'מפגש זה "=". כאן יש סימן אי־שוויון ← מי למעלה.'},{t:gt?'איפה f מעל ציר x':'איפה f מתחת לציר x',msg:'משווים את f ל־<b>g</b>, לא לציר x.'}])});
+const ASK_MATCH=slope=>({text:'מה יעזור לנו להחליט כאן איזה גרף שייך לאיזו משוואה?',...CH([{t:`הסימן של ${M('m')}: עולה או יורד`,ok:slope,msg:'כאן ל־2 המשוואות אותו m (מקבילים). מה שונה ביניהן? b.'},{t:`${M('b')}: איפה הקו חותך את ציר y`,ok:!slope,msg:'כאן ל־2 המשוואות אותו b: הן נפגשות על ציר y. מה שונה? הסימן של m.'},{t:'האורך של הקו',msg:'ישר הוא אינסופי, אין לו אורך. מסתכלים על מה ששונה במשוואות: m או b.'}])});
 /* ===== ★ ידע ===== */
-function gB(){const m=nz(-4,4),b=nz(-7,7);
- return {kind:'חיתוך עם ציר y',rc:2,text:`באיזו נקודה הישר ${EQ(m,b)} חותך את ציר ${M('y')}?`,tpl:'( [] , [] )',
+function gB(e){const m=e?R(1,4):nz(-4,4),b=e?R(1,7):nz(-7,7);
+ return {kind:'חיתוך עם ציר y',rc:2,ask:ASK_Y(),text:`באיזו נקודה הישר ${EQ(m,b)} חותך את ציר ${M('y')}?`,tpl:'( [] , [] )',
   ans:[{label:'x =',lt:1,col:'#9fb3cc',val:0,neg:true,unit:''},{label:'y =',lt:1,col:OR,val:b,neg:true,unit:''}],
   dia:h=>h?G({lines:[{m,b,col:BL}],pts:[{x:0,y:b,col:OR,lab:Pt(0,b)}],yr:yrFor(b),anim:1}):'',
   lines:[`על ציר ${M('y')} תמיד ${M('x = 0')}.`,`מציבים ${M('x = 0')}: ${M('y = '+N(m)+' · 0'+bs(b)+' = '+N(b))}`,`הנקודה ${M(Pt(0,b))}. זה בדיוק ${C('b',OR)}!`],
   rule:'ישר חותך את ציר y בנקודה <span class="m">(0, b)</span>: ה־x הוא 0, וה־y הוא b.',
-  diag:({vals:[vx,vy]})=>vx===b&&vy===0?'<b>הפכתם את הסדר!</b> על ציר y ה־x תמיד 0. כותבים קודם x ואחר כך y: <span class="m">(0, b)</span>.':vx!==0?'כל נקודה על ציר <span class="m">y: <b</span>>ה־x שלה 0</b>.':vy===m?`זה ${C('m',BL)}, השיפוע. החיתוך עם ציר y הוא ${C('b',OR)}: המספר שעומד לבד, בלי x.`:vy===-b?`שימו לב לסימן של ${C('b',OR)}: הוא ${M(N(b))}.`:null};}
+  diag:({vals:[vx,vy]})=>vx===b&&vy===0?'<b>הפכתם את הסדר!</b> על ציר y ה־x תמיד 0. כותבים קודם x ואחר כך y: <span class="m">(0, b)</span>.':vx!==0?'כל נקודה על ציר y: <b>ה־x שלה 0</b>.':vy===m?`זה ${C('m',BL)}, השיפוע. החיתוך עם ציר y הוא ${C('b',OR)}: המספר שעומד לבד, בלי x.`:vy===-b?`שימו לב לסימן של ${C('b',OR)}: הוא ${M(N(b))}.`:null};}
 function gReadB(){const m=pick([1,2,3,-1,-2,-3]);let b;do b=nz(-5,5);while(b===m);const b3=b>0?b+2:b-2;
  const c=CH([{t:EQ(m,b),ok:1},{t:EQ(m,-b),msg:`בדקו את הסימן של b: הגרף חותך את ציר y ${b>0?'<b>מעל</b>':'<b>מתחת</b>'} לראשית, ב־${M(N(b))}.`},
   {t:EQ(b,m),msg:`החלפתם בין ${C('m',BL)} ל־${C('b',OR)}. ${C('b',OR)} הוא המספר שעומד לבד, בלי x, והוא מראה איפה הגרף חותך את ציר y.`},
@@ -169,19 +182,19 @@ function gOnAxis(){const t=pick(['y','x','n']),k=nz(-6,6),j=nz(-6,6),[x,y]=t==='
  return {kind:'על איזה ציר?',rc:1,text:`איפה נמצאת הנקודה ${M(Pt(x,y))}?`,...c,dia:h=>h?G({lines:[],pts:[{x,y,col:OR,lab:Pt(x,y)}],anim:1}):'',
   lines:[t==='y'?`${M('x = 0')} ← על ציר y.`:t==='x'?`${M('y = 0')} ← על ציר x.`:'אין 0 ← הנקודה לא על ציר.'],rule:'<span class="m">x = 0</span> ← על ציר y.  <span class="m">y = 0</span> ← על ציר x.'};}
 /* ===== ★★ יישום ===== */
-function gXint(ph){let r,m;do{r=nz(-5,5);m=pick([1,2,3,-1,-2,-3]);}while(Math.abs(m*r)>12);const b=-m*r;ph=ph!=null?ph:R(0,1);
+function gXint(ph,e){let r,m;do{r=nz(-5,5);m=e?pick([1,2]):pick([1,2,3,-1,-2,-3]);}while(Math.abs(m*r)>12);const b=-m*r;ph=ph!=null?ph:R(0,1);
  const st=[`${M(RHS(m,b)+' = 0')}`,`${M(mx(m)+' = '+N(-b))}`];if(m!==1)st.push(`${M('x = '+N(-b)+' : '+par(m)+' = '+N(r))}`);
- return {kind:'חיתוך עם ציר x',rc:5,text:ph?`מצאו את הנקודה שבה ${M('f(x) = 0')}, עבור ${EQ(m,b,'f(x)')}.`:`באיזו נקודה הישר ${EQ(m,b)} חותך את ציר ${M('x')}?`,tpl:'( [] , [] )',
+ return {kind:'חיתוך עם ציר x',rc:5,ask:ph?ASK_F0():ASK_X(),text:ph?`מצאו את הנקודה שבה ${M('f(x) = 0')}, עבור ${EQ(m,b,'f(x)')}.`:`באיזו נקודה הישר ${EQ(m,b)} חותך את ציר ${M('x')}?`,tpl:'( [] , [] )',
   ans:[{label:'x =',lt:1,col:GR,val:r,neg:true,unit:''},{label:'y =',lt:1,col:'#9fb3cc',val:0,neg:true,unit:''}],
   dia:h=>h?G({lines:[{m,b,col:BL}],pts:[{x:r,y:0,col:GR,lab:Pt(r,0),dy:-10},{x:0,y:b,col:OR,d:2.4}],yr:yrFor(b),anim:1}):'',
   lines:[`על ציר x תמיד ${M('y = 0')}${ph?` (וזה בדיוק ${M('f(x) = 0')})`:''}. מציבים:`,...st,`הנקודה: ${M(C(Pt(r,0),GR))}`],rule:'ציר x ← מציבים <span class="m">y = 0</span> ופותרים. התשובה: <span class="m">(x, 0)</span>.',
-  diag:({vals:[vx,vy]})=>vx===0&&vy===b?'זו נקודת החיתוך עם ציר <b>y</b>. כאן מחפשים את ציר <b>x</b>: מציבים 0 במקום y.':vx===0&&vy===r?'הסדר הפוך: קודם x ואחר כך y.':vy!==0?'על ציר <span class="m">x <b</span>>ה־y תמיד 0</b>: התשובה נראית כך <span class="m">(?, 0)</span>.':vx===b?`${M(N(b))} זה b, החיתוך עם ציר y. כאן פותרים משוואה: ${M(RHS(m,b)+' = 0')}.`:vx===-r?'כמעט! בדקו את הסימן כשמעבירים את b לצד השני.':null};}
+  diag:({vals:[vx,vy]})=>vx===0&&vy===b?'זו נקודת החיתוך עם ציר <b>y</b>. כאן מחפשים את ציר <b>x</b>: מציבים 0 במקום y.':vx===0&&vy===r?'הסדר הפוך: קודם x ואחר כך y.':vy!==0?'על ציר x <b>ה־y תמיד 0</b>: התשובה נראית כך <span class="m">(?, 0)</span>.':vx===b?`${M(N(b))} זה b, החיתוך עם ציר y. כאן פותרים משוואה: ${M(RHS(m,b)+' = 0')}.`:vx===-r?'כמעט! בדקו את הסימן כשמעבירים את b לצד השני.':null};}
 function gMatch(){const L=shuf(['א','ב']),slope=Math.random()<.6;let I,II,rc,rw,dw;
  if(slope){const a=pick([1,2,3]),b=pick([2,3,4,5,6]),s=pick([1,-1]);I={m:s*a,b};II={m:-s*a,b};rc=s>0?'השיפוע חיובי ← הישר עולה':'השיפוע שלילי ← הישר יורד';rw=s>0?'השיפוע חיובי ← הישר יורד':'השיפוע שלילי ← הישר עולה';dw={t:'כי הוא חותך את ציר y גבוה יותר',msg:'לשני הישרים <b>אותו b</b>, הם נפגשים על ציר y. כאן מחליטים לפי <b>m</b>: עולה או יורד.'};}
  else{const m=pick([1,2,-1,-2]),b1=pick([2,3,4,5]),b2=-pick([2,3,4]),s=pick([1,-1]);I={m,b:s>0?b1:b2};II={m,b:s>0?b2:b1};rc=s>0?'b חיובי ← חותך את ציר y מעל הראשית':'b שלילי ← חותך את ציר y מתחת לראשית';rw=s>0?'b חיובי ← חותך את ציר y מתחת לראשית':'b שלילי ← חותך את ציר y מעל הראשית';dw={t:'כי הוא עולה',msg:'שני הישרים <b>מקבילים</b> (אותו m), שניהם עולים או שניהם יורדים. כאן מחליטים לפי <b>b</b>.'};}
  const lines=[{...I,lab:L[0]},{...II,lab:L[1]}],ok=L[0],no=L[1];
  const c=CH([{t:`גרף ${ok}: ${rc}`,ok:1},{t:`גרף ${no}: ${rw}`,msg:'ההסבר הפוך. '+(slope?'m חיובי ← עולה, m שלילי ← יורד.':'b חיובי ← מעל הראשית, b שלילי ← מתחת.')},{t:`גרף ${ok}: ${rw}`,msg:'הגרף נכון, אבל ההסבר הפוך. '+(slope?'m חיובי ← עולה.':'b חיובי ← מעל הראשית.')},{t:`גרף ${no}: ${dw.t}`,msg:dw.msg}]);
- return {kind:'התאמת גרף למשוואה',rc:4,text:`בשרטוט שני ישרים:<br>${M('I')}: ${EQ(I.m,I.b)}<br>${M('II')}: ${EQ(II.m,II.b)}<br>איזה גרף מתאים למשוואה ${M('I')}, ולמה?`,...c,
+ return {kind:'התאמת גרף למשוואה',rc:4,ask:ASK_MATCH(slope),text:`בשרטוט שני ישרים:<br>${M('I')}: ${EQ(I.m,I.b)}<br>${M('II')}: ${EQ(II.m,II.b)}<br>איזה גרף מתאים למשוואה ${M('I')}, ולמה?`,...c,
   dia:h=>G({lines:lines.map((x,i)=>({...x,col:h?(i?PU:BL):'#dfe8f5'})),yr:[-7,8],anim:h}),
   lines:slope?[`לשני הישרים אותו b ← מחליטים לפי ${C('m',BL)}.`,`ב־${M('I')}: ${M(C('m = '+N(I.m),BL))} ← ${I.m>0?'עולה ↗':'יורד ↘'} ← גרף ${ok}.`]:[`לשני הישרים אותו m (מקבילים) ← מחליטים לפי ${C('b',OR)}.`,`ב־${M('I')}: ${M(C('b = '+N(I.b),OR))} ← ${I.b>0?'מעל הראשית':'מתחת לראשית'} ← גרף ${ok}.`],
   rule:'התאמה: <span class="m">(1)</span> עולה או יורד? לפי הסימן של m. <span class="m">(2)</span> איפה חותך את ציר y? לפי b.'};}
@@ -208,14 +221,14 @@ function gSign(){let r,m;do{r=nz(-5,5);m=pick([1,2,3,-1,-2,-3]);}while(Math.abs(
  const big=(m>0)===pos,T=v=>M('x > '+N(v)),S=v=>M('x < '+N(v)),d=b!==r?b:-r;
  const c=CH([{t:T(r),ok:big,msg:`הפוך! הישר ${m>0?'עולה':'יורד'}. בדקו בציור: איפה הוא ${pos?'מעל ציר x':'מתחת לציר x'}?`},{t:S(r),ok:!big,msg:`הפוך! הישר ${m>0?'עולה':'יורד'}. בדקו בציור: איפה הוא ${pos?'מעל ציר x':'מתחת לציר x'}?`},
   {t:T(d),msg:`${M(N(d))} זה לא החיתוך עם ציר x. התחום מתחיל במקום שבו ${M('f(x) = 0')}: ${M('x = '+N(r))}.`},{t:S(d),msg:`${M(N(d))} זה לא החיתוך עם ציר x. התחום מתחיל במקום שבו ${M('f(x) = 0')}: ${M('x = '+N(r))}.`}]);
- return {kind:'חיובי ושלילי',rc:6,text:w?`עבור אילו ערכי x הפונקציה ${EQ(m,b,'f(x)')} מקבלת ערכים ${pos?'חיוביים':'שליליים'}?`:`מצאו את התחום שבו ${M('f(x) '+(pos?'>':'<')+' 0')}, עבור ${EQ(m,b,'f(x)')}.`,...c,
+ return {kind:'חיובי ושלילי',rc:6,ask:ASK_SIGN(pos),text:w?`עבור אילו ערכי x הפונקציה ${EQ(m,b,'f(x)')} מקבלת ערכים ${pos?'חיוביים':'שליליים'}?`:`מצאו את התחום שבו ${M('f(x) '+(pos?'>':'<')+' 0')}, עבור ${EQ(m,b,'f(x)')}.`,...c,
   dia:h=>G({lines:[{m,b,col:BL}],pts:h?[{x:r,y:0,col:'#dfe8f5',lab:Pt(r,0)}]:[],sign:h?0:null,yr:yrFor(b),anim:h}),
   lines:[`שלב 1: איפה ${M('f(x) = 0')}? ${M(RHS(m,b)+' = 0')} ← ${M('x = '+N(r))}`,`שלב 2: הישר ${m>0?'עולה ↗':'יורד ↘'}. ${C('ירוק',GR)} = מעל ציר x, ${C('אדום',RD)} = מתחת.`,`${pos?'מעל ציר x':'מתחת לציר x'} ← ${big?T(r):S(r)}`],
   rule:'חיובי = מעל ציר x, שלילי = מתחת. מוצאים איפה <span class="m">f(x) = 0</span>, ובודקים לאיזה צד הגרף עולה.'};}
 function meetPair(){let a1,a2,x0,y0,b1,b2;do{a1=pick([-3,-2,-1,1,2,3]);a2=pick([-3,-2,-1,1,2,3]);x0=nz(-3,3);y0=R(-4,4);b1=y0-a1*x0;b2=y0-a2*x0;}while(a1===a2||Math.abs(b1)>9||Math.abs(b2)>9);return {a1,a2,x0,y0,b1,b2};}
 const twoDia=(o,h,ex)=>G({lines:[{m:o.a1,b:o.b1,col:FC,lab:'f'},{m:o.a2,b:o.b2,col:GC,lab:'g'}],yr:[-9,9],anim:h,...ex});
 function gMeet(){const o=meetPair(),{a1,a2,x0,y0,b1,b2}=o,d=a1-a2;
- return {kind:'נקודת מפגש',rc:7,text:`${EQf(a1,b1,'f(x)',FC)}<br>${EQf(a2,b2,'g(x)',GC)}<br>מצאו את x שעבורו ${M('f(x) = g(x)')}.`,ans:[{label:'x =',col:PU,val:x0,neg:true,unit:''}],
+ return {kind:'נקודת מפגש',rc:7,ask:ASK_EQ(),text:`${EQf(a1,b1,'f(x)',FC)}<br>${EQf(a2,b2,'g(x)',GC)}<br>מצאו את x שעבורו ${M('f(x) = g(x)')}.`,ans:[{label:'x =',col:PU,val:x0,neg:true,unit:''}],
   dia:h=>h?twoDia(o,1,{pts:[{x:x0,y:y0,col:OR,lab:Pt(x0,y0)}]}):'',
   lines:[`${M('f(x) = g(x)')} ← שני הגרפים באותו גובה ← נקודת המפגש.`,M(C(RHS(a1,b1),FC)+' = '+C(RHS(a2,b2),GC)),M(mx(d)+' = '+N(b2-b1)),...(d!==1?[M('x = '+N(b2-b1)+' : '+par(d)+' = '+N(x0))]:[])],
   rule:'<span class="m">f(x) = g(x)</span> ← משווים את שני הביטויים ופותרים. זה ה־x של נקודת המפגש.',
@@ -224,7 +237,7 @@ function gAbove(){const o=meetPair(),{a1,a2,x0,y0,b1,b2}=o,d=a1-a2,gt=Math.rando
  const flip=d<0?'שכחתם להפוך את הסימן! חילקנו במספר שלילי.':'הפוך. בדקו בציור: איזה קו למעלה?';
  const c=CH([{t:T(x0),ok:big,msg:flip},{t:S(x0),ok:!big,msg:flip},{t:T(dv),msg:`התחום מתחיל ב־x של נקודת המפגש: ${M('x = '+N(x0))}.`},{t:S(dv),msg:`התחום מתחיל ב־x של נקודת המפגש: ${M('x = '+N(x0))}.`}]);
  const fs=(d<0?(gt?'<':'>'):s);
- return {kind:'מי גבוה יותר?',rc:7,text:`${EQf(a1,b1,'f(x)',FC)}<br>${EQf(a2,b2,'g(x)',GC)}<br>באיזה תחום ${M('f(x) '+s+' g(x)')}?`,...c,
+ return {kind:'מי גבוה יותר?',rc:7,ask:ASK_GT(gt),text:`${EQf(a1,b1,'f(x)',FC)}<br>${EQf(a2,b2,'g(x)',GC)}<br>באיזה תחום ${M('f(x) '+s+' g(x)')}?`,...c,
   dia:h=>twoDia(o,h,h?{above:gt?[0,1]:[1,0],pts:[{x:x0,y:y0,col:OR,lab:Pt(x0,y0)}]}:{}),
   lines:[M(C(RHS(a1,b1),FC)+' '+s+' '+C(RHS(a2,b2),GC)),M(mx(d)+' '+s+' '+N(b2-b1)),...(d!==1?[`מחלקים ב־${M(par(d))}${d<0?' ← <b>מספר שלילי: הסימן מתהפך!</b>':''}`]:[]),M('x '+fs+' '+N(x0)),`בציור: ${gt?C('f',FC)+' מעל '+C('g',GC):C('g',GC)+' מעל '+C('f',FC)} ← ${big?T(x0):S(x0)}`],
   rule:'<span class="m">f(x) > g(x)</span> ← איפה הקו של f למעלה. פותרים אי־שוויון; בחילוק במספר שלילי הסימן מתהפך.'};}
@@ -271,12 +284,36 @@ function gErr(){const nm=pick(['נועה','דניאל','איתי','מאיה','י
  const c=CH([{t:`הסדר הפוך. הנקודה היא ${M(Pt(r,0))}`,ok:1},{t:`הנקודה היא ${M(Pt(0,b))}`,msg:'זה החיתוך עם ציר <b>y</b>. כאן שואלים על ציר x.'},{t:`הנקודה היא ${M(Pt(b,0))}`,msg:`b לא עוזר כאן. פותרים ${M(RHS(m,b)+' = 0')}.`},{t:'אין טעות',msg:`בנקודה ${M(Pt(0,r))} ה־x הוא 0 ← היא על ציר <b>y</b>.`}]);
  return {kind:'מוצאים את הטעות',rc:9,text:`${nm} פתר/ה ${M(RHS(m,b)+' = 0')}, קיבל/ה ${M('x = '+N(r))} וכתב/ה: «הישר חותך את ציר x בנקודה ${M(Pt(0,r))}». מה הטעות?`,...c,
   dia:h=>h?G({lines:[{m,b,col:BL}],pts:[{x:r,y:0,col:GR,lab:Pt(r,0)}],yr:yrFor(b),anim:1}):'',lines:[`על ציר x: ${M('y = 0')} ← כותבים ${M(Pt(r,0))}.`],rule:'<span class="m">(x, y)</span>: קודם x ואחר כך y. על ציר x, <span class="m">y = 0</span>.'};}
-/* ===== levels ===== */
+/* ===== exam-style chains (one graph, several steps) ===== */
+function chain7(){const t=triSet(),{a,k,b}=t,upL=Math.random()<.5,Lq=upL?t.up:t.dn,r=upL?-k:k,pos=Math.random()<.5,big=upL===pos,T=v=>M('x > '+N(v)),S=v=>M('x < '+N(v));
+ const steps=[
+  {text:`איזה גרף מתאים למשוואה ${M('I')}: ${EQ(-a,b)}?`,short:`הגרף של ${M('I')}`,...CH([{t:`גרף ${t.dn}`,ok:1},{t:`גרף ${t.up}`,msg:`ב־${M('I')} ${M(C('m = '+N(-a),BL))}: שלילי ← הקו <b>יורד</b> ↘.`}]),hint:'לשני הישרים אותו b. מסתכלים על m: עולה או יורד?',lines:[`${M(C('m = '+N(-a),BL))} שלילי ← יורד ← גרף ${t.dn}.`],rule:'התאמה: הסימן של m (עולה/יורד), ואם צריך גם b.'},
+  {text:`מהם שיעורי הנקודה ${M('C')}?`,short:M('C'),tpl:'( [] , [] )',ans:[{label:'x =',lt:1,col:'#9fb3cc',val:0,neg:true,unit:''},{label:'y =',lt:1,col:OR,val:b,neg:true,unit:''}],hint:'C על ציר y ← x = 0, וה־y הוא b.',lines:[`C על ציר y ← ${M('C'+Pt(0,b))} (זה b!).`],rule:'נקודה על ציר y: (0, b).',diag:({vals:[u,v]})=>u===b&&v===0?'הסדר הפוך: (0, b).':u!==0?'C על ציר y ← x = 0.':null},
+  {text:`מהם שיעורי הנקודה ${M('A')}? (A על הישר העולה, ${M('II')})`,short:M('A'),tpl:'( [] , [] )',ans:[{label:'x =',lt:1,col:GR,val:-k,neg:true,unit:''},{label:'y =',lt:1,col:'#9fb3cc',val:0,neg:true,unit:''}],hint:`A על ציר x ← מציבים y = 0 ב־${M('II')} ופותרים.`,lines:[M('0 = '+a+'x + '+b),M(a+'x = '+N(-b)),M('x = '+N(-k)),M('A'+Pt(-k,0))],rule:'נקודה על ציר x: מציבים y = 0.',diag:({vals:[u,v]})=>u===k?'A <b>משמאל</b> לראשית ← x שלילי.':v!==0?'A על ציר x ← y = 0.':null},
+  {text:`מהם שיעורי הנקודה ${M('B')}? (B על הישר היורד, ${M('I')})`,short:M('B'),tpl:'( [] , [] )',ans:[{label:'x =',lt:1,col:GR,val:k,neg:true,unit:''},{label:'y =',lt:1,col:'#9fb3cc',val:0,neg:true,unit:''}],hint:`מציבים y = 0 ב־${M('I')}.`,lines:[M('0 = '+N(-a)+'x + '+b),M(N(-a)+'x = '+N(-b)),M('x = '+k),M('B'+Pt(k,0))],rule:'נקודה על ציר x: מציבים y = 0.',diag:({vals:[u,v]})=>u===-k?'B <b>מימין</b> לראשית ← x חיובי. בדקו את הסימן בחילוק.':v!==0?'B על ציר x ← y = 0.':null},
+  {text:`חשבו את שטח המשולש ${M('ABC')}.`,short:'שטח',ans:[{label:'שטח =',col:OR,val:k*b,unit:''}],hint:`בסיס = AB (מ־${M(N(-k))} עד ${M(k)}), גובה = OC = b. שטח = (בסיס · גובה) : 2.`,lines:[`בסיס ${M('AB = '+2*k)}, גובה ${M('OC = '+b)}`,M('('+2*k+' · '+b+') : 2 = '+k*b)],rule:'שטח משולש = (בסיס · גובה) : 2.',diag:({vals:[v]})=>v===2*k*b?'שכחתם לחלק ב־2.':v===k*b/2?`הבסיס הוא כל AB = ${2*k}, לא רק AO.`:null},
+  {text:`עבור אילו ערכי x הפונקציה שבגרף ${Lq} מקבלת ערכים ${pos?'חיוביים':'שליליים'}?`,short:`${pos?'חיובי':'שלילי'} בגרף ${Lq}`,...CH([{t:T(r),ok:big,msg:'הפוך. '+(pos?'חיובי = מעל ציר x.':'שלילי = מתחת לציר x.')},{t:S(r),ok:!big,msg:'הפוך. '+(pos?'חיובי = מעל ציר x.':'שלילי = מתחת לציר x.')},{t:T(-r),msg:`הגרף ${Lq} חותך את ציר x ב־${M(N(r))}.`},{t:S(-r),msg:`הגרף ${Lq} חותך את ציר x ב־${M(N(r))}.`}]),dia:h=>h?triDia(t,1,{sign:upL?0:1}):'',hint:`${pos?'חיובי = מעל ציר x':'שלילי = מתחת לציר x'}. גרף ${Lq} חותך את ציר x ב־${M(upL?'A':'B')}. לאיזה צד הוא ${pos?'מעל':'מתחת'}?`,lines:[`גרף ${Lq} ${upL?'עולה':'יורד'} ←  ${big?T(r):S(r)}`],rule:'חיובי = מעל ציר x, שלילי = מתחת.'}];
+ return {kind:'שאלת מבחן בצעדים',rc:8,text:triTxt(t)+'פותרים צעד אחרי צעד:',dia:h=>triDia(t,h,h?{tri:[[-k,0],[k,0],[0,b]]}:{}),steps,lines:['ראו את הצעדים.'],rule:'שאלה ארוכה = כמה שאלות קצרות. פותרים אחת אחרי השנייה.'};}
+function chain6(){let r,m1,b1,m2,x0,y0,b2;do{r=nz(-4,4);m1=pick([-3,-2,-1,1,2,3]);b1=-m1*r;m2=pick([-3,-2,-1,1,2,3]);x0=nz(-3,3);y0=m1*x0+b1;b2=y0-m2*x0;}while(m1===m2||Math.abs(b1)>10||Math.abs(b2)>9||b1===0||x0===r||Math.abs(y0)>8);
+ const o={a1:m1,b1,a2:m2,b2},pos=Math.random()<.5,bigS=(m1>0)===pos,d=m1-m2,bigG=d>0,T=v=>M('x > '+N(v)),S=v=>M('x < '+N(v)),dz=b1!==r&&b1!==x0?b1:(-r!==x0?-r:r+7);
+ const steps=[
+  {text:`מצאו את הנקודה שבה ${M('f(x) = 0')}.`,short:M('f(x) = 0'),tpl:'( [] , [] )',ans:[{label:'x =',lt:1,col:GR,val:r,neg:true,unit:''},{label:'y =',lt:1,col:'#9fb3cc',val:0,neg:true,unit:''}],hint:`${M('f(x) = 0')} ← על ציר x. פותרים ${M(RHS(m1,b1)+' = 0')}.`,lines:[M(RHS(m1,b1)+' = 0'),M(mx(m1)+' = '+N(-b1)),M('x = '+N(r)),M(Pt(r,0))],rule:'f(x) = 0 ← חיתוך עם ציר x: פותרים משוואה.',diag:({vals:[u,v]})=>u===0&&v===b1?'זו נקודת החיתוך עם ציר <b>y</b>.':v!==0?'על ציר x ה־y הוא 0.':u===-r?'בדקו את הסימן.':null},
+  {text:`באיזה תחום ${M('f(x) '+(pos?'>':'<')+' 0')}?`,short:M('f(x) '+(pos?'>':'<')+' 0'),...CH([{t:T(r),ok:bigS,msg:`הפוך. f ${m1>0?'עולה':'יורד'}: בדקו בציור לאיזה צד הוא ${pos?'מעל ציר x':'מתחת לציר x'}.`},{t:S(r),ok:!bigS,msg:`הפוך. f ${m1>0?'עולה':'יורד'}: בדקו בציור לאיזה צד הוא ${pos?'מעל ציר x':'מתחת לציר x'}.`},{t:T(dz),msg:`התחום מתחיל בחיתוך עם ציר x שמצאתם בצעד 1: ${M('x = '+N(r))}.`},{t:S(dz),msg:`התחום מתחיל בחיתוך עם ציר x שמצאתם בצעד 1: ${M('x = '+N(r))}.`}]),hint:`${pos?'> 0 ← מעל ציר x':'< 0 ← מתחת לציר x'}. משתמשים בנקודה מצעד 1.`,lines:[`f ${m1>0?'עולה':'יורד'}, חותך את ציר x ב־${M(N(r))} ← ${bigS?T(r):S(r)}`],rule:'חיובי = מעל ציר x, שלילי = מתחת.'},
+  {text:`מהו x שעבורו ${M('f(x) = g(x)')}?`,short:M('f(x) = g(x)'),ans:[{label:'x =',col:PU,val:x0,neg:true,unit:''}],hint:'משווים את שני הביטויים ופותרים.',lines:[M(C(RHS(m1,b1),FC)+' = '+C(RHS(m2,b2),GC)),M(mx(d)+' = '+N(b2-b1)),M('x = '+N(x0))],rule:'f(x) = g(x) ← נקודת המפגש.',diag:({vals:[v]})=>v===y0&&y0!==x0?'זה ה־y של המפגש. שואלים על x.':v===-x0?'בדקו את הסימן בחילוק.':null},
+  {text:`באיזה תחום ${M('f(x) > g(x)')}?`,short:M('f(x) > g(x)'),...CH([{t:T(x0),ok:bigG,msg:d<0?'חילקנו במספר שלילי ← הסימן מתהפך!':'הפוך. בדקו בציור: איזה קו למעלה?'},{t:S(x0),ok:!bigG,msg:d<0?'חילקנו במספר שלילי ← הסימן מתהפך!':'הפוך. בדקו בציור: איזה קו למעלה?'},{t:T(r),msg:`התחום מתחיל בנקודת המפגש מצעד 3: ${M('x = '+N(x0))}.`},{t:S(r),msg:`התחום מתחיל בנקודת המפגש מצעד 3: ${M('x = '+N(x0))}.`}]),hint:`> ← איפה הקו של f למעלה. מתחילים מנקודת המפגש (צעד 3). זהירות: חילוק במספר שלילי הופך את הסימן.`,lines:[M(C(RHS(m1,b1),FC)+' > '+C(RHS(m2,b2),GC)),M(mx(d)+' > '+N(b2-b1)),...(d<0?['חילוק במספר שלילי ← הסימן מתהפך!']:[]),bigG?T(x0):S(x0)],rule:'f(x) > g(x) ← איפה f למעלה.'}];
+ return {kind:'שאלת מבחן בצעדים',rc:7,text:`${EQf(m1,b1,'f(x)',FC)}<br>${EQf(m2,b2,'g(x)',GC)}<br>פותרים צעד אחרי צעד:`,dia:h=>twoDia(o,h,h?{pts:[{x:r,y:0,col:GR,lab:Pt(r,0)},{x:x0,y:y0,col:OR,lab:Pt(x0,y0)}]}:{}),steps,lines:['ראו את הצעדים.'],rule:'שאלה ארוכה = כמה שאלות קצרות. פותרים אחת אחרי השנייה.'};}
+/* ===== levels: a fixed ladder, easy → hard; hints fade (h: 2 shown, 1 on tap, 0 none) ===== */
+const LAD=[
+ [{g:gOnAxis,n:4,h:2},{g:()=>gB(1),n:4,h:2},{g:()=>gB(),n:4,h:1},{g:gUpDown,n:4,h:1},{g:gReadB,n:4,h:0}],
+ [{g:()=>gXint(0,1),n:4,h:2},{g:()=>gXint(0),n:4,h:1},{g:()=>gXint(1),n:4,h:1},{g:gPointOn,n:4,h:1},{g:gMatch,n:4,h:0}],
+ [{g:gDict,n:5,h:2},{g:gSign,n:5,h:1},{g:gMeet,n:5,h:1},{g:gAbove,n:5,h:0}],
+ [{g:chain7,n:4,h:1},{g:chain6,n:4,h:1},{g:chain7,n:3,h:0},{g:chain6,n:3,h:0},{g:gStory,n:3,h:0},{g:gErr,n:3,h:0}]];
 const LEVELS=[
- {n:1,t:'מה זה b? עולה או יורד?',d:'חיתוך עם ציר y, שיפוע, על איזה ציר',g:()=>pick([gB,gB,gB,gReadB,gReadB,gUpDown,gOnAxis])()},
- {n:2,t:'חיתוך עם ציר x והתאמת גרף',d:'<span class="m">y = 0</span>, איזה גרף לאיזו משוואה, נקודה על ישר',g:()=>pick([gXint,gXint,gMatch,gMatch,gPointOn])()},
- {n:3,t:'מה השאלה שואלת?',d:'מילון השאלות, חיובי/שלילי, שני ישרים',g:()=>pick([gDict,gDict,gSign,gSign,gMeet,gAbove])()},
- {n:4,t:'שאלות מבחן',d:'שטח משולש, תחומים בשרטוט, סיפור, טעויות',g:()=>pick([gTri,gTri,gTriSign,gStory,gErr])()}];
+ {n:1,t:'מה זה b? עולה או יורד?',d:'על איזה ציר ← חיתוך עם ציר y ← עולה/יורד ← קוראים מהגרף',ladder:LAD[0]},
+ {n:2,t:'חיתוך עם ציר x והתאמת גרף',d:'y = 0 ← f(x) = 0 ← נקודה על ישר ← איזה גרף',ladder:LAD[1]},
+ {n:3,t:'מה השאלה שואלת?',d:'מילון השאלות ← חיובי/שלילי ← מפגש ← מי גבוה',ladder:LAD[2]},
+ {n:4,t:'שאלות מבחן בצעדים',d:'כמו שאלות 6 ו־7: גרף אחד, צעד אחרי צעד',ladder:LAD[3]}];
+LEVELS.forEach(l=>l.g=()=>pick(l.ladder).g());
 const TEST=[[gOnAxis,gB,gReadB,gUpDown],[()=>gXint(0),()=>gXint(1),gMatch,gPointOn],[gDict,gSign,gMeet,gAbove],[()=>gTri('C'),()=>gTri('ABC'),gTriSign,gStory]];
 const WARM=[gOnAxis,gB,gOnAxis,gB,gUpDown,gB,gUpDown,gReadB];
 /* ===== animated explanation ===== */
@@ -320,21 +357,40 @@ function menu(){$('#sc').textContent='';const tl=store.get('test');
  <h2 style="margin-top:18px">תרגול בשלבים: מתקדמים מרמה לרמה</h2><p style="font-size:16px;color:var(--muted)">עוברים שלב עם 16 נכונות מתוך 20 ✅</p>
  <div class="levels">${LEVELS.map((l,i)=>{const b=store.get('best'+i),rec=LEVELS.findIndex((_,j)=>(store.get('best'+j)||0)<16);return `<button type="button" data-l="${i}" class="${i===rec?'rec':''}">${b>=16?'<span class="badge ok">✅ עברתי</span>':i===rec?'<span class="badge">👈 מומלץ עכשיו</span>':''}<span class="st">${'★'.repeat(l.n)}</span><span class="t">${l.t}</span><span class="d">${l.d}</span>${b!=null?`<span class="best">השיא שלי: ${b} מתוך ${TOTAL}</span>`:''}</button>`}).join('')}</div></div>`;
  $('#go-recap').onclick=()=>recap(0);$('#go-test').onclick=testIntro;V.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>start(+b.dataset.l));}
-function start(l){S={mode:'lv',l,i:0,score:0,n:TOTAL,streak:0};next();}
-function next(){if(S.q)S.i++;if(S.i>=S.n)return S.mode==='test'?endTest():S.mode==='warm'?endWarm():end();S.q=S.list?S.list[S.i]():LEVELS[S.l].g();S.tries=0;S.done=false;draw();}
+function start(l){const L=LEVELS[l];S={mode:'lv',l,i:0,score:0,n:TOTAL,streak:0};
+ if(L.ladder){const list=[],meta=[];L.ladder.forEach(e=>{for(let k=0;k<e.n;k++){list.push(e.g);meta.push(e);}});S.list=list;S.meta=meta;S.n=list.length;}next();}
+function next(){if(S.q)S.i++;if(S.i>=S.n)return S.mode==='test'?endTest():S.mode==='warm'?endWarm():end();S.q=S.list?S.list[S.i]():LEVELS[S.l].g();S.tries=0;S.done=false;S.si=0;S.stepNext=false;S.chainBad=false;S.askTries=0;
+ const me=S.meta?S.meta[S.i]:null;S.ph=me?(me.h||0):S.mode==='warm'?1:0;S.askDone=!S.q.ask||S.mode==='test'||(me&&me.a===0);draw();}
+const curQ=()=>S.q.steps?S.q.steps[S.si]:S.q;
+function hintHtml(c){const H=c.hint||c.rule;if(!H||S.mode==='test'||!S.ph)return '';return S.ph>=2?`<div class="hint">💡 ${H}</div>`:`<button class="btn sec mini" id="hb" type="button">💡 רמז</button><div class="hint" id="hint" hidden>${H}</div>`;}
+function choicesHtml(c){return c.choice?`<div class="choices">${c.choiceLab?`<span class="lab">${c.choiceLab}</span>`:''}${c.choice.map((x,i)=>`<button type="button" data-c="${i}">${x}</button>`).join('')}</div>`:'';}
+function bindChoices(T){S.sel=-1;V.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{if(S.done&&T)return;V.querySelectorAll('[data-c]').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');S.sel=+b.dataset.c;});}
+function drawAsk(){const q=S.q;$('#sc').textContent=`נקודות: ${S.score}`;
+ V.innerHTML=`<div class="meta"><span>${lab()} · שאלה ${S.i+1} מתוך ${S.n}</span><span></span></div><div class="prog"><i style="width:${S.i/S.n*100}%"></i></div>
+ <div class="card pop"><span class="kind">${q.kind}</span>${(()=>{const d=qDia(q,false);return d?`<div class="dia">${d}</div>`:''})()}<div class="qtext">${q.text}</div>
+ <div class="askbox"><div class="ah">🔎 לפני שפותרים: מה השאלה שואלת?</div>${q.ask.text?`<div>${q.ask.text}</div>`:''}${choicesHtml(q.ask)}</div>
+ <div class="btns"><button class="btn main" id="chk" type="button">בדיקה</button><button class="btn sec" id="show" type="button">הראו לי</button></div><div class="fb" id="fb" role="status" aria-live="polite"></div></div>`;
+ bindChoices(false);
+ $('#chk').onclick=()=>{const fb=$('#fb');if(S.sel<0){fb.className='fb no';fb.innerHTML='בחרו תשובה.';return;}
+  if(S.sel===q.ask.correct){S.askDone=true;S.askOk=true;draw();return;}
+  S.askTries++;const m=q.ask.diag?q.ask.diag({sel:S.sel}):null;fb.className='fb no pop';fb.innerHTML=`<b>לא בדיוק.</b> ${m||q.ask.why||''} ${S.askTries>=2?'<br>לחצו על <b>"הראו לי"</b>.':'נסו שוב.'}`;};
+ $('#show').onclick=()=>{S.askDone=true;S.askOk=false;draw();};}
 function lab(){return S.mode==='warm'?'חימום':S.mode==='test'?'מבחן מדורג · '+TL[S.lv[S.i]]:'★'.repeat(LEVELS[S.l].n)+' '+LEVELS[S.l].t;}
-function qDia(q,hl){return typeof QDIA==='function'?QDIA(q,hl):(q.dia?q.dia(hl):'');}
-function draw(){const q=S.q,T=S.mode==='test';$('#sc').textContent=T?'':`נקודות: ${S.score}`;
+function qDia(q,hl){return typeof QDIA==='function'?QDIA(q,hl):(q.dia?q.dia(hl):(hl&&S.q&&q!==S.q&&S.q.dia?S.q.dia(true):''));}
+function draw(){if(!S.askDone)return drawAsk();const q=S.q,c=curQ(),T=S.mode==='test',ST=q.steps;$('#sc').textContent=T?'':`נקודות: ${S.score}`;
  V.innerHTML=`<div class="meta"><span>${lab()} · שאלה ${S.i+1} מתוך ${S.n}</span><span>${!T&&S.streak>=3?'🔥 '+S.streak+' ברצף':''}</span></div><div class="prog"><i style="width:${S.i/S.n*100}%"></i></div>
  <div class="card pop"><span class="kind">${q.kind}</span>${(()=>{const d=qDia(q,false);return d?`<div class="dia">${d}</div>`:''})()}<div class="qtext">${q.text}</div>
- ${q.ans&&q.tpl?`<div class="inputs tpl">${q.tpl.split('[]').map((p,i,arr)=>`<span class="tp">${p}</span>`+(i<arr.length-1?`<input class="tin" inputmode="${q.ans[i].neg?'text':'decimal'}" data-i="${i}" aria-label="${q.ans[i].label}" style="border-color:${q.ans[i].col}">`:'')).join('')}</div>`:''}
+ ${q.ask?`<div class="asknote">${S.askOk?'✓ נכון!':'👀'} השאלה שואלת: <b>${q.ask.choice[q.ask.correct]}</b></div>`:''}
+ ${ST?ST.slice(0,S.si).map((st,k)=>`<div class="stepdone"><b>✓ צעד ${k+1}:</b> ${st.short||st.text} ← ${ansText(st)}</div>`).join('')+`<div class="stephead">צעד ${S.si+1} מתוך ${ST.length}</div><div class="qtext">${c.text}</div>`:''}
+ ${hintHtml(c)}
+ ${(q=>`${q.ans&&q.tpl?`<div class="inputs tpl">${q.tpl.split('[]').map((p,i,arr)=>`<span class="tp">${p}</span>`+(i<arr.length-1?`<input class="tin" inputmode="${q.ans[i].neg?'text':'decimal'}" data-i="${i}" aria-label="${q.ans[i].label}" style="border-color:${q.ans[i].col}">`:'')).join('')}</div>`:''}
  ${q.ans&&!q.tpl?`<div class="inputs">${q.ans.map((a,i)=>`<label class="inp"><span style="color:${a.col}">${a.label==='x ='||a.lt?M(a.label):a.label}</span><input inputmode="${a.neg?'text':'decimal'}" data-i="${i}" aria-label="${a.label}"></label>`).join('')}</div>`:''}
- ${q.choice?`<div class="choices">${q.choiceLab?`<span class="lab">${q.choiceLab}</span>`:''}${q.choice.map((c,i)=>`<button type="button" data-c="${i}">${c}</button>`).join('')}</div>`:''}
+ ${choicesHtml(q)}`)(c)}
  <div class="btns"><button class="btn main" id="chk" type="button">${T?'שמירת התשובה':'בדיקה'}</button>${T?'':'<button class="btn sec" id="show" type="button">הראו לי</button>'}</div>
  <div class="fb" id="fb" role="status" aria-live="polite"></div><div class="sol" id="sol"></div></div>`;
- S.sel=-1;V.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{if(S.done&&T)return;V.querySelectorAll('[data-c]').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');S.sel=+b.dataset.c;});
+ bindChoices(T);if($('#hb'))$('#hb').onclick=()=>{$('#hint').hidden=false;$('#hb').remove();};
  V.querySelectorAll('input').forEach(x=>x.onkeydown=e=>{if(e.key==='Enter')$('#chk').click();});
- $('#chk').onclick=()=>{if(S.done)return next();check(q);};if($('#show'))$('#show').onclick=()=>solve(q);}
+ $('#chk').onclick=()=>{if(S.stepNext){S.stepNext=false;S.si++;S.tries=0;return draw();}if(S.done)return next();check(c);};if($('#show'))$('#show').onclick=()=>solve(c);}
 function check(q){const fb=$('#fb');const ins=[...V.querySelectorAll('input')];
  const vals=ins.map(x=>parseFloat(x.value.replace(',','.').replace(/[−–]/g,'-').replace(/\s/g,'')));
  if(q.ans&&vals.some(isNaN)){fb.className='fb no';fb.innerHTML='מלאו את כל התשובות.';return;}
@@ -343,7 +399,9 @@ function check(q){const fb=$('#fb');const ins=[...V.querySelectorAll('input')];
  if(S.mode==='test'){ins.forEach(x=>x.disabled=true);S.res.push({lv:S.lv[S.i],ok,q});S.done=true;fb.className='fb saved pop';
   fb.innerHTML='<b>התשובה נשמרה ✓</b> '+(S.i+1<S.n?'ממשיכים בנחת.':'זאת הייתה השאלה האחרונה!');$('#chk').textContent=S.i+1<S.n?'לשאלה הבאה':'לדוח שלי';return;}
  S.tries++;ins.forEach((x,i)=>{x.classList.remove('good','bad');x.classList.add(vals[i]===q.ans[i].val?'good':'bad');});
- if(ok){if(S.tries===1){S.score++;S.streak=(S.streak||0)+1;}S.done=true;fb.className='fb ok pop';fb.innerHTML=`<b>${pick(['מעולה!','בדיוק!','יפה מאוד!','נכון!'])}</b> ${S.tries===1?'הצלחתם בניסיון הראשון.':'תיקנתם, וזה מה שחשוב.'}`;$('#chk').textContent='לשאלה הבאה';if($('#show'))$('#show').style.display='none';return;}
+ const lastStep=!S.q.steps||S.si===S.q.steps.length-1;
+ if(ok&&!lastStep){if(S.tries>1)S.chainBad=true;S.stepNext=true;fb.className='fb ok pop';fb.innerHTML=`<b>${pick(['נכון!','בדיוק!','יפה!'])}</b> ממשיכים לצעד הבא.`;$('#chk').textContent='לצעד הבא ←';if($('#show'))$('#show').style.display='none';return;}
+ if(ok){if(S.tries===1&&!S.chainBad){S.score++;S.streak=(S.streak||0)+1;}S.done=true;fb.className='fb ok pop';fb.innerHTML=`<b>${pick(['מעולה!','בדיוק!','יפה מאוד!','נכון!'])}</b> ${S.tries===1?'הצלחתם בניסיון הראשון.':'תיקנתם, וזה מה שחשוב.'}`;$('#chk').textContent='לשאלה הבאה';if($('#show'))$('#show').style.display='none';return;}
  S.streak=0;let msg=q.diag?q.diag({vals,sel:S.sel}):null;
  if(okIn&&!okCh&&q.ans)msg='החישוב נכון! אבל <b>הנימוק</b> לא מתאים. רמז: '+q.rule;
  if(!msg)msg=S.mode==='warm'?'רמז: '+q.rule:'רמז: '+q.rule;
@@ -351,7 +409,7 @@ function check(q){const fb=$('#fb');const ins=[...V.querySelectorAll('input')];
 function solve(q){const sol=$('#sol');sol.className='sol on';
  sol.innerHTML=`${(()=>{const d=qDia(q,true);return d?`<div class="dia">${d}</div>`:''})()}${q.lines.map(l=>`<div class="sline">${l}</div>`).join('')}<div class="rule sline">${q.rule}</div>`;
  [...sol.querySelectorAll('.sline')].forEach((el,i)=>setTimeout(()=>el.classList.add('show'),500+i*650));
- S.tries=Math.max(S.tries,2);S.streak=0;if(!S.done){S.done=true;$('#chk').textContent='לשאלה הבאה';$('#show').style.display='none';}}
+ S.tries=Math.max(S.tries,2);S.streak=0;if(S.q.steps&&S.si<S.q.steps.length-1){S.chainBad=true;S.stepNext=true;$('#chk').textContent='לצעד הבא ←';$('#show').style.display='none';return;}if(!S.done){S.done=true;$('#chk').textContent='לשאלה הבאה';$('#show').style.display='none';}}
 function end(){$('#sc').textContent=`נקודות: ${S.score}`;const best=store.get('best'+S.l);if(best==null||S.score>best)store.set('best'+S.l,S.score);
  const st=S.score>=18?3:S.score>=14?2:S.score>=10?1:0;
  V.innerHTML=`<div class="card pop" style="text-align:center"><h2>סיימתם: ${'★'.repeat(LEVELS[S.l].n)} ${LEVELS[S.l].t}</h2><div class="big">${S.score} / ${TOTAL}</div>
