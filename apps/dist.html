@@ -280,7 +280,7 @@ function testIntro(){$('#sc').textContent='';const nm=store.get('name')||'';
  <div class="btns"><button class="btn main" id="go" type="button">מתחילים</button><button class="btn sec" id="bk" type="button">חזרה</button></div></div>`;
  $('#bk').onclick=menu;$('#go').onclick=()=>{const n=$('#nm').value.trim();if(!n){$('#nm').focus();$('#nm').style.borderColor='var(--red)';return;}store.set('name',n);
   const list=[],lv=[];TEST.forEach((g,i)=>shuf(g).forEach(fn=>{list.push(fn);lv.push(i);}));S={mode:'test',i:0,score:0,n:16,list,lv,res:[],name:n};next();};}
-function ansText(q){const a=[];if(q.ans)a.push(q.ans.map(x=>x.label==='x ='?M('x = '+x.val):(x.lt?M(x.label):x.label)+' '+M(x.val+(x.unit!=null?(x.unit&&x.unit!=='°'?' '+x.unit:x.unit):deg))).join(' · '));if(q.choice)a.push(q.choice[q.correct]);return a.join(' · ');}
+function ansText(q){const a=[];if(q.ans)a.push(q.ans.map(x=>x.label==='x ='||x.lt?M(x.label+' '+String(x.val).replace('-','−')+(x.unit?' '+x.unit:'')):x.label+' '+M(x.val+(x.unit!=null?(x.unit&&x.unit!=='°'?' '+x.unit:x.unit):deg))).join(' · '));if(q.choice)a.push(q.choice[q.correct]);return a.join(' · ');}
 function endTest(){const per=[0,0,0,0];S.res.forEach(r=>{if(r.ok)per[r.lv]++;});const sc=per.reduce((a,b)=>a+b,0),grade=Math.round(sc/16*100);
  const up=sc>=14&&per.every(x=>x>=3),weak=per.findIndex(x=>x<3),d=new Date().toLocaleDateString('he-IL');store.set('test',{sc,d,per});
  const v=up?{c:'var(--ok)',t:'מוכן/ה לעלות הקבצה! 🎉 שלטת בכל ארבע הרמות.'}:sc>=10?{c:'var(--acc)',t:weak<0?'קרוב מאוד! יש הצלחה בכל הרמות. עוד קצת דיוק, ומנסים שוב.':`קרוב מאוד! כדי לעלות הקבצה צריך לחזק את רמה ${TL[weak]}.`}:{c:'var(--red)',t:'בונים יסודות: עוברים על ההסבר, מתרגלים ★ ו־★★, ואז מנסים שוב. כל ניסיון מקרב!'};
