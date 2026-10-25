@@ -1,0 +1,87 @@
+/*META {"id":"protractor","title":"מעבדת מד הזווית","icon":"📐"} */
+const LAB={hide:true,tip:'🖐 גוררים את מד הזווית מהגוף שלו, ומסובבים אותו בעיגול הצהוב. כשמרכז המד קרוב לקודקוד או לקרן, הוא נצמד לבד.',refresh:()=>draw()};
+const V={x:330,y:340},AR=230,RP=180,PARK={x:700,y:505,r:0};
+let A=55,a1=0,P={...PARK},chal=null,off={x:0,y:0},hl=null;
+const rad=d=>d*Math.PI/180,deg=r=>r*180/Math.PI,norm=d=>((d%360)+360)%360,adiff=(a,b)=>Math.abs(((a-b)%360+540)%360-180);
+const pt=(c,phi,r)=>({x:c.x+r*Math.cos(rad(phi)),y:c.y-r*Math.sin(rad(phi))});
+const showV=()=>!(ST.hide&&!ST.revealed)&&!(chal&&!chal.rev);
+const kindOf=a=>a<90?['חדה','קטנה מ־90°']:a===90?['ישרה','בדיוק 90°']:a<180?['קהה','גדולה מ־90° וקטנה מ־180°']:['שטוחה','בדיוק 180°'];
+function wedge(c,p1,p2,r){const s=pt(c,p1,r),e=pt(c,p2,r),lg=(p2-p1)>180?1:0;return `M${c.x},${c.y}L${s.x},${s.y}A${r},${r} 0 ${lg} 0 ${e.x},${e.y}Z`;}
+/* ---------- מד הזווית ---------- */
+function proSVG(){let s=`<g id="pro" transform="translate(${P.x},${P.y}) rotate(${-P.r})">`;
+ s+=`<path id="proB" d="M${-RP-12},0A${RP+12},${RP+12} 0 0 1 ${RP+12},0Z" fill="#fefce8" fill-opacity=".38" stroke="#475569" stroke-width="2.5" style="cursor:grab"/>`;
+ s+='<g style="pointer-events:none">';
+ for(let d=0;d<=180;d++){const L=d%10===0?20:d%5===0?13:7,c=Math.cos(rad(d)),n=-Math.sin(rad(d));s+=`<line x1="${c*(RP+12)}" y1="${n*(RP+12)}" x2="${c*(RP+12-L)}" y2="${n*(RP+12-L)}" stroke="#334155" stroke-width="${d%10?1:1.8}"/>`;}
+ const num=(id,r,col,val)=>{let t=`<g id="${id}">`;for(let d=0;d<=180;d+=10){const p={x:Math.cos(rad(d))*r,y:-Math.sin(rad(d))*r};t+=`<text x="${p.x}" y="${p.y+5}" text-anchor="middle" font-size="${d%90===0?15:13}" font-weight="800" fill="${col}" transform="rotate(${90-d} ${p.x} ${p.y})">${val(d)}</text>`;}return t+'</g>';};
+ s+=num('sOut',RP-20,COL.blue,d=>180-d)+num('sIn',RP-44,COL.red,d=>d);
+ s+=`<path d="M${-RP+70},0A${RP-70},${RP-70} 0 0 1 ${RP-70},0" fill="none" stroke="#94a3b8" stroke-width="1.5"/><line x1="${-RP-12}" y1="0" x2="${RP+12}" y2="0" stroke="#334155" stroke-width="2.5"/>`;
+ s+=`<line x1="0" y1="-14" x2="0" y2="0" stroke="#dc2626" stroke-width="2"/><circle r="5" fill="none" stroke="#dc2626" stroke-width="2.5"/></g>`;
+ s+=`<circle id="proR" cx="${RP+30}" cy="-14" r="15" fill="${COL.gold}" stroke="${COL.ink}" stroke-width="2.5" style="cursor:grab"/><text x="${RP+30}" y="-8" text-anchor="middle" font-size="17" font-weight="800" style="pointer-events:none">↻</text></g>`;return s;}
+function placePro(){const g=$('#pro');if(g)g.setAttribute('transform',`translate(${P.x},${P.y}) rotate(${-P.r})`);status();}
+/* ---------- ציור ---------- */
+function draw(){const a2=a1+A,v=showV(),pA=pt(V,a1,AR),pC=pt(V,a2,AR);let s='<g id="bg">';
+ s+=`<line x1="${V.x}" y1="${V.y}" x2="${pA.x}" y2="${pA.y}" stroke="${COL.ink}" stroke-width="4" stroke-linecap="round" id="arm1"/><line x1="${V.x}" y1="${V.y}" x2="${pC.x}" y2="${pC.y}" stroke="${COL.ink}" stroke-width="4" stroke-linecap="round" id="arm2"/>`;
+ s+=`<path d="${wedge(V,a1,a2,40)}" fill="${COL.orange}" fill-opacity=".25" stroke="${COL.orange}" stroke-width="3"/>`;
+ const m=pt(V,a1+A/2,66);s+=`<text x="${m.x}" y="${m.y+7}" text-anchor="middle" font-size="22" font-weight="800" fill="${COL.orange}" paint-order="stroke" stroke="#fff" stroke-width="5">${v?A+'°':'?'}</text>`;
+ const lab=(p,phi,t)=>{const q=pt(p,phi,20);return `<text x="${q.x}" y="${q.y+8}" text-anchor="middle" font-size="24" font-weight="800" fill="${COL.ink}">${t}</text>`;};
+ s+=lab(pA,a1,'A')+lab(pC,a2,'C')+lab(V,a1+A/2+180,'B');
+ s+=`<circle cx="${V.x}" cy="${V.y}" r="5" fill="${COL.ink}"/></g><g id="ani"></g>`+proSVG()+'<g id="top" style="pointer-events:none"></g>';
+ $('#sv').innerHTML=s;out();status();}
+function out(){const H=hidCls(),v=showV(),[k,why]=kindOf(A);
+ card('out',`<div class="big">${M('∢ABC')} = <span class="${H}">${v?M(A+'°'):'?'}</span></div><div class="tip ${H}">${v?`זווית <b>${k}</b> (${why}).`:'נחשו: חדה, ישרה או קהה?'}</div>${H?'<button class="noprint" id="bReveal" style="margin-top:8px">👀 גלו את התשובה</button>':''}`);
+ if($('#bReveal'))$('#bReveal').onclick=()=>{ST.revealed=true;draw();};}
+function which(){if(Math.hypot(P.x-V.x,P.y-V.y)>2)return null;if(adiff(P.r,a1)<.6)return 'in';if(adiff(P.r,a1+A-180)<.6)return 'out';return 'bad';}
+function status(){const w=which(),cen=Math.hypot(P.x-V.x,P.y-V.y)<=2,zero=adiff(P.r,a1)<.6||adiff(P.r,a1+A-180)<.6;
+ let t=`<div class="big" style="font-size:20px">🧭 בדיקת ההנחה</div><div class="tip">${cen?'✅':'⬜'} מרכז המד (העיגול האדום הקטן) על הקודקוד ${M('B')}</div><div class="tip">${cen&&zero?'✅':'⬜'} קו ה־0 של המד על אחת הקרניים</div>`;
+ if(w==='in'||w==='out')t+=`<div class="okbox">✅ המד מונח נכון! ה־0 נמצא על הקרן ${w==='in'?M('BA'):M('BC')}, ולכן קוראים ב<b class="${w==='in'?'red':'blue'}">סולם ה${w==='in'?'אדום':'כחול'}</b>.</div>`;
+ card('st',t);$('#side').insertBefore($('#st'),$('#out'));
+ if(chal&&(w==='in'||w==='out')&&!chal.ok){chal.ok=true;$('#chs').innerHTML=`<div class="okbox">✅ <b>מצוין!</b> המד מונח נכון. עכשיו קראו את הזווית בסולם ה${w==='in'?'אדום':'כחול'}.</div><button class="lt noprint" id="bCr">👀 גלו את הגודל</button>`;$('#bCr').onclick=()=>{chal.rev=true;draw();};}}
+/* ---------- פעולות ---------- */
+function anim(to,ms,done){ST.busy=true;const fr={...P},t0=performance.now(),dr=((to.r-fr.r)%360+540)%360-180;
+ const st=now=>{const k=Math.min(1,(now-t0)/ms),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;P={x:fr.x+(to.x-fr.x)*e,y:fr.y+(to.y-fr.y)*e,r:fr.r+dr*e};placePro();if(k<1)requestAnimationFrame(st);else{P={...to};placePro();ST.busy=false;done&&done();}};requestAnimationFrame(st);}
+function place(done){if(ST.busy)return;clearAni();const w=which();if(w==='in'||w==='out'){done&&done();return;}
+ const t1=norm(a1),t2=norm(a1+A-180),r=adiff(P.r,t1)<=adiff(P.r,t2)?t1:t2;
+ card('walk','<div class="big">▶️ שלב 1: מזיזים את מרכז המד אל הקודקוד B</div>');
+ anim({x:V.x,y:V.y,r:P.r},1300,()=>{card('walk','<div class="big">▶️ שלב 2: מסובבים עד שקו ה־0 על הקרן</div>');anim({x:V.x,y:V.y,r},1300,()=>{card('walk','<div class="big">✅ המד מונח נכון</div><div class="tip">מרכז על הקודקוד, ו־0 על קרן.</div>');done&&done();});});}
+function clearAni(){const a=$('#top');if(a)a.innerHTML='';['sIn','sOut'].forEach(i=>{const e=$('#'+i);if(e)e.style.opacity=1;});['arm1','arm2'].forEach(i=>{const e=$('#'+i);if(e){e.setAttribute('stroke',COL.ink);e.setAttribute('stroke-width',4);}});}
+function read(){if(ST.busy)return;place(()=>{const w=which(),col=w==='in'?COL.red:COL.blue,from=w==='in'?a1:a1+A,dir=w==='in'?1:-1;
+  $(w==='in'?'#sOut':'#sIn').style.opacity=.2;const z=$(w==='in'?'#arm1':'#arm2');z.setAttribute('stroke',col);z.setAttribute('stroke-width',7);
+  const vals=[];for(let v=10;v<=A;v+=10)vals.push(v);if(A%10)for(let v=Math.floor(A/10)*10+1;v<=A;v++)vals.push(v);if(!vals.length)vals.push(A);
+  ST.revealed=true;if(chal)chal.rev=true;
+  seq(vals.length,Math.min(5200,vals.length*330),i=>{const v=vals[i],p1=dir>0?from:from-v,p2=dir>0?from+v:from;$('#top').innerHTML=`<path d="${wedge(V,p1,p2,RP-58)}" fill="${col}" fill-opacity=".22" stroke="${col}" stroke-width="3"/>`;
+    card('walk',`<div class="big" style="color:${col}">סופרים בסולם ה${w==='in'?'אדום':'כחול'} מ־0: ${M(v+'°')}</div>`);},
+   ()=>{draw();$(w==='in'?'#sOut':'#sIn').style.opacity=.2;const z2=$(w==='in'?'#arm1':'#arm2');z2.setAttribute('stroke',col);z2.setAttribute('stroke-width',7);
+    $('#top').innerHTML=`<path d="${wedge(V,a1,a1+A,RP-58)}" fill="${col}" fill-opacity=".22" stroke="${col}" stroke-width="3"/>`;
+    card('walk',`<div class="big">${M('∢ABC')} = <span style="color:${col}">${M(A+'°')}</span></div><div class="tip">ה־0 של הסולם ה${w==='in'?'אדום':'כחול'} נמצא על הקרן ${w==='in'?M('BA'):M('BC')}, ולכן קוראים בו.</div>`);});});}
+function wrong(){if(ST.busy)return;place(()=>{const w=which(),bad=w==='in'?'כחול':'אדום',badCol=w==='in'?COL.blue:COL.red,okCol=w==='in'?COL.red:COL.blue,v2=180-A,[k,why]=kindOf(A);
+  ST.revealed=true;if(chal)chal.rev=true;draw();const q=pt(V,w==='in'?a1+A:a1,RP+42);
+  $('#top').innerHTML=A===90?'':`<text x="${q.x}" y="${q.y+8}" text-anchor="middle" font-size="26" font-weight="800" fill="${badCol}" paint-order="stroke" stroke="#fff" stroke-width="5">✘ ${v2}°</text>`;
+  card('walk',A===90?`<div class="okbox">⭐ בזווית <b>ישרה</b> שני הסולמות נותנים ${M('90°')}, אין טעות אפשרית!</div>`:
+   `<div class="badbox">⚠️ <b>הטעות הנפוצה:</b> קוראים בסולם ה${bad} ומקבלים ${M(v2+'°')}.</div><div class="tip"><b>איך בודקים?</b> מסתכלים על הזווית לפני שמודדים: היא <b>${k}</b> (${why}).<br>לכן התשובה ${C(M(A+'°'),w==='in'?'red':'blue')}, ולא ${M(v2+'°')}.<br>💡 תמיד קוראים בסולם שה־0 שלו נמצא על הקרן.</div>`);
+  $('#side').insertBefore($('#walk'),$('#out'));});}
+function kind(){if(ST.busy)return;clearAni();ST.revealed=true;if(chal)chal.rev=true;draw();const [k,why]=kindOf(A),r90=pt(V,a1+90,AR-20),c1=pt(V,a1,26),c2=pt(V,a1+90,26),c3={x:c1.x+c2.x-V.x,y:c1.y+c2.y-V.y};
+ const col=A<90?COL.green:A===90?COL.purple:A<180?COL.orange:COL.red;
+ $('#top').innerHTML=`<line x1="${V.x}" y1="${V.y}" x2="${r90.x}" y2="${r90.y}" stroke="#64748b" stroke-width="3" stroke-dasharray="9 7"/><path d="M${c1.x},${c1.y}L${c3.x},${c3.y}L${c2.x},${c2.y}" fill="none" stroke="#64748b" stroke-width="2.5"/><text x="${r90.x}" y="${r90.y-10}" text-anchor="middle" font-size="18" font-weight="800" fill="#64748b">90°</text>`;
+ card('walk',`<div class="big" style="color:${col}">🔤 זווית ${k}</div><div class="tip">הקו המקווקו הוא זווית ישרה (${M('90°')}). הזווית שלנו ${why}.</div><div class="tip">${M('0° < ')}<b class="green">חדה</b>${M(' < 90°')} · <b class="purple">ישרה</b> ${M('= 90°')} · ${M('90° < ')}<b class="orange">קהה</b>${M(' < 180°')} · <b class="red">שטוחה</b> ${M('= 180°')}</div>`);
+ $('#side').insertBefore($('#walk'),$('#out'));}
+function newAngle(tilt){if(ST.busy)return;A=R(2,34)*5;a1=tilt?R(-2,8)*5:0;if(a1+A>195)A=195-a1;if(A<10)A=10;P={...PARK};chal=null;['chal','walk'].forEach(i=>{const e=$('#'+i);if(e)e.remove();});ST.revealed=false;edit();draw();}
+function challenge(){newAngle(true);chal={ok:false,rev:false};card('chal','<div class="big" style="font-size:22px">🎯 הניחו את מד הזווית נכון ומדדו את '+M('∢ABC')+'.</div><div id="chs" class="tip">גררו את המד וסובבו אותו בעיגול הצהוב.</div><button class="lt noprint" id="bAll" style="margin-top:8px">כל האפשרויות</button><div id="allx"></div>','chal');
+ $('#side').insertBefore($('#chal'),$('#st'));$('#bAll').onclick=()=>{$('#allx').innerHTML=`<div class="tip">יש שתי דרכים נכונות:<br>1. מרכז על ${M('B')}, 0 על הקרן ${M('BA')} ← קוראים ב<b class="red">אדום</b>.<br>2. מרכז על ${M('B')}, 0 על הקרן ${M('BC')} ← קוראים ב<b class="blue">כחול</b>.</div>`;};draw();}
+/* ---------- הזנה ---------- */
+const IN=(id,val)=>`<input type="number" id="${id}" dir="ltr" value="${val}" style="width:70px;font-size:20px;font-weight:700;text-align:center;border:2px solid ${COL.orange};border-radius:8px;padding:3px">`;
+function edit(){card('ed',`<div class="big" style="font-size:20px">✏️ הזווית</div><div class="ctl" style="margin:4px 0">גודל: ${IN('eA',A)}°</div><div class="ctl" style="margin:4px 0">סיבוב (זווית מוטה): ${IN('eT',a1)}°</div><div id="edMsg" class="tip"></div>`);
+ const ap=()=>{const a=parseInt($('#eA').value,10),t=parseInt($('#eT').value,10);if(isNaN(a)||isNaN(t))return;
+  if(a<1||a>180||t<-20||t>60||a+t>200){$('#edMsg').innerHTML='❗ גודל בין 1 ל־180, סיבוב בין −20 ל־60 (ושניהם יחד עד 200).';return;}$('#edMsg').textContent='';A=a;a1=t;ST.revealed=false;draw();};
+ $('#eA').oninput=ap;$('#eT').oninput=ap;}
+/* ---------- הפעלה ---------- */
+function start(){svgSize(920,520);
+ document.head.insertAdjacentHTML('beforeend','<style>.bigb{display:block;width:100%;font-size:21px;font-weight:800;padding:13px 14px;margin:7px 0;border-radius:14px;text-align:start}#bigs .bigb:nth-child(1){background:#0f766e}#bigs .bigb:nth-child(2){background:#2563eb}#bigs .bigb:nth-child(3){background:#dc2626}#bigs .bigb:nth-child(4){background:#7c3aed}#bigs .bigb:nth-child(5),#bigs .bigb:nth-child(6){background:#ea580c}#bigs .bigb:nth-child(7){background:#b45309}</style>');
+ tool('bPk','🧹 מד הזווית הצידה',()=>{clearAni();anim({...PARK},900);});
+ card('acts','<div class="noprint" id="bigs">'+[['aPl','▶️ הנחה נכונה של המד'],['aRd','🎯 מאיזה סולם קוראים?'],['aWr','⚠️ הטעות הנפוצה'],['aKd','🔤 סוג הזווית'],['aNw','🎲 זווית חדשה'],['aTl','🔄 זווית מוטה'],['aCh','🎯 אתגר לכיתה']].map(([i,t])=>`<button class="bigb" id="${i}">${t}</button>`).join('')+'</div>');
+ const F={aPl:()=>place(),aRd:read,aWr:wrong,aKd:kind,aNw:()=>newAngle(false),aTl:()=>newAngle(true),aCh:challenge};
+ Object.entries(F).forEach(([i,fn])=>$('#'+i).onclick=()=>{if(!ST.busy)fn();});
+ edit();
+ $('#sv').addEventListener('pointerdown',e=>{if(e.target.id==='proB'){const p=svgPt(e);off={x:p.x-P.x,y:p.y-P.y};}});
+ draggable(['proB','proR'],(id,p)=>{clearAni();if(id==='proB'){let x=p.x-off.x,y=p.y-off.y;if(Math.hypot(x-V.x,y-V.y)<16){x=V.x;y=V.y;}P.x=x;P.y=y;}
+  else{let r=deg(Math.atan2(-(p.y-P.y),p.x-P.x))-3.81;for(const t of [a1,a1+A-180])if(adiff(r,t)<4)r=norm(t);P.r=norm(r);}placePro();});
+ draw();}
