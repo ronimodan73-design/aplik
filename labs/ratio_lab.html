@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>מעבדת היחס</title>
+<style>
+:root{--bg:#f4f5fb;--ink:#1f2937;--muted:#6b7280;--gold:#f5b301;--goldInk:#b45309;--line:#e5e7eb;--navy:#1e1b4b}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:"Rubik","Segoe UI","Arial Hebrew",Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:20px;min-height:100vh;display:flex;flex-direction:column}
+.m{direction:ltr;unicode-bidi:isolate;display:inline-block;font-weight:700;white-space:nowrap}
+button,select,input{font:inherit}
+button{cursor:pointer;border:none;border-radius:12px;padding:8px 16px;background:#eef2ff;color:var(--navy);transition:transform .15s}
+button:active{transform:scale(.95)}
+button:disabled{opacity:.35;cursor:default}
+header{display:flex;align-items:center;gap:10px;padding:10px 18px;background:var(--navy);color:#fff;flex-wrap:wrap}
+header h1{margin:0;font-size:26px}
+header .tools{margin-inline-start:auto;display:flex;gap:8px;flex-wrap:wrap}
+header button{background:#312e81;color:#fff}
+header #edit{background:var(--gold);color:#1f2937;font-weight:800}
+main{flex:1;display:flex;flex-direction:column;gap:14px;padding:16px 22px;max-width:1500px;width:100%;margin:0 auto}
+#story{font-size:30px;line-height:1.6;background:#fff;border-radius:18px;padding:14px 22px;box-shadow:0 2px 10px rgba(30,27,75,.07)}
+.work{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:start}
+#vis{background:#fff;border-radius:18px;padding:16px;min-height:230px;box-shadow:0 2px 10px rgba(30,27,75,.07);display:flex;flex-wrap:wrap;gap:10px;align-content:flex-start}
+#side{display:flex;flex-direction:column;gap:12px;align-items:stretch;min-width:300px}
+#rep{background:#fff;border-radius:18px;padding:12px 20px;box-shadow:0 2px 10px rgba(30,27,75,.07);text-align:center;font-size:48px;font-weight:800;min-height:130px;display:flex;align-items:center;justify-content:center}
+#calc{font-size:23px;line-height:1.8}
+#calc div{background:#fff;border-radius:12px;padding:2px 14px;margin-bottom:6px;border-inline-start:6px solid var(--line)}
+#calc div.new{border-color:var(--gold);background:#fffbeb;animation:pop .4s backwards}
+#why{font-size:22px;color:#047857;background:#ecfdf5;border-radius:12px;padding:8px 14px}
+.navbar{display:flex;align-items:center;gap:14px;justify-content:center;flex-wrap:wrap}
+.dots{display:flex;gap:8px}
+.dots button{padding:6px 14px;font-size:17px;background:#e5e7eb;color:var(--muted)}
+.dots button.on{background:var(--navy);color:#fff;font-weight:700}
+.dots button.done{background:#c7d2fe;color:var(--navy)}
+#next{background:var(--navy);color:#fff;font-size:26px;font-weight:800;padding:12px 40px}
+#prev{font-size:20px}
+@keyframes pop{from{transform:scale(0);opacity:0}}
+.grp{display:flex;flex-direction:column;gap:3px;padding:6px;border:2px dashed #cbd5e1;border-radius:12px;animation:pop .35s backwards;background:#fafafa}
+.grp.hi{border:3px solid var(--gold);background:#fffbeb}
+.grp .gl{font-size:14px;color:var(--muted);text-align:center}
+.prow{display:flex;gap:3px;flex-wrap:wrap}
+.pile{display:flex;flex-direction:column;gap:10px;width:100%}
+.pile .prow{gap:4px}
+.it{display:inline-flex;align-items:center;justify-content:center;width:var(--s);height:var(--s);flex:0 0 auto;font-style:normal}
+.cube{border-radius:22%;box-shadow:inset -3px -3px 0 rgba(0,0,0,.18)}
+.dot{border-radius:50%;color:#fff;font-size:calc(var(--s) * .55);font-weight:800}
+.kid{font-size:calc(var(--s) * .9);line-height:1}
+.bill{width:calc(var(--s) * 1.9);border:2px solid;border-radius:5px;font-size:calc(var(--s) * .42);font-weight:800;color:#166534;background:#dcfce7}
+.badge{width:100%;font-size:26px;font-weight:800}
+.badge span.k{background:var(--gold);border-radius:14px;padding:4px 16px;display:inline-block;animation:pop .5s backwards}
+.frrow{display:inline-flex;direction:ltr;align-items:center}
+.fr{display:inline-flex;flex-direction:column;align-items:center;min-width:1.3em;line-height:1.12}
+.fl{display:block;width:100%;height:4px;background:var(--ink);border-radius:2px;margin:3px 0}
+.op{display:inline-flex;flex-direction:column;align-items:center;margin:0 .3em;line-height:1.12}
+.op b,.ga{color:var(--goldInk);background:#fef3c7;border-radius:8px;padding:0 6px;font-size:24px;animation:pop .4s backwards}
+.qm{opacity:.3}
+.chain{direction:ltr;display:inline-flex;align-items:flex-start;gap:8px}
+.cc{display:inline-flex;flex-direction:column;align-items:center;gap:4px;line-height:1.12}
+dialog{border:none;border-radius:20px;padding:0;max-width:680px;width:calc(100% - 24px);box-shadow:0 20px 60px rgba(0,0,0,.3)}
+dialog::backdrop{background:rgba(15,23,42,.55)}
+.dlg{padding:20px 24px;display:flex;flex-direction:column;gap:14px}
+.dlg h2{margin:0;font-size:26px}
+.fld{display:flex;flex-direction:column;gap:6px}
+.fld>label{font-weight:700;color:var(--navy)}
+.opts{display:flex;gap:8px;flex-wrap:wrap}
+.opts button{border:2px solid var(--line);background:#fff;font-size:19px}
+#fType{flex-direction:column;align-items:stretch}#fType button{text-align:start}
+.opts button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.dlg input[type=number]{width:96px;padding:6px;border:2px solid var(--line);border-radius:10px;text-align:center;font-size:22px}
+.dlg select{padding:6px;border:2px solid var(--line);border-radius:10px;font-size:20px}
+.inl{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+#err{color:#dc2626;min-height:1.4em;font-size:18px}
+.acts{display:flex;gap:10px;flex-wrap:wrap}
+.acts .go{background:var(--navy);color:#fff;font-weight:800;font-size:22px;padding:10px 26px}
+.acts .rnd{background:var(--gold);font-weight:700}
+footer{text-align:center;color:var(--muted);font-size:15px;padding:8px}
+@media (max-width:900px){.work{grid-template-columns:minmax(0,1fr)}#side{min-width:0}#story{font-size:22px}#rep{font-size:38px}#next{padding:10px 24px}main{padding:12px}}
+@media print{header .tools,.navbar{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<header>
+  <h1>⚖️ מעבדת היחס</h1>
+  <div class="tools">
+    <button id="edit">✏️ שאלה חדשה</button>
+    <button id="fs">⛶ מסך מלא</button>
+    <button id="pr" aria-label="הדפסה">🖨️</button>
+  </div>
+</header>
+
+<main>
+  <div id="story"></div>
+  <div class="work">
+    <div id="vis"></div>
+    <div id="side">
+      <div id="rep"></div>
+      <div id="calc"></div>
+      <div id="why"></div>
+    </div>
+  </div>
+  <div class="navbar">
+    <button id="prev" aria-label="הקודם">→</button>
+    <div class="dots" id="dots"></div>
+    <button id="next">הבא ←</button>
+  </div>
+</main>
+<footer>ערכה: רוני מודן · שחקים</footer>
+
+<dialog id="dlg"><div class="dlg">
+  <h2>✏️ שאלה חדשה</h2>
+  <div class="fld"><label>סיפור</label><div class="opts" id="fCtx"></div></div>
+  <div class="fld"><label>מה נתון בשאלה?</label><div class="opts" id="fType"></div></div>
+  <div class="fld" id="fRatioBox"><label>היחס</label><div class="inl" id="fRatio"></div></div>
+  <div class="fld"><label id="fGivenLbl">המספר הנתון</label><div class="inl" id="fGiven"></div></div>
+  <div id="err"></div>
+  <div class="acts">
+    <button class="go" id="fGo">✔ הצג לכיתה</button>
+    <button class="rnd" id="fRnd">🎲 הפתעה</button>
+    <button id="fCancel">ביטול</button>
+  </div>
+</div></dialog>
+
+<script>
+const $=s=>document.querySelector(s);
+const gcd=(a,b)=>b?gcd(b,a%b):a, gcdA=arr=>arr.reduce((x,y)=>gcd(x,y));
+const rnd=(lo,hi)=>lo+Math.floor(Math.random()*(hi-lo+1)), pick=a=>a[Math.floor(Math.random()*a.length)];
+const F=x=>Number(x).toLocaleString('en-US');
+const M=s=>`<span class="m">${s}</span>`;
+const MI='−';
+const vav=x=>x.startsWith('<span')?'ו־'+x:'ו'+x;
+const joinW=l=>l.length===1?l[0]:l.length===2?`${l[0]} ${vav(l[1])}`:`${l[0]}, ${l[1]} ${vav(l[2])}`;
+const groupsW=k=>k===1?'קבוצה אחת':`${M(k)} קבוצות`;
+
+/* ===== סיפורים. כדי להוסיף סיפור חדש מוסיפים כאן רשומה אחת. ===== */
+const CTX={
+  cubes:{icon:'🧊',title:'קוביות',u:1,cfg(n){
+    const nm=['אדומות','כחולות','ירוקות'].slice(0,n),col=['#ef4444','#3b82f6','#16a34a'].slice(0,n);
+    const rel=n===2?'הקוביות האדומות לכחולות':'הקוביות האדומות, הכחולות והירוקות';
+    return{col,short:nm,
+      qty:(i,v)=>`${M(F(v))} קוביות ${nm[i]}`,
+      intro:R=>`בשקית יש קוביות ${joinW(nm)}. היחס בין ${rel} הוא ${R}.`,
+      total:T=>`בשקית יש ${M(F(T))} קוביות בסך הכול.`,
+      has:list=>`בשקית יש ${joinW(list)}.`,
+      more:(i,j,D)=>`יש בשקית ${M(F(D))} קוביות ${nm[j]} יותר מקוביות ${nm[i]}.`,
+      askParts:'כמה קוביות יש מכל צבע?',askTotal:'כמה קוביות יש בשקית בסך הכול?',askRatio:`מה היחס בין ${rel}?`,
+      item:i=>`<i class="it cube" style="background:${col[i]}"></i>`};}},
+  students:{icon:'👧👦',title:'תלמידים',u:1,cfg(n){
+    if(n===2){const nm=['בנים','בנות'],col=['#2563eb','#db2777'];
+      return{col,short:nm,
+        qty:(i,v)=>`${M(F(v))} ${nm[i]}`,
+        intro:R=>`בכיתה היחס בין מספר הבנים למספר הבנות הוא ${R}.`,
+        total:T=>`בכיתה יש ${M(F(T))} תלמידים.`,
+        has:list=>`בכיתה יש ${joinW(list)}.`,
+        more:(i,j,D)=>`בכיתה יש ${M(F(D))} ${nm[j]} יותר מ${nm[i]}.`,
+        askParts:'כמה בנים וכמה בנות יש בכיתה?',askTotal:'כמה תלמידים יש בכיתה?',askRatio:'מה היחס בין מספר הבנים למספר הבנות?',
+        item:i=>`<i class="it kid">${['👦','👧'][i]}</i>`};}
+    const g=['ז׳','ח׳','ט׳'],col=['#ea580c','#7c3aed','#0d9488'];
+    return{col,short:g,
+      qty:(i,v)=>`${M(F(v))} תלמידי ${g[i]}`,
+      intro:R=>`בטיול השתתפו תלמידים משכבות ז׳, ח׳ וט׳. היחס בין מספר התלמידים בשכבות ז׳, ח׳ וט׳ הוא ${R}.`,
+      total:T=>`בטיול השתתפו ${M(F(T))} תלמידים.`,
+      has:list=>`בטיול השתתפו ${joinW(list)}.`,
+      more:(i,j,D)=>`בטיול השתתפו ${M(F(D))} תלמידי ${g[j]} יותר מתלמידי ${g[i]}.`,
+      askParts:'כמה תלמידים השתתפו מכל שכבה?',askTotal:'כמה תלמידים השתתפו בטיול בסך הכול?',askRatio:'מה היחס בין מספר התלמידים בשכבות ז׳, ח׳ וט׳?',
+      item:i=>`<i class="it dot" style="background:${col[i]}">${'זחט'[i]}</i>`};}},
+  money:{icon:'💰',title:'כסף',u:100,cfg(n){
+    const nm=['דנה','יואב','נועה'].slice(0,n),vb=['קיבלה','קיבל','קיבלה'],col=['#dc2626','#2563eb','#16a34a'].slice(0,n);
+    const S=v=>`${M(F(v*100))} ₪`;
+    return{col,short:nm,money:1,
+      qty:(i,v)=>`${nm[i]} ${vb[i]} ${S(v)}`,
+      intro:R=>`${joinW(nm)} חילקו ביניהם כסף ביחס ${R}.`,
+      total:T=>`בסך הכול הם חילקו ${S(T)}.`,
+      has:list=>`${joinW(list)}.`,
+      more:(i,j,D)=>`${nm[j]} ${vb[j]} ${S(D)} יותר מ${nm[i]}.`,
+      askParts:'כמה כסף קיבל כל אחד?',askTotal:'כמה כסף חילקו בסך הכול?',
+      askRatio:n===2?'מה היחס בין הסכום של דנה לסכום של יואב?':'מה היחס בין הסכומים של דנה, יואב ונועה?',
+      item:i=>`<i class="it bill" style="border-color:${col[i]}">100</i>`};}}
+};
+CTX.angles={icon:'📐',title:'זוויות',u:1,deg:1,cfg(n){
+  const nm=n===2?['זווית א׳','זווית ב׳']:['זווית א׳','זווית ב׳','זווית ג׳'],col=['#ef4444','#3b82f6','#16a34a'].slice(0,n);
+  return{col,short:nm,
+    intro:R=>n===2?`שתי זוויות צמודות ביחס ${R}. מה גודל כל אחת מהזוויות?`:`זוויות המשולש ביחס ${R}. מה גודל כל זווית במשולש?`,
+    ratioStory:L=>n===2?`שתי זוויות צמודות: האחת ${L[0]} והשנייה ${L[1]}. מה היחס בין הזוויות?`:`במשולש יש זוויות של ${L[0]}, ${L[1]} ו־${L[2]}. מה היחס בין הזוויות?`};}};
+const TYPES=[['total','🧩 ידוע הסך הכול ← מוצאים כל חלק'],['part','📦 ידוע חלק אחד ← מוצאים את הסך הכול'],['diff','↔️ ידוע ההפרש ← מוצאים כל חלק'],['ratio','🔍 ידועות הכמויות ← מוצאים את היחס']];
+
+/* Q = השאלה המוצגת. הכמויות שמורות ביחידות: קובייה / תלמיד / שטר */
+let Q={ctx:'cubes',type:'total',a:[2,3],k:6,given:0,pair:[0,1],V:null};
+let steps=[],cur=0,C=null;
+
+/* ===== ציור פריטים ===== */
+function sizeFor(total){return total<=30?30:total<=70?22:total<=140?16:total<=260?12:9;}
+function groupHTML(per,s,hi,label,delay){
+  return `<div class="grp${hi?' hi':''}" style="--s:${s}px;animation-delay:${delay}s">${label?`<div class="gl">${label}</div>`:''}${
+    per.map((c,i)=>`<div class="prow">${C.item(i).repeat(c)}</div>`).join('')}</div>`;
+}
+function groupsHTML(count,per,opts={}){
+  const tot=count*per.reduce((s,x)=>s+x,0),s=sizeFor(tot),dl=Math.min(.12,2.4/count);
+  let h='';for(let g=0;g<count;g++)h+=groupHTML(per,s,opts.hi&&g===0,opts.num?`${g+1}`:'',g*dl);
+  return h;
+}
+function pileHTML(V){
+  const s=sizeFor(V.reduce((x,y)=>x+y,0));
+  return `<div class="pile" style="--s:${s}px">${V.map((c,i)=>`<div class="prow">${C.item(i).repeat(c)}</div>`).join('')}</div>`;
+}
+
+/* ===== שבר / שורת יחס ===== */
+function repHTML(top,bot,op,kv){
+  const cell=(v,i)=>`<span class="${v==='?'?'qm':''}" style="color:${C.col[i]}">${typeof v==='number'?F(v):v}</span>`;
+  const kk=kv===undefined?'?':F(kv);
+  if(top.length===2){
+    const fr=x=>`<span class="fr">${cell(x[0],0)}<span class="fl"></span>${cell(x[1],1)}</span>`;
+    let h=fr(top);if(bot)h+=`<span class="op"><b>${op}${kk}</b><span>=</span><b>${op}${kk}</b></span>`+fr(bot);
+    return `<span class="frrow">${h}</span>`;
+  }
+  let h='<span class="chain">';
+  top.forEach((v,i)=>{h+=`<span class="cc">${cell(v,i)}${bot?`<b class="ga">↓ ${op}${kk}</b>${cell(bot[i],i)}`:''}</span>`;
+    if(i<top.length-1)h+=`<span class="cc"><span>:</span>${bot?'<b class="ga" style="visibility:hidden">↓</b><span>:</span>':''}</span>`;});
+  return h+'</span>';
+}
+
+/* ===== זוויות: חצי עיגול של 180° שמחולק לחלקים שווים ===== */
+function semiSVG(parts,sliceDeg,mode){
+  // parts = מספר החלקים לכל זווית; sliceDeg = כמה מעלות בחלק (null = עוד לא ידוע)
+  const N=parts.reduce((s,x)=>s+x,0),cx=230,cy=215,r=185,P=t=>[cx+r*Math.cos(t),cy-r*Math.sin(t)];
+  const per=Math.PI/N,showSlices=N<=36;let h='',idx=0;
+  parts.forEach((c,i)=>{for(let q=0;q<c;q++,idx++){
+    const t1=idx*per,t2=(idx+1)*per,[x1,y1]=P(t1),[x2,y2]=P(t2);
+    h+=`<path d="M${cx},${cy} L${x1.toFixed(1)},${y1.toFixed(1)} A${r},${r} 0 0 0 ${x2.toFixed(1)},${y2.toFixed(1)} Z" fill="${C.col[i]}" fill-opacity="${mode==='final'?.85:.55}" stroke="#fff" stroke-width="${showSlices?2:0}"/>`;
+    if(showSlices&&sliceDeg&&mode!=='final'){const tm=(t1+t2)/2,fs=Math.max(11,Math.min(26,170/N));
+      h+=`<text x="${(cx+r*.72*Math.cos(tm)).toFixed(1)}" y="${(cy-r*.72*Math.sin(tm)+fs*.35).toFixed(1)}" font-size="${fs}" font-weight="800" text-anchor="middle" fill="#1f2937">${sliceDeg}°</text>`;}
+  }});
+  if(mode==='final'||mode==='totals'){let acc=0;
+    parts.forEach((c,i)=>{const tm=(acc+c/2)*per;acc+=c;const deg=c*(sliceDeg||1);
+      if(acc<N){const[x,y]=P(acc*per);h+=`<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#1f2937" stroke-width="5"/>`;}
+      h+=`<text x="${(cx+r*.55*Math.cos(tm)).toFixed(1)}" y="${(cy-r*.55*Math.sin(tm)+12).toFixed(1)}" font-size="34" font-weight="800" text-anchor="middle" fill="#fff" stroke="#1f2937" stroke-width="5" paint-order="stroke">${deg}°</text>`;});}
+  h+=`<line x1="${cx-r-25}" y1="${cy}" x2="${cx+r+25}" y2="${cy}" stroke="#1f2937" stroke-width="5" stroke-linecap="round"/><circle cx="${cx}" cy="${cy}" r="6" fill="#1f2937"/>`;
+  return `<svg viewBox="0 0 460 235" style="width:100%;max-width:620px;margin:0 auto;display:block" role="img" aria-label="חצי עיגול של 180 מעלות">${h}</svg>`;
+}
+function buildAngles(){
+  const two=C.col.length===2,all=C.col.map((_,i)=>i);
+  const lab=i=>`<b style="color:${C.col[i]}">${C.short[i]}</b>`;
+  const RH=arr=>M(arr.map((x,i)=>`<span style="color:${C.col[i]}">${x}</span>`).join(':'));
+  const DG=x=>M(x+'°'), sumName=two?'זוויות צמודות':'זוויות המשולש';
+  if(Q.type==='ratio'){
+    const V=Q.V,g=gcdA(V),r=V.map(x=>x/g);
+    return{story:C.ratioStory(V.map(x=>DG(x))),S:[
+      {t:two?'שבר':'יחס',vis:semiSVG(V,1,'totals'),rep:repHTML(V),w:two?'כותבים את הזוויות כשבר.':'כותבים את הזוויות כיחס.'},
+      {t:'במה מצמצמים?',vis:`<div class="badge">🔑 חלקים שווים של <span class="k">${DG(g)}</span></div>`+semiSVG(r,g,'slices'),
+        rep:repHTML(V,V.map(()=>'?'),':',g),calc:[`מצמצמים ב־${M(g)}`],w:`מחלקים את חצי העיגול לחלקים שווים של ${DG(g)}.`},
+      {t:'תשובה',vis:`<div class="badge">🔑 סופרים חלקים = היחס</div>`+semiSVG(r,g,'slices'),
+        rep:repHTML(V,r,':',g),calc:[`היחס: ${RH(r)}`],w:'סופרים כמה חלקים יש לכל זווית, וזה היחס.'}]};
+  }
+  const a=Q.a,k=Q.k,V=a.map(x=>x*k),N=a.reduce((s,x)=>s+x,0);
+  return{story:C.intro(RH(a)),S:[
+    {t:two?'שבר':'יחס',vis:semiSVG(a,null,'slices'),rep:repHTML(a),
+      calc:[`${sumName}: ${DG(180)}`,`מספר החלקים: ${M(a.join(' + ')+' = '+N)}`],
+      w:two?'זוויות צמודות משלימות ל־180°. מונה + מכנה = מספר החלקים.':'סכום הזוויות במשולש הוא 180°. סופרים את החלקים.'},
+    {t:'גורם ההכפלה',vis:`<div class="badge">🔑 חלק אחד = <span class="k">${DG(k)}</span></div>`+semiSVG(a,k,'slices'),
+      rep:repHTML(a,a.map(()=>'?'),'·',k),calc:[`חלק אחד: ${M('180° : '+N+' = '+k+'°')}`],w:'מחלקים את 180° למספר החלקים.'},
+    {t:'תשובה',vis:semiSVG(a,k,'final'),rep:repHTML(a,V,'·',k),
+      calc:[all.map(i=>`${lab(i)}: ${DG(V[i])}`).join(' &nbsp;|&nbsp; '),`בדיקה: ${M(V.map(x=>x+'°').join(' + ')+' = 180°')} ✓`],
+      w:two?'מרחיבים את השבר, וזו התשובה.':'מכפילים כל מספר, וזו התשובה.'}]};
+}
+
+/* ===== המנוע: 3 צעדים לכל שאלה ===== */
+function build(){
+  C=CTX[Q.ctx].cfg(Q.type==='ratio'?Q.V.length:Q.a.length);
+  if(CTX[Q.ctx].deg)return buildAngles();
+  const u=CTX[Q.ctx].u,two=C.col.length===2,all=C.col.map((_,i)=>i);
+  const lab=i=>`<b style="color:${C.col[i]}">${C.short[i]}</b>`;
+  const RH=arr=>M(arr.map((x,i)=>`<span style="color:${C.col[i]}">${x}</span>`).join(':'));
+  const money=v=>C.money?` = ${M(F(v*u))} ₪`:'';
+  const unitW=C.money?' שטרות':'';
+  let story,S;
+  if(Q.type==='ratio'){
+    const V=Q.V,g=gcdA(V),r=V.map(x=>x/g),Vu=V.map(x=>x*u);
+    story=`${C.has(all.map(i=>C.qty(i,V[i])))} ${C.askRatio}`;
+    S=[
+      {t:two?'שבר':'יחס',vis:pileHTML(V),rep:repHTML(Vu),w:two?'כותבים את הכמויות כשבר.':'כותבים את הכמויות כיחס.'},
+      {t:'במה מצמצמים?',vis:`<div class="badge">🔑 מסדרים ב־<span class="k">${groupsW(g)}</span> שוות</div>`+groupsHTML(g,r,{num:g<=30}),
+        rep:repHTML(Vu,Vu.map(()=>'?'),':',g*u),calc:[`מצמצמים ב־${M(F(g*u))}`],w:`הכי הרבה קבוצות שוות: ${M(g)}. זה המספר שבו מצמצמים.`},
+      {t:'תשובה',vis:`<div class="badge">🔑 קבוצה אחת = היחס</div>`+groupsHTML(g,r,{hi:1}),
+        rep:repHTML(Vu,r,':',g*u),calc:[`היחס: ${RH(r)}`],w:'מצמצמים, וקבוצה אחת היא היחס.'}
+    ];
+  }else{
+    const a=Q.a,k=Q.k,V=a.map(x=>x*k),T=V.reduce((s,x)=>s+x,0),N=a.reduce((s,x)=>s+x,0),R=RH(a);
+    const ans=all.map(i=>`${lab(i)}: ${M(F(V[i]))}${unitW}${money(V[i])}`).join(' &nbsp;|&nbsp; ');
+    const grpLine=`קבוצה אחת: ${M(a.join(' + ')+' = '+N)}${unitW}${money(N)}`;
+    const one=groupHTML(a,34,0,'קבוצה אחת',0);
+    const s2={t:'גורם ההכפלה',vis:`<div class="badge">🔑 גורם ההכפלה = <span class="k">${groupsW(k)}</span></div>`+groupsHTML(k,a,{num:k<=30}),rep:repHTML(a,a.map(()=>'?'),'·',k)};
+    const s3={t:'תשובה',vis:`<div class="badge">🔑 <span class="k">${groupsW(k)}</span></div>`+groupsHTML(k,a,{num:k<=30}),
+      rep:repHTML(a,V,'·',k),w:two?'מרחיבים את השבר בגורם ההכפלה, וזו התשובה.':'מכפילים כל מספר בגורם ההכפלה, וזו התשובה.'};
+    if(Q.type==='total'){
+      story=`${C.intro(R)} ${C.total(T)} ${C.askParts}`;
+      S=[{t:two?'שבר':'יחס',vis:one,rep:repHTML(a),calc:[grpLine],w:two?'כותבים שבר. מונה + מכנה = גודל הקבוצה.':'מחברים את המספרים ביחס, וזה גודל הקבוצה.'},
+        {...s2,calc:[`כמה קבוצות? ${M(F(T*u)+' : '+F(N*u)+' = '+k)}`],w:'כמה קבוצות נכנסות בסך הכול? זה גורם ההכפלה.'},
+        {...s3,calc:[ans,`בדיקה: ${M(V.map(F).join(' + ')+' = '+F(T))}${unitW} ✓`]}];
+    }else if(Q.type==='part'){
+      const i=Q.given,v=V[i],bot1=a.map((_,m)=>m===i?v:'?');
+      story=`${C.intro(R)} ${C.has([C.qty(i,v)])} ${C.askTotal}`;
+      S=[{t:two?'שבר':'יחס',vis:one,rep:repHTML(a,bot1,'·'),calc:[`בכל קבוצה ל${lab(i)}: ${M(a[i])}${unitW}${money(a[i])}`],w:two?'כותבים את השבר, ומתחתיו את מה שידוע.':'כותבים את היחס, ומתחתיו את מה שידוע.'},
+        {...s2,rep:repHTML(a,bot1,'·',k),calc:[`כמה קבוצות? ${M(F(v*u)+' : '+F(a[i]*u)+' = '+k)}`],w:`כמה קבוצות צריך כדי להגיע ל־${M(F(v*u))}?`},
+        {...s3,calc:[ans,`סך הכול: ${M(N+' · '+k+' = '+F(T))}${unitW}${money(T)}`]}];
+    }else{
+      const[i,j]=Q.pair,D=V[j]-V[i],du=a[j]-a[i];
+      story=`${C.intro(R)} ${C.more(i,j,D)} ${C.askParts}`;
+      S=[{t:two?'שבר':'יחס',vis:one,rep:repHTML(a),calc:[`בכל קבוצה ל${lab(j)} יש יותר: ${M(a[j]+' '+MI+' '+a[i]+' = '+du)}${unitW}${money(du)}`],w:`בכל קבוצה יש ל${lab(j)} ${M(du)}${unitW} יותר מאשר ל${lab(i)}.`},
+        {...s2,calc:[`כמה קבוצות? ${M(F(D*u)+' : '+F(du*u)+' = '+k)}`],w:`כמה קבוצות צריך כדי שההפרש יגיע ל־${M(F(D*u))}?`},
+        {...s3,calc:[ans,`בדיקה: ${M(F(V[j])+' '+MI+' '+F(V[i])+' = '+F(D))}${unitW} ✓`]}];
+    }
+  }
+  return{story,S};
+}
+
+/* ===== הצגה ===== */
+function show(){const b=build();$('#story').innerHTML=b.story;steps=b.S;cur=0;render();}
+function render(){
+  const s=steps[cur];
+  $('#vis').innerHTML=s.vis;$('#rep').innerHTML=s.rep;
+  let c='';steps.slice(0,cur+1).forEach((x,i)=>(x.calc||[]).forEach(l=>c+=`<div class="${i===cur?'new':''}">${l}</div>`));
+  $('#calc').innerHTML=c;$('#why').innerHTML='💡 '+s.w;
+  $('#dots').innerHTML=steps.map((x,i)=>`<button class="${i===cur?'on':i<cur?'done':''}" data-i="${i}">${i+1}. ${x.t}</button>`).join('');
+  document.querySelectorAll('#dots button').forEach(b=>b.onclick=()=>{cur=+b.dataset.i;render();});
+  $('#prev').disabled=cur===0;$('#next').disabled=cur===steps.length-1;
+}
+const next=()=>{if(cur<steps.length-1){cur++;render();}}, prev=()=>{if(cur>0){cur--;render();}};
+
+/* ===== חלון המורה ===== */
+let D={ctx:'cubes',type:'total',n:2};
+function dlgOpts(){
+  $('#fCtx').innerHTML=Object.entries(CTX).map(([id,c])=>`<button data-c="${id}" class="${D.ctx===id?'on':''}">${c.icon} ${c.title}</button>`).join('');
+  if(CTX[D.ctx].deg&&!['total','ratio'].includes(D.type))D.type='total';
+  $('#fType').innerHTML=TYPES.filter(([id])=>!CTX[D.ctx].deg||['total','ratio'].includes(id)).map(([id,t])=>CTX[D.ctx].deg&&id==='total'?['total','📐 מוצאים את הזוויות']:[id,t]).map(([id,t])=>`<button data-t="${id}" class="${D.type===id?'on':''}">${t}</button>`).join('');
+  document.querySelectorAll('#fCtx button').forEach(b=>b.onclick=()=>{D.ctx=b.dataset.c;dlgFields();});
+  document.querySelectorAll('#fType button').forEach(b=>b.onclick=()=>{D.type=b.dataset.t;dlgFields();});
+}
+function dlgFields(){
+  const prevR=[...document.querySelectorAll('[data-r]')].map(x=>x.value);
+  dlgOpts();
+  const c=CTX[D.ctx].cfg(D.n),cur3=D.n===3,unitL=c.money?' ₪':'';
+  const sh=i=>`<b style="color:${c.col[i]}">${c.short[i]}</b>`;
+  const rv=Array.from({length:D.n},(_,i)=>prevR[i]||[2,3,4][i]);
+  const tgl=id=>`<button id="${id}">${cur3?'− בלי חלק שלישי':'+ חלק שלישי'}</button>`;
+  $('#fRatioBox').style.display=D.type==='ratio'?'none':'';
+  $('#fRatio').innerHTML=rv.map((v,i)=>`${sh(i)} <input type="number" min="1" max="12" value="${v}" data-r="${i}" style="border-color:${c.col[i]}" aria-label="${c.short[i]}">`).join(' <b>:</b> ')+' '+tgl('fN');
+  let g='';
+  if(CTX[D.ctx].deg&&D.type==='total'){$('#fGivenLbl').textContent='הסכום ידוע';g=`<b>${D.n===2?'זוויות צמודות':'זוויות במשולש'}: <span class="m">180°</span></b>`;}
+  else if(D.type==='total'){$('#fGivenLbl').textContent='הסך הכול';g=`<input type="number" min="1" id="gv" value="${c.money?(cur3?3600:3000):(cur3?36:30)}">${unitL}`;}
+  if(D.type==='part'){$('#fGivenLbl').textContent='מה ידוע?';g=`<select id="gi">${c.short.map((s,i)=>`<option value="${i}">${s}</option>`).join('')}</select> <input type="number" min="1" id="gv" value="${c.money?1200:12}">${unitL}`;}
+  if(D.type==='diff'){$('#fGivenLbl').textContent='ההפרש';const ops=[];for(let i=0;i<D.n;i++)for(let j=0;j<D.n;j++)if(i!==j)ops.push(`<option value="${i},${j}">${c.short[j]} יותר מ${c.short[i]}</option>`);
+    g=`<select id="gp">${ops.join('')}</select> <input type="number" min="1" id="gv" value="${c.money?600:6}">${unitL}`;}
+  if(D.type==='ratio'){$('#fGivenLbl').textContent='הכמויות';
+    g=c.short.map((s,i)=>`${sh(i)} <input type="number" min="1" data-q="${i}" value="${CTX[D.ctx].deg?(D.n===2?[40,140][i]:[40,60,80][i]):c.money?[800,1200,2000][i]:[12,18,24][i]}">${CTX[D.ctx].deg?'°':unitL}`).join(' &nbsp; ')+' '+tgl('fN2');}
+  $('#fGiven').innerHTML=g;
+  const tg=()=>{D.n=D.n===2?3:2;dlgFields();};
+  if($('#fN'))$('#fN').onclick=tg; if($('#fN2'))$('#fN2').onclick=tg;
+  $('#err').textContent='';
+}
+function err(t){$('#err').textContent=t;return null;}
+function dlgGo(){
+  const u=CTX[D.ctx].u,c=CTX[D.ctx].cfg(D.n),int=x=>Number.isInteger(x);
+  const toUnits=x=>(!int(x)||x<1)?null:(x%u?'u':x/u);
+  const uMsg='בכסף משתמשים בשטרות של 100 ₪, ולכן כל סכום צריך להיות כפולה של 100.';
+  if(D.type==='ratio'){
+    const V=[...document.querySelectorAll('[data-q]')].map(x=>toUnits(Number(x.value)));
+    if(V.includes(null))return err('כותבים רק מספרים שלמים וחיוביים.');
+    if(V.includes('u'))return err(uMsg);
+    if(CTX[D.ctx].deg&&V.reduce((s,x)=>s+x,0)!==180)return err(D.n===2?'זוויות צמודות צריכות להשלים ל־180°. בדקי את המספרים.':'סכום הזוויות במשולש צריך להיות 180°. בדקי את המספרים.');
+    if(!CTX[D.ctx].deg&&V.reduce((s,x)=>s+x,0)>300)return err('יש יותר מדי פריטים לציור. כדאי לבחור כמויות קטנות יותר (עד 300 פריטים).');
+    Q={ctx:D.ctx,type:'ratio',V};$('#dlg').close();show();return;
+  }
+  const a=[...document.querySelectorAll('[data-r]')].map(x=>Number(x.value));
+  if(!a.every(x=>int(x)&&x>=1&&x<=12))return err('במספרי היחס כותבים רק מספרים שלמים מ־1 עד 12.');
+  if(a.every(x=>x===a[0]))return err('כל המספרים ביחס שווים. כדאי לבחור מספרים שונים.');
+  const N=a.reduce((s,x)=>s+x,0);
+  if(CTX[D.ctx].deg){if(180%N)return err(`180° לא מתחלק ב־${N} חלקים, ולכן לא יוצא מספר שלם של מעלות. כדאי לבחור יחס אחר.`);
+    Q={ctx:D.ctx,type:'total',a,k:180/N,given:0,pair:[0,1]};$('#dlg').close();show();return;}
+  const gv=toUnits(Number($('#gv').value));
+  if(gv===null)return err('כותבים מספר שלם וחיובי.');
+  if(gv==='u')return err(uMsg);
+  const fit=(val,div,what)=>val%div?err(`${what} לא מתחלק ב־${F(div*u)}, ולכן לא יוצא מספר שלם של קבוצות. כדאי לבחור מספר אחר.`):val/div;
+  let k=null,given=0,pair=[0,1];
+  if(D.type==='total')k=fit(gv,N,'הסך הכול');
+  if(D.type==='part'){given=+$('#gi').value;k=fit(gv,a[given],'המספר הנתון');}
+  if(D.type==='diff'){pair=$('#gp').value.split(',').map(Number);const[i,j]=pair;
+    if(a[j]<=a[i])return err(`לפי היחס, ל${c.short[j]} אין יותר מאשר ל${c.short[i]}. כדאי לבחור את הכיוון ההפוך.`);
+    k=fit(gv,a[j]-a[i],'ההפרש');}
+  if(k===null)return;
+  if(k*N>300)return err('יש יותר מדי פריטים לציור. כדאי לבחור מספר קטן יותר.');
+  Q={ctx:D.ctx,type:D.type,a,k,given,pair};$('#dlg').close();show();
+}
+function surprise(){
+  if(CTX[D.ctx].deg){const n=D.n;let a;do{a=Array.from({length:n},()=>rnd(1,n===2?9:6));}while(gcdA(a)!==1||a.every(x=>x===a[0])||180%a.reduce((s,x)=>s+x,0));
+    const k=180/a.reduce((s,x)=>s+x,0);Q=Math.random()<.6?{ctx:D.ctx,type:'total',a,k,given:0,pair:[0,1]}:{ctx:D.ctx,type:'ratio',V:a.map(x=>x*k)};
+    if($('#dlg').open)$('#dlg').close();show();return;}
+  const n=D.n,type=pick(['total','part','diff','ratio']);let a;
+  do{a=Array.from({length:n},()=>rnd(1,n===2?6:5));}while(gcdA(a)!==1||a.every(x=>x===a[0]));
+  const N=a.reduce((s,x)=>s+x,0),k=rnd(2,Math.max(2,Math.min(10,Math.floor(120/N))));
+  if(type==='ratio')Q={ctx:D.ctx,type,V:a.map(x=>x*k)};
+  else{const pairs=[];for(let i=0;i<n;i++)for(let j=0;j<n;j++)if(a[i]<a[j])pairs.push([i,j]);
+    Q={ctx:D.ctx,type,a,k,given:rnd(0,n-1),pair:pick(pairs)};}
+  if($('#dlg').open)$('#dlg').close();show();
+}
+
+/* ===== הפעלה ===== */
+$('#edit').onclick=()=>{dlgFields();$('#dlg').showModal();};
+$('#fGo').onclick=dlgGo;$('#fRnd').onclick=surprise;$('#fCancel').onclick=()=>$('#dlg').close();
+$('#next').onclick=next;$('#prev').onclick=prev;
+$('#fs').onclick=()=>{try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();}catch(e){}};
+$('#pr').onclick=()=>print();
+addEventListener('keydown',e=>{if($('#dlg').open)return;
+  if(['ArrowLeft','PageDown',' ','Enter'].includes(e.key)){e.preventDefault();next();}
+  else if(['ArrowRight','PageUp','Backspace'].includes(e.key)){e.preventDefault();prev();}});
+show();
+</script>
+</body>
+</html>

@@ -1,0 +1,604 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>מעבדת המספרים המכוונים</title>
+<style>
+:root{--bg:#f3f4f8;--ink:#1f2937;--muted:#6b7280;--line:#e5e7eb;--navy:#1e1b4b;--pos:#16a34a;--neg:#dc2626;--op:#9333ea;--dist:#ea580c;--gold:#f5b301}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:"Rubik","Segoe UI","Arial Hebrew",Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:22px;min-height:100vh;display:flex;flex-direction:column}
+.m{direction:ltr;unicode-bidi:isolate;display:inline-block;font-weight:700;white-space:nowrap}
+.p{color:var(--pos)}.n{color:var(--neg)}.z{color:var(--ink)}.opc{color:var(--op);font-weight:800}.dc{color:var(--dist);font-weight:800}
+.bar{font-weight:900;color:var(--dist);padding:0 2px}
+.tg{background:#f3e8ff;outline:3px solid var(--op);border-radius:12px;padding:0 8px;animation:pop .4s backwards}
+button,select,input{font:inherit}
+button{cursor:pointer;border:none;border-radius:14px;padding:8px 16px;background:#eef2ff;color:var(--navy);transition:transform .15s,background .2s}
+button:active{transform:scale(.95)}
+button:disabled{opacity:.35;cursor:default}
+header{display:flex;align-items:center;gap:10px;padding:10px 20px;background:var(--navy);color:#fff;flex-wrap:wrap}
+header h1{margin:0;font-size:26px;font-weight:800}
+header .tools{margin-inline-start:auto;display:flex;gap:8px;flex-wrap:wrap}
+header button{background:#312e81;color:#fff}
+header #edit{background:var(--gold);color:#1f2937;font-weight:800}
+main{flex:1;display:flex;flex-direction:column;gap:14px;padding:16px 22px;max-width:1500px;width:100%;margin:0 auto}
+.card{background:#fff;border-radius:22px;box-shadow:0 4px 18px rgba(30,27,75,.07)}
+#ex{font-size:56px;font-weight:800;text-align:center;padding:12px;min-height:100px;display:flex;align-items:center;justify-content:center;flex-wrap:wrap}
+#ms{display:none;font-size:28px;padding:12px 22px;line-height:1.6}
+#stage{padding:12px 16px 16px}
+#stage svg{width:100%;display:block}
+#cap{font-size:30px;text-align:center;line-height:1.5;min-height:46px;padding:4px 10px}
+#cap .rule{display:inline-block;background:#faf5ff;border:3px solid var(--op);border-radius:18px;padding:10px 22px;margin-top:4px;text-align:start}
+#cap .rule div{margin:4px 0}
+#cap .trap{display:block;font-size:24px;color:var(--neg);margin-top:8px}
+.replay{font-size:20px;margin-inline-start:12px;background:#f3e8ff;color:var(--op)}
+#pred{display:none;text-align:center;padding:8px}
+#pred .q{font-size:30px;font-weight:800;margin-bottom:12px}
+#pred .opts{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+#pred .opts button{font-size:34px;font-weight:800;min-width:150px;padding:12px 22px;background:#fff;border:3px solid #c7d2fe}
+#pred .opts button.ok{background:#dcfce7;border-color:var(--pos);opacity:1}
+#pred .opts button.bad{background:#fee2e2;border-color:var(--neg)}
+#pred .fb{font-size:26px;margin-top:12px;min-height:40px;font-weight:700}
+#pred .skip{font-size:17px;margin-top:6px;background:none;color:var(--muted);text-decoration:underline}
+#tbl{display:none;margin:6px auto 0;border-collapse:separate;border-spacing:0 8px;font-size:34px}
+#tbl td{padding:6px 26px;background:#f8fafc;text-align:center}
+#tbl td:first-child{border-radius:0 14px 14px 0}#tbl td:last-child{border-radius:14px 0 0 14px}
+#tbl tr.new td{background:#fef9c3;animation:pop .4s backwards}
+.below{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
+#calc{font-size:26px;line-height:1.8}
+#calc div{background:#fff;border-radius:14px;padding:4px 16px;margin-bottom:6px;border-inline-start:6px solid var(--line)}
+#calc div.new{border-color:var(--gold);background:#fffbeb;animation:pop .4s backwards}
+#why{font-size:25px;color:#065f46;background:#ecfdf5;border-radius:14px;padding:12px 16px}
+.navbar{display:flex;align-items:center;gap:14px;justify-content:center;flex-wrap:wrap}
+.dots{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.dots button{padding:6px 14px;font-size:17px;background:#e5e7eb;color:var(--muted)}
+.dots button.on{background:var(--navy);color:#fff;font-weight:700}
+.dots button.done{background:#c7d2fe;color:var(--navy)}
+#next{background:var(--navy);color:#fff;font-size:28px;font-weight:800;padding:12px 44px}
+#prev{font-size:22px}
+@keyframes pop{from{transform:scale(.4);opacity:0}}
+.flip{display:inline-block;animation:flip .9s ease-in-out}
+@keyframes flip{0%{transform:rotateX(0)}50%{transform:rotateX(90deg)}100%{transform:rotateX(0)}}
+.hl{background:#f3e8ff;border-radius:14px;padding:0 10px}
+dialog{border:none;border-radius:22px;padding:0;max-width:700px;width:calc(100% - 24px);box-shadow:0 20px 60px rgba(0,0,0,.3)}
+dialog::backdrop{background:rgba(15,23,42,.55)}
+.dlg{padding:20px 24px;display:flex;flex-direction:column;gap:14px}
+.dlg h2{margin:0;font-size:26px}
+.fld{display:flex;flex-direction:column;gap:6px}
+.fld>label{font-weight:700;color:var(--navy)}
+.opts2{display:flex;gap:8px;flex-wrap:wrap}
+.opts2 button{border:2px solid var(--line);background:#fff;font-size:19px}
+.opts2 button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.dlg input[type=number]{width:100px;padding:6px;border:2px solid var(--line);border-radius:10px;text-align:center;font-size:24px;direction:ltr}
+.dlg input.exin{width:100%;padding:8px 12px;border:2px solid var(--line);border-radius:12px;font-size:28px;direction:ltr;text-align:left;font-weight:700}
+.inl{display:flex;gap:10px;align-items:center;flex-wrap:wrap;direction:ltr;justify-content:flex-end;font-size:26px;font-weight:700}
+.chips{display:flex;gap:6px;flex-wrap:wrap;direction:ltr;justify-content:flex-end}
+.chips button{font-size:18px;padding:4px 10px;background:#f3e8ff;color:#581c87}
+.hint{font-size:16px;color:var(--muted)}
+#err{color:#dc2626;min-height:1.4em;font-size:18px}
+.acts{display:flex;gap:10px;flex-wrap:wrap}
+.acts .go{background:var(--navy);color:#fff;font-weight:800;font-size:22px;padding:10px 26px}
+.acts .rnd{background:var(--gold);font-weight:700}
+footer{text-align:center;color:var(--muted);font-size:15px;padding:8px}
+@media (max-width:900px){.below{grid-template-columns:minmax(0,1fr)}#ex{font-size:30px;min-height:60px}#cap{font-size:22px}#pred .q{font-size:22px}#pred .opts button{font-size:24px;min-width:90px}#tbl{font-size:22px}#ex .m,#calc .m,#cap .m{white-space:normal}.dots button{font-size:14px;padding:5px 9px}main{padding:12px}#next{padding:10px 24px}body{font-size:18px}#calc{font-size:20px}#why{font-size:19px}#ms{font-size:20px}}
+@media print{header .tools,.navbar,#pred{display:none!important}body{background:#fff}}
+</style>
+</head>
+<body>
+<header>
+  <h1>🐸 מעבדת המספרים המכוונים</h1>
+  <div class="tools">
+    <button id="edit">✏️ שאלה חדשה</button>
+    <button id="fs">⛶ מסך מלא</button>
+    <button id="pr" aria-label="הדפסה">🖨️</button>
+  </div>
+</header>
+
+<main>
+  <div id="ex" class="card"></div>
+  <div id="ms" class="card"></div>
+  <div id="stage" class="card">
+    <div id="svg"></div>
+    <table id="tbl"></table>
+    <div id="cap"></div>
+    <div id="pred"><div class="q"></div><div class="opts"></div><div class="fb"></div></div>
+  </div>
+  <div class="below">
+    <div id="calc"></div>
+    <div id="why"></div>
+  </div>
+  <div class="navbar">
+    <button id="prev" aria-label="הקודם">→</button>
+    <div class="dots" id="dots"></div>
+    <button id="next">הבא ←</button>
+  </div>
+</main>
+<footer>ערכה: רוני מודן · שחקים</footer>
+
+<dialog id="dlg"><div class="dlg">
+  <h2>✏️ שאלה חדשה</h2>
+  <div class="fld"><label>מה מלמדים?</label><div class="opts2" id="fType"></div></div>
+  <div class="fld" id="fStoryBox"><label>סיפור</label><div class="opts2" id="fStory"></div></div>
+  <div class="fld" id="fPredBox"><label>שאלות ניחוש בכל שלב</label><div class="opts2" id="fPred"></div></div>
+  <div class="fld"><label id="fLbl">המספרים</label><div id="fIn"></div>
+    <div class="hint" id="fHint">מספר שלילי כותבים עם מינוס לפניו, למשל ‎-3.</div></div>
+  <div id="err"></div>
+  <div class="acts">
+    <button class="go" id="fGo">✔ הצג לכיתה</button>
+    <button class="rnd" id="fRnd">🎲 הפתעה</button>
+    <button id="fCancel">ביטול</button>
+  </div>
+</div></dialog>
+
+<script>
+const $=s=>document.querySelector(s);
+const rnd=(lo,hi)=>lo+Math.floor(Math.random()*(hi-lo+1)), pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
+const MI='−', LIM=20, BIG=50, POS='#16a34a', NEG='#dc2626', OP='#9333ea', DIST='#ea580c';
+const colr=x=>x>0?POS:x<0?NEG:'#1f2937';
+const cls=x=>x>0?'p':x<0?'n':'z';
+const txt=x=>x>0?'+'+x:x<0?MI+(-x):'0';
+const plain=x=>x<0?MI+(-x):''+x;
+const num=(x,par=true,extra='')=>`<span class="${cls(x)} ${extra}">${par&&x!==0?'('+txt(x)+')':plain(x)}</span>`;
+const OPM=`<span class="opc">${MI}</span>`;
+const M=s=>`<span class="m">${s}</span>`;
+const stepsW=x=>Math.abs(x)===1?'צעד אחד':`${M(Math.abs(x))} צעדים`;
+const SH=x=>`${M(Math.abs(x))} ₪`;
+const val=x=>x>0?`יש ${SH(x)} 💰`:x<0?`חוב של ${SH(x)} 📕`:'אין כסף ואין חוב';
+const ACT={add:b=>b>0?`מקבלים ${SH(b)}`:`נוסף חוב של ${SH(b)}`,sub:b=>b>0?`מוציאים ${SH(b)}`:`מוחקים חוב של ${SH(b)}`};
+const EQV=b=>b>0?`להוציא ${SH(b)} זה כמו להוסיף חוב של ${SH(b)}`:`למחוק חוב של ${SH(b)} זה כמו לקבל ${SH(b)}`;
+const BRIDGE=(a,mv,res,type)=>{const X=SH(mv);
+  if(mv>0)return a>=0?`הכסף גדל ב־${X}`:res<0?`החוב קטן ב־${X}`:res===0?'החוב נמחק':'החוב נמחק, ונשאר כסף';
+  if(a>0){const pre=type==='add'?'משלמים מהכסף שיש. ':'';return res>0?`${pre}הכסף קטן ב־${X}`:res===0?`${pre}הכסף נגמר`:`${pre}הכסף נגמר, והשאר ${type==='add'?'נשאר':'נהיה'} חוב`;}
+  return a===0?`נכנסים לחוב של ${X}`:`החוב גדל ב־${X}`;};
+const TYPES=[['add','➕ חיבור'],['sub','➖ חיסור'],['law','🔍 מגלים את החוק'],['abs','| | ערך מוחלט'],['nabs','−| | מינוס לפני ערך מוחלט'],['cmp','⚖️ משווים ערכים מוחלטים'],['expr','✍️ תרגיל חופשי (ארוך ומעורבב)'],['cmpx','⚖️ משווים שני תרגילים']];
+const KS=[2,1,0,-1,-2,-3];
+
+let Q={type:'sub',a:-3,b:-5,money:false,pred:true},S=[],cur=0,anim=0;
+
+/* ===== ציר המספרים ===== */
+const AY=200;
+let RNG=10;
+const X=v=>60+(v+RNG)/(2*RNG)*880;
+function axisSVG(){
+  let h=`<line x1="22" y1="${AY}" x2="978" y2="${AY}" stroke="#1f2937" stroke-width="4"/>
+  <path d="M978,${AY} l-14,-8 v16 z M22,${AY} l14,-8 v16 z" fill="#1f2937"/>`;
+  const lab=RNG<=12?1:RNG<=25?2:5, tick=RNG<=25?1:5;
+  for(let v=-RNG;v<=RNG;v++){const x=X(v);
+    if(v%tick===0)h+=`<line x1="${x}" y1="${AY-(v?8:14)}" x2="${x}" y2="${AY+(v?8:14)}" stroke="#1f2937" stroke-width="${v?2:4}"/>`;
+    if(v%lab===0)h+=`<text x="${x}" y="${AY+40}" text-anchor="middle" font-size="${RNG<=12?24:18}" font-weight="${v?600:800}" fill="${colr(v)}">${plain(v)}</text>`;}
+  if(Q.money)h+=`<text x="34" y="${AY+80}" font-size="24" font-weight="800" fill="${NEG}">חוב 📕</text><text x="966" y="${AY+80}" text-anchor="end" font-size="24" font-weight="800" fill="${POS}">💰 כסף</text>`;
+  return h;
+}
+function setRange(...v){const m=Math.max(5,...v.map(Math.abs));RNG=Math.min(BIG,Math.ceil(m/5)*5);}
+const wrap=inner=>`<svg viewBox="0 0 1000 ${Q.money?300:260}" style="direction:ltr" direction="ltr" role="img" aria-label="ציר המספרים">${axisSVG()}${inner}</svg>`;
+const frog=v=>`<g id="frog" transform="translate(${X(v)},0)"><ellipse cx="0" cy="${AY-2}" rx="20" ry="5" fill="rgba(0,0,0,.15)"/><text x="0" y="${AY-8}" text-anchor="middle" font-size="50">🐸</text></g>`;
+const dot=(v,c)=>`<circle cx="${X(v)}" cy="${AY}" r="11" fill="${c}" stroke="#1f2937" stroke-width="3"/>`;
+const tag=(v,c,y=AY-92)=>`<g><rect x="${X(v)-36}" y="${y}" width="72" height="36" rx="11" fill="${c}"/><text x="${X(v)}" y="${y+27}" text-anchor="middle" font-size="24" font-weight="800" fill="#fff">${plain(v)}</text></g>`;
+function arrow(from,len,c,label,y=72,id='',faint=false){
+  if(!len)return '';const x1=X(from),x2=X(from+len),d=Math.sign(len);
+  return `<g ${id?`id="${id}"`:''} ${faint?'opacity=".25"':''}><line x1="${x1}" y1="${y}" x2="${x2-d*16}" y2="${y}" stroke="${c}" stroke-width="9" stroke-linecap="round"/>
+  <path d="M${x2},${y} l${-d*24},-16 v32 z" fill="${c}"/><text class="al" x="${(x1+x2)/2}" y="${y-18}" text-anchor="middle" font-size="30" font-weight="800" fill="${c}">${label}</text></g>`;
+}
+const flyMinus=(from,len)=>`<text id="flyMinus" transform="translate(0,-50)" x="${(X(from)+X(from+len))/2}" y="58" text-anchor="middle" font-size="64" font-weight="800" fill="${OP}">${MI}</text>`;
+function arc(from,to,k,c){
+  const x1=X(from),x2=X(to),mx=(x1+x2)/2,h=Math.min(56,Math.abs(x2-x1)*1.2);
+  return `<path d="M${x1},${AY-6} Q${mx},${AY-6-h*2} ${x2},${AY-6}" fill="none" stroke="${c}" stroke-width="4" stroke-dasharray="7 6"/>
+  <text x="${mx}" y="${AY-12-h}" text-anchor="middle" font-size="18" font-weight="800" fill="${c}">${k}</text>`;
+}
+function hopList(from,mv,size){ // רשימת קפיצות: [מ, אל, תווית]
+  const d=Math.sign(mv),n=Math.abs(mv),out=[];let p=from;
+  if(size){for(let k=1;k<=n;k++){out.push([p,p+size,k]);p+=size;}return out;}
+  if(n<=15){for(let k=1;k<=n;k++){out.push([p,p+d,k]);p+=d;}return out;}
+  let left=n;while(left>=5){out.push([p,p+5*d,5]);p+=5*d;left-=5;}
+  while(left>0){out.push([p,p+d,1]);p+=d;left--;}return out;
+}
+const arcsOf=(list,c)=>list.map(h=>arc(h[0],h[1],h[2],c)).join('');
+const arcs=(from,mv,c)=>arcsOf(hopList(from,mv),c);
+function bracket(v,y,c,label){
+  if(!v)return '';const x1=X(0),x2=X(v);
+  return `<g><path d="M${x1},${y+12} v-12 H${x2} v12" fill="none" stroke="${c}" stroke-width="6"/>
+  <rect x="${(x1+x2)/2-34}" y="${y-42}" width="68" height="34" rx="10" fill="${c}"/><text x="${(x1+x2)/2}" y="${y-17}" text-anchor="middle" font-size="24" font-weight="800" fill="#fff">${label}</text></g>`;
+}
+const addSVG=h=>{const s=$('#svg svg');if(s)s.insertAdjacentHTML('beforeend',h);};
+
+/* ===== תנועה ===== */
+const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+function tween(ms,fn,done,id){const t0=performance.now();(function f(now){if(id!==anim)return;const t=Math.min(1,(now-t0)/ms);fn(t);if(t<1)requestAnimationFrame(f);else done&&done();})(t0);}
+function hops(list,c,id,done){
+  const g=$('#frog'),trail=$('#trail');let k=0;
+  const one=()=>{if(id!==anim)return;if(k>=list.length){done&&done();return;}
+    const [a,b,l]=list[k],xa=X(a),xb=X(b),h=Math.min(60,Math.abs(xb-xa)*1.3);
+    tween(Math.abs(b-a)>1?560:420,t=>{g.setAttribute('transform',`translate(${xa+(xb-xa)*t},${-Math.sin(Math.PI*t)*h})`);},
+      ()=>{k++;trail.insertAdjacentHTML('beforeend',arc(a,b,l,c));setTimeout(one,90);},id);};
+  setTimeout(one,350);
+}
+const jump=(from,mv,c,id,done)=>hops(hopList(from,mv),c,id,done);
+function spin(from,b,id,done){
+  const g=$('#spinA'),minus=$('#flyMinus');if(!g){done&&done();return;}
+  const x1=X(from),line=g.querySelector('line'),head=g.querySelector('path'),lab=g.querySelector('.al');
+  tween(700,t=>minus.setAttribute('transform',`translate(0,${-50+ease(t)*50})`),()=>{
+    minus.style.opacity=0;lab.style.opacity=0;
+    tween(1500,t=>{const e=ease(t),sx=Math.cos(Math.PI*e);g.setAttribute('transform',`translate(${x1},0) scale(${Math.abs(sx)<.02?.02:sx},1) translate(${-x1},0)`);const c=e<.5?colr(b):colr(-b);line.setAttribute('stroke',c);head.setAttribute('fill',c);},
+      ()=>{g.outerHTML=arrow(from,-b,colr(-b),txt(-b),72,'spinA');done&&done();},id);},id);
+}
+function moveFrog(from,to,id,done){const g=$('#frog'),xa=X(from),xb=X(to);
+  tween(700,t=>g.setAttribute('transform',`translate(${xa+(xb-xa)*ease(t)},${-Math.sin(Math.PI*t)*50})`),done,id);}
+
+/* ===== מנוע התרגילים החופשיים ===== */
+let P,pos,uid=0;
+function tokenize(s){
+  s=s.replace(/[−–—]/g,'-').replace(/[×·*xX]/g,'*').replace(/[÷:\/]/g,'/').replace(/\s+/g,'');
+  if(!s)throw 'צריך לכתוב תרגיל.';
+  const t=[];let i=0;
+  while(i<s.length){const c=s[i];
+    if(/\d/.test(c)){let j=i;while(j<s.length&&/\d/.test(s[j]))j++;t.push({t:'n',v:+s.slice(i,j)});i=j;continue;}
+    if('+-*/()|'.includes(c)){t.push({t:c});i++;continue;}
+    throw `התו "${c}" לא מוכר. משתמשים רק במספרים, + − · : ( ) |`;}
+  return t;
+}
+const pk=()=>P[pos];
+function eat(t){if(!P[pos]||P[pos].t!==t)throw t===')'?'חסר סוגר סוגר ")".':'חסר קו סוגר של ערך מוחלט "|".';pos++;}
+function pExpr(){let a=pTerm();while(pk()&&(pk().t==='+'||pk().t==='-')){const op=P[pos++].t;a={k:'bin',op,a,b:pTerm(),id:++uid};}return a;}
+function pTerm(){let a=pFac();while(pk()&&(pk().t==='*'||pk().t==='/')){const op=P[pos++].t;a={k:'bin',op,a,b:pFac(),id:++uid};}return a;}
+function pFac(){const t=pk();if(!t)throw 'התרגיל נגמר באמצע.';
+  if(t.t==='-'||t.t==='+'){pos++;const n=pk();if(n&&n.t==='n'){pos++;return{k:'num',v:t.t==='-'?-n.v:n.v,id:++uid};}
+    const a=pFac();return t.t==='-'?{k:'neg',a,id:++uid}:a;}
+  return pPrim();}
+function pPrim(){const t=pk();if(!t)throw 'התרגיל נגמר באמצע.';
+  if(t.t==='n'){pos++;return{k:'num',v:t.v,id:++uid};}
+  if(t.t==='('){pos++;const e=pExpr();eat(')');return e.k==='num'?e:{k:'par',a:e,id:++uid};}
+  if(t.t==='|'){pos++;const e=pExpr();eat('|');return{k:'abs',a:e,id:++uid};}
+  throw 'חסר מספר באחד המקומות.';}
+function parse(s){P=tokenize(s);pos=0;const e=pExpr();if(pos<P.length)throw 'יש בתרגיל משהו מיותר או סוגר שלא נפתח.';return e;}
+const kids=n=>n.k==='bin'?[n.a,n.b]:n.k==='num'?[]:[n.a];
+function collapse(n){ // סוגריים סביב מספר בודד נעלמים
+  if(n.k==='num')return n;
+  if(n.k==='bin'){n.a=collapse(n.a);n.b=collapse(n.b);return n;}
+  n.a=collapse(n.a);if(n.k==='par'&&n.a.k==='num')return n.a;return n;}
+const RANK={abs:0,neg:1,'*':2,'/':2,'+':3,'-':3};
+function findRed(root){ // מה מחשבים עכשיו: קודם בתוך קווים וסוגריים, אחר כך כפל וחילוק, ובסוף חיבור וחיסור
+  const c=[];let order=0;
+  (function walk(n,inG){if(n.k==='num')return;kids(n).forEach(k=>walk(k,inG||n.k==='abs'||n.k==='par'));
+    if(kids(n).every(k=>k.k==='num'))c.push({n,inG,r:RANK[n.k==='bin'?n.op:n.k],o:order++});})(root,false);
+  c.sort((x,y)=>(x.inG===y.inG?0:x.inG?-1:1)||x.r-y.r||x.o-y.o);
+  return c.length?c[0].n:null;}
+function replace(n,target,repl){if(n===target)return repl;
+  if(n.k==='bin'){n.a=replace(n.a,target,repl);n.b=replace(n.b,target,repl);}else if(n.k!=='num')n.a=replace(n.a,target,repl);return n;}
+const clone=n=>JSON.parse(JSON.stringify(n));
+const dn=v=>v>0?`<span class="p">${v}</span>`:num(v);
+const OPS={'+':'+','-':OPM,'*':'·','/':':'};
+function rend(n,hid){
+  let h;
+  if(n.k==='num')h=n.v>0?`<span class="p">${n.v}</span>`:num(n.v);
+  else if(n.k==='neg')h=`${OPM}${n.a.k==='num'&&n.a.v>0?`<span class="p">${n.a.v}</span>`:rend(n.a,hid)}`;
+  else if(n.k==='abs')h=`<span class="bar">|</span>${n.a.k==='num'?num(n.a.v,false):rend(n.a,hid)}<span class="bar">|</span>`;
+  else if(n.k==='par')h=`(${rend(n.a,hid)})`;
+  else h=`${rend(n.a,hid)} ${OPS[n.op]} ${rend(n.b,hid)}`;
+  return n.id===hid?`<span class="tg">${h}</span>`:h;
+}
+function info(n){
+  if(n.k==='abs'){const v=n.a.v;return{kind:'abs',v,res:Math.abs(v)};}
+  if(n.k==='neg'){const v=n.a.v;return{kind:'neg',v,res:-v};}
+  const a=n.a.v,b=n.b.v;
+  if(n.op==='+')return{kind:'add',a,b,res:a+b};
+  if(n.op==='-')return{kind:'sub',a,b,res:a-b};
+  if(n.op==='*')return{kind:'mul',a,b,res:a*b};
+  if(b===0)throw 'בתרגיל יש חילוק ב־0, ואי אפשר לחלק ב־0.';
+  if(a%b)throw `${plain(a)} : ${plain(b)} לא יוצא מספר שלם. כדאי לבחור מספרים אחרים.`;
+  return{kind:'div',a,b,res:a/b};
+}
+const RULES={order:'סדר פעולות: קודם מה שבתוך הקווים והסוגריים, אחר כך כפל וחילוק, ובסוף חיבור וחיסור.',
+  abs:'ערך מוחלט הוא המרחק מ־0, ולכן הוא אף פעם לא שלילי.',neg:'מינוס פירושו "הנגדי של".',
+  add:'חיבור: הסימן הוא הכיוון, והערך המוחלט הוא המרחק.',sub:'חיסור הוא חיבור של הנגדי.',
+  mul:'כפל וחילוק: סימנים זהים ← התוצאה חיובית. סימנים שונים ← התוצאה שלילית.'};
+function exprSteps(root0,wrapEx,used){
+  let r=collapse(clone(root0));const out=[];let guard=0;
+  while(r.k!=='num'){
+    if(++guard>12)throw 'התרגיל ארוך מדי. אפשר עד 12 פעולות.';
+    const n=findRed(r),I=info(n);
+    if(Math.abs(I.res)>BIG)throw `באמצע הדרך יוצא ${plain(I.res)}, וזה מחוץ לציר (עד ${BIG}). כדאי לבחור מספרים קטנים יותר.`;
+    const before=wrapEx(rend(r,n.id));
+    r=reduceTree(r,n,I.res);
+    const after=wrapEx(rend(r,-1));
+    used.add(I.kind==='div'?'mul':I.kind);
+    out.push(makeExprStep(I,before,after));
+  }
+  return{steps:out,val:r.v};
+}
+function findById(n,id){if(n.id===id)return n;for(const c of kids(n)){const f=findById(c,id);if(f)return f;}return null;}
+function reduceTree(r,n,res){return collapse(replace(r,n,{k:'num',v:res,id:++uid}));}
+function makeExprStep(I,before,after){
+  const st={ex:before,exAfter:after,gate:Q.pred};
+  const k=I.kind;
+  if(k==='abs'){const v=I.v,n=I.res;setRange(v);const R=RNG;
+    Object.assign(st,{t:'ערך מוחלט',vis:()=>{RNG=R;return wrap(dot(v,colr(v))+tag(v,colr(v))+'<g id="trail"></g>'+frog(0));},
+      go:id=>{RNG=R;jump(0,v,DIST,id,()=>{addSVG(bracket(v,AY-110,DIST,''+n));done(st);});},
+      cap:`ערך מוחלט = המרחק מ־0. כמה צעדים מ־0 עד ${M(num(v,false))}?`,calcL:`${M(`|${plain(v)}| = ${n}`)}`,
+      pred:{q:`🤔 כמה זה ${M(`|${num(v,false)}|`)}?`,opts:options(n,[{v:-n,fb:'ערך מוחלט הוא מרחק, ומרחק לא יכול להיות שלילי.'},{v:v,fb:'הקווים "בולעים" את המינוס שבפנים.'},{v:n+1,fb:'כמעט! ספרו את הצעדים מ־0.'}])},
+      w:'קודם מה שבתוך הקווים. ערך מוחלט הוא מרחק.'});}
+  else if(k==='neg'){const v=I.v;setRange(v);const R=RNG;
+    Object.assign(st,{t:'הנגדי של',vis:()=>{RNG=R;return wrap(dot(0,'#1f2937')+arrow(0,v,colr(v),txt(v),72,'spinA')+flyMinus(0,v));},
+      go:id=>{RNG=R;spin(0,v,id,()=>{addSVG(dot(-v,colr(-v))+tag(-v,colr(-v)));done(st);});},
+      cap:`המינוס שבחוץ פועל עכשיו: הנגדי של ${M(num(v,false))}`,calcL:`${M(`${OPM}(${plain(v)}) = ${num(-v,false)}`)}`,
+      pred:{q:`🤔 מה הנגדי של ${M(num(v,false))}?`,opts:options(-v,[{v:v,fb:'שכחתם את המינוס שבחוץ: הוא הופך את המספר לנגדי שלו.'},{v:Math.abs(v)===v?v+1:Math.abs(v),fb:'הנגדי נמצא באותו מרחק מ־0, בצד השני.'},{v:-v+1,fb:'הנגדי נמצא באותו מרחק מ־0, בצד השני.'}])},
+      w:'מינוס פירושו "הנגדי של": אותו מרחק מ־0, בצד השני.'});}
+  else if(k==='add'||k==='sub'){const a=I.a,b=I.b,mv=k==='add'?b:-b,res=I.res;setRange(a,b,res,a+b,a-b);const R=RNG,c=colr(mv);
+    Object.assign(st,{t:k==='add'?'חיבור':'חיסור',
+      vis:()=>{RNG=R;return wrap(dot(a,colr(a))+'<g id="trail"></g>'+frog(a)+(k==='sub'?arrow(a,b,colr(b),txt(b),72,'spinA')+flyMinus(a,b):arrow(a,b,colr(b),txt(b))));},
+      go:id=>{RNG=R;const j=()=>jump(a,mv,c,id,()=>{addSVG(tag(res,colr(res)));done(st);});k==='sub'?spin(a,b,id,j):j();},
+      cap:k==='sub'?`מינוס = הנגדי של: ${M(`${dn(a)} ${OPM} ${dn(b)} = ${dn(a)} + ${dn(-b)}`)}`:`מתחילים ב־${M(num(a,false))} וזזים ${stepsW(b)} ${b>0?'ימינה':'שמאלה'}`,
+      calcL:k==='sub'?`${M(`${dn(a)} ${OPM} ${dn(b)} = ${dn(a)} + ${dn(-b)} = ${num(res,false)}`)}`:`${M(`${dn(a)} + ${dn(b)} = ${num(res,false)}`)}`,
+      pred:{q:`🤔 כמה זה ${M(k==='sub'?`${dn(a)} ${OPM} ${dn(b)}`:`${dn(a)} + ${dn(b)}`)}?`,opts:options(res,k==='sub'?
+        [{v:a+b,fb:'שכחתם להפוך: מינוס = הנגדי של.'},{v:b-a,fb:'בחיסור סדר המספרים חשוב.'},{v:-res,fb:'בדקו את הסימן של התוצאה.'}]:
+        [{v:a-b,fb:'זה הכיוון ההפוך. לאן מצביע החץ?'},{v:-res,fb:'בדקו את הסימן של התוצאה.'},{v:res+1,fb:'כמעט! ספרו שוב.'}])},
+      w:k==='sub'?'חיסור הוא חיבור של הנגדי.':'הסימן הוא הכיוון, והערך המוחלט הוא המרחק.'});}
+  else{const a=I.a,b=I.b,res=I.res,same=(a<0)===(b<0)||a===0||b===0,sym=k==='mul'?'·':':';
+    const groups=k==='mul'&&a!==0&&b!==0&&Math.abs(a)<=8;setRange(res,groups?Math.abs(a)*b:0,a,b);const R=RNG;
+    const signTxt=res===0?'אחד המספרים הוא 0, ולכן התוצאה 0.':same?'סימנים זהים ← התוצאה חיובית':'סימנים שונים ← התוצאה שלילית';
+    Object.assign(st,{t:k==='mul'?'כפל':'חילוק',
+      vis:()=>{RNG=R;return wrap('<g id="trail"></g>'+(groups?frog(0):dot(res,'#d1d5db')));},
+      go:id=>{RNG=R;
+        if(!groups){addSVG(dot(res,colr(res))+tag(res,colr(res)));done(st);return;}
+        const pos=Math.abs(a)*b;
+        hops(hopList(0,pos,b),colr(b),id,()=>{
+          if(a>0){addSVG(tag(res,colr(res)));done(st);return;}
+          addSVG(arrow(0,pos,colr(pos),txt(pos),72,'spinA')+flyMinus(0,pos));
+          spin(0,pos,id,()=>moveFrog(pos,res,id,()=>{addSVG(tag(res,colr(res)));done(st);}));});},
+      cap:`${signTxt}${groups?`<br><span style="font-size:24px">${M(Math.abs(a))} קבוצות של ${M(num(b,false))}${a<0?', ואז הנגדי (כפל ב־'+M(num(-1))+' הופך כיוון)':''}</span>`:''}`,
+      calcL:`${M(`${dn(a)} ${sym} ${dn(b)} = ${num(res,false)}`)}`,
+      pred:{q:`🤔 כמה זה ${M(`${dn(a)} ${sym} ${dn(b)}`)}?`,opts:options(res,[{v:-res,fb:'בדקו את כלל הסימנים.'},{v:k==='mul'?a+b:a-b,fb:'זו לא הפעולה שבתרגיל.'},{v:res+1,fb:'כמעט! בדקו שוב את החישוב.'}])},
+      w:'כפל וחילוק: קודם קובעים את הסימן, ואחר כך מחשבים את הגודל.'});}
+  return st;
+}
+function done(st){if(S[cur]!==st)return;$('#ex').innerHTML=M(st.exAfter);finishGate(st);}
+
+/* ===== בניית השלבים ===== */
+function options(correct,cands){
+  const out=[{v:correct,ok:true}];
+  for(const c of cands){if(out.length>=3)break;if(!out.some(o=>o.v===c.v))out.push(c);}
+  return shuffle(out);
+}
+function exprString(){return Q.type==='nabs'?`-|${Q.a}|`:Q.src;}
+function build(){
+  const {type,a,b}=Q;
+  if(type==='expr'||type==='nabs'){
+    const root=parse(exprString()),used=new Set();
+    const ex0=rend(collapse(clone(root)),-1);
+    const {steps,val}=exprSteps(root,h=>h,used);
+    setRange(val);const R=RNG;
+    const many=steps.length>1;
+    const first={t:'מתחילים',ex:ex0,vis:()=>{RNG=R;return wrap('');},cap:many?`📋 ${RULES.order}`:'קודם מה שבתוך הקווים והסוגריים.',
+      w:type==='nabs'?'קוראים בקול: "הנגדי של הערך המוחלט של..."':'מסמנים מה עושים קודם, ורק אז מחשבים.'};
+    const rules=['order',...['abs','neg','add','sub','mul'].filter(x=>used.has(x))].filter(x=>x!=='order'||many);
+    let trap='';if(type==='nabs'&&Q.a<0)trap=`⚠️ ${M(`${OPM}|${num(Q.a,false)}|`)} הוא לא ${M(Math.abs(Q.a))}! המינוס שבחוץ פועל בסוף.`;
+    const last={t:'הכלל',ex:`${ex0} = ${num(val,false)}`,vis:()=>{RNG=R;return wrap(dot(val,colr(val))+tag(val,colr(val)));},
+      cap:`<span class="rule">${rules.map(x=>`<div>📌 ${RULES[x]}</div>`).join('')}</span>${trap?`<span class="trap">${trap}</span>`:''}`,w:'אלה הכללים שהשתמשנו בהם בתרגיל.'};
+    return [first,...steps,last];
+  }
+  if(type==='cmpx'){
+    const L=parse(Q.src),Rr=parse(Q.src2),used=new Set();
+    const Lr=rend(collapse(clone(L)),-1),Rs=rend(collapse(clone(Rr)),-1);
+    const C=' <span class="z">◯</span> ';
+    const left=exprSteps(L,h=>`${h}${C}${Rs}`,used);
+    const right=exprSteps(Rr,h=>`${num(left.val,false)}${C}${h}`,used);
+    const lv=left.val,rv=right.val,sym=lv>rv?'&gt;':lv<rv?'&lt;':'=';
+    setRange(lv,rv);const R=RNG;
+    left.steps.forEach(s=>s.t='תרגיל 1: '+s.t);right.steps.forEach(s=>s.t='תרגיל 2: '+s.t);
+    const first={t:'מתחילים',ex:`${Lr}${C}${Rs}`,vis:()=>{RNG=R;return wrap('');},cap:'קודם מחשבים כל תרגיל לבד, ואחר כך משווים.',w:'השוואה: מחשבים את שני הצדדים.'};
+    const cmp={t:'משווים',ex:`${num(lv,false)}${C}${num(rv,false)}`,vis:()=>{RNG=R;return wrap(dot(lv,colr(lv))+dot(rv,colr(rv))+tag(lv,colr(lv),AY-92)+(lv!==rv?tag(rv,colr(rv),AY-140):''));},
+      pred:{q:'🤔 איזה סימן מתאים?',opts:[{v:'&gt;',ok:lv>rv,fb:'על הציר, המספר הימני גדול יותר.'},{v:'&lt;',ok:lv<rv,fb:'על הציר, המספר הימני גדול יותר.'},{v:'=',ok:lv===rv,fb:'המספרים שונים.'}],
+        onOk:()=>{$('#ex').innerHTML=M(`${num(lv,false)} <span class="z hl">${sym}</span> ${num(rv,false)}`);}},
+      cap:'על ציר המספרים, המספר הימני גדול יותר.',w:'מי שנמצא ימינה על הציר גדול יותר.'};
+    const last={t:'הכלל',ex:`${Lr} <span class="z hl">${sym}</span> ${Rs}`,vis:cmp.vis,
+      cap:`<span class="rule"><div>📌 קודם מחשבים כל צד לפי סדר הפעולות.</div><div>📌 על ציר המספרים, המספר הימני גדול יותר.</div></span>`,w:'משווים רק אחרי שמחשבים.'};
+    return [first,...left.steps,...right.steps,cmp,last];
+  }
+  if(type==='add'||type==='sub'){
+    const mv=type==='add'?b:-b,res=a+mv;setRange(a,b,res,a+b,a-b);
+    const ex0=`${num(a)} ${type==='add'?'+':OPM} ${num(b)}`;
+    const exAdd=type==='add'?ex0:`${num(a)} + <span class="hl">${num(-b,true,'flip')}</span>`;
+    const dirW=mv>0?'ימינה':'שמאלה',c=colr(mv);
+    const read=type==='add'?`קוראים בקול: ${M(num(a))} ועוד ${M(num(b))}`:`קוראים בקול: ${M(num(a))} ועוד <span class="opc">הנגדי של</span> ${M(num(b))}`;
+    const S1={t:'קוראים בקול',ex:ex0,vis:()=>wrap(dot(a,colr(a))+frog(a)),cap:read,
+      w:type==='add'?'מתחילים במספר הראשון. הצפרדע עומדת עליו.':'כל מינוס פירושו "הנגדי של".',mt:`${val(a)}.`};
+    let S2;
+    if(type==='sub'){
+      S2={t:'הנגדי של',ex:exAdd,vis:()=>wrap(dot(a,colr(a))+frog(a)+arrow(a,b,colr(b),txt(b),72,'spinA')+flyMinus(a,b)),
+        run:id=>spin(a,b,id),cap:`הנגדי של ${M(num(b))} הוא ${M(num(-b))} <button class="replay" onclick="replay()">↻ שוב לאט</button>`,
+        calc:[`${M(`${ex0} = ${num(a)} + ${num(-b)}`)}`],
+        w:b<0?'מינוס מינוס: הנגדי של מספר שלילי הוא חיובי, ולכן החץ מתהפך ימינה.':'הנגדי של מספר חיובי הוא שלילי, ולכן החץ מתהפך שמאלה.',
+        mt:`${ACT.sub(b)}. מינוס = הנגדי של: ${EQV(b)}.`};
+    }else{
+      S2={t:'כיוון ומרחק',ex:ex0,vis:()=>wrap(dot(a,colr(a))+frog(a)+arrow(a,b,colr(b),txt(b))),
+        cap:`${M(num(b))}: הכיוון ${b>0?'<span class="p">ימינה</span>':'<span class="n">שמאלה</span>'}, המרחק <span class="dc">${Math.abs(b)}</span>`,
+        w:'הסימן הוא הכיוון. הערך המוחלט הוא המרחק.',mt:`${ACT.add(b)}.`};
+    }
+    const wrong=type==='sub'?a+b:a-b;
+    const S3={t:'מה תחזו?',ex:exAdd,vis:()=>wrap(dot(a,colr(a))+frog(a)+arrow(a,mv,c,txt(mv))),
+      pred:{q:'🤔 באיזה מספר הצפרדע תעצור?',opts:options(res,[
+        {v:wrong,fb:type==='sub'?'זו התוצאה אם שוכחים להפוך את החץ. מינוס = הנגדי של!':'זה הכיוון ההפוך. לאן מצביע החץ?'},
+        {v:-res,fb:'כיוון הפוך. בדקו לאן מצביע החץ.'},{v:res+1,fb:'כמעט! ספרו שוב את הצעדים.'},{v:res-1,fb:'כמעט! ספרו שוב את הצעדים.'}])},
+      w:'קודם מנחשים, ורק אחר כך בודקים.',mt:`${val(a)}. ${ACT[type](b)}. מה יהיה עכשיו?`};
+    const S4={t:'קופצים וסופרים',ex:`${exAdd} = ${num(res,false)}`,vis:()=>wrap(dot(a,colr(a))+arrow(a,mv,c,txt(mv),72,'',true)+'<g id="trail"></g>'+frog(a)),
+      run:id=>jump(a,mv,c,id,()=>addSVG(tag(res,colr(res)))),
+      cap:`${stepsW(mv)} ${dirW}, ומגיעים ל־${M(num(res,false))}`,
+      calc:[`${M(type==='sub'?`${ex0} = ${num(a)} + ${num(-b)} = ${num(res,false)}`:`${ex0} = ${num(res,false)}`)} ✓`],
+      w:'כל קפיצה היא צעד אחד. סופרים את הקפיצות.',mt:`${val(a)}. ${ACT[type](b)}. ${BRIDGE(a,mv,res,type)}. עכשיו: ${val(res)}.`};
+    let rule,trap='';
+    if(type==='sub'){
+      rule=b<0?`הנגדי של הנגדי: חוזרים לעצמנו. ${M(`${OPM}${num(b)} = ${num(-b)}`)}`:`חיסור הוא חיבור של הנגדי. ${M(`${OPM} ${num(b)} = + ${num(-b)}`)}`;
+      if(b>0&&a<0)trap='⚠️ אין כאן "מינוס מינוס": המינוס פועל על '+M(num(b))+', ולא על '+M(num(a))+'.';
+    }else{
+      const same=a===0||Math.sign(a)===Math.sign(b);
+      rule=same?'אותו כיוון: המרחקים מתחברים, והכיוון נשאר.':'כיוונים הפוכים: מחסרים את המרחקים, והכיוון הוא של מי שרחוק יותר מ־0.';
+    }
+    const S5={t:'הכלל',ex:`${ex0} = ${num(res,false)}`,vis:()=>wrap(dot(a,colr(a))+arcs(a,mv,c)+frog(res)+tag(res,colr(res))),
+      cap:`<span class="rule">📌 ${rule}</span>${trap?`<span class="trap">${trap}</span>`:''}`,w:'זה הכלל. כדאי לכתוב אותו במחברת.',mt:`עכשיו: ${val(res)}.`};
+    return [S1,S2,S3,S4,S5];
+  }
+  if(type==='law'){
+    const s=a;setRange(s-2,s+3);
+    const row=k=>`${num(s,false)} ${OPM} ${num(k)}`;
+    const S0={t:'מה קורה בכל שורה?',tbl:{n:3,last:null},vis:()=>wrap('<g id="trail"></g>'+frog(s-2)),
+      run:id=>{let i=0;const go=()=>{if(id!==anim||i>=2)return;jump(s-2+i,1,POS,id,()=>{i++;go();});};go();},
+      ex:'🔍 מגלים את החוק',cap:'בכל שורה מחסירים מספר שקטן ב־1.',
+      pred:{q:'🤔 מה קורה לתוצאה משורה לשורה?',opts:shuffle([{v:'גדלה ב־1',ok:true},{v:'קטנה ב־1',fb:'הסתכלו שוב על עמודת התוצאה.'},{v:'לא משתנה',fb:'הסתכלו שוב על עמודת התוצאה.'}])},
+      w:'מחפשים דפוס, ואז משתמשים בו כדי לנחש.'};
+    const mk=idx=>{const k=KS[idx],r=s-k;return{t:M(row(k)),tbl:{n:idx+1,last:idx},ex:'🔍 מגלים את החוק',
+      vis:()=>wrap('<g id="trail"></g>'+frog(r-1)),
+      pred:{q:`🤔 לפי הדפוס, כמה זה ${M(row(k))}?`,opts:options(r,[{v:s+k,fb:'זה מה שיוצא אם מתעלמים מהדפוס. התוצאה צריכה לגדול ב־1.'},{v:r-2,fb:'לפי הדפוס, התוצאה גדלה ב־1 בכל שורה.'},{v:-r,fb:'לפי הדפוס, התוצאה גדלה ב־1 בכל שורה.'}]),
+        onOk:()=>jump(r-1,1,POS,anim)},
+      cap:'',w:'הדפוס ממשיך: בכל שורה התוצאה גדלה ב־1.'};};
+    const S4={t:'הכלל',tbl:{n:6,last:null},ex:`${M(`${row(-3)} = ${num(s,false)} + ${num(3)}`)}`,vis:()=>wrap(frog(s+3)+tag(s+3,colr(s+3))),
+      cap:`<span class="rule">📌 חיסור של מספר שלילי הוא חיבור של הנגדי שלו. ${M(`${OPM}${num(-3)} = ${num(3)}`)}</span>`,
+      w:'גילינו את הכלל מתוך הדפוס: הנגדי של הנגדי הוא המספר עצמו.'};
+    return [S0,mk(3),mk(4),mk(5),S4];
+  }
+  if(type==='abs'){
+    setRange(a);const n=Math.abs(a);
+    return [
+      {t:'איפה המספר?',ex:`|${num(a,false)}| = ?`,vis:()=>wrap(dot(a,colr(a))+tag(a,colr(a))),cap:'ערך מוחלט של מספר הוא המרחק שלו מאפס.',w:'מסמנים את המספר על הציר.',mt:`${val(a)}.`},
+      {t:'מה תחזו?',ex:`|${num(a,false)}| = ?`,vis:()=>wrap(dot(a,colr(a))+tag(a,colr(a))+frog(0)),
+        pred:{q:`🤔 כמה זה ${M(`|${num(a,false)}|`)}?`,opts:options(n,[{v:-n,fb:'ערך מוחלט הוא מרחק, ומרחק לא יכול להיות שלילי.'},{v:n+1,fb:'כמעט! ספרו את הצעדים מ־0.'},{v:n-1,fb:'כמעט! ספרו את הצעדים מ־0.'}])},
+        w:'כמה צעדים יש מ־0 עד המספר?',mt:'כמה שקלים זה, בלי לשאול אם זה כסף או חוב?'},
+      {t:'סופרים מרחק',ex:`|${num(a,false)}| = <span class="dc">${n}</span>`,vis:()=>wrap(dot(a,colr(a))+'<g id="trail"></g>'+frog(0)),
+        run:id=>jump(0,a,DIST,id,()=>addSVG(bracket(a,AY-100,DIST,''+n))),
+        cap:`מ־0 עד ${M(num(a,false))}: ${stepsW(a)}`,calc:[`${M(`|${num(a,false)}| = ${n}`)}`],w:'סופרים את הקפיצות מ־0.',mt:`גודל הסכום: ${SH(a)}.`},
+      {t:'הכלל',ex:`|${num(a,false)}| = <span class="dc">${n}</span>`,vis:()=>wrap(dot(a,colr(a))+arcs(0,a,DIST)+frog(a)+bracket(a,AY-100,DIST,''+n)),
+        cap:'<span class="rule">📌 ערך מוחלט הוא מרחק מ־0, ולכן הוא אף פעם לא שלילי.</span>',w:'זה הכלל. כדאי לכתוב אותו במחברת.'}];
+  }
+  setRange(a,b);const na=Math.abs(a),nb=Math.abs(b),sym=na>nb?'&gt;':na<nb?'&lt;':'=';
+  const ex0=`|${num(a,false)}| <span class="z">◯</span> |${num(b,false)}|`,far=na>nb?a:b;
+  const trap=(Math.sign(a-b)!==Math.sign(na-nb)&&na!==nb)?`⚠️ שימו לב: ${M(`${plain(a)} ${a<b?'&lt;':'&gt;'} ${plain(b)}`)}, אבל ${M(`|${plain(a)}| ${sym} |${plain(b)}|`)}`:'';
+  const base=()=>dot(a,colr(a))+dot(b,colr(b))+tag(a,colr(a))+tag(b,colr(b));
+  return [
+    {t:'מסמנים',ex:ex0,vis:()=>wrap(base()),cap:'מי רחוק יותר מ־0?',w:'מסמנים את שני המספרים על הציר.',mt:`${val(a)}, ומול זה ${val(b)}.`},
+    {t:'מה תחזו?',ex:ex0,vis:()=>wrap(base()),pred:{q:'🤔 איזה סימן מתאים?',opts:[{v:'&gt;',ok:na>nb,fb:'מדדו את המרחק מ־0, לא את המיקום על הציר.'},{v:'&lt;',ok:na<nb,fb:'מדדו את המרחק מ־0, לא את המיקום על הציר.'},{v:'=',ok:na===nb,fb:'המרחקים מ־0 שונים.'}]},w:'מחליטים לפי המרחק מ־0.',mt:'משווים רק את גודל הסכום, בלי לשאול אם זה כסף או חוב.'},
+    {t:'מודדים מרחק',ex:`|${num(a,false)}| <span class="z hl">${sym}</span> |${num(b,false)}|`,vis:()=>wrap(dot(a,colr(a))+dot(b,colr(b))+bracket(a,AY-60,DIST,''+na)+bracket(b,AY-130,'#7c3aed',''+nb)),
+      cap:`${M(`|${num(a,false)}| = ${na}`)} &nbsp;|&nbsp; ${M(`|${num(b,false)}| = ${nb}`)}`,calc:[`${M(`${na} ${sym} ${nb}`)}`],w:'כל מרחק נמדד מ־0.',mt:na===nb?'שני הסכומים באותו גודל.':`הסכום הגדול יותר, בלי להתחשב אם זה כסף או חוב: ${SH(far)}.`},
+    {t:'הכלל',ex:`|${num(a,false)}| <span class="z hl">${sym}</span> |${num(b,false)}|`,vis:()=>wrap(base()),
+      cap:`<span class="rule">📌 משווים ערכים מוחלטים לפי המרחק מ־0.</span>${trap?`<span class="trap">${trap}</span>`:''}`,w:'זה הכלל. כדאי לכתוב אותו במחברת.'}];
+}
+
+/* ===== הצגה ===== */
+function show(){S=build();cur=0;render();}
+function calcHTML(){let c='';S.slice(0,cur+1).forEach((x,i)=>{const L=[...(x.calc||[]),...(x.calcL&&(i<cur||x._done)?[x.calcL]:[])];L.forEach(l=>c+=`<div class="${i===cur?'new':''}">${l}</div>`);});return c;}
+function finishGate(s){s._done=true;$('#calc').innerHTML=calcHTML();}
+function render(){
+  anim++;const id=anim,s=S[cur];s._done=false;
+  $('#ex').innerHTML=M(s.ex);$('#svg').innerHTML=s.vis();
+  $('#cap').innerHTML=s.cap||'';
+  $('#ms').style.display=Q.money&&s.mt?'block':'none';if(Q.money&&s.mt)$('#ms').innerHTML=s.mt;
+  const T=$('#tbl');
+  if(s.tbl){T.style.display='table';
+    T.innerHTML=KS.slice(0,s.tbl.n).map((k,i)=>`<tr class="${i===s.tbl.n-1?'new':''}"><td>${M(`${num(Q.a,false)} ${OPM} ${num(k)}`)}</td><td>=</td><td id="r${i}">${i===s.tbl.last?'<span class="z">?</span>':M(num(Q.a-k,false))}</td></tr>`).join('');}
+  else T.style.display='none';
+  const P=$('#pred'),showPred=s.pred&&(!s.go||s.gate);
+  const runGo=()=>{if(s.go&&!s._ran){s._ran=true;const sk=P.querySelector('.skip');if(sk)sk.remove();s.go(id);}};
+  s._ran=false;
+  if(showPred){P.style.display='block';P.querySelector('.q').innerHTML=s.pred.q;P.querySelector('.fb').innerHTML='';
+    P.querySelector('.opts').innerHTML=s.pred.opts.map((o,i)=>`<button data-i="${i}">${typeof o.v==='number'?M(num(o.v,false)):o.v}</button>`).join('');
+    const old=P.querySelector('.skip');if(old)old.remove();
+    if(s.go)P.insertAdjacentHTML('beforeend','<button class="skip">▶ להראות בלי לנחש</button>');
+    if(s.go)P.querySelector('.skip').onclick=runGo;
+    P.querySelectorAll('.opts button').forEach(btn=>btn.onclick=()=>{const o=s.pred.opts[+btn.dataset.i];
+      if(o.ok){P.querySelectorAll('.opts button').forEach(x=>x.disabled=true);btn.classList.add('ok');P.querySelector('.fb').innerHTML='<span class="p">✓ נכון! 🎉</span>';
+        if(s.tbl&&s.tbl.last!==null)$('#r'+s.tbl.last).innerHTML=M(num(Q.a-KS[s.tbl.last],false));
+        if(s.pred.onOk)s.pred.onOk();runGo();}
+      else{btn.classList.add('bad');btn.disabled=true;P.querySelector('.fb').innerHTML=`<span class="n">${o.fb}</span> נסו שוב.`;}});}
+  else{P.style.display='none';const old=P.querySelector('.skip');if(old)old.remove();}
+  $('#calc').innerHTML=calcHTML();$('#why').innerHTML='💡 '+s.w;
+  $('#dots').innerHTML=S.map((x,i)=>`<button class="${i===cur?'on':i<cur?'done':''}" data-i="${i}">${i+1}. ${x.t}</button>`).join('');
+  document.querySelectorAll('#dots button').forEach(b=>b.onclick=()=>{cur=+b.dataset.i;render();});
+  $('#prev').disabled=cur===0;$('#next').disabled=cur===S.length-1;
+  if(s.run)s.run(id);
+  if(s.go&&!showPred)runGo();
+}
+function replay(){render();}
+const next=()=>{if(cur<S.length-1){cur++;render();}}, prev=()=>{if(cur>0){cur--;render();}};
+
+/* ===== חלון המורה ===== */
+let DT='sub',DM=false,DP=true;
+const EXAMPLES=['-|-3|','|-4| - (-2)','-|-6| + 3','(-5) - |-2|','|3 - 7|','-|2 - 9|','(-3)·4 + |-5|','12 : (-3) - (-2)·5','-|-8| - (-3)·(-2) + 7'];
+const isExpr=t=>t==='expr'||t==='cmpx';
+function dlgFields(){
+  $('#fType').innerHTML=TYPES.map(([id,t])=>`<button data-t="${id}" class="${DT===id?'on':''}">${t}</button>`).join('');
+  document.querySelectorAll('#fType button').forEach(b=>b.onclick=()=>{DT=b.dataset.t;dlgFields();});
+  $('#fStoryBox').style.display=(DT==='add'||DT==='sub')?'':'none';
+  $('#fStory').innerHTML=[[false,'📏 ציר בלבד'],[true,'💰 כסף וחוב']].map(([v,t])=>`<button data-m="${v}" class="${DM===v?'on':''}">${t}</button>`).join('');
+  document.querySelectorAll('#fStory button').forEach(b=>b.onclick=()=>{DM=b.dataset.m==='true';dlgFields();});
+  $('#fPredBox').style.display=(isExpr(DT)||DT==='nabs')?'':'none';
+  $('#fPred').innerHTML=[[true,'🤔 כן, בכל שלב'],[false,'בלי, רק להראות']].map(([v,t])=>`<button data-p="${v}" class="${DP===v?'on':''}">${t}</button>`).join('');
+  document.querySelectorAll('#fPred button').forEach(b=>b.onclick=()=>{DP=b.dataset.p==='true';dlgFields();});
+  const inp=(id,v)=>`<input type="number" min="-20" max="20" step="1" id="${id}" value="${v}">`;
+  const same=Q.type===DT,H=$('#fHint');H.textContent='מספר שלילי כותבים עם מינוס לפניו, למשל ‎-3. טווח: מ־‎-20 עד 20.';
+  let h='';
+  if(DT==='add'||DT==='sub'){$('#fLbl').textContent='התרגיל';h=`<div class="inl">(${inp('ia',same?Q.a:-3)}) <span style="font-size:32px;color:${DT==='sub'?OP:'inherit'}">${DT==='add'?'+':MI}</span> (${inp('ib',same?Q.b:-5)})</div>`;}
+  else if(DT==='abs'){$('#fLbl').textContent='המספר';h=`<div class="inl">|${inp('ia',same?Q.a:-6)}|</div>`;}
+  else if(DT==='nabs'){$('#fLbl').textContent='המספר שבתוך הקווים';h=`<div class="inl"><span style="color:${OP}">${MI}</span>|${inp('ia',same?Q.a:-3)}|</div>`;}
+  else if(DT==='law'){$('#fLbl').textContent='המספר שממנו מחסירים';h=`<div class="inl">${inp('ia',same?Q.a:3)} <span style="color:${OP}">${MI}</span> 2, 1, 0, (${MI}1), (${MI}2), (${MI}3)</div>`;}
+  else if(DT==='cmp'){$('#fLbl').textContent='שני המספרים';h=`<div class="inl">|${inp('ia',same?Q.a:-8)}| ◯ |${inp('ib',same?Q.b:5)}|</div>`;}
+  else if(DT==='expr'){$('#fLbl').textContent='כתבי תרגיל, ארוך כמה שתרצי';
+    h=`<input class="exin" id="ie" value="${same?Q.src:'-|-6| + (-3)·2 - (-4)'}" spellcheck="false"><div class="chips">${EXAMPLES.map(e=>`<button data-e="${e}">${e.replace(/-/g,MI)}</button>`).join('')}</div>`;
+    H.textContent='כפל: * או · או x. חילוק: : או /. ערך מוחלט: |…|. מינוס: -. אפשר סוגריים. מספרים עד 50 בכל שלב.';}
+  else{$('#fLbl').textContent='שני התרגילים להשוואה';
+    h=`<input class="exin" id="ie" value="${same?Q.src:'-|-5|'}" spellcheck="false"><div style="text-align:center;font-size:26px">◯</div><input class="exin" id="ie2" value="${same?Q.src2:'(-2) - 4'}" spellcheck="false">`;
+    H.textContent='בכל צד אפשר לכתוב תרגיל שלם, עם ערך מוחלט, כפל, חילוק וסוגריים.';}
+  $('#fIn').innerHTML=h;
+  document.querySelectorAll('.chips button').forEach(b=>b.onclick=()=>{$('#ie').value=b.dataset.e;});
+  $('#err').textContent='';
+}
+const err=t=>{$('#err').textContent=t;};
+function tryBuild(q){const old=Q;Q=q;try{const s=build();Q=old;return s?null:'שגיאה';}catch(e){Q=old;return typeof e==='string'?e:'יש בעיה בתרגיל. בדקי שכל סוגר וכל קו נסגרו.';}}
+function dlgGo(){
+  if(isExpr(DT)){
+    const src=$('#ie').value,src2=$('#ie2')?$('#ie2').value:'';
+    const q={type:DT,src,src2,money:false,pred:DP};const e=tryBuild(q);if(e)return err(e);
+    Q=q;$('#dlg').close();show();return;}
+  const ok=x=>Number.isInteger(x)&&x>=-LIM&&x<=LIM;
+  if($('#ia').value===''||($('#ib')&&$('#ib').value===''))return err('צריך למלא את כל המספרים.');
+  const a=Number($('#ia').value),b=$('#ib')?Number($('#ib').value):0;
+  if(!ok(a)||!ok(b))return err('כותבים רק מספרים שלמים מ־‎-20 עד 20.');
+  if(DT==='add'||DT==='sub'){
+    if(b===0)return err('המספר השני הוא 0, ולכן לא זזים בכלל. כדאי לבחור מספר אחר.');
+    const res=DT==='add'?a+b:a-b;
+    if(!ok(res))return err(`התוצאה, ${plain(res)}, יוצאת מחוץ לציר (מ־‎-20 עד 20). כדאי לבחור מספרים קטנים יותר.`);
+  }
+  if(DT==='law'&&(a<-10||a>10))return err('בגילוי החוק בוחרים מספר מ־‎-10 עד 10, כדי שכל הטבלה תיכנס לציר.');
+  if(DT==='nabs'&&a===0)return err('בחרי מספר שונה מ־0, כדי שיהיה מה להפוך.');
+  Q={type:DT,a,b,money:DM&&(DT==='add'||DT==='sub'),pred:DP};$('#dlg').close();show();
+}
+function randExpr(){
+  const n=()=>{let v=rnd(-9,9);return v||-4;},p=()=>rnd(1,9),s=v=>v<0?`(${v})`:''+v;
+  const T=[()=>`-|${n()}|`,()=>`|${n()}| - ${s(n())}`,()=>`-|${n()}| + ${s(n())}`,()=>`${s(n())} - |${n()}|`,()=>`|${p()} - ${p()+3}|`,()=>`-|${p()} - ${p()+4}|`,
+    ()=>`${s(n())}·${rnd(2,4)} + |${n()}|`,()=>`${s(n())} - ${s(n())}·${s(n())}`,()=>`-|${n()}| - ${s(n())} + ${p()}`,()=>{const d=pick([2,3,4]);return `${s(d*n())} : ${s(pick([d,-d]))} - |${n()}|`;}];
+  for(let i=0;i<50;i++){const src=pick(T)();if(!tryBuild({type:'expr',src,pred:DP}))return src;}
+  return '-|-3|';
+}
+function surprise(){
+  const type=DT==='cmpx'?'cmpx':DT==='expr'?'expr':pick(TYPES.map(t=>t[0]).filter(t=>t!=='cmpx'));let a,b=0;
+  if(type==='expr'){Q={type,src:randExpr(),money:false,pred:DP};}
+  else if(type==='cmpx'){let src,src2;do{src=randExpr();src2=randExpr();}while(tryBuild({type,src,src2,pred:DP}));Q={type,src,src2,money:false,pred:DP};}
+  else{
+    if(type==='add'||type==='sub'){do{a=rnd(-12,12);b=rnd(-12,12);}while(b===0||Math.abs(type==='add'?a+b:a-b)>LIM);}
+    else if(type==='law'){a=rnd(-6,6);}
+    else{a=rnd(-15,15);b=rnd(-15,15);if(a===0)a=-7;}
+    Q={type,a,b,money:DM&&(type==='add'||type==='sub'),pred:DP};}
+  DT=type;if($('#dlg').open)$('#dlg').close();show();
+}
+
+/* ===== הפעלה ===== */
+$('#edit').onclick=()=>{dlgFields();$('#dlg').showModal();};
+$('#fGo').onclick=dlgGo;$('#fRnd').onclick=surprise;$('#fCancel').onclick=()=>$('#dlg').close();
+$('#next').onclick=next;$('#prev').onclick=prev;
+$('#fs').onclick=()=>{try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();}catch(e){}};
+$('#pr').onclick=()=>print();
+addEventListener('keydown',e=>{if($('#dlg').open)return;
+  if(['ArrowLeft','PageDown',' '].includes(e.key)){e.preventDefault();next();}
+  else if(['ArrowRight','PageUp','Backspace'].includes(e.key)){e.preventDefault();prev();}});
+show();
+</script>
+</body>
+</html>

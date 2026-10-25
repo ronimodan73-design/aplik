@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>יישומונים למורים</title>
+<style>
+:root{--bg:#f4f6fb;--card:#fff;--ink:#1c2541;--mut:#5c6784;--acc:#1d4ed8;--acc2:#e8eefc;--line:#dfe4ef;--z:#0f8a5f;--h:#c2410c;--t:#6d28d9;--b:#b45309}
+@media (prefers-color-scheme:dark){:root{--bg:#10151f;--card:#1a2130;--ink:#e8ecf5;--mut:#a3adc2;--acc:#7aa2ff;--acc2:#22304d;--line:#2c364a}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;line-height:1.5}
+.wrap{max-width:900px;margin:0 auto;padding:16px}
+header{background:linear-gradient(135deg,#1e1b4b,#1d4ed8);color:#fff;border-radius:16px;padding:18px 18px 14px}
+header h1{margin:0 0 4px;font-size:1.5rem}header p{margin:0;opacity:.9;font-size:.98rem}
+h2{font-size:1.15rem;margin:22px 4px 8px;display:flex;align-items:center;gap:8px}
+h2 .tag{font-size:.8rem;color:#fff;border-radius:8px;padding:1px 9px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 14px;display:flex;flex-direction:column;gap:5px}
+.card h3{margin:0;font-size:1.05rem}.card p{margin:0;color:var(--mut);font-size:.92rem}
+.card .how{color:var(--ink);font-size:.9rem}
+.btns{display:flex;gap:8px;margin-top:auto;padding-top:6px}
+.btns a,.btns button{font:inherit;text-decoration:none;border:0;cursor:pointer;border-radius:10px;padding:8px 12px;font-weight:600;font-size:.93rem}
+.btns a{background:var(--acc);color:#fff}.btns button{background:var(--acc2);color:var(--acc)}
+.note{background:var(--card);border:1px dashed var(--line);border-radius:12px;padding:10px 14px;margin-top:20px;font-size:.93rem;color:var(--mut)}
+footer{text-align:center;color:var(--mut);font-size:.85rem;padding:20px 0 30px}
+</style>
+</head>
+<body><div class="wrap">
+<header><h1>📱 יישומונים במתמטיקה · למורים</h1><p>כל היישומונים במקום אחד. נפתחים ישר מהקישור, בלי התחברות, במחשב, בלוח ובטלפון.</p></header>
+<div id="app"></div>
+<div class="note">💡 <b>איך מעבירים לתלמידים?</b> לוחצים "העתקת קישור" ליד יישומון התרגול, ומדביקים בקבוצת הווטסאפ של הכיתה. בתרגול התלמיד מתחיל ב"מתחילים כאן", עובר את הרמות, ובסוף "בחן את עצמך" נותן לו דוח אישי לצלם ולשלוח למורה.</div>
+<footer>ערכה: רוני מודן · שחקים</footer>
+</div>
+<script>
+const B='https://htmlpreview.github.io/?https://github.com/ronimodan73-design/aplik/blob/main/';
+const S=[
+ {h:'🖥️ לוח למורה: המורה שולט/ת על גבי הלוח',c:'#1e1b4b',tag:'לוח',items:[
+  ['📐','מעבדת השטח וההיקף','labs/area_lab.html','ז׳','מלבן על משבצות שהמורה גורר/ת ומשנה. נמלה סופרת את ההיקף, משבצות ממלאות את השטח, והנוסחה מתעדכנת בצבעים.','גוררים את העיגול הצהוב. יש צורת L, הסתרת תוצאות לניחוש ואתגרים לכיתה.'],
+  ['📏','מעבדת הזוויות','labs/angles_lab.html','ז׳–ט׳','שני ישרים מקבילים וחותך. מסובבים את החותך וכל 8 הזוויות משתנות בזמן אמת: מתאימות, מתחלפות, חד־צדדיות, קודקודיות וצמודות.','גוררים את העיגול הצהוב, לוחצים על שתי זוויות, ובוחרים "שאלה חדשה" עם x.'],
+  ['➖','מעבדת המספרים המכוונים','labs/directed_lab.html','ז׳','חיבור וחיסור מספרים מכוונים בעזרת חיילים בשני צבעים וזוגות שמתאפסים.','בוחרים תרגיל או "הפתעה", ומתקדמים צעד אחרי צעד.'],
+  ['⚖️','מעבדת היחס','labs/ratio_lab.html','ח׳','בעיות יחס עם קוביות, תלמידים, כסף וזוויות. רואים את החלקים, את גורם ההרחבה ואת הבדיקה.','"שאלה חדשה": בוחרים סיפור וסוג שאלה, ומתקדמים בשלבים.'],
+  ['🎬','ספריית האנימציות','animations.html','ז׳–ט׳','אנימציות שמסבירות למה: פילוג, שיפוע, פיתגורס, יחס, זוויות, מספרים מכוונים ועוד.','בוחרים נושא ומקרינים על הלוח, צעד אחרי צעד.']]},
+ {h:'כיתה ז׳: תרגול לתלמידים',c:'#0f8a5f',tag:'ז׳',items:[
+  ['🟦','שטח והיקף של ריבוע ומלבן','apps/z7_area.html','ז׳','מספירת משבצות ועד צורה מורכבת. 4 רמות, 20 שאלות בכל רמה, ומשוב בצבע שמראה מה חסר.','מתחילים ב"מתחילים כאן", ובסוף "בחן את עצמך".'],
+  ['📍','הרביע הראשון','apps/z7_q1.html','ז׳','מערכת צירים: קריאת נקודות, אורך קטע, ומלבן וריבוע על הצירים.','מתחילים ב"מתחילים כאן", ובסוף "בחן את עצמך".']]},
+ {h:'כיתה ח׳: תרגול לתלמידים',c:'#c2410c',tag:'ח׳',items:[
+  ['⚖️','יחס, פרופורציה וקנה מידה','apps/h8_ratio.html','ח׳','טבלת העוגן וגורם ההרחבה, ב־3 נושאים ו־4 רמות.','בוחרים נושא, ובסוף "בחן את עצמך".'],
+  ['📐','זוויות בין ישרים מקבילים','apps/h8_parallel.html','ח׳','מתאימות, מתחלפות וחד־צדדיות, כולל משוואות.','מתחילים ב"מתחילים כאן", ובסוף "בחן את עצמך".'],
+  ['📈','הישר והגרף שלו','apps/h8_lines.html','ח׳','שיפוע, נקודות חיתוך עם הצירים, ושאלות מבחן בצעדים.','מתחילים ב"מתחילים כאן", ובסוף "בחן את עצמך".'],
+  ['🧑‍🏫','המורה הפרטית: יחס','tutor/ratio.html','ח׳','מאבחנת פערים ומלמדת מחדש, צעד אחרי צעד.','התלמיד עונה, והיישומון מתאים את עצמו.']]},
+ {h:'כיתה ט׳: תרגול לתלמידים',c:'#6d28d9',tag:'ט׳',items:[
+  ['✖️','חוק הפילוג','apps/dist.html','ט׳','פתיחת סוגריים עם מודל שטח והכופל בצבע.','מתחילים ב"מתחילים כאן", ובסוף "בחן את עצמך".'],
+  ['➗','הוצאת גורם משותף','apps/gcf.html','ט׳','מחלקים כל איבר בגורם, כולל גורם שלילי וביטוי בסוגריים.','מתחילים ב"מתחילים כאן", ובסוף "בחן את עצמך".'],
+  ['🔺','משולש שווה־שוקיים','apps/t9_iso.html','ט׳','המשפטים והמשפטים ההפוכים, זוויות עם x ונימוקים.','מתחילים ב"מתחילים כאן", ובסוף "בחן את עצמך".'],
+  ['📐','משפט פיתגורס','apps/t9_pythagoras.html','ט׳','מציאת יתר וניצב, ומשולש שווה־שוקיים.','מתחילים בהסבר המונפש, ובסוף מבחן עצמי.'],
+  ['🟰','משוואות עם נעלם אחד','apps/eq.html','ט׳','צעד אחד, שני צעדים, סוגריים, ו"חשבתי על מספר".','מתחילים ב"מתחילים כאן", ובסוף "בחן את עצמך".']]}];
+document.getElementById('app').innerHTML=S.map(s=>`<h2><span class="tag" style="background:${s.c}">${s.tag}</span>${s.h}</h2><div class="grid">`+s.items.map(([e,n,u,k,w,how])=>`<div class="card"><h3>${e} ${n}</h3><p>${w}</p><p class="how">👉 ${how}</p><div class="btns"><a href="${B+u}" target="_blank" rel="noopener">פתיחה</a><button data-u="${B+u}">📋 העתקת קישור</button></div></div>`).join('')+'</div>').join('');
+document.querySelectorAll('button[data-u]').forEach(b=>b.onclick=async()=>{try{await navigator.clipboard.writeText(b.dataset.u);b.textContent='✅ הועתק';}catch(e){prompt('העתיקו את הקישור:',b.dataset.u);}setTimeout(()=>b.textContent='📋 העתקת קישור',1800);});
+</script>
+</body></html>
