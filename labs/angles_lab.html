@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>מעבדת הזוויות</title>
+<style>
+:root{--bg:#f3f4f8;--ink:#1f2937;--muted:#6b7280;--line:#e5e7eb;--navy:#1e1b4b;--c1:#db2777;--c2:#0891b2;--mid:#d97706;--op:#9333ea;--gold:#f5b301;--ok:#16a34a;--bad:#dc2626}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:"Rubik","Segoe UI","Arial Hebrew",Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:22px;min-height:100vh;display:flex;flex-direction:column}
+.m{direction:ltr;unicode-bidi:isolate;display:inline-block;font-weight:700;white-space:nowrap}
+.v{font-family:"Times New Roman",serif;font-style:italic;font-weight:700}
+.c1{color:var(--c1)}.c2{color:var(--c2)}.cm{color:var(--mid)}
+button,select,input{font:inherit}
+button{cursor:pointer;border:none;border-radius:14px;padding:8px 16px;background:#eef2ff;color:var(--navy);transition:transform .15s}
+button:active{transform:scale(.95)}
+button:disabled{opacity:.35;cursor:default}
+header{display:flex;align-items:center;gap:10px;padding:10px 20px;background:var(--navy);color:#fff;flex-wrap:wrap}
+header h1{margin:0;font-size:26px;font-weight:800}
+header .tools{margin-inline-start:auto;display:flex;gap:8px;flex-wrap:wrap}
+header button{background:#312e81;color:#fff}
+header #edit{background:var(--gold);color:#1f2937;font-weight:800}
+#lvl{font-size:18px;background:#312e81;padding:6px 12px;border-radius:12px}
+main{flex:1;display:flex;flex-direction:column;gap:14px;padding:16px 22px;max-width:1500px;width:100%;margin:0 auto}
+.card{background:#fff;border-radius:22px;box-shadow:0 4px 18px rgba(30,27,75,.07)}
+#ex{font-size:30px;text-align:center;padding:14px 18px;line-height:1.6}
+#stage{padding:10px 16px 16px;display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:14px;align-items:center}
+#svg svg{width:100%;display:block}
+#stage.noboard #svg{grid-column:1/-1;max-width:1100px;margin:0 auto;width:100%}#stage.noboard #board{display:none}
+#board{font-size:38px;text-align:center;direction:ltr}
+#board .ln{padding:4px 10px;border-radius:12px;margin:4px 0;animation:pop .4s backwards}
+#board .ln.new{background:#fffbeb;outline:3px solid var(--gold)}
+#board .ann{font-size:26px;color:var(--op);margin-left:18px;font-weight:700}
+#board .res{background:#dcfce7;border-radius:12px;padding:2px 14px}
+#cap{font-size:28px;text-align:center;line-height:1.5;padding:4px 10px;grid-column:1/-1}
+#cap .rule{display:inline-block;background:#faf5ff;border:3px solid var(--op);border-radius:18px;padding:10px 22px;text-align:start}
+#cap .rule div{margin:4px 0}
+#cap .note{font-size:19px;color:var(--muted)}
+#pred{display:none;text-align:center;padding:4px;grid-column:1/-1}
+#pred .q{font-size:28px;font-weight:800;margin-bottom:10px}
+#pred .opts{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+#pred .opts button{font-size:26px;font-weight:800;min-width:150px;padding:10px 20px;background:#fff;border:3px solid #c7d2fe}
+#pred .opts button.ok{background:#dcfce7;border-color:var(--ok);opacity:1}
+#pred .opts button.bad{background:#fee2e2;border-color:var(--bad)}
+#pred .fb{font-size:24px;margin-top:10px;min-height:36px;font-weight:700}
+#pred .skip{font-size:17px;margin-top:6px;background:none;color:var(--muted);text-decoration:underline}
+.below{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
+#calc{font-size:24px;line-height:1.8}
+#calc div{background:#fff;border-radius:14px;padding:4px 16px;margin-bottom:6px;border-inline-start:6px solid var(--line)}
+#calc div.new{border-color:var(--gold);background:#fffbeb;animation:pop .4s backwards}
+#why{font-size:24px;color:#065f46;background:#ecfdf5;border-radius:14px;padding:12px 16px}
+.navbar{display:flex;align-items:center;gap:14px;justify-content:center;flex-wrap:wrap}
+.dots{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.dots button{padding:6px 12px;font-size:16px;background:#e5e7eb;color:var(--muted)}
+.dots button.on{background:var(--navy);color:#fff;font-weight:700}
+.dots button.done{background:#c7d2fe;color:var(--navy)}
+#next{background:var(--navy);color:#fff;font-size:28px;font-weight:800;padding:12px 44px}
+#prev{font-size:22px}
+body.exp #svg{touch-action:none}
+#cap button{font-size:22px;margin:4px}
+@keyframes pop{from{transform:scale(.5);opacity:0}}
+dialog{border:none;border-radius:22px;padding:0;max-width:720px;width:calc(100% - 24px);box-shadow:0 20px 60px rgba(0,0,0,.3)}
+dialog::backdrop{background:rgba(15,23,42,.55)}
+.dlg{padding:20px 24px;display:flex;flex-direction:column;gap:14px}
+.dlg h2{margin:0;font-size:26px}
+.dlg h3{margin:6px 0 0;font-size:20px;color:var(--navy)}
+.opts2{display:flex;gap:8px;flex-wrap:wrap}
+.opts2 button{border:2px solid var(--line);background:#fff;font-size:20px}
+.opts2 button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.lvls button{min-width:120px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.row select{font-size:22px;padding:6px;border:2px solid var(--line);border-radius:10px;direction:ltr}
+.row input{width:170px;font-size:24px;padding:6px 10px;border:2px solid var(--line);border-radius:10px;direction:ltr;text-align:center;font-weight:700}
+.hint{font-size:16px;color:var(--muted)}
+#err{color:#dc2626;min-height:1.4em;font-size:18px}
+.acts{display:flex;gap:10px;flex-wrap:wrap}
+.acts .go{background:var(--navy);color:#fff;font-weight:800;font-size:22px;padding:10px 26px}
+.acts .rnd{background:var(--gold);font-weight:700}
+footer{text-align:center;color:var(--muted);font-size:15px;padding:8px}
+@media (max-width:900px){#stage{grid-template-columns:minmax(0,1fr)}.below{grid-template-columns:minmax(0,1fr)}#ex{font-size:20px}#board{font-size:26px}#cap{font-size:20px}#pred .q{font-size:20px}#pred .opts button{font-size:19px;min-width:90px}.m{white-space:normal}main{padding:12px}#next{padding:10px 24px}body{font-size:18px}#calc{font-size:19px}#why{font-size:19px}.dots button{font-size:13px;padding:4px 8px}}
+@media print{header .tools,.navbar,#pred{display:none!important}body{background:#fff}}
+</style>
+</head>
+<body>
+<header>
+  <h1>📐 מעבדת הזוויות</h1>
+  <span id="lvl"></span>
+  <div class="tools">
+    <button id="exp">🖐️ חקירה חופשית</button>
+    <button id="edit">✏️ שאלה חדשה</button>
+    <button id="fs">⛶ מסך מלא</button>
+    <button id="pr" aria-label="הדפסה">🖨️</button>
+  </div>
+</header>
+
+<main>
+  <div id="ex" class="card"></div>
+  <div id="stage" class="card">
+    <div id="svg"></div>
+    <div id="board"></div>
+    <div id="cap"></div>
+    <div id="pred"><div class="q"></div><div class="opts"></div><div class="fb"></div></div>
+  </div>
+  <div class="below">
+    <div id="calc"></div>
+    <div id="why"></div>
+  </div>
+  <div class="navbar">
+    <button id="prev" aria-label="הקודם">→</button>
+    <div class="dots" id="dots"></div>
+    <button id="next">הבא ←</button>
+  </div>
+</main>
+<footer>ערכה: רוני מודן · שחקים</footer>
+
+<dialog id="dlg"><div class="dlg">
+  <h2>✏️ שאלה חדשה</h2>
+  <h3>🎲 שאלה מוכנה לפי רמה</h3>
+  <div class="opts2 lvls" id="fLvl"></div>
+  <div class="row"><span>סוג הזוויות:</span><div class="opts2" id="fKind"></div></div>
+  <h3>✍️ או שאלה מהספר</h3>
+  <div class="row"><select id="a1"></select><span>=</span><input id="e1" value="2x+10" spellcheck="false"></div>
+  <div class="row"><select id="a2"></select><span>=</span><input id="e2" value="3x-20" spellcheck="false"></div>
+  <div class="hint">כותבים מספר (70), ביטוי עם x (2x+10), או ? לזווית שמחפשים. הישרים AB ו־CD מקבילים.</div>
+  <div class="row"><span>שאלות ניחוש:</span><div class="opts2" id="fPred"></div></div>
+  <div id="err"></div>
+  <div class="acts">
+    <button class="rnd" id="fRnd">🎲 שאלה מוכנה</button>
+    <button class="go" id="fGo">✔ הצג את השאלה שלי</button>
+    <button id="fCancel">ביטול</button>
+  </div>
+</div></dialog>
+
+<script>
+const $=s=>document.querySelector(s);
+const rnd=(lo,hi)=>lo+Math.floor(Math.random()*(hi-lo+1)), pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
+const MI='−',C1='#db2777',C2='#0891b2',CM='#d97706',OP='#9333ea',GOLD='#f5b301',FA='#2563eb',FB='#ea580c';
+const M=s=>`<span class="m">${s}</span>`;
+const XV='<span class="v">x</span>';
+const plain=x=>x<0?MI+(-x):''+x;
+
+/* ===== הזוויות: 4 מקומות בכל צומת ===== */
+const NAME={E:{TR:'GEB',TL:'GEA',BL:'AEF',BR:'BEF'},F:{TR:'EFD',TL:'EFC',BL:'CFH',BR:'DFH'}};
+const OPP={TR:'BL',BL:'TR',TL:'BR',BR:'TL'};
+const typ=p=>(p==='TR'||p==='BL')?'a':'b';
+const angTxt=P=>`∠${NAME[P.v][P.p]}`;
+const ang=(P,c)=>`<span style="color:${c||'inherit'}">${angTxt(P)}</span>`;
+const KIND={corr:'מתאימות',alt:'מתחלפות',co:'חד־צדדיות',vert:'קודקודיות',adj:'צמודות'};
+const RULE={corr:'זוויות מתאימות בין ישרים מקבילים שוות.',alt:'זוויות מתחלפות בין ישרים מקבילים שוות.',
+  co:'סכום זוויות חד־צדדיות בין ישרים מקבילים הוא 180°.',vert:'זוויות קודקודיות שוות.',adj:'סכום זוויות צמודות הוא 180°.'};
+const HINT={corr:'מתאימות: באותו מקום בכל אחת משתי נקודות החיתוך.',alt:'מתחלפות: בין הישרים המקבילים, בצדדים שונים של החותך.',
+  co:'חד־צדדיות: בין הישרים המקבילים, באותו צד של החותך.',vert:'קודקודיות: באותו קודקוד, זו מול זו.',adj:'צמודות: באותו קודקוד, עם שוק משותפת, והשוקיים האחרות יוצרות ישר.'};
+const TRICK={corr:'צורת F: באותה פינה בשני הצמתים ← הזוויות שוות',alt:'צורת Z (זיגזג) ← הזוויות שוות',co:'צורת ח (או C) ← ביחד 180°',vert:'צורת X (מספריים) ← הזוויות שוות',adj:'יושבות יחד על קו ישר ← ביחד 180°'};
+const LETTER={corr:'F',alt:'Z',co:'C',vert:'X',adj:'—'};
+const BIG='🔑 הטריק הגדול: בשרטוט יש רק שני גדלים, זווית חדה וזווית קהה. חדה = חדה. קהה = קהה. חדה + קהה = 180°.';
+const isEq=k=>k==='corr'||k==='alt'||k==='vert';
+
+function relation(P1,P2){
+  if(P1.v===P2.v)return P1.p===OPP[P2.p]?{kind:'vert',path:[{k:'vert',from:P1,to:P2}]}:{kind:'adj',path:[{k:'adj',from:P1,to:P2}]};
+  let a=P1,b=P2;if(a.v==='F')[a,b]=[b,a];
+  if(a.p===b.p)return{kind:'corr',path:[{k:'corr',from:a,to:b}]};
+  const key=a.p+b.p;
+  if(key==='BLTR'||key==='BRTL')return{kind:'alt',path:[{k:'alt',from:a,to:b}]};
+  const mid={v:'F',p:a.p};
+  if(key==='BLTL'||key==='BRTR')return{kind:'co',mid,path:[{k:'corr',from:a,to:mid},{k:'adj',from:mid,to:b}]};
+  const r2=relation(mid,b);
+  return{kind:'chain',mid,first:'corr',second:r2.kind,path:[{k:'corr',from:a,to:mid},...r2.path]};
+}
+
+/* ===== שרטוט ===== */
+const Y1=150,EX0=560;let Y2=350;
+let PHI=60;
+function G(){const r=PHI*Math.PI/180,dx=(Y2-Y1)/Math.tan(r);const E={x:EX0+dx/2,y:Y1},F={x:EX0-dx/2,y:Y2},u={x:Math.cos(r),y:-Math.sin(r)};return{E,F,u};}
+const dispPhi=v=>Math.max(28,Math.min(152,v));
+function rangeOf(p){return{TR:[0,PHI],TL:[PHI,180],BL:[180,180+PHI],BR:[180+PHI,360]}[p];}
+const V=P=>G()[P.v];
+const pt=(c,r,a)=>({x:c.x+r*Math.cos(a*Math.PI/180),y:c.y-r*Math.sin(a*Math.PI/180)});
+function sector(P,color,op=.45,r=46,id=''){
+  const c=V(P),[a1,a2]=rangeOf(P.p),p1=pt(c,r,a1),p2=pt(c,r,a2),lg=(a2-a1)>180?1:0;
+  return `<path ${id?`id="${id}"`:''} d="M${c.x},${c.y} L${p1.x.toFixed(1)},${p1.y.toFixed(1)} A${r},${r} 0 ${lg} 0 ${p2.x.toFixed(1)},${p2.y.toFixed(1)} Z" fill="${color}" fill-opacity="${op}" stroke="${color}" stroke-width="3"/>`;
+}
+function svgText(t){return t.replace(/-/g,MI).replace(/x/g,'<tspan font-style="italic" font-family="Times New Roman,serif">x</tspan>');}
+function label(P,text,color,r=96){
+  const c=V(P),[a1,a2]=rangeOf(P.p),m=pt(c,r,(a1+a2)/2),w=Math.max(58,text.length*16+20);
+  return `<g><rect x="${m.x-w/2}" y="${m.y-19}" width="${w}" height="38" rx="10" fill="#fff" stroke="${color}" stroke-width="3"/><text x="${m.x}" y="${m.y+9}" text-anchor="middle" font-size="27" font-weight="800" fill="${color}">${svgText(text)}</text></g>`;
+}
+function base(){
+  const {E,F,u}=G(),Gp={x:E.x+u.x*100,y:E.y+u.y*100},H={x:F.x-u.x*100,y:F.y-u.y*100};
+  const chev=(x,y)=>`<path d="M${x},${y-9} l12,9 l-12,9 M${x+12},${y-9} l12,9 l-12,9" fill="none" stroke="#1f2937" stroke-width="3"/>`;
+  const P=(p,t,dx,dy)=>`<circle cx="${p.x}" cy="${p.y}" r="5" fill="#1f2937"/><text x="${p.x+dx}" y="${p.y+dy}" font-size="26" font-weight="800" fill="#1f2937" text-anchor="middle">${t}</text>`;
+  return `<line x1="90" y1="${Y1}" x2="970" y2="${Y1}" stroke="#1f2937" stroke-width="4"/><line x1="90" y1="${Y2}" x2="970" y2="${Y2}" stroke="#1f2937" stroke-width="4"/>
+  <line x1="${Gp.x}" y1="${Gp.y}" x2="${H.x}" y2="${H.y}" stroke="#1f2937" stroke-width="4"/>${chev(180,Y1)}${chev(180,Y2)}
+  ${P({x:90,y:Y1},'A',-22,8)}${P({x:970,y:Y1},'B',22,8)}${P({x:90,y:Y2},'C',-22,8)}${P({x:970,y:Y2},'D',22,8)}
+  ${P(Gp,'G',(u.x>0?22:-22),-6)}${P(H,'H',(u.x>0?-22:22),24)}${P(E,'E',(u.x>0?-26:26),-14)}${P(F,'F',(u.x>0?26:-26),30)}`;
+}
+const wrap=inner=>`<svg viewBox="0 0 1060 500" role="img" aria-label="שני ישרים מקבילים וישר חותך">${base()}${inner}</svg>`;
+function shape(P1,P2,kind){ // הטריק: מציירים את האות (F, Z, C, X) על השרטוט
+  const {E,F,u}=G(),hd=P=>(P.p==='TR'||P.p==='BR')?1:-1,ray=P=>{const c=V(P);return `M${c.x},${c.y} L${c.x+hd(P)*190},${c.y}`;};
+  const tr=(a,b)=>`M${a.x+u.x*a.k},${a.y+u.y*a.k} L${b.x-u.x*b.k},${b.y-u.y*b.k}`;
+  const hl=c=>`M90,${c.y} L970,${c.y}`,tl=c=>`M${c.x+u.x*130},${c.y+u.y*130} L${c.x-u.x*130},${c.y-u.y*130}`;
+  let d;
+  if(kind==='vert')d=hl(V(P1))+tl(V(P1));
+  else if(kind==='adj')d=hd(P1)!==hd(P2)?hl(V(P1)):tl(V(P1));
+  else d=ray(P1)+ray(P2)+tr({...E,k:40},{...F,k:40});
+  const L=LETTER[kind],c=kind==='vert'||kind==='adj'?V(P1):{x:(E.x+F.x)/2,y:(E.y+F.y)/2};
+  return `<g opacity=".9"><path d="${d}" fill="none" stroke="${GOLD}" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" opacity=".55"/>${L!=='—'?`<circle cx="${c.x+70}" cy="${c.y-40}" r="30" fill="${GOLD}"/><text x="${c.x+70}" y="${c.y-29}" text-anchor="middle" font-size="34" font-weight="900" fill="#1f2937">${L}</text>`:''}</g>`;
+}
+const addSVG=h=>{const s=$('#svg svg');if(s)s.insertAdjacentHTML('beforeend',h);};
+
+/* ===== תנועה ===== */
+let anim=0;
+const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+function tween(ms,fn,done,id){const t0=performance.now();(function f(now){if(id!==anim)return;const t=Math.min(1,(now-t0)/ms);fn(t);if(t<1)requestAnimationFrame(f);else done&&done();})(t0);}
+function seg(s,c,id,done){ // הנפשה של צעד אחד בהוכחה
+  if(s.k==='adj'){
+    const c0=V(s.from),r1=rangeOf(s.from.p),r2=rangeOf(s.to.p);let a,b;
+    if(r1[1]===r2[0]){a=r1[0];b=r2[1];}else if(r2[1]===r1[0]){a=r2[0];b=r1[1];}else if(r1[1]===360){a=r1[0];b=360+r2[1];}else{a=r2[0];b=360+r1[1];}
+    const p1=pt(c0,72,a),p2=pt(c0,72,b),m=pt(c0,104,(a+b)/2);
+    addSVG(`<g id="adjG" opacity="0"><path d="M${p1.x},${p1.y} A72,72 0 0 0 ${p2.x},${p2.y}" fill="none" stroke="${GOLD}" stroke-width="7" stroke-dasharray="10 6"/><rect x="${m.x-38}" y="${m.y-20}" width="76" height="40" rx="12" fill="${GOLD}"/><text x="${m.x}" y="${m.y+10}" text-anchor="middle" font-size="26" font-weight="800">180°</text></g>`);
+    const g=$('#adjG');tween(900,t=>g.setAttribute('opacity',t),()=>setTimeout(done,500),id);return;}
+  addSVG(`<g id="ghost">${sector(s.from,c,.75,46)}</g>`);const g=$('#ghost'),A=V(s.from),B=V(s.to);
+  tween(1600,t=>{const e=ease(t);
+    if(s.k==='corr')g.setAttribute('transform',`translate(${(B.x-A.x)*e},${(B.y-A.y)*e})`);
+    else if(s.k==='alt'){const mx=(A.x+B.x)/2,my=(A.y+B.y)/2;g.setAttribute('transform',`rotate(${180*e} ${mx} ${my})`);}
+    else g.setAttribute('transform',`rotate(${180*e} ${A.x} ${A.y})`);},()=>{g.removeAttribute('id');setTimeout(done,400);},id);
+}
+function runPath(path,cols,id,done){let i=0;const nx=()=>{if(id!==anim)return;if(i>=path.length){done&&done();return;}seg(path[i],cols[i],id,()=>{i++;nx();});};nx();}
+
+/* ===== ביטויים ליניאריים ===== */
+function lin(s){
+  s=String(s).replace(/[−–]/g,'-').replace(/\s+/g,'').replace(/X/g,'x');
+  if(!/^[-+]?(\d*x|\d+)([-+](\d*x|\d+))*$/.test(s))throw `לא הצלחתי לקרוא את "${s}". כותבים למשל 70 או 2x+10.`;
+  let p=0,q=0;
+  for(const m of s.matchAll(/([-+]?)(\d*)x|([-+]?)(\d+)/g)){
+    if(m[0].includes('x')){const c=m[2]===''?1:+m[2];p+=m[1]==='-'?-c:c;}else{const c=+m[4];q+=m[3]==='-'?-c:c;}}
+  return{p,q};
+}
+const val=(L,x)=>L.p*x+L.q;
+function fmt(L,c){
+  let h='';
+  if(L.p){h+=(L.p===1?'':L.p===-1?MI:plain(L.p))+XV;}
+  if(L.q||!L.p){h+=L.p?(L.q>0?` + ${L.q}`:L.q<0?` ${MI} ${-L.q}`:''):plain(L.q);}
+  return c?`<span style="color:${c}">${h}</span>`:h;
+}
+const fmtS=L=>{let s='';if(L.p)s+=(L.p===1?'':L.p===-1?'-':L.p)+'x';if(L.q||!L.p)s+=L.p?(L.q>0?'+'+L.q:L.q<0?''+L.q:''):''+L.q;return s;};
+
+/* ===== בניית השלבים ===== */
+let Q=null,S=[],cur=0;
+function options(cor,cands){const out=[{v:cor,ok:true}];for(const c of cands){if(out.length>=3)break;if(!out.some(o=>o.v===c.v))out.push(c);}return shuffle(out);}
+function build(){
+  const {P1,P2,e1,e2,lvl}=Q;const R=relation(P1,P2),eq=typ(P1.p)===typ(P2.p);
+  const L1=lin(e1),unk=e2.trim()==='?',L2=unk?null:lin(e2);
+  // פתרון
+  let x=null,v1,v2;
+  if(unk){if(L1.p)throw 'כשמחפשים זווית בלי x, הזווית הנתונה צריכה להיות מספר.';v1=L1.q;v2=eq?v1:180-v1;}
+  else if(!L1.p&&!L2.p){v1=L1.q;v2=L2.q;if(eq?v1!==v2:v1+v2!==180)throw `לפי הכלל, הזוויות ${eq?'שוות':'משלימות ל־180°'}, אבל המספרים לא מתאימים לזה.`;}
+  else{
+    let Lh,Rh;if(eq){Lh=L1.p>=L2.p?L1:L2;Rh=Lh===L1?L2:L1;}else{Lh={p:L1.p+L2.p,q:L1.q+L2.q};Rh={p:0,q:180};}
+    const P=Lh.p-Rh.p;if(P<=0)throw eq&&L1.p===L2.p?'המקדם של x שווה בשני הביטויים, ולכן אין פתרון אחד. בחרי ביטויים אחרים.':'המקדם של x צריך לצאת חיובי. בחרי ביטויים אחרים.';
+    if((Rh.q-Lh.q)%P)throw 'x לא יוצא מספר שלם. כדאי לבחור מספרים אחרים.';
+    x=(Rh.q-Lh.q)/P;v1=val(L1,x);v2=val(L2,x);}
+  for(const v of [v1,v2])if(!(v>0&&v<180))throw `אחת הזוויות יוצאת ${v}°. זווית כזו לא יכולה להיווצר בין ישר חותך לישר. בחרי מספרים אחרים.`;
+  const realPhi=typ(P1.p)==='a'?v1:180-v1;
+  const draw0=()=>{PHI=realPhi<90?60:120;};const drawReal=()=>{PHI=dispPhi(realPhi);};
+  const lab1=e1.replace(/\s/g,''),lab2=unk?'?':e2.replace(/\s/g,'');
+  const pair=(o='')=>sector(P1,C1)+sector(P2,C2)+label(P1,lab1,C1)+label(P2,lab2,C2)+o;
+  const giv=`נתון: ${M('AB ∥ CD')}. ${M(`${ang(P1,C1)} = ${fmt(L1,C1)}${!L1.p?'°':''}`)}${unk?'':`, ${M(`${ang(P2,C2)} = ${fmt(L2,C2)}${!L2.p?'°':''}`)}`}.<br>${unk?`מצאו את ${M(ang(P2,C2))}.`:x!==null?`מצאו את ${XV} ואת גודל הזוויות.`:''}`;
+  const steps=[];
+  // שלב 1: מזהים
+  const direct=R.kind!=='chain';
+  const others=shuffle(Object.keys(KIND).filter(k=>k!==R.kind)).slice(0,2);
+  steps.push({t:'מה רואים?',ex:giv,vis:()=>{draw0();return wrap(pair());},
+    cap:`${direct?'💡 רמז: חפשו אות בשרטוט: F, Z, C או X.':`💡 ${BIG}`}<br><span class="note">השרטוט אינו בקנה מידה.</span>`,
+    pred:direct?{q:'🤔 איזה זוג זוויות זה?',opts:shuffle([{v:KIND[R.kind],ok:true},...others.map(k=>({v:KIND[k],fb:`${HINT[R.kind]} טריק: ${TRICK[R.kind]}.`}))])}
+      :{q:'🤔 אין כלל ישיר ביניהן. האם הזוויות שוות, או שסכומן 180°?',opts:shuffle([{v:'שוות',ok:eq,fb:'טריק: האם שתיהן חדות, או שתיהן קהות? אם לא, ביחד הן 180°.'},{v:'סכומן 180°',ok:!eq,fb:'טריק: שתיהן חדות או שתיהן קהות? אז הן שוות.'}])},
+    w:direct?'מזהים את סוג הזוויות לפי המקום שלהן בשרטוט.':'כשאין כלל ישיר, נעזרים בזווית שלישית.'});
+  // שלב 2: למה (הנפשה)
+  const cols=R.path.map((s,i)=>i===0?(s.from.v===P1.v&&s.from.p===P1.p?C1:C2):CM);
+  const mid=R.mid;
+  const stmts=[];
+  if(R.kind==='chain'){
+    stmts.push(`${M(`${ang(R.path[0].from)} = ${ang(mid,CM)}`)} (${RULE.corr.replace('.','')})`);
+    stmts.push(isEq(R.second)?`${M(`${ang(mid,CM)} = ${ang(R.path[1].to)}`)} (${RULE.vert.replace('.','')})`:`${M(`${ang(mid,CM)} + ${ang(R.path[1].to)} = 180°`)} (${RULE.adj.replace('.','')})`);
+  }else stmts.push(eq?`${M(`${ang(P1,C1)} = ${ang(P2,C2)}`)} (${RULE[R.kind].replace('.','')})`:`${M(`${ang(P1,C1)} + ${ang(P2,C2)} = 180°`)} (${RULE[R.kind].replace('.','')})`);
+  const rules=R.kind==='chain'?[RULE.corr,RULE[R.second]]:[RULE[R.kind]];
+  const trick=R.kind==='chain'?BIG:`🔑 טריק: ${TRICK[R.kind]}`;
+  steps.push({t:'למה?',ex:giv,vis:()=>{draw0();return wrap((R.kind!=='chain'?shape(P1,P2,R.kind):'')+pair(mid?sector(mid,CM,.25):''));},
+    run:id=>{draw0();runPath(R.path,cols,id);},
+    cap:`<div style="font-weight:800;margin-bottom:6px">${trick}</div><span class="rule">${rules.map(r=>`<div>📌 ${r}</div>`).join('')}</span> <button class="replay" style="font-size:18px" onclick="render()">↻ שוב</button>`,
+    calc:stmts,w:R.kind==='alt'?'חצי סיבוב סביב אמצע הקטע EF מעביר זווית אחת על השנייה.':R.kind==='corr'?'הזווית מחליקה לאורך החותך ונוחתת על הזווית השנייה.':R.kind==='vert'?'חצי סיבוב סביב הקודקוד מעביר זווית אחת על השנייה.':R.kind==='adj'?'שתי הזוויות יחד יוצרות ישר, כלומר 180°.':'קודם מחליקים לצומת השנייה, ואז משתמשים בכלל שבאותו קודקוד.'});
+  // משוואה ופתרון
+  if(unk){
+    steps.push({t:'מחשבים',ex:giv,vis:()=>{draw0();return wrap(pair());},
+      board:[eq?`${ang(P2,C2)} = ${ang(P1,C1)} = <span class="res">${v2}°</span>`:`${ang(P2,C2)} = 180° ${MI} ${v1}° = <span class="res">${v2}°</span>`],
+      pred:{q:`🤔 כמה זה ${M(ang(P2,C2))}?`,opts:options(v2+'°',[{v:(eq?180-v1:v1)+'°',fb:eq?'הזוויות שוות, לא משלימות ל־180°.':'הזוויות משלימות ל־180°, הן לא שוות.'},{v:(v2+10)+'°',fb:'בדקו שוב את החישוב.'}]),gate:true},
+      w:eq?'זוויות שוות: אותו גודל.':'מחסירים מ־180°.'});
+  }else if(x!==null){
+    let Lh,Rh,lines=[];
+    if(eq){Lh=L1.p>=L2.p?L1:L2;Rh=Lh===L1?L2:L1;const cL=Lh===L1?C1:C2,cR=Lh===L1?C2:C1;lines.push({eq:`${fmt(Lh,cL)} = ${fmt(Rh,cR)}`,w:'הזוויות שוות, ולכן הביטויים שווים.',first:true});}
+    else{lines.push({eq:`${fmt(L1,C1)} + ${fmt(L2,C2)} = 180`,w:'סכום הזוויות 180°.',first:true});
+      Lh={p:L1.p+L2.p,q:L1.q+L2.q};Rh={p:0,q:180};
+      if((L1.p&&L2.p)||(L1.q&&L2.q))lines.push({eq:`${fmt(Lh)} = 180`,ann:'',w:'מכנסים איברים דומים: x עם x, ומספרים עם מספרים.',
+        pred:{q:'🤔 מה עושים עכשיו?',opts:shuffle([{v:'מכנסים איברים דומים',ok:true},{v:'מחלקים ב־180',fb:'קודם מסדרים כל צד: x עם x ומספרים עם מספרים.'},{v:'מחסירים x',fb:'קודם מסדרים כל צד: x עם x ומספרים עם מספרים.'}])}});}
+    let cl={...Lh},cr={...Rh};
+    if(cr.p){const k=cr.p;cl={p:cl.p-k,q:cl.q};cr={p:0,q:cr.q};
+      lines.push({eq:`${fmt(cl)} = ${fmt(cr)}`,ann:`| ${MI}${k===1?'':k}${XV}`,w:`מחסירים ${M((k===1?'':k)+XV)} משני האגפים, כדי שה־${XV} יהיה רק בצד אחד.`,
+        pred:{q:'🤔 מה עושים עכשיו?',opts:shuffle([{v:`מחסירים ${M((k===1?'':k)+XV)} משני האגפים`,ok:true},{v:`מחסירים ${M(k)} משני האגפים`,fb:`צריך להוריד את כל האיבר ${M((k===1?'':k)+XV)}, לא רק את המספר.`},{v:`מחלקים ב־${M(k)}`,fb:'קודם מעבירים את כל ה־x לצד אחד.'}])}});}
+    if(cl.q){const q=cl.q;cl={p:cl.p,q:0};cr={p:0,q:cr.q-q};
+      lines.push({eq:`${fmt(cl)} = ${fmt(cr)}`,ann:q>0?`| ${MI}${q}`:`| +${-q}`,w:q>0?`מחסירים ${M(q)} משני האגפים.`:`מוסיפים ${M(-q)} לשני האגפים.`,
+        pred:{q:'🤔 מה עושים עכשיו?',opts:shuffle([{v:q>0?`מחסירים ${M(q)} משני האגפים`:`מוסיפים ${M(-q)} לשני האגפים`,ok:true},{v:q>0?`מוסיפים ${M(q)} לשני האגפים`:`מחסירים ${M(-q)} משני האגפים`,fb:'עושים את הפעולה ההפוכה, כדי שהמספר ייעלם מהצד של x.'},{v:`מחסירים ${M(q)} רק מצד אחד`,fb:'מה שעושים לצד אחד, עושים גם לצד השני.'}])}});}
+    if(cl.p!==1){const k=cl.p;lines.push({eq:`${XV} = <span class="res">${x}</span>`,ann:`| : ${k}`,w:`מחלקים את שני האגפים ב־${M(k)}.`,
+        pred:{q:'🤔 מה עושים עכשיו?',opts:shuffle([{v:`מחלקים את שני האגפים ב־${M(k)}`,ok:true},{v:`מחסירים ${M(k)} משני האגפים`,fb:`${M(k+XV)} פירושו ${M(k)} כפול ${XV}. הפעולה ההפוכה לכפל היא חילוק.`},{v:`כופלים ב־${M(k)}`,fb:'הפעולה ההפוכה לכפל היא חילוק.'}])}});}
+    else lines[lines.length-1].eq=lines[lines.length-1].eq.replace(new RegExp(`= ${x}$`),`= <span class="res">${x}</span>`);
+    const boards=[];
+    lines.forEach((l,i)=>{boards.push(l);const B=boards.map((b,j)=>({h:b.eq,ann:b.ann||'',isNew:j===i}));
+      steps.push({t:i===0?'משוואה':'פותרים',ex:giv,vis:()=>{draw0();return wrap(pair());},boardL:B,
+        pred:l.pred?{...l.pred,gate:true}:null,w:l.w});});
+  }
+  // בדיקה
+  if(!unk){
+    const chk=x!==null?[`${ang(P1,C1)} = ${M(fmtS(L1).replace(/x/,'·'+x).replace(/^·/,'').replace(/-/g,MI).replace(/^1·/,''))} = ${v1}°`,`${ang(P2,C2)} = ${M(fmtS(L2).replace(/x/,'·'+x).replace(/^·/,'').replace(/-/g,MI).replace(/^1·/,''))} = ${v2}°`]:[`${ang(P1,C1)} = ${v1}°`,`${ang(P2,C2)} = ${v2}°`];
+    steps.push({t:'בדיקה',ex:giv,vis:()=>{drawReal();return wrap(sector(P1,C1)+sector(P2,C2)+label(P1,v1+'°',C1)+label(P2,v2+'°',C2));},
+      board:[...chk.map(c=>M(c)),eq?`${v1}° = ${v2}° ✓`:`${v1}° + ${v2}° = 180° ✓`],
+      cap:'<span class="note">עכשיו השרטוט בקנה מידה, לפי הזוויות שמצאנו.</span>',w:'מציבים את מה שמצאנו ובודקים שהכלל מתקיים.'});
+  }
+  // טענה ונימוק + כל 8 הזוויות
+  const all=()=>{drawReal();let h='';for(const v of ['E','F'])for(const p of ['TR','TL','BL','BR']){const P={v,p},a=typ(p)==='a'?realPhi:180-realPhi,c=typ(p)==='a'?FA:FB;h+=sector(P,c,.22,40)+label(P,a+'°',c,78);}return wrap(h);};
+  steps.push({t:'טענה ונימוק',ex:giv,vis:all,board:[x!==null?`${XV} = <span class="res">${x}</span>`:'',`${ang(P1,C1)} = ${v1}°`,`${ang(P2,C2)} = ${v2}°`].filter(Boolean),
+    cap:`<span class="rule">${stmts.map(s=>`<div>✍️ ${s}</div>`).join('')}</span><div style="margin-top:8px;font-size:24px">${BIG}</div>`,
+    w:`כל 8 הזוויות: 4 זוויות של ${realPhi}° ו־4 זוויות של ${180-realPhi}°. כל זוג סמוך משלים ל־180°.`});
+  return steps;
+}
+
+/* ===== הצגה ===== */
+function show(){EXP=false;document.body.classList.remove('exp');$('.navbar').style.display='';S=build();cur=0;render();$('#lvl').textContent=Q.lvl?'★'.repeat(Q.lvl):'שאלה מהספר';}
+function render(){
+  anim++;const id=anim,s=S[cur];
+  $('#ex').innerHTML=s.ex;$('#svg').innerHTML=s.vis();$('#cap').innerHTML=s.cap||'';
+  const B=$('#board');
+  const drawBoard=(revealLast)=>{if(s.boardL)B.innerHTML=s.boardL.filter((b,j)=>revealLast||!b.isNew).map(b=>`<div class="ln ${b.isNew?'new':''}">${M(b.h)}${b.ann?`<span class="ann">${M(b.ann)}</span>`:''}</div>`).join('');
+    else if(s.board)B.innerHTML=(revealLast?s.board:s.board.slice(0,-1)).map((b,j)=>`<div class="ln">${M(b)}</div>`).join('');else B.innerHTML='';};
+  $('#stage').classList.toggle('noboard',!(s.board||s.boardL));
+  const gated=s.pred&&s.pred.gate&&Q.pred;
+  drawBoard(!gated);
+  const P=$('#pred');
+  if(s.pred&&Q.pred){P.style.display='block';P.querySelector('.q').innerHTML=s.pred.q;P.querySelector('.fb').innerHTML='';
+    P.querySelector('.opts').innerHTML=s.pred.opts.map((o,i)=>`<button data-i="${i}">${o.v}</button>`).join('');
+    const old=P.querySelector('.skip');if(old)old.remove();
+    if(gated){P.insertAdjacentHTML('beforeend','<button class="skip">▶ להראות בלי לנחש</button>');P.querySelector('.skip').onclick=()=>{drawBoard(true);P.querySelector('.skip').remove();};}
+    P.querySelectorAll('.opts button').forEach(btn=>btn.onclick=()=>{const o=s.pred.opts[+btn.dataset.i];
+      if(o.ok){P.querySelectorAll('.opts button').forEach(x=>x.disabled=true);btn.classList.add('ok');P.querySelector('.fb').innerHTML='<span style="color:#16a34a">✓ נכון! 🎉</span>';if(gated){drawBoard(true);const sk=P.querySelector('.skip');if(sk)sk.remove();}}
+      else{btn.classList.add('bad');btn.disabled=true;P.querySelector('.fb').innerHTML=`<span style="color:#dc2626">${o.fb}</span> נסו שוב.`;}});}
+  else{P.style.display='none';}
+  let c='';S.slice(0,cur+1).forEach((x,i)=>(x.calc||[]).forEach(l=>c+=`<div class="${i===cur?'new':''}">${l}</div>`));
+  $('#calc').innerHTML=c;$('#why').innerHTML='💡 '+s.w;
+  $('#dots').innerHTML=S.map((x,i)=>`<button class="${i===cur?'on':i<cur?'done':''}" data-i="${i}">${i+1}. ${x.t}</button>`).join('');
+  document.querySelectorAll('#dots button').forEach(b=>b.onclick=()=>{cur=+b.dataset.i;render();});
+  $('#prev').disabled=cur===0;$('#next').disabled=cur===S.length-1;
+  if(s.run)s.run(id);
+}
+const next=()=>{if(EXP)return;if(cur<S.length-1){cur++;render();}}, prev=()=>{if(EXP)return;if(cur>0){cur--;render();}};
+
+/* ===== חקירה חופשית: גוררים ורואים ===== */
+let EXP=false,sel=[],drag=null,raf=0;
+const key=P=>P.v+'-'+P.p;
+function expSVG(){
+  const ph=PHI,{E,u}=G(),Gp={x:E.x+u.x*100,y:E.y+u.y*100};
+  let h='';
+  if(sel.length===2){const R=relation(sel[0],sel[1]);if(R.kind!=='chain')h+=shape(sel[0],sel[1],R.kind);}
+  for(const P of ALLP){const i=sel.findIndex(s=>key(s)===key(P)),a=typ(P.p)==='a'?ph:180-ph,c=i===0?C1:i===1?C2:(typ(P.p)==='a'?FA:FB);
+    h+=`<g class="hit" data-k="${key(P)}" style="cursor:pointer">${sector(P,'transparent',0,95)}${sector(P,c,i>=0?.65:.18,46)}${label(P,a+'°',c,80)}</g>`;}
+  h+=`<g id="hG" style="cursor:grab"><circle cx="${Gp.x}" cy="${Gp.y}" r="24" fill="${GOLD}" stroke="#1f2937" stroke-width="3"/><text x="${Gp.x}" y="${Gp.y+9}" text-anchor="middle" font-size="26" font-weight="900">↻</text></g>`;
+  h+=`<g id="hL" style="cursor:ns-resize"><circle cx="1015" cy="${Y2}" r="24" fill="${GOLD}" stroke="#1f2937" stroke-width="3"/><text x="1015" y="${Y2+9}" text-anchor="middle" font-size="26" font-weight="900">↕</text></g>`;
+  return wrap(h);
+}
+function renderExp(){
+  anim++;EXP=true;document.body.classList.add('exp');
+  $('#lvl').textContent='🖐️ חקירה';$('.navbar').style.display='none';$('#pred').style.display='none';
+  $('#ex').innerHTML='🖐️ גררו את <b style="color:#b45309">↻</b> כדי לסובב את החותך, ואת <b style="color:#b45309">↕</b> כדי להזיז את הישר התחתון.<br>לחצו על שתי זוויות כדי לבדוק אותן.';
+  $('#svg').innerHTML=expSVG();
+  const ph=PHI;let cap,board=[];
+  if(sel.length===2){const [A,B]=sel,R=relation(A,B),eq=typ(A.p)===typ(B.p),va=typ(A.p)==='a'?ph:180-ph,vb=typ(B.p)==='a'?ph:180-ph;
+    const name=R.kind==='chain'?'אין ביניהן כלל ישיר. נעזרים בזווית שלישית.':`אלה זוויות ${KIND[R.kind]}`;
+    const trick=R.kind==='chain'?BIG:`🔑 טריק: ${TRICK[R.kind]}`;
+    const rules=R.kind==='chain'?[RULE.corr,RULE[R.second]]:[RULE[R.kind]];
+    board=[eq?`${ang(A,C1)} = ${ang(B,C2)}`:`${ang(A,C1)} + ${ang(B,C2)} = 180°`,eq?`<span class="c1">${va}°</span> = <span class="c2">${vb}°</span> ✓`:`<span class="c1">${va}°</span> + <span class="c2">${vb}°</span> = 180° ✓`];
+    cap=`<div style="font-weight:800">${name}</div><div style="font-weight:700;margin:4px 0">${trick}</div><span class="rule">${rules.map(r=>`<div>📌 ${r}</div>`).join('')}</span><div style="margin-top:8px"><button id="lock" style="background:#1e1b4b;color:#fff;font-weight:800">🔒 הפוך לשאלה</button><button id="clr">↺ בחירה חדשה</button></div>`;
+  }else cap=sel.length?`בחרתם את ${M(ang(sel[0],C1))}. לחצו על זווית נוספת.`:`<div style="font-size:24px">${BIG}</div>`;
+  $('#cap').innerHTML=cap;
+  $('#board').innerHTML=board.map(b=>`<div class="ln">${M(b)}</div>`).join('');
+  $('#stage').classList.toggle('noboard',!board.length);
+  $('#calc').innerHTML='';$('#why').innerHTML=`💡 עכשיו בשרטוט: 4 זוויות של ${ph}° ו־4 זוויות של ${180-ph}°.<br>${M(`${ph}° + ${180-ph}° = 180°`)}`;
+  if($('#lock'))$('#lock').onclick=()=>{const [A,B]=sel,va=typ(A.p)==='a'?PHI:180-PHI;Q={P1:A,P2:B,e1:''+va,e2:'?',lvl:1,pred:DP};sel=[];show();};
+  if($('#clr'))$('#clr').onclick=()=>{sel=[];renderExp();};
+}
+function svgPt(e){const s=$('#svg svg'),p=s.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(s.getScreenCTM().inverse());}
+$('#svg').addEventListener('pointerdown',e=>{if(!EXP)return;
+  if(e.target.closest('#hG'))drag='G';else if(e.target.closest('#hL'))drag='L';
+  else{const h=e.target.closest('.hit');if(h){const [v,p]=h.dataset.k.split('-'),P={v,p},i=sel.findIndex(s=>key(s)===key(P));
+    if(i>=0)sel.splice(i,1);else{sel.push(P);if(sel.length>2)sel.shift();}renderExp();}return;}
+  e.preventDefault();});
+addEventListener('pointermove',e=>{if(!drag||!EXP)return;const q=svgPt(e),cy=(Y1+Y2)/2;
+  if(drag==='G'){let a=Math.atan2(cy-q.y,q.x-EX0)*180/Math.PI;if(a<0)a+=180;PHI=Math.round(Math.max(25,Math.min(155,a)));}
+  else Y2=Math.round(Math.max(Y1+110,Math.min(385,q.y)));
+  if(!raf)raf=requestAnimationFrame(()=>{raf=0;renderExp();});});
+addEventListener('pointerup',()=>{drag=null;});
+$('#exp').onclick=()=>{sel=[];PHI=60;renderExp();};
+
+/* ===== שאלות מוכנות ===== */
+const ALLP=[];for(const v of ['E','F'])for(const p of ['TR','TL','BL','BR'])ALLP.push({v,p});
+function pairOfKind(k){
+  if(k==='chain'){const L=[];for(const a of ALLP.filter(P=>P.v==='E'))for(const b of ALLP.filter(P=>P.v==='F'))if(relation(a,b).kind==='chain')L.push([a,b]);return pick(L);}
+  const L=[];for(const a of ALLP)for(const b of ALLP)if(a!==b&&relation(a,b).kind===k)L.push([a,b]);return pick(L);
+}
+function genQ(lvl,kind){
+  for(let t=0;t<200;t++){
+    const k=lvl===4?'chain':(kind||pick(Object.keys(KIND)));let [P1,P2]=pairOfKind(k);if(Math.random()<.5)[P1,P2]=[P2,P1];
+    let phi=rnd(35,145);if(Math.abs(phi-90)<8)continue;
+    const v1=typ(P1.p)==='a'?phi:180-phi,v2=typ(P2.p)==='a'?phi:180-phi,eq=typ(P1.p)===typ(P2.p);
+    let e1,e2;
+    if(lvl===1){e1=''+v1;e2='?';}
+    else if(lvl===2){e1=''+v1;if(Math.random()<.5&&v2%2===0){const kk=pick([2,3,4].filter(z=>v2%z===0));e2=kk+'x';}else{const q=rnd(10,40);if(v2-q<5)continue;e2='x+'+q;}}
+    else{const x0=rnd(6,35);let p1=rnd(1,4),p2=rnd(1,4);if(eq&&p1===p2)continue;
+      const q1=v1-p1*x0,q2=v2-p2*x0;if(Math.abs(q1)>90||Math.abs(q2)>90)continue;
+      e1=fmtS({p:p1,q:q1});e2=fmtS({p:p2,q:q2});}
+    const q={P1,P2,e1,e2,lvl,pred:Q?Q.pred:true};const old=Q;Q=q;try{build();Q=old;return q;}catch(e){Q=old;}
+  }
+  return{P1:{v:'E',p:'TR'},P2:{v:'F',p:'TR'},e1:'2x+10',e2:'3x-20',lvl:3,pred:true};
+}
+
+/* ===== חלון המורה ===== */
+let DL=3,DK=null,DP=true;
+function dlg(){
+  $('#fLvl').innerHTML=[1,2,3,4].map(l=>`<button data-l="${l}" class="${DL===l?'on':''}">${'★'.repeat(l)}<br><small style="font-size:14px">${['מספרים בלבד','משוואה פשוטה','x בשני הצדדים','שרשרת של כללים'][l-1]}</small></button>`).join('');
+  document.querySelectorAll('#fLvl button').forEach(b=>b.onclick=()=>{DL=+b.dataset.l;dlg();});
+  $('#fKind').innerHTML=[[null,'🎲 מעורבב'],...Object.entries(KIND)].map(([k,t])=>`<button data-k="${k}" class="${DK===k?'on':''}" ${DL===4&&k?'disabled':''}>${t}</button>`).join('');
+  document.querySelectorAll('#fKind button').forEach(b=>b.onclick=()=>{DK=b.dataset.k==='null'?null:b.dataset.k;dlg();});
+  $('#fPred').innerHTML=[[true,'🤔 כן'],[false,'בלי']].map(([v,t])=>`<button data-p="${v}" class="${DP===v?'on':''}">${t}</button>`).join('');
+  document.querySelectorAll('#fPred button').forEach(b=>b.onclick=()=>{DP=b.dataset.p==='true';dlg();});
+  const opts=sel=>ALLP.map(P=>`<option value="${P.v}-${P.p}" ${sel===P.v+'-'+P.p?'selected':''}>${angTxt(P)}</option>`).join('');
+  if(!$('#a1').options.length){$('#a1').innerHTML=opts('E-TR');$('#a2').innerHTML=opts('F-TR');}
+  $('#err').textContent='';
+}
+const err=t=>{$('#err').textContent=t;};
+function go(){
+  const P=s=>{const [v,p]=s.split('-');return{v,p};};
+  const P1=P($('#a1').value),P2=P($('#a2').value);
+  if(P1.v===P2.v&&P1.p===P2.p)return err('בחרי שתי זוויות שונות.');
+  const e1=$('#e1').value.trim(),e2=$('#e2').value.trim();
+  if(e1==='?')return err('את ? כותבים רק בזווית השנייה.');
+  const q={P1,P2,e1,e2,lvl:0,pred:DP};const old=Q;Q=q;
+  try{build();}catch(e){Q=old;return err(typeof e==='string'?e:'יש בעיה בנתונים.');}
+  $('#dlg').close();show();
+}
+$('#edit').onclick=()=>{dlg();$('#dlg').showModal();};
+$('#fRnd').onclick=()=>{Q=genQ(DL,DL===4?null:DK);Q.pred=DP;$('#dlg').close();show();};
+$('#fGo').onclick=go;$('#fCancel').onclick=()=>$('#dlg').close();
+$('#next').onclick=next;$('#prev').onclick=prev;
+$('#fs').onclick=()=>{try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();}catch(e){}};
+$('#pr').onclick=()=>print();
+addEventListener('keydown',e=>{if($('#dlg').open)return;
+  if(['ArrowLeft','PageDown',' '].includes(e.key)){e.preventDefault();next();}
+  else if(['ArrowRight','PageUp','Backspace'].includes(e.key)){e.preventDefault();prev();}});
+Q={P1:{v:'E',p:'BL'},P2:{v:'F',p:'TR'},e1:'2x+10',e2:'3x-20',lvl:3,pred:true};
+PHI=60;renderExp();
+</script>
+</body>
+</html>
