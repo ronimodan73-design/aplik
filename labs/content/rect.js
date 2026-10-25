@@ -1,0 +1,162 @@
+/*META {"id":"rect","title":"מעבדת המלבן על הצירים","icon":"📐"} */
+const LAB={hide:true,tip:'🖐 כותבים בצד את פינות המלבן (או רוחב וגובה), או גוררים את העיגולים. אחר כך לוחצים על כפתור גדול: היקף, שטח, קשר, השוואה, חיסור שטחים או אתגר.',refresh:()=>draw()};
+const CFG={q1:{xmin:0,xmax:12,ymin:0,ymax:8,U:50,OX:90,OY:460},q4:{xmin:-8,xmax:8,ymin:-5,ymax:5,U:42,OX:380,OY:265}};
+let bd='q1',RC={x1:2,y1:1,x2:7,y2:4},K=null,shP=false,shS=false,cmp=false,chal=null;
+const g=()=>CFG[bd],X=x=>g().OX+x*g().U,Y=y=>g().OY-y*g().U,f=n=>n<0?'−'+(-n):''+n,fp=n=>n<0?'('+f(n)+')':f(n),showV=()=>!(ST.hide&&!ST.revealed);
+const Wd=()=>RC.x2-RC.x1,Ht=()=>RC.y2-RC.y1,PAL=[COL.teal,COL.pink,COL.purple,COL.green,COL.orange,COL.red,COL.blue,'#854d0e'];
+const inK=(x,y)=>K&&x>=K.x1&&x<K.x2&&y>=K.y1&&y<K.y2;
+function cellsOf(skipK=true){const o=[];for(let y=RC.y2-1;y>=RC.y1;y--)for(let x=RC.x1;x<RC.x2;x++){if(skipK&&inK(x,y))continue;o.push([x,y]);}return o;}
+function loops(cs){const S=new Set(cs.map(c=>c[0]+','+c[1])),has=(x,y)=>S.has(x+','+y),E=[];
+ cs.forEach(([x,y])=>{if(!has(x,y-1))E.push([x,y,x+1,y]);if(!has(x+1,y))E.push([x+1,y,x+1,y+1]);if(!has(x,y+1))E.push([x+1,y+1,x,y+1]);if(!has(x-1,y))E.push([x,y+1,x,y]);});
+ const nx={};E.forEach(e=>(nx[e[0]+','+e[1]]=nx[e[0]+','+e[1]]||[]).push(e));const used=new Set(),L=[];
+ [...E].sort((a,b)=>a[1]-b[1]||a[0]-b[0]).forEach(st=>{if(used.has(st))return;const lp=[];let e=st;while(e&&!used.has(e)){used.add(e);lp.push(e);e=(nx[e[2]+','+e[3]]||[]).find(q=>!used.has(q));}L.push(lp);});return L;}
+const perim=()=>loops(cellsOf()).reduce((a,l)=>a+l.length,0);
+function okRect(r){const c=g();return r.x1<r.x2&&r.y1<r.y2&&r.x1>=c.xmin&&r.x2<=c.xmax&&r.y1>=c.ymin&&r.y2<=c.ymax;}
+function okK(k){return k.x1<k.x2&&k.y1<k.y2&&k.x1>=RC.x1&&k.x2<=RC.x2&&k.y1>=RC.y1&&k.y2<=RC.y2&&(k.x2-k.x1)*(k.y2-k.y1)<Wd()*Ht();}
+/* ---------- ציור ---------- */
+function draw(){const c=g(),U=c.U,v=showV();let s='<defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#1f2937"/></marker></defs>';
+ for(let x=c.xmin;x<=c.xmax;x++)s+=`<line x1="${X(x)}" y1="${Y(c.ymin)}" x2="${X(x)}" y2="${Y(c.ymax)}" stroke="${COL.grid}" stroke-width="1.5"/>`;
+ for(let y=c.ymin;y<=c.ymax;y++)s+=`<line x1="${X(c.xmin)}" y1="${Y(y)}" x2="${X(c.xmax)}" y2="${Y(y)}" stroke="${COL.grid}" stroke-width="1.5"/>`;
+ s+=`<line x1="${X(c.xmin)-(c.xmin<0?18:0)}" y1="${Y(0)}" x2="${X(c.xmax)+26}" y2="${Y(0)}" stroke="${COL.ink}" stroke-width="3" marker-end="url(#ar)"${c.xmin<0?' marker-start="url(#ar)"':''}/>`;
+ s+=`<line x1="${X(0)}" y1="${Y(c.ymin)+(c.ymin<0?18:0)}" x2="${X(0)}" y2="${Y(c.ymax)-26}" stroke="${COL.ink}" stroke-width="3" marker-end="url(#ar)"${c.ymin<0?' marker-start="url(#ar)"':''}/>`;
+ s+=`<text x="${X(c.xmax)+30}" y="${Y(0)+30}" font-size="22" font-weight="800" fill="${COL.green}">x</text><text x="${X(0)+18}" y="${Y(c.ymax)-22}" font-size="22" font-weight="800" fill="${COL.purple}">y</text>`;
+ for(let x=c.xmin;x<=c.xmax;x++){s+=`<line x1="${X(x)}" y1="${Y(0)-6}" x2="${X(x)}" y2="${Y(0)+6}" stroke="${COL.ink}" stroke-width="2"/>`;if(x)s+=`<text x="${X(x)}" y="${Y(0)+25}" text-anchor="middle" font-size="16" font-weight="600" fill="${COL.green}">${f(x)}</text>`;}
+ for(let y=c.ymin;y<=c.ymax;y++){s+=`<line x1="${X(0)-6}" y1="${Y(y)}" x2="${X(0)+6}" y2="${Y(y)}" stroke="${COL.ink}" stroke-width="2"/>`;if(y)s+=`<text x="${X(0)-11}" y="${Y(y)+6}" text-anchor="end" font-size="16" font-weight="600" fill="${COL.purple}">${f(y)}</text>`;}
+ s+=`<text x="${X(0)-9}" y="${Y(0)+23}" text-anchor="end" font-size="16" font-weight="800">0</text>`;
+ if(!cmp){const cs=cellsOf(),w=Wd(),h=Ht();
+  if(shS)cs.forEach(([x,y])=>s+=`<rect x="${X(x)+2}" y="${Y(y+1)+2}" width="${U-4}" height="${U-4}" rx="3" fill="${COL.blue}" fill-opacity=".4"/>`);
+  if(K){const kw=K.x2-K.x1,kh=K.y2-K.y1;s+=`<rect x="${X(K.x1)}" y="${Y(K.y2)}" width="${kw*U}" height="${kh*U}" fill="${COL.red}" fill-opacity=".07" stroke="${COL.red}" stroke-width="3" stroke-dasharray="8 6"/><text x="${X(K.x1)+kw*U/2}" y="${Y(K.y2)+kh*U/2+8}" text-anchor="middle" font-size="22" font-weight="800" fill="${COL.red}">${v?kw+'·'+kh:'?'}</text>`;}
+  loops(cs).forEach(lp=>lp.forEach(e=>s+=`<line x1="${X(e[0])}" y1="${Y(e[1])}" x2="${X(e[2])}" y2="${Y(e[3])}" stroke="${shP?COL.orange:COL.ink}" stroke-width="${shP?8:3.5}" stroke-linecap="round"/>`));
+  s+=`<text id="lw" x="${X(RC.x1)+w*U/2}" y="${Y(RC.y1)+(RC.y1===0?46:32)}" text-anchor="middle" font-size="24" font-weight="800" fill="${COL.green}" paint-order="stroke" stroke="#fff" stroke-width="5">${v?w:'?'}</text>`;
+  s+=`<text id="lh" x="${X(RC.x2)+14}" y="${Y(RC.y1)-h*U/2+8}" font-size="24" font-weight="800" fill="${COL.purple}" paint-order="stroke" stroke="#fff" stroke-width="5">${v?h:'?'}</text>`;
+  const lab=(x,y,dx,dy,anc)=>`<text x="${X(x)+dx}" y="${Y(y)+dy}" text-anchor="${anc}" font-size="17" font-weight="800" fill="${COL.ink}" paint-order="stroke" stroke="#fff" stroke-width="4">(<tspan fill="${COL.green}">${v?f(x):'?'}</tspan>, <tspan fill="${COL.purple}">${v?f(y):'?'}</tspan>)</text>`;
+  s+=lab(RC.x1,RC.y1,-12,26,'end')+lab(RC.x2,RC.y2,12,-12,'start');
+  s+='<g id="ani"></g>';
+  if(K){const cor=(x,y)=>(x===RC.x1||x===RC.x2)&&(y===RC.y1||y===RC.y2);[['k1',K.x1,K.y1],['k2',K.x2,K.y2]].forEach(([i,x,y])=>{if(!cor(x,y))s+=`<circle id="${i}" cx="${X(x)}" cy="${Y(y)}" r="12" fill="${COL.red}" stroke="#fff" stroke-width="3" style="cursor:grab"/>`;});}
+  s+=`<circle id="hA" cx="${X(RC.x1)}" cy="${Y(RC.y1)}" r="14" fill="${COL.teal}" stroke="#fff" stroke-width="3" style="cursor:grab"/><circle id="hB" cx="${X(RC.x2)}" cy="${Y(RC.y2)}" r="17" fill="${COL.gold}" stroke="${COL.ink}" stroke-width="3" style="cursor:grab"/>`;}
+ else s+='<g id="ani"></g>';
+ $('#sv').innerHTML=s;out();}
+/* ---------- כרטיס תוצאות ---------- */
+function out(){const H=hidCls(),w=Wd(),h=Ht(),S=cellsOf().length,P=perim();let t='';
+ t+=`<div class="big"><span class="green">רוחב</span>: <span class="${H}">${M(`<span class="green">${f(RC.x2)} − ${fp(RC.x1)} = ${w}</span>`)}</span></div>`;
+ t+=`<div class="big"><span class="purple">גובה</span>: <span class="${H}">${M(`<span class="purple">${f(RC.y2)} − ${fp(RC.y1)} = ${h}</span>`)}</span></div>`;
+ if(!K){t+=`<div class="big"><span class="orange">היקף</span>: <span class="${H}">${M(`${C(w,'green')}+${C(h,'purple')}+${C(w,'green')}+${C(h,'purple')} = ${C(P,'orange')}`)} יחידות</span></div>`;
+  t+=`<div class="big"><span class="blue">שטח</span>: <span class="${H}">${M(`${C(w,'green')}·${C(h,'purple')} = ${C(S,'blue')}`)} משבצות</span></div>`;
+  if(w===h)t+='<div class="okbox">⭐ זה <b>ריבוע</b>: כל הצלעות שוות.</div>';}
+ else{const kw=K.x2-K.x1,kh=K.y2-K.y1,P0=2*(w+h),corner=(K.x1===RC.x1||K.x2===RC.x2)&&(K.y1===RC.y1||K.y2===RC.y2),hole=K.x1>RC.x1&&K.x2<RC.x2&&K.y1>RC.y1&&K.y2<RC.y2;
+  t+=`<div class="big"><span class="blue">שטח הצורה</span>: <span class="${H}">${M(`${C(w,'green')}·${C(h,'purple')} − ${C(kw+'·'+kh,'red')} = ${C(w*h,'blue')} − ${C(kw*kh,'red')} = ${C(S,'blue')}`)} משבצות</span></div>`;
+  t+=`<div class="big"><span class="orange">היקף הצורה</span>: <span class="${H}">${M(C(P,'orange'))} יחידות</span></div>`;
+  t+=`<div class="tip ${H}">${corner?`⭐ <b>גילוי:</b> חתכנו פינה, והשטח קטן, אבל ההיקף נשאר ${M(P0)}, כמו המלבן השלם.`:hole?`חור באמצע: השטח קטן, אבל ההיקף <b>גדל</b>. נוסף גבול בפנים: ${M(`${P0} + ${P-P0} = ${P}`)}.`:`חתכנו מהצד: השטח קטן וההיקף ${P>P0?'גדל':P<P0?'קטן':'לא השתנה'} (${M(P0)} ← ${M(P)}).`}</div>`;}
+ if(H)t+=`<button class="noprint" id="bReveal" style="margin-top:8px">👀 גלו את התשובה</button>`;
+ card('out',t);if($('#bReveal'))$('#bReveal').onclick=()=>{ST.revealed=true;draw();};
+ if(chal)checkChal();}
+/* ---------- הזנה ---------- */
+const IN=(id,c,val)=>`<input type="number" id="${id}" dir="ltr" value="${val}" style="width:62px;font-size:20px;font-weight:700;text-align:center;border:2px solid ${c};border-radius:8px;padding:3px">`;
+function edit(){let t='<div class="big" style="font-size:20px">✏️ המלבן</div>';
+ t+=`<div class="ctl" style="margin:4px 0;flex-wrap:wrap">פינה למטה משמאל: <span dir="ltr" style="display:inline-flex;gap:3px;align-items:center;font-weight:800">(${IN('e1x',COL.green,RC.x1)}, ${IN('e1y',COL.purple,RC.y1)})</span></div>`;
+ t+=`<div class="ctl" style="margin:4px 0;flex-wrap:wrap">פינה למעלה מימין: <span dir="ltr" style="display:inline-flex;gap:3px;align-items:center;font-weight:800">(${IN('e2x',COL.green,RC.x2)}, ${IN('e2y',COL.purple,RC.y2)})</span></div>`;
+ t+=`<div class="ctl" style="margin:8px 0 4px;flex-wrap:wrap">או: <span class="green">רוחב</span> ${IN('ew',COL.green,Wd())} <span class="purple">גובה</span> ${IN('eh',COL.purple,Ht())}</div>`;
+ if(K)t+=`<div class="ctl" style="margin:10px 0 4px;flex-wrap:wrap"><b class="red">✂️ חותכים:</b> מ־<span dir="ltr" style="display:inline-flex;gap:3px;align-items:center;font-weight:800">(${IN('k1x',COL.red,K.x1)}, ${IN('k1y',COL.red,K.y1)})</span> עד <span dir="ltr" style="display:inline-flex;gap:3px;align-items:center;font-weight:800">(${IN('k2x',COL.red,K.x2)}, ${IN('k2y',COL.red,K.y2)})</span></div><div class="ctl noprint" style="gap:6px;flex-wrap:wrap"><button class="lt" id="kC">פינה</button><button class="lt" id="kS">מהצד</button><button class="lt" id="kH">חור באמצע</button></div>`;
+ t+='<div id="edMsg" class="tip"></div>';
+ card('ed',t);
+ const num=id=>parseInt($('#'+id).value,10),msg=m=>{$('#edMsg').innerHTML=m;};
+ const apply=r=>{if(Object.values(r).some(isNaN))return;if(!okRect(r)){const c=g();msg(`❗ המלבן צריך להיות בתוך הלוח (${C('x','green')} בין ${M(f(c.xmin))} ל־${M(f(c.xmax))}, ${C('y','purple')} בין ${M(f(c.ymin))} ל־${M(f(c.ymax))}), והפינה הימנית העליונה גדולה מהשמאלית התחתונה.`);return;}
+  msg('');RC=r;if(K&&!okK(K)){K=null;$('#aCut').innerHTML='✂️ חיסור שטחים';reset();draw();edit();return;}reset();draw();sync();};
+ ['e1x','e1y','e2x','e2y'].forEach(id=>$('#'+id).oninput=()=>apply({x1:num('e1x'),y1:num('e1y'),x2:num('e2x'),y2:num('e2y')}));
+ ['ew','eh'].forEach(id=>$('#'+id).oninput=()=>{const w=num('ew'),h=num('eh');if(w<1||h<1){msg('❗ רוחב וגובה הם לפחות 1.');return;}apply({x1:RC.x1,y1:RC.y1,x2:RC.x1+w,y2:RC.y1+h});});
+ if(K){['k1x','k1y','k2x','k2y'].forEach(id=>$('#'+id).oninput=()=>{const k={x1:num('k1x'),y1:num('k1y'),x2:num('k2x'),y2:num('k2y')};if(Object.values(k).some(isNaN))return;if(!okK(k)){msg('❗ החלק שחותכים צריך להיות בתוך המלבן, וקטן ממנו.');return;}msg('');K=k;reset();draw();});
+  $('#kC').onclick=()=>setK('c');$('#kS').onclick=()=>setK('s');$('#kH').onclick=()=>setK('h');}}
+function sync(){const set=(id,v)=>{const e=$('#'+id);if(e&&document.activeElement!==e)e.value=v;};set('e1x',RC.x1);set('e1y',RC.y1);set('e2x',RC.x2);set('e2y',RC.y2);set('ew',Wd());set('eh',Ht());
+ if(K){set('k1x',K.x1);set('k1y',K.y1);set('k2x',K.x2);set('k2y',K.y2);}}
+function reset(){shP=false;shS=false;cmp=false;['walk','cmp'].forEach(id=>{const e=$('#'+id);if(e)e.remove();});}
+/* ---------- נמלה בהיקף ---------- */
+function walkP(done){if(ST.busy)return;cmp=false;shP=false;ST.revealed=true;draw();['#lw','#lh'].forEach(q=>{const e=$(q);if(e)e.remove();});const U=g().U,L=loops(cellsOf()),E=[];L.forEach((lp,li)=>lp.forEach((e,k)=>E.push([...e,li,k===0])));
+ const P=E.length,dt=Math.round(Math.max(150,Math.min(480,7500/P))),a=$('#ani');
+ a.insertAdjacentHTML('beforeend','<g id="pe"></g><g id="ant"><g id="antO"><circle r="20" fill="#fff7ed" stroke="#ea580c" stroke-width="3"/><text text-anchor="middle" dominant-baseline="central" font-size="27">🐜</text></g></g>');
+ const ant=$('#ant'),ori=$('#antO'),mv=(x,y)=>{ant.style.transform=`translate(${x}px,${y}px)`;},jump=(x,y)=>{ant.style.transition='none';mv(x,y);ant.getBoundingClientRect();ant.style.transition=`transform ${dt}ms linear`;};
+ jump(X(E[0][0]),Y(E[0][1]));
+ seq(P,P*dt,i=>{const [ax,ay,bx,by,li,first]=E[i],sx=X(bx)-X(ax),sy=Y(by)-Y(ay);if(first&&i)jump(X(ax),Y(ay));
+   ori.setAttribute('transform',sx>0?'scale(-1,1)':sx<0?'':sy<0?'rotate(90)':'rotate(-90)');
+   const l=document.createElementNS('http://www.w3.org/2000/svg','line');[['x1',X(ax)],['y1',Y(ay)],['x2',X(bx)],['y2',Y(by)],['stroke',COL.orange],['stroke-width',9]].forEach(([k,v])=>l.setAttribute(k,v));
+   l.style.strokeDasharray=U+' '+U;l.style.strokeDashoffset=U;$('#pe').appendChild(l);l.getBoundingClientRect();l.style.transition=`stroke-dashoffset ${dt}ms linear`;l.style.strokeDashoffset=0;mv(X(bx),Y(by));
+   const dx=bx-ax,dy=by-ay,mx=(X(ax)+X(bx))/2+dy*17,my=(Y(ay)+Y(by))/2+dx*19+(dy?6:0);
+   setTimeout(()=>{const pe=$('#pe');if(pe)pe.insertAdjacentHTML('beforeend',`<text x="${mx}" y="${my}" text-anchor="middle" font-size="15" font-weight="800" fill="${COL.orange}" paint-order="stroke" stroke="#fff" stroke-width="4">${i+1}</text>`);},dt*.7);
+   card('walk',`<div class="big orange">🐜 הנמלה הולכת מסביב · היקף: ${i+1} מתוך ${P}</div>`);},
+  ()=>{ST.busy=true;setTimeout(()=>{ST.busy=false;shP=true;draw();card('walk',`<div class="big orange">🐜 היקף: ${P} יחידות</div><div class="tip">ההיקף הוא <b>הקו מסביב</b>: כמה יחידות הנמלה הלכה.</div>`);done&&done();},dt+200);});}
+/* ---------- מילוי שטח ---------- */
+function fillS(done){if(ST.busy)return;cmp=false;shS=false;ST.revealed=true;draw();const U=g().U,w=Wd(),h=Ht(),all=cellsOf(false),a=$('#ani'),big=U>=40;
+ a.insertAdjacentHTML('afterbegin','<g id="cl"></g>');const cl=$('#cl');
+ seq(all.length,Math.min(7000,Math.max(2500,all.length*150)),i=>{const [x,y]=all[i],row=Math.floor(i/w)+1;cl.insertAdjacentHTML('beforeend',`<rect id="q${x}_${y}" x="${X(x)+2}" y="${Y(y+1)+2}" width="${U-4}" height="${U-4}" rx="3" fill="${COL.blue}" fill-opacity=".45"/>${big?`<text id="t${x}_${y}" x="${X(x)+U/2}" y="${Y(y)-U/2+6}" text-anchor="middle" font-size="15" font-weight="700" fill="#1e3a8a">${i+1}</text>`:''}`);
+   card('walk',`<div class="big blue">🟦 שורה ${row} מתוך ${h} · ${i+1} משבצות</div><div class="tip">בכל שורה ${C(w,'green')} משבצות.</div>`);},
+  ()=>{const fin=()=>{shS=true;draw();const S=cellsOf().length;card('walk',`<div class="big blue">🟦 שטח: ${S} משבצות</div><div class="tip">${K?`ממלאים את כל המלבן (${M(`${C(w,'green')}·${C(h,'purple')} = ${w*h}`)}) ומורידים את החלק החתוך.`:`${C(h,'purple')} שורות של ${C(w,'green')} משבצות: ${M(`${C(w,'green')}·${C(h,'purple')} = ${C(S,'blue')}`)}. השטח הוא <b>המשטח בפנים</b>.`}</div>`);done&&done();};
+   if(!K){fin();return;}
+   const kc=all.filter(([x,y])=>inK(x,y));seq(kc.length,Math.min(4500,Math.max(1500,kc.length*220)),j=>{const [x,y]=kc[j],r=$(`#q${x}_${y}`),tx=$(`#t${x}_${y}`);if(r){r.setAttribute('fill',COL.red);r.style.transition='opacity .6s';setTimeout(()=>r.style.opacity=.12,250);}if(tx)tx.remove();
+     card('walk',`<div class="big red">✂️ מורידים: ${j+1} מתוך ${kc.length} משבצות</div>`);},()=>setTimeout(fin,500));});}
+/* ---------- הקשר בין היקף לשטח ---------- */
+function rel(){walkP(()=>setTimeout(()=>fillS(()=>{const P=perim(),S=cellsOf().length,w=Wd(),h=Ht();
+ card('walk',`<div class="big">🔗 <span class="orange">היקף ${P}</span> · <span class="blue">שטח ${S}</span></div>
+ <div class="tip"><b class="orange">היקף</b> = הקו מסביב, נמדד ב<b>יחידות אורך</b> (כמו גדר).<br><b class="blue">שטח</b> = המשטח בפנים, נמדד ב<b>משבצות</b> (כמו שטיח).<br>אותם ${C('רוחב','green')} ו${C('גובה','purple')} בונים את שניהם: ${M(`${C(w,'green')}+${C(h,'purple')}+${C(w,'green')}+${C(h,'purple')}`)} ו־${M(`${C(w,'green')}·${C(h,'purple')}`)}.</div>
+ ${K?'':'<button class="lt noprint" id="bDbl" style="margin-top:8px;font-size:18px">⏩ ומה קורה אם מכפילים את הצלעות?</button>'}`);
+ if($('#bDbl'))$('#bDbl').onclick=dbl;}),600));}
+function dbl(){if(ST.busy)return;const w=Wd(),h=Ht(),c=g(),fit=RC.x1+2*w<=c.xmax&&RC.y1+2*h<=c.ymax,U=c.U;
+ if(fit){const a=$('#ani');a.insertAdjacentHTML('afterbegin',`<rect x="${X(RC.x1)}" y="${Y(RC.y1+2*h)}" width="${2*w*U}" height="${2*h*U}" fill="${COL.teal}" fill-opacity=".12" stroke="${COL.teal}" stroke-width="5" stroke-dasharray="10 6"/>`);}
+ card('cmp',`<div class="big" style="font-size:20px">⏩ מכפילים את הצלעות פי 2</div><table style="width:100%;border-collapse:collapse;font-size:19px;text-align:center"><tr><th></th><th class="green">רוחב</th><th class="purple">גובה</th><th class="orange">היקף</th><th class="blue">שטח</th></tr>
+ <tr><td>המקורי</td><td>${w}</td><td>${h}</td><td>${2*(w+h)}</td><td>${w*h}</td></tr><tr style="color:${COL.teal};font-weight:800"><td>פי 2</td><td>${2*w}</td><td>${2*h}</td><td>${4*(w+h)}</td><td>${4*w*h}</td></tr></table>
+ <div class="okbox">⭐ צלעות פי 2 ← <b class="orange">היקף פי 2</b>, אבל <b class="blue">שטח פי 4</b>!${fit?' (המלבן המקווקו על הלוח)':''}</div><div class="tip">למה? בשטח יש פי 2 שורות, ובכל שורה פי 2 משבצות: ${M('2·2 = 4')}.</div>`);
+ $('#side').insertBefore($('#cmp'),$('#out'));}
+/* ---------- אותו היקף / אותו שטח ---------- */
+function fits(w,h){const c=g(),ax=bd==='q1'?1:c.xmin+1,ay=bd==='q1'?1:c.ymin+1;if(ax+w<=c.xmax&&ay+h<=c.ymax)return [ax,ay,w,h];if(ax+h<=c.xmax&&ay+w<=c.ymax)return [ax,ay,h,w];return null;}
+function ask(kind){if(ST.busy)return;reset();draw();const P=perim(),S=cellsOf().length;
+ const q=kind==='P'?`למלבנים עם <b class="orange">אותו היקף</b> יש תמיד <b class="blue">אותו שטח</b>?`:`למלבנים עם <b class="blue">אותו שטח</b> יש תמיד <b class="orange">אותו היקף</b>?`;
+ card('cmp',`<div class="big" style="font-size:22px">❓ ${q}</div><div class="ctl noprint" style="gap:10px;margin-top:8px"><button class="bigb" id="yes" style="flex:1">👍 כן</button><button class="bigb" id="no" style="flex:1">👎 לא</button></div>`);
+ $('#side').insertBefore($('#cmp'),$('#out'));
+ $('#yes').onclick=$('#no').onclick=()=>show(kind,K?16:P,K?12:S);}
+function show(kind,P,S){let list=[];
+ if(kind==='P'){const hf=P/2;for(let w=1;w<=hf/2;w++){const r=fits(w,hf-w);if(r)list.push(r);}if(list.length<2){P=16;list=[];for(let w=1;w<=4;w++){const r=fits(w,8-w);if(r)list.push(r);}}}
+ else{for(let w=1;w*w<=S;w++)if(S%w===0){const r=fits(w,S/w);if(r)list.push(r);}if(list.length<2){S=12;list=[];[[1,12],[2,6],[3,4]].forEach(([a,b])=>{const r=fits(a,b);if(r)list.push(r);});}}
+ cmp=true;draw();const a=$('#ani'),U=g().U;let rows='';
+ const head=`<div class="big" style="font-size:20px">${kind==='P'?`כל המלבנים שהיקפם ${M(C(P,'orange'))}`:`כל המלבנים ששטחם ${M(C(S,'blue'))}`}</div>`;
+ const tb=()=>`${head}<table style="width:100%;border-collapse:collapse;font-size:19px;text-align:center"><tr><th class="green">רוחב</th><th class="purple">גובה</th><th class="orange">היקף</th><th class="blue">שטח</th></tr>${rows}</table>`;
+ card('cmp',tb());
+ seq(list.length,list.length*1400,i=>{const [x,y,w,h]=list[i],col=PAL[i%PAL.length];
+   a.querySelectorAll('rect').forEach(r=>{r.setAttribute('fill-opacity','.04');r.setAttribute('stroke-width','2');});
+   a.insertAdjacentHTML('beforeend',`<rect x="${X(x)}" y="${Y(y+h)}" width="${w*U}" height="${h*U}" fill="${col}" fill-opacity=".28" stroke="${col}" stroke-width="5"/><text x="${X(x)+w*U-8}" y="${Y(y+h)+24}" text-anchor="end" font-size="20" font-weight="800" fill="${col}" paint-order="stroke" stroke="#fff" stroke-width="4">${w}·${h}</text>`);
+   rows+=`<tr style="color:${col};font-weight:800"><td>${w}</td><td>${h}</td><td>${2*(w+h)}</td><td>${w*h}</td></tr>`;card('cmp',tb());},
+  ()=>{let best;if(kind==='P'){best=list.reduce((m,r)=>r[2]*r[3]>m[2]*m[3]?r:m);}else{best=list.reduce((m,r)=>r[2]+r[3]<m[2]+m[3]?r:m);}
+   card('cmp',tb()+`<div class="okbox">💡 <b>לא!</b> ${kind==='P'?`אותו היקף ${M(P)}, אבל השטחים שונים.<br>⭐ השטח הכי גדול: ${M(best[2]+'·'+best[3])}, המלבן הכי קרוב לריבוע.`:`אותו שטח ${M(S)}, אבל ההיקפים שונים.<br>⭐ ההיקף הכי קטן: ${M(best[2]+'·'+best[3])}, המלבן הכי קרוב לריבוע.`}</div><button class="lt noprint" id="bBack" style="margin-top:8px">↩️ חזרה למלבן שלי</button>`);
+   $('#bBack').onclick=()=>{reset();draw();};});}
+/* ---------- חיסור שטחים ---------- */
+function setK(kind){const w=Wd(),h=Ht();
+ if(kind==='h'&&(w<3||h<3)){card('walk','<div class="badbox">לחור באמצע צריך מלבן ברוחב ובגובה של לפחות 3.</div>');return;}
+ if(w<2||h<2){card('walk','<div class="badbox">כדי לחתוך, צריך מלבן ברוחב ובגובה של לפחות 2.</div>');return;}
+ const kw=Math.max(1,Math.floor(w/2)),kh=Math.max(1,Math.floor(h/2));
+ K=kind==='c'?{x1:RC.x2-kw,y1:RC.y2-kh,x2:RC.x2,y2:RC.y2}:kind==='s'?{x1:RC.x1+Math.floor((w-Math.max(1,w-2))/2),y1:RC.y2-kh,x2:RC.x1+Math.floor((w-Math.max(1,w-2))/2)+Math.max(1,w-2),y2:RC.y2}:{x1:RC.x1+1,y1:RC.y1+1,x2:RC.x2-1,y2:RC.y2-1};
+ if(kind==='s'&&(K.x1===RC.x1||K.x2===RC.x2))K={x1:RC.x1+1,y1:RC.y2-kh,x2:RC.x2-1,y2:RC.y2};
+ if(!okK(K)){K=null;return;}reset();edit();fillS();}
+function cut(){if(ST.busy)return;if(K){K=null;reset();edit();draw();$('#aCut').innerHTML='✂️ חיסור שטחים';return;}setK('c');if(K)$('#aCut').innerHTML='↩️ בלי חיתוך';}
+/* ---------- אתגר ---------- */
+function pairsS(S){const o=[];for(let w=1;w*w<=S;w++)if(S%w===0&&fits(w,S/w))o.push(`${w}·${S/w}`);return o;}
+function pairsP(P){const o=[];for(let w=1;w<=P/4;w++)if(fits(w,P/2-w))o.push(`${w}·${P/2-w}`);return o;}
+const CH=[()=>{const P=pick([12,14,16,18,20]);return {t:`בנו מלבן ש<b class="orange">היקפו</b> ${M(P)} יחידות.`,ok:(p,s)=>p===P,all:pairsP(P)}},
+ ()=>{const S=pick([6,8,12,16,18,24]);return {t:`בנו מלבן ש<b class="blue">שטחו</b> ${M(S)} משבצות.`,ok:(p,s)=>s===S,all:pairsS(S)}},
+ ()=>{const [w,h]=pick([[2,6],[3,4],[3,5],[2,7],[4,5],[1,8]]);return {t:`בנו מלבן ש<b class="orange">היקפו</b> ${M(2*(w+h))} ו<b class="blue">שטחו</b> ${M(w*h)}.`,ok:(p,s)=>p===2*(w+h)&&s===w*h,all:[`${w}·${h}`]}},
+ ()=>{const k=pick([2,3,4,5]);return {t:`בנו <b>ריבוע</b> ש<b class="blue">שטחו</b> ${M(k*k)} משבצות. מה ההיקף שלו?`,ok:(p,s)=>Wd()===Ht()&&s===k*k,all:[`${k}·${k}, היקף ${4*k}`]}},
+ ()=>({t:`בנו מלבן שה<b class="orange">היקף</b> שלו שווה ל<b class="blue">שטח</b> שלו (רק המספרים).`,ok:(p,s)=>p===s,all:['4·4','3·6']})];
+function checkChal(){const el=$('#chs');if(!el)return;el.innerHTML=!K&&chal.ok(perim(),cellsOf().length)?'<div class="okbox">✅ <b>מצוין!</b> המשימה מתקיימת. יש עוד אפשרות?</div>':'שנו את המלבן עד שהמשימה מתקיימת.';}
+function challenge(){if(ST.busy)return;if(K){K=null;$('#aCut').innerHTML='✂️ חיסור שטחים';}reset();chal=pick(CH)();edit();
+ card('chal',`<div class="big" style="font-size:22px">🎯 ${chal.t}</div><div id="chs" class="tip"></div><button class="lt noprint" id="bAll" style="margin-top:8px">כל האפשרויות</button><div id="allx"></div>`,'chal');
+ $('#side').insertBefore($('#chal'),$('#out'));$('#bAll').onclick=()=>{$('#allx').innerHTML='<div class="tip">'+chal.all.map(x=>M(x)).join(' · ')+'</div>';};draw();}
+/* ---------- הפעלה ---------- */
+function start(){svgSize(760,520);
+ document.head.insertAdjacentHTML('beforeend','<style>.bigb{display:block;width:100%;font-size:21px;font-weight:800;padding:13px 14px;margin:7px 0;border-radius:14px;text-align:start}#acts .bigb:nth-child(1){background:#ea580c}#acts .bigb:nth-child(2){background:#2563eb}#acts .bigb:nth-child(3){background:#0f766e}#acts .bigb:nth-child(4),#acts .bigb:nth-child(5){background:#7c3aed}#acts .bigb:nth-child(6){background:#dc2626}#acts .bigb:nth-child(7){background:#b45309}</style>');
+ tool('bB','🗺️ רביע ראשון / 4 רביעים',b=>{bd=bd==='q1'?'q4':'q1';RC=bd==='q1'?{x1:2,y1:1,x2:7,y2:4}:{x1:-3,y1:-2,x2:4,y2:2};K=null;$('#aCut').innerHTML='✂️ חיסור שטחים';reset();edit();draw();},{lt:1});
+ tool('bZ','🧹 התחלה מחדש',()=>{RC=bd==='q1'?{x1:2,y1:1,x2:7,y2:4}:{x1:-3,y1:-2,x2:4,y2:2};K=null;chal=null;const ch=$('#chal');if(ch)ch.remove();$('#aCut').innerHTML='✂️ חיסור שטחים';reset();edit();draw();});
+ card('acts','<div class="noprint">'+[['aP','🐜 הראה היקף'],['aS','🟦 הראה שטח'],['aR','🔗 הקשר בין היקף לשטח'],['aEP','❓ אותו היקף ← אותו שטח?'],['aES','❓ אותו שטח ← אותו היקף?'],['aCut','✂️ חיסור שטחים'],['aCh','🎯 אתגר לכיתה']].map(([i,t])=>`<button class="bigb" id="${i}">${t}</button>`).join('')+'</div>');
+ const A={aP:()=>walkP(),aS:()=>fillS(),aR:rel,aEP:()=>ask('P'),aES:()=>ask('S'),aCut:cut,aCh:challenge};
+ Object.entries(A).forEach(([i,fn])=>$('#'+i).onclick=()=>{if(!ST.busy)fn();});
+ edit();
+ draggable(['hA','hB','k1','k2'],(id,p)=>{const c=g(),gx=Math.round((p.x-c.OX)/c.U),gy=Math.round((c.OY-p.y)/c.U);
+  if(id==='hA'||id==='hB'){const r={...RC};if(id==='hA'){r.x1=gx;r.y1=gy;}else{r.x2=gx;r.y2=gy;}if(!okRect(r)||(r.x1===RC.x1&&r.y1===RC.y1&&r.x2===RC.x2&&r.y2===RC.y2))return;RC=r;if(K&&!okK(K)){K=null;$('#aCut').innerHTML='✂️ חיסור שטחים';edit();}}
+  else{const k={...K};if(id==='k1'){k.x1=gx;k.y1=gy;}else{k.x2=gx;k.y2=gy;}if(!okK(k)||(k.x1===K.x1&&k.y1===K.y1&&k.x2===K.x2&&k.y2===K.y2))return;K=k;}
+  reset();draw();sync();});
+ draw();}
