@@ -1,0 +1,58 @@
+/*META {"id":"area","title":"מעבדת השטח וההיקף","icon":"📐"} */
+const LAB={hide:true,tip:'🖐 גררו את העיגול הצהוב כדי לשנות את המלבן.<span id="tipL" style="display:none"> גררו את העיגול האדום כדי לשנות את הפינה שנחתכה.</span>',refresh:()=>out()};
+const U=46,OX=70,OY=64,MAXW=13,MAXH=8;
+let w=6,h=4,L=false,cw=2,ch=2,anim=null,chal=null;
+function cells(){const c=[];for(let y=0;y<h;y++)for(let x=0;x<w;x++){if(L&&x>=w-cw&&y<ch)continue;c.push([x,y]);}return c;}
+function boundary(cs){const S=new Set(cs.map(c=>c+'')),E=[];cs.forEach(([x,y])=>{if(!S.has([x,y-1]+''))E.push([[x,y],[x+1,y]]);if(!S.has([x+1,y]+''))E.push([[x+1,y],[x+1,y+1]]);if(!S.has([x,y+1]+''))E.push([[x+1,y+1],[x,y+1]]);if(!S.has([x-1,y]+''))E.push([[x,y+1],[x,y]]);});
+ const nx={};E.forEach(e=>nx[e[0]+'']=e);let e=E.reduce((a,b)=>(b[0][1]<a[0][1]||(b[0][1]===a[0][1]&&b[0][0]<a[0][0]))?b:a);const st=e[0]+'',o=[];do{o.push(e);e=nx[e[1]+''];}while(e&&e[0]+''!==st&&o.length<=E.length);return o;}
+const X=x=>OX+x*U,Y=y=>OY+y*U;
+function draw(){let s='';
+ for(let x=0;x<=MAXW;x++)s+=`<line x1="${X(x)}" y1="${Y(0)}" x2="${X(x)}" y2="${Y(MAXH)}" stroke="${COL.grid}"/>`;
+ for(let y=0;y<=MAXH;y++)s+=`<line x1="${X(0)}" y1="${Y(y)}" x2="${X(MAXW)}" y2="${Y(y)}" stroke="${COL.grid}"/>`;
+ const cs=cells(),B=boundary(cs),fill=anim==='S'?0:(anim==='P'?-1:cs.length);
+ cs.forEach(([x,y],i)=>s+=`<rect id="c${i}" x="${X(x)+2}" y="${Y(y)+2}" width="${U-4}" height="${U-4}" rx="5" fill="${COL.blue}" fill-opacity="${i<fill?.28:.06}"/>`);
+ B.forEach((e,i)=>s+=`<line id="e${i}" x1="${X(e[0][0])}" y1="${Y(e[0][1])}" x2="${X(e[1][0])}" y2="${Y(e[1][1])}" stroke="${anim==='P'?'#cbd5e1':COL.orange}" stroke-width="6" stroke-linecap="round"/>`);
+ s+=`<text x="${X(w/2)}" y="${Y(0)-30}" text-anchor="middle" font-size="28" font-weight="800" fill="${COL.green}">${w}</text>`;
+ s+=`<text x="${X(0)-30}" y="${Y(h/2)+10}" text-anchor="end" font-size="28" font-weight="800" fill="${COL.purple}">${h}</text>`;
+ if(L){s+=`<text x="${X(w-cw/2)}" y="${Y(ch)+30}" text-anchor="middle" font-size="20" font-weight="700" fill="${COL.red}">${cw}·${ch}</text>`;
+  s+=`<circle id="hL" cx="${X(w-cw)}" cy="${Y(ch)}" r="15" fill="${COL.red}" stroke="#fff" stroke-width="3" style="cursor:grab"/>`;}
+ s+=`<g id="ant"></g><circle id="hd" cx="${X(w)}" cy="${Y(h)}" r="18" fill="${COL.gold}" stroke="${COL.ink}" stroke-width="3" style="cursor:grab"/>`;
+ $('#sv').innerHTML=s;out();}
+function out(){const cs=cells(),S=cs.length,P=boundary(cs).length,H=hidCls();
+ card('dims',`<div class="ctl"><b class="green">רוחב</b><button class="lt" data-d="w,-1">−</button><span class="big green">${w}</span><button class="lt" data-d="w,1">+</button></div>
+  <div class="ctl"><b class="purple">גובה</b><button class="lt" data-d="h,-1">−</button><span class="big purple">${h}</span><button class="lt" data-d="h,1">+</button></div>`);
+ $$('[data-d]').forEach(b=>b.onclick=()=>{if(ST.busy)return;const [k,d]=b.dataset.d.split(',');if(k==='w')w=Math.max(1,Math.min(MAXW,w+ +d));else h=Math.max(1,Math.min(MAXH,h+ +d));fix();ST.revealed=false;draw();});
+ let t=`<div class="big"><span class="orange" id="lp">היקף</span>: <span class="${H}">`;
+ t+=L?`${M(P)} ס״מ</span></div><div class="tip">הולכים מסביב לכל הגבול. <b>גילוי:</b> ההיקף שווה להיקף המלבן השלם ${M(`2·(${w}+${h}) = ${2*(w+h)}`)}</div>`
+      :`${M(`${C(w,'green')}+${C(h,'purple')}+${C(w,'green')}+${C(h,'purple')} = ${P}`)} ס״מ</span></div>`;
+ t+=`<div class="big" style="margin-top:6px"><span class="blue" id="ls">שטח</span>: <span class="${H}">`;
+ t+=L?`${M(`${C(w,'green')}·${C(h,'purple')} − ${C(cw+'·'+ch,'red')} = ${S}`)} סמ״ר</span></div>`
+      :`${M(`${C(w,'green')}·${C(h,'purple')} = ${S}`)} סמ״ר</span></div>`;
+ if(!L&&w===h)t+=`<div class="okbox">⭐ זה <b>ריבוע</b>: כל הצלעות שוות. היקף ${M('4·'+w)}, שטח ${M(w+'·'+w)}.</div>`;
+ if(H)t+=`<button class="noprint" id="bReveal" style="margin-top:8px">👀 גלו את התשובה</button>`;
+ card('out',t);if($('#bReveal'))$('#bReveal').onclick=()=>{ST.revealed=true;out();};
+ if(chal)checkChal(S,P);}
+function run(kind){if(ST.busy)return;anim=kind;draw();ST.revealed=true;const cs=cells(),B=boundary(cs),n=kind==='S'?cs.length:B.length,ant=$('#ant');
+ seq(n,2600,i=>{if(kind==='S'){$('#c'+i).setAttribute('fill-opacity','.28');const [x,y]=cs[i];ant.innerHTML+=`<text x="${X(x)+U/2}" y="${Y(y)+U/2+7}" text-anchor="middle" font-size="18" font-weight="700" fill="#1e3a8a">${i+1}</text>`;}
+   else{$('#e'+i).setAttribute('stroke',COL.orange);const e=B[i],mx=(X(e[0][0])+X(e[1][0]))/2,my=(Y(e[0][1])+Y(e[1][1]))/2,dx=e[1][1]-e[0][1],dy=-(e[1][0]-e[0][0]);
+    ant.innerHTML+=`<text x="${mx+dx*18}" y="${my+dy*18+6}" text-anchor="middle" font-size="16" font-weight="700" fill="${COL.orange}">${i+1}</text>`;}
+   $(kind==='S'?'#ls':'#lp').textContent=(kind==='S'?'שטח':'היקף')+` (${i+1} מתוך ${n})`;},
+  ()=>{anim=null;setTimeout(out,400);});}
+function fix(){if(L){if(w<2||h<2){L=false;$('#bL').classList.remove('on');$('#tipL').style.display='none';}cw=Math.min(cw,w-1);ch=Math.min(ch,h-1);}}
+const CH=[()=>{const S=pick([12,16,18,20,24]);return {t:`בנו מלבן ש<b class="blue">שטחו</b> ${M(S)} סמ״ר.`,ok:(s,p)=>s===S,all:pairs(S).map(([a,b])=>`${a}·${b}`)}},
+ ()=>{const P=pick([12,14,16,18,20]);return {t:`בנו מלבן ש<b class="orange">היקפו</b> ${M(P)} ס״מ.`,ok:(s,p)=>p===P,all:sums(P/2).map(([a,b])=>`${a} ו־${b}`)}},
+ ()=>({t:`בנו מלבן שה<b class="orange">היקף</b> שלו שווה ל<b class="blue">שטח</b> שלו (רק המספרים).`,ok:(s,p)=>s===p,all:['4·4','3·6']}),
+ ()=>{const P=pick([16,20,24]);return {t:`מכל המלבנים שהיקפם ${M(P)} ס״מ, בנו את המלבן עם <b class="blue">השטח הגדול ביותר</b>.`,ok:(s,p)=>p===P&&s===(P/4)**2,all:[`${P/4}·${P/4} (ריבוע!)`]}}];
+function pairs(S){const o=[];for(let a=1;a<=S;a++)if(S%a===0&&a<=S/a&&S/a<=MAXW&&a<=MAXH)o.push([a,S/a]);return o;}
+function sums(n){const o=[];for(let a=1;a<=n/2;a++)if(n-a<=MAXW)o.push([a,n-a]);return o;}
+function checkChal(S,P){const el=$('#chs');if(el)el.innerHTML=chal.ok(S,P)?'<div class="okbox">✅ <b>מצוין!</b> המשימה מתקיימת. יש עוד אפשרות?</div>':'הזיזו את המלבן עד שהמשימה מתקיימת.';}
+function start(){svgSize(760,520);
+ tool('bP','🐜 היקף: הולכים מסביב',()=>run('P'),{lt:1});
+ tool('bS','🟦 שטח: ממלאים',()=>run('S'),{lt:1});
+ tool('bL','✂️ צורת L',b=>{if(w<2||h<2)return;L=!L;b.classList.toggle('on',L);$('#tipL').style.display=L?'inline':'none';fix();ST.revealed=false;draw();});
+ tool('bC','🎯 אתגר',()=>{chal=pick(CH)();if(L){L=false;$('#bL').classList.remove('on');$('#tipL').style.display='none';}
+  card('chal',`<div class="big" style="font-size:24px">🎯 ${chal.t}</div><div id="chs" class="tip"></div><button class="lt noprint" id="bAll" style="margin-top:8px">כל האפשרויות</button><div id="allx"></div>`,'chal');
+  $('#bAll').onclick=()=>{$('#allx').innerHTML='<div class="tip">'+chal.all.join(' · ')+'</div>';};draw();});
+ draggable(['hd','hL'],(id,p)=>{if(id==='hd'){const nw=Math.max(1,Math.min(MAXW,Math.round((p.x-OX)/U))),nh=Math.max(1,Math.min(MAXH,Math.round((p.y-OY)/U)));if(nw!==w||nh!==h){w=nw;h=nh;fix();ST.revealed=false;draw();}}
+  else{const ncw=Math.max(1,Math.min(w-1,Math.round(w-(p.x-OX)/U))),nch=Math.max(1,Math.min(h-1,Math.round((p.y-OY)/U)));if(ncw!==cw||nch!==ch){cw=ncw;ch=nch;ST.revealed=false;draw();}}});
+ draw();}

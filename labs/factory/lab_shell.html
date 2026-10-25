@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>/*TITLE*/</title>
+<style>
+:root{--bg:#f3f4f8;--ink:#1f2937;--muted:#6b7280;--line:#e5e7eb;--navy:#1e1b4b;--gold:#f5b301;--ok:#16a34a;--bad:#dc2626;
+ --green:#16a34a;--purple:#9333ea;--orange:#ea580c;--blue:#2563eb;--red:#dc2626;--pink:#db2777;--teal:#0891b2}
+*{box-sizing:border-box}html,body{margin:0}
+body{font-family:"Rubik","Segoe UI","Arial Hebrew",Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:22px;min-height:100vh;display:flex;flex-direction:column}
+.m{direction:ltr;unicode-bidi:isolate;display:inline-block;font-weight:700;white-space:nowrap}
+header{background:var(--navy);color:#fff;padding:10px 14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+header h1{font-size:28px;margin:0 0 0 auto}
+button{font:inherit;font-size:19px;border:0;border-radius:12px;padding:9px 14px;cursor:pointer;background:#312e81;color:#fff}
+button.on{background:var(--gold);color:#1f2937;font-weight:700}
+button.lt{background:#fff;color:var(--ink);border:2px solid var(--line)}
+button:active{transform:scale(.96)}
+main{flex:1;display:flex;flex-wrap:wrap;gap:14px;padding:14px;align-items:flex-start;justify-content:center}
+.card{background:#fff;border-radius:18px;box-shadow:0 2px 10px #0001;padding:14px}
+#stage{flex:1 1 560px;max-width:860px}
+#side{flex:1 1 300px;max-width:440px;display:flex;flex-direction:column;gap:12px}
+#side:empty{display:none}
+svg{width:100%;height:auto;touch-action:none;user-select:none;display:block}
+.ctl{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0}.ctl b{min-width:70px}
+.big{font-size:30px;font-weight:800;line-height:1.5}
+.green{color:var(--green)}.purple{color:var(--purple)}.orange{color:var(--orange)}.blue{color:var(--blue)}.red{color:var(--red)}.pink{color:var(--pink)}.teal{color:var(--teal)}
+.hid{filter:blur(9px)}
+.chal{border:3px dashed var(--gold);background:#fffbeb}
+.okbox{background:#ecfdf5;border:2px solid var(--ok);border-radius:12px;padding:8px 12px;margin-top:8px}
+.badbox{background:#fef2f2;border:2px solid var(--bad);border-radius:12px;padding:8px 12px;margin-top:8px}
+.tip{font-size:18px;color:var(--muted)}
+footer{text-align:center;color:var(--muted);font-size:15px;padding:8px}
+@media print{header,.noprint{display:none!important}body{background:#fff}}
+</style>
+</head>
+<body>
+<header><h1>/*ICON*/ /*TITLE*/</h1><span id="tools" style="display:contents"></span>
+ <button id="bHide" class="noprint" style="display:none">🙈 הסתר תוצאות</button>
+ <button id="bFs" class="noprint">⛶ מסך מלא</button><button id="bPr" class="noprint" aria-label="הדפסה">🖨️</button></header>
+<main>
+ <section id="stage" class="card"><svg id="sv" aria-label="/*TITLE*/"></svg><div class="tip noprint" id="tip"></div></section>
+ <section id="side"></section>
+</main>
+<footer>ערכה: רוני מודן · שחקים</footer>
+<script>
+/* ===== מפעל המעבדות של רוני: עזרים משותפים ===== */
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const M=t=>`<span class="m">${t}</span>`;                       // ביטוי מתמטי משמאל לימין
+const COL={green:'#16a34a',purple:'#9333ea',orange:'#ea580c',blue:'#2563eb',red:'#dc2626',pink:'#db2777',teal:'#0891b2',gold:'#f5b301',ink:'#1f2937',grid:'#e5e7eb'};
+const C=(t,c)=>`<span class="${c}">${t}</span>`;                  // טקסט צבוע לפי שם צבע
+const pick=a=>a[Math.floor(Math.random()*a.length)],R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const ST={hide:false,revealed:false,busy:false};
+const hidCls=()=>ST.hide&&!ST.revealed?'hid':'';                 // מטשטש תוצאות במצב "נחשו"
+function tool(id,label,fn,o={}){const b=document.createElement('button');b.id=id;b.innerHTML=label;if(o.lt)b.className='lt';b.classList.add('noprint');b.onclick=()=>{if(ST.busy&&!o.always)return;fn(b);};$('#tools').appendChild(b);return b;}
+function card(id,html,cls=''){let c=$('#'+id);if(!c){c=document.createElement('div');c.id=id;$('#side').appendChild(c);}c.className='card '+cls;c.innerHTML=html;return c;}
+function svgSize(w,h){$('#sv').setAttribute('viewBox',`0 0 ${w} ${h}`);ST.vw=w;ST.vh=h;}
+function svgPt(ev){const r=$('#sv').getBoundingClientRect(),p=ev.touches?ev.touches[0]:ev;return {x:(p.clientX-r.left)*ST.vw/r.width,y:(p.clientY-r.top)*ST.vh/r.height};}
+/* גרירה: ids = מזהי אלמנטים שאפשר לגרור; fn(id, point) נקרא בכל תזוזה */
+function draggable(ids,fn){let d=null;$('#sv').addEventListener('pointerdown',e=>{if(ids.includes(e.target.id)){d=e.target.id;e.target.setPointerCapture?.(e.pointerId);e.preventDefault();}});
+ window.addEventListener('pointermove',e=>{if(d&&!ST.busy)fn(d,svgPt(e));});window.addEventListener('pointerup',()=>d=null);}
+/* אנימציה בצעדים: n צעדים במשך total מ״ש בערך; step(i) לכל צעד, done בסוף */
+function seq(n,total,step,done){ST.busy=true;let i=0;const t=()=>{if(i<n){step(i);i++;setTimeout(t,Math.max(110,total/n));}else{ST.busy=false;done&&done();}};t();}
+$('#bFs').onclick=()=>{try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();}catch(e){}};
+$('#bPr').onclick=()=>print();
+/* ===== תוכן המעבדה ===== */
+/*CONTENT*/
+/* ===== הפעלה ===== */
+if(typeof LAB!=='undefined'){if(LAB.tip)$('#tip').innerHTML=LAB.tip;
+ if(LAB.hide){const b=$('#bHide');b.style.display='';b.onclick=()=>{ST.hide=!ST.hide;ST.revealed=false;b.classList.toggle('on',ST.hide);LAB.refresh&&LAB.refresh();};}}
+addEventListener('keydown',e=>{if(e.key==='f'||e.key==='F')$('#bFs').click();});
+start();
+</script>
+</body>
+</html>
