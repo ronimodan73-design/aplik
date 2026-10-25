@@ -24,13 +24,13 @@ footer{text-align:center;font-weight:700;padding:20px 0 30px}
 <body><div class="wrap">
 <header><h1>📚 שיעורים במתמטיקה · כיתה ז׳</h1><p style="font-weight:700">ערכה: רוני מודן · שחקים</p><p>לכל שיעור: מצגת + יישומון ללוח שהמורה שולטת בו. נפתח ישר מהקישור, בלי התחברות.</p></header>
 <div id="app"></div>
-<div class="note">💡 <b>במצגת:</b> לוחצים על כפתור המסך המלא להקרנה על הלוח. <b>ביישומון ללוח:</b> גוררים את העיגול הצהוב והציור מתעדכן מול הכיתה.</div>
+<div class="note">💡 <b>במצגת:</b> לוחצים על כפתור המסך המלא להקרנה על הלוח. <b>ביישומון ללוח:</b> גוררים את העיגולים, והציור מתעדכן מול הכיתה.</div>
 <footer>ערכה: רוני מודן · שחקים</footer>
 </div>
 <script>
 const B='https://htmlpreview.github.io/?https://github.com/ronimodan73-design/aplik/blob/main/';
 const L=[
- ['1','ערך מוחלט: המרחק מ־0','מה זה ערך מוחלט, ולמה הוא תמיד חיובי.','decks/z7_abs_only.html','labs/axes_lab.html'],
+ ['1','ערך מוחלט: המרחק מ־0','מה זה ערך מוחלט, ולמה הוא אף פעם לא שלילי.','decks/z7_abs_only.html','labs/axes_lab.html'],
  ['2','מספרים מכוונים: חיבור וחיסור','ערך מוחלט כ"שפה אחת לכל המינוסים", וחיבור וחיסור בעזרת חיילים בשני צבעים.','decks/z7_abs.html','labs/directed_lab.html'],
  ['3','שטח והיקף של ריבוע ומלבן','נמלה רצה סביב ההיקף, משבצות ממלאות את השטח, והנוסחה בצבעים.','','labs/area_lab.html']];
 document.getElementById('app').innerHTML=L.map(([n,t,w,d,l])=>`<div class="card"><h2>שיעור ${n} · ${t}</h2><p>${w}</p><div class="btns">${d?`<a class="d" href="${B+d}" target="_blank" rel="noopener">🎞️ מצגת</a>`:'<span>🎞️ מצגת · בקרוב</span>'}${l?`<a class="l" href="${B+l}" target="_blank" rel="noopener">🖥️ יישומון ללוח</a>`:'<span>🖥️ יישומון ללוח · בקרוב</span>'}</div></div>`).join('');
