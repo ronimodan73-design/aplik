@@ -7,7 +7,7 @@ const CFG={line:{xmin:-10,xmax:10,ymin:0,ymax:0,U:34,OX:380,OY:250},
 const MODES=[['line','➖ ציר מספרים'],['q1','⌞ רביע ראשון'],['q2','⊥ 2 רביעים'],['q4','✚ 4 רביעים']];
 const DEF={line:[[-3,0],[2,0]],q1:[[2,3],[7,3]],q2:[[-3,2],[4,2]],q4:[[-3,2],[4,2],[-3,-3]]};
 const NM='ABCDEF',PIDS=[...NM].map(k=>'p'+k);
-let mode='q1',nums=true,pts=[],segs=[],last=0,chal=null,rectOn=false;
+let mode='q1',nums=true,pts=[],segs=[],last=0,chal=null,rectOn=false,rectPh='done';
 const fp=n=>n<0?'('+f(n)+')':f(n);
 let SZ=0;const SIZES=[[0,'רגיל'],[20,'עד 20'],[30,'עד 30']];
 function cfg(){if(!SZ)return {...CFG[mode],st:1};const N=SZ,st=N<=20?2:5;
@@ -39,9 +39,9 @@ function draw(){G=cfg();const c=g();let s='<defs><marker id="ar" viewBox="0 0 10
    const mx=(X(a.x)+X(b.x))/2,my=(Y(a.y)+Y(b.y))/2;s+=`<text x="${o==='h'?mx:mx+14}" y="${o==='h'?my+30:my+7}" text-anchor="${o==='h'?'middle':'start'}" font-size="21" font-weight="800" fill="${COL.orange}">${showV()?d:'?'}</text>`;}});
  const Rc=rectOn&&rectOf();if(rectOn&&!Rc)rectOn=false;
  if(Rc){const v=showV(),x0=X(Rc.x1),y0=Y(Rc.y2),W=Rc.w*c.U,Hh=Rc.h*c.U;
-  s+=`<rect x="${x0}" y="${y0}" width="${W}" height="${Hh}" fill="${COL.blue}" fill-opacity=".1" stroke="${COL.orange}" stroke-width="4"/>`;
-  s+=`<text x="${x0+W/2}" y="${y0+Hh+(Rc.y1===0?44:28)}" text-anchor="middle" font-size="22" font-weight="800" fill="${COL.green}" paint-order="stroke" stroke="#fff" stroke-width="5">${v?Rc.w:'?'}</text>`;
-  s+=`<text x="${x0+W+10}" y="${y0+Hh/2+8}" font-size="22" font-weight="800" fill="${COL.purple}" paint-order="stroke" stroke="#fff" stroke-width="5">${v?Rc.h:'?'}</text>`;}
+  s+=`<rect x="${x0}" y="${y0}" width="${W}" height="${Hh}" ${rectPh==='anim'?'fill="none" stroke="#94a3b8" stroke-width="3" stroke-dasharray="8 6"':`fill="${COL.blue}" fill-opacity=".3" stroke="${COL.orange}" stroke-width="7"`}/>`;
+  if(rectPh==='done')s+=`<text x="${x0+W/2}" y="${y0+Hh+(Rc.y1===0?44:28)}" text-anchor="middle" font-size="22" font-weight="800" fill="${COL.green}" paint-order="stroke" stroke="#fff" stroke-width="5">${v?Rc.w:'?'}</text>`;
+  if(rectPh==='done')s+=`<text x="${x0+W+10}" y="${y0+Hh/2+8}" font-size="22" font-weight="800" fill="${COL.purple}" paint-order="stroke" stroke="#fff" stroke-width="5">${v?Rc.h:'?'}</text>`;}
  s+='<g id="ani"></g>';
  pts.forEach((p,i)=>{const v=showV();
   if(LINE())s+=`<text x="${X(p.x)}" y="${Y(0)-76}" text-anchor="middle" font-size="22" font-weight="800" fill="${COL.red}">${p.n}${v?' = '+f(p.x):''}</text>`;
@@ -77,16 +77,25 @@ function rectOf(){if(LINE()||pts.length<4)return null;const q=pts.slice(0,4),xs=
  return {x1:xs[0],x2:xs[1],y1:ys[0],y2:ys[1],w:xs[1]-xs[0],h:ys[1]-ys[0],name:q.map(p=>p.n).join('')};}
 function runRect(){if(LINE()){card('walk','<div class="badbox">מלבן בונים על מערכת צירים. בחרו רביע ראשון, 2 רביעים או 4 רביעים.</div>');return;}
  const Rc=rectOf();if(!Rc){card('walk','<div class="badbox">כתבו 4 נקודות שהן הקודקודים של מלבן. למשל '+M('(2, 1)')+', '+M('(7, 1)')+', '+M('(7, 4)')+', '+M('(2, 4)')+'.</div>');return;}
- rectOn=true;ST.revealed=true;draw();const {x1,x2,y1,y2,w,h}=Rc,E=[],cells=[];
+rectOn=true;rectPh='anim';ST.revealed=true;draw();const {x1,x2,y1,y2}=Rc,E=[],cells=[];
  for(let x=x1;x<x2;x++)E.push([x,y1,x+1,y1]);for(let y=y1;y<y2;y++)E.push([x2,y,x2,y+1]);for(let x=x2;x>x1;x--)E.push([x,y2,x-1,y2]);for(let y=y2;y>y1;y--)E.push([x1,y,x1,y-1]);
  for(let y=y2-1;y>=y1;y--)for(let x=x1;x<x2;x++)cells.push([x,y]);
- const P=E.length,S=cells.length,a=$('#ani'),U=g().U,big=U>=30;
- a.insertAdjacentHTML('beforeend','<g id="cl"></g><g id="pe"></g><text id="antE" text-anchor="middle" dominant-baseline="central" font-size="26">🐜</text>');
- seq(P+S,Math.min(16000,Math.max(5000,(P+S)*150)),i=>{if(i<P){const [ax,ay,bx,by]=E[i];$('#pe').insertAdjacentHTML('beforeend',`<line x1="${X(ax)}" y1="${Y(ay)}" x2="${X(bx)}" y2="${Y(by)}" stroke="${COL.orange}" stroke-width="9" stroke-linecap="round"/>`);
-   const t=$('#antE');t.setAttribute('x',X(bx));t.setAttribute('y',Y(by));card('walk',`<div class="big orange">🐜 היקף: ${i+1} מתוך ${P}</div>`);}
-  else{const k=i-P,[x,y]=cells[k];if(k===0)$('#antE').remove();$('#cl').insertAdjacentHTML('beforeend',`<rect x="${X(x)+2}" y="${Y(y+1)+2}" width="${U-4}" height="${U-4}" rx="3" fill="${COL.blue}" fill-opacity=".3"/>${big?`<text x="${X(x)+U/2}" y="${Y(y)-U/2+6}" text-anchor="middle" font-size="15" font-weight="700" fill="#1e3a8a">${k+1}</text>`:''}`);
-   card('walk',`<div class="big blue">🟦 שטח: ${k+1} מתוך ${S} משבצות</div>`);}},
-  ()=>card('walk',`<div class="big"><span class="orange">היקף ${P}</span> · <span class="blue">שטח ${S}</span></div><div class="tip">ספרנו ${C(P,'orange')} יחידות מסביב ו־${C(S,'blue')} משבצות בפנים. בדקו בכרטיס המלבן שהחישוב נותן אותו דבר.</div>`));}
+ const P=E.length,S=cells.length,a=$('#ani'),U=g().U,big=U>=30,dt=Math.round(Math.max(150,Math.min(480,7500/P)));
+ a.insertAdjacentHTML('beforeend','<g id="cl"></g><g id="pe"></g><g id="ant"><g id="antO"><circle r="20" fill="#fff7ed" stroke="#ea580c" stroke-width="3"/><text text-anchor="middle" dominant-baseline="central" font-size="27">🐜</text></g></g>');
+ const ant=$('#ant'),ori=$('#antO'),mv=(x,y)=>{ant.style.transform=`translate(${x}px,${y}px)`;};
+ mv(X(x1),Y(y1));ant.getBoundingClientRect();ant.style.transition=`transform ${dt}ms linear`;
+ seq(P,P*dt,i=>{const [ax,ay,bx,by]=E[i],sx=X(bx)-X(ax),sy=Y(by)-Y(ay);
+   ori.setAttribute('transform',sx>0?'scale(-1,1)':sx<0?'':sy<0?'rotate(90)':'rotate(-90)');
+   const l=document.createElementNS('http://www.w3.org/2000/svg','line');[['x1',X(ax)],['y1',Y(ay)],['x2',X(bx)],['y2',Y(by)],['stroke',COL.orange],['stroke-width',9],['stroke-linecap','butt']].forEach(([k,v])=>l.setAttribute(k,v));
+   l.style.strokeDasharray=U+' '+U;l.style.strokeDashoffset=U;$('#pe').appendChild(l);l.getBoundingClientRect();l.style.transition=`stroke-dashoffset ${dt}ms linear`;l.style.strokeDashoffset=0;
+   mv(X(bx),Y(by));
+   if(big||(i+1)%5===0||i===P-1){const mx=(X(ax)+X(bx))/2,my=(Y(ay)+Y(by))/2,ox=sy?(sy<0?16:-16):0,oy=sx?(sx>0?22:-14):0;
+    setTimeout(()=>$('#pe')&&$('#pe').insertAdjacentHTML('beforeend',`<text x="${mx+ox}" y="${my+oy+(sy?6:0)}" text-anchor="middle" font-size="15" font-weight="800" fill="${COL.orange}" paint-order="stroke" stroke="#fff" stroke-width="4">${i+1}</text>`),dt*.7);}
+   card('walk',`<div class="big orange">🐜 הנמלה הולכת מסביב · היקף: ${i+1} מתוך ${P}</div>`);},
+  ()=>{ST.busy=true;setTimeout(()=>{ant.remove();ST.busy=false;if(!$('#cl'))return;
+   seq(S,Math.min(7000,Math.max(2500,S*140)),k=>{const [x,y]=cells[k];$('#cl').insertAdjacentHTML('beforeend',`<rect x="${X(x)+2}" y="${Y(y+1)+2}" width="${U-4}" height="${U-4}" rx="3" fill="${COL.blue}" fill-opacity=".45"/>${big?`<text x="${X(x)+U/2}" y="${Y(y)-U/2+6}" text-anchor="middle" font-size="15" font-weight="700" fill="#fff">${k+1}</text>`:''}`);
+     card('walk',`<div class="big blue">🟦 ממלאים את השטח: ${k+1} מתוך ${S} משבצות</div>`);},
+    ()=>{rectPh='done';card('walk',`<div class="big"><span class="orange">היקף ${P}</span> · <span class="blue">שטח ${S}</span></div><div class="tip">הנמלה הלכה ${C(P,'orange')} יחידות מסביב (היקף), ובפנים יש ${C(S,'blue')} משבצות (שטח). בדקו בכרטיס המלבן שהחישוב נותן אותו דבר.</div>`);setTimeout(()=>{if(!ST.busy)draw();},50);});},dt+250);});}
 function walk(){const p=pts[last]||pts[0];if(!p)return;ST.revealed=true;draw();const a=$('#ani');
  if(LINE()){const n=Math.abs(p.x),sx=Math.sign(p.x);if(!n)return;
   seq(n,Math.min(9000,Math.max(2400,n*380)),i=>{const x1=X(i*sx),x2=X((i+1)*sx);a.insertAdjacentHTML('beforeend',`<path d="M${x1},${Y(0)} Q${(x1+x2)/2},${Y(0)-Math.min(58,g().U*1.6)} ${x2},${Y(0)}" fill="none" stroke="${COL.blue}" stroke-width="3.5"/><text x="${(x1+x2)/2}" y="${Y(0)-Math.min(58,g().U*1.6)*.55-8}" text-anchor="middle" font-size="17" font-weight="800" fill="${COL.blue}">${g().U>=30||(i+1)%5===0?i+1:''}</text>`);
