@@ -74,7 +74,8 @@ const CFG={line:{xmin:-10,xmax:10,ymin:0,ymax:0,U:34,OX:380,OY:250},
 const MODES=[['line','➖ ציר מספרים'],['q1','⌞ רביע ראשון'],['q2','⊥ 2 רביעים'],['q4','✚ 4 רביעים']];
 const DEF={line:[[-3,0],[2,0]],q1:[[2,3],[7,3]],q2:[[-3,2],[4,2]],q4:[[-3,2],[4,2],[-3,-3]]};
 const NM='ABCDEF',PIDS=[...NM].map(k=>'p'+k);
-let mode='q1',nums=true,pts=[],segs=[],last=0,chal=null;
+let mode='q1',nums=true,pts=[],segs=[],last=0,chal=null,rectOn=false;
+const fp=n=>n<0?'('+f(n)+')':f(n);
 let SZ=0;const SIZES=[[0,'רגיל'],[20,'עד 20'],[30,'עד 30']];
 function cfg(){if(!SZ)return {...CFG[mode],st:1};const N=SZ,st=N<=20?2:5;
  if(mode==='line')return {xmin:-N,xmax:N,ymin:0,ymax:0,U:680/(2*N),OX:380,OY:250,st};
@@ -103,10 +104,15 @@ function draw(){G=cfg();const c=g();let s='<defs><marker id="ar" viewBox="0 0 10
    s+=`<path d="M${x1},${y-10}V${y}H${x2}V${y-10}" fill="none" stroke="${COL.orange}" stroke-width="4"/><text x="${(x1+x2)/2}" y="${y+28}" text-anchor="middle" font-size="22" font-weight="800" fill="${COL.orange}">${showV()?d:'?'}</text>`;}
   else{s+=`<line x1="${X(a.x)}" y1="${Y(a.y)}" x2="${X(b.x)}" y2="${Y(b.y)}" stroke="${COL.orange}" stroke-width="6" stroke-linecap="round" opacity=".85"/>`;
    const mx=(X(a.x)+X(b.x))/2,my=(Y(a.y)+Y(b.y))/2;s+=`<text x="${o==='h'?mx:mx+14}" y="${o==='h'?my+30:my+7}" text-anchor="${o==='h'?'middle':'start'}" font-size="21" font-weight="800" fill="${COL.orange}">${showV()?d:'?'}</text>`;}});
+ const Rc=rectOn&&rectOf();if(rectOn&&!Rc)rectOn=false;
+ if(Rc){const v=showV(),x0=X(Rc.x1),y0=Y(Rc.y2),W=Rc.w*c.U,Hh=Rc.h*c.U;
+  s+=`<rect x="${x0}" y="${y0}" width="${W}" height="${Hh}" fill="${COL.blue}" fill-opacity=".1" stroke="${COL.orange}" stroke-width="4"/>`;
+  s+=`<text x="${x0+W/2}" y="${y0+Hh+(Rc.y1===0?44:28)}" text-anchor="middle" font-size="22" font-weight="800" fill="${COL.green}" paint-order="stroke" stroke="#fff" stroke-width="5">${v?Rc.w:'?'}</text>`;
+  s+=`<text x="${x0+W+10}" y="${y0+Hh/2+8}" font-size="22" font-weight="800" fill="${COL.purple}" paint-order="stroke" stroke="#fff" stroke-width="5">${v?Rc.h:'?'}</text>`;}
  s+='<g id="ani"></g>';
  pts.forEach((p,i)=>{const v=showV();
   if(LINE())s+=`<text x="${X(p.x)}" y="${Y(0)-76}" text-anchor="middle" font-size="22" font-weight="800" fill="${COL.red}">${p.n}${v?' = '+f(p.x):''}</text>`;
-  else s+=`<text x="${X(p.x)+13}" y="${Y(p.y)-14}" font-size="21" font-weight="800" fill="${COL.red}" paint-order="stroke" stroke="#fff" stroke-width="5">${p.n}(<tspan fill="${COL.green}">${v?f(p.x):'?'}</tspan>, <tspan fill="${COL.purple}">${v?f(p.y):'?'}</tspan>)</text>`;
+  else{const L=Rc&&p.x===Rc.x1,B=Rc&&p.y===Rc.y1;s+=`<text x="${X(p.x)+(L?-14:13)}" y="${Y(p.y)+(B?32:-14)}" text-anchor="${L?'end':'start'}" font-size="21" font-weight="800" fill="${COL.red}" paint-order="stroke" stroke="#fff" stroke-width="5">${p.n}(<tspan fill="${COL.green}">${v?f(p.x):'?'}</tspan>, <tspan fill="${COL.purple}">${v?f(p.y):'?'}</tspan>)</text>`;}
   s+=`<circle id="p${p.n}" cx="${X(p.x)}" cy="${Y(p.y)}" r="${Math.min(13,Math.max(8,g().U*.55))}" fill="${COL.red}" stroke="#fff" stroke-width="3" style="cursor:grab"/>`;});
  $('#sv').innerHTML=s;out();}
 function out(){const H=hidCls();
@@ -122,7 +128,32 @@ function out(){const H=hidCls();
  if(!pts.length)t='<div class="tip">הלוח ריק. כתבו נקודה למטה ולחצו "הוסף נקודה".</div>';
  if(H)t+=`<button class="noprint" id="bReveal" style="margin-top:8px">👀 גלו את התשובה</button>`;
  card('out',t);if($('#bReveal'))$('#bReveal').onclick=()=>{ST.revealed=true;draw();};
+ const Rc=rectOn&&rectOf();
+ if(Rc){const {x1,x2,y1,y2,w,h}=Rc,P=2*(w+h),S=w*h;
+  let t=`<div class="big" style="font-size:20px">📐 המלבן ${Rc.name}</div>`;
+  t+=`<div class="big"><span class="green">רוחב</span>: <span class="${H}">${M(`<span class="green">${f(x2)} − ${fp(x1)} = ${w}</span>`)}</span></div>`;
+  t+=`<div class="big"><span class="purple">גובה</span>: <span class="${H}">${M(`<span class="purple">${f(y2)} − ${fp(y1)} = ${h}</span>`)}</span></div>`;
+  t+=`<div class="big"><span class="orange">היקף</span>: <span class="${H}">${M(`${C(w,'green')}+${C(h,'purple')}+${C(w,'green')}+${C(h,'purple')} = ${C(P,'orange')}`)} יחידות</span></div>`;
+  t+=`<div class="big"><span class="blue">שטח</span>: <span class="${H}">${M(`${C(w,'green')}·${C(h,'purple')} = ${C(S,'blue')}`)} משבצות</span></div>`;
+  if(w===h)t+=`<div class="okbox">⭐ זה <b>ריבוע</b>: כל הצלעות שוות.</div>`;
+  t+='<div class="tip">את אורך הצלע מוצאים מהמספרים על הצירים, ובעזרתו מחשבים היקף ושטח.</div>';
+  card('rect',t);$('#ed').after($('#rect'));if($('#walk'))$('#rect').after($('#walk'));}else{const e=$('#rect');if(e)e.remove();}
  if(chal)checkChal();}
+function rectOf(){if(LINE()||pts.length<4)return null;const q=pts.slice(0,4),xs=[...new Set(q.map(p=>p.x))].sort((a,b)=>a-b),ys=[...new Set(q.map(p=>p.y))].sort((a,b)=>a-b);
+ if(xs.length!==2||ys.length!==2)return null;for(const x of xs)for(const y of ys)if(!q.some(p=>p.x===x&&p.y===y))return null;
+ return {x1:xs[0],x2:xs[1],y1:ys[0],y2:ys[1],w:xs[1]-xs[0],h:ys[1]-ys[0],name:q.map(p=>p.n).join('')};}
+function runRect(){if(LINE()){card('walk','<div class="badbox">מלבן בונים על מערכת צירים. בחרו רביע ראשון, 2 רביעים או 4 רביעים.</div>');return;}
+ const Rc=rectOf();if(!Rc){card('walk','<div class="badbox">כתבו 4 נקודות שהן הקודקודים של מלבן. למשל '+M('(2, 1)')+', '+M('(7, 1)')+', '+M('(7, 4)')+', '+M('(2, 4)')+'.</div>');return;}
+ rectOn=true;ST.revealed=true;draw();const {x1,x2,y1,y2,w,h}=Rc,E=[],cells=[];
+ for(let x=x1;x<x2;x++)E.push([x,y1,x+1,y1]);for(let y=y1;y<y2;y++)E.push([x2,y,x2,y+1]);for(let x=x2;x>x1;x--)E.push([x,y2,x-1,y2]);for(let y=y2;y>y1;y--)E.push([x1,y,x1,y-1]);
+ for(let y=y2-1;y>=y1;y--)for(let x=x1;x<x2;x++)cells.push([x,y]);
+ const P=E.length,S=cells.length,a=$('#ani'),U=g().U,big=U>=30;
+ a.insertAdjacentHTML('beforeend','<g id="cl"></g><g id="pe"></g><text id="antE" text-anchor="middle" dominant-baseline="central" font-size="26">🐜</text>');
+ seq(P+S,Math.min(16000,Math.max(5000,(P+S)*150)),i=>{if(i<P){const [ax,ay,bx,by]=E[i];$('#pe').insertAdjacentHTML('beforeend',`<line x1="${X(ax)}" y1="${Y(ay)}" x2="${X(bx)}" y2="${Y(by)}" stroke="${COL.orange}" stroke-width="9" stroke-linecap="round"/>`);
+   const t=$('#antE');t.setAttribute('x',X(bx));t.setAttribute('y',Y(by));card('walk',`<div class="big orange">🐜 היקף: ${i+1} מתוך ${P}</div>`);}
+  else{const k=i-P,[x,y]=cells[k];if(k===0)$('#antE').remove();$('#cl').insertAdjacentHTML('beforeend',`<rect x="${X(x)+2}" y="${Y(y+1)+2}" width="${U-4}" height="${U-4}" rx="3" fill="${COL.blue}" fill-opacity=".3"/>${big?`<text x="${X(x)+U/2}" y="${Y(y)-U/2+6}" text-anchor="middle" font-size="15" font-weight="700" fill="#1e3a8a">${k+1}</text>`:''}`);
+   card('walk',`<div class="big blue">🟦 שטח: ${k+1} מתוך ${S} משבצות</div>`);}},
+  ()=>card('walk',`<div class="big"><span class="orange">היקף ${P}</span> · <span class="blue">שטח ${S}</span></div><div class="tip">ספרנו ${C(P,'orange')} יחידות מסביב ו־${C(S,'blue')} משבצות בפנים. בדקו בכרטיס המלבן שהחישוב נותן אותו דבר.</div>`));}
 function walk(){const p=pts[last]||pts[0];if(!p)return;ST.revealed=true;draw();const a=$('#ani');
  if(LINE()){const n=Math.abs(p.x),sx=Math.sign(p.x);if(!n)return;
   seq(n,Math.min(9000,Math.max(2400,n*380)),i=>{const x1=X(i*sx),x2=X((i+1)*sx);a.insertAdjacentHTML('beforeend',`<path d="M${x1},${Y(0)} Q${(x1+x2)/2},${Y(0)-Math.min(58,g().U*1.6)} ${x2},${Y(0)}" fill="none" stroke="${COL.blue}" stroke-width="3.5"/><text x="${(x1+x2)/2}" y="${Y(0)-Math.min(58,g().U*1.6)*.55-8}" text-anchor="middle" font-size="17" font-weight="800" fill="${COL.blue}">${g().U>=30||(i+1)%5===0?i+1:''}</text>`);
@@ -168,6 +199,7 @@ function start(){svgSize(760,520);card('mode','');card('ed','');card('out','');
  tool('bN','🔢 מספרים על הצירים',b=>{nums=!nums;b.classList.toggle('on',nums);draw();},{lt:1}).classList.add('on');
  tool('bW','🚶 הליכה לנקודה',()=>walk(),{lt:1});
  tool('bD','📏 מודדים מרחק',()=>measure(),{lt:1});
+ tool('bQ','📐 מלבן: היקף ושטח',()=>runRect(),{lt:1});
  tool('bR','🎲 נקודה לניחוש',()=>{const c=g(),[x,y]=addAt(R(c.xmin,c.xmax),R(c.ymin,c.ymax));pts=[{n:'A',x,y}];segs=[];last=0;ST.revealed=false;draw();edit();});
  tool('bX','🧹 ניקוי',()=>{pts=[];segs=[];chal=null;const ch=$('#chal');if(ch)ch.remove();draw();edit();});
  tool('bC','🎯 אתגר',()=>{setDef();chal=pick(CHL[LINE()?'line':'plane'])();
