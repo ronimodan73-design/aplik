@@ -99,11 +99,17 @@ function out(){const cs=cells(),S=cs.length,P=boundary(cs).length,H=hidCls();
  card('out',t);if($('#bReveal'))$('#bReveal').onclick=()=>{ST.revealed=true;out();};
  if(chal)checkChal(S,P);}
 function run(kind){if(ST.busy)return;anim=kind;draw();ST.revealed=true;const cs=cells(),B=boundary(cs),n=kind==='S'?cs.length:B.length,ant=$('#ant');
- seq(n,2600,i=>{if(kind==='S'){$('#c'+i).setAttribute('fill-opacity','.28');const [x,y]=cs[i];ant.innerHTML+=`<text x="${X(x)+U/2}" y="${Y(y)+U/2+7}" text-anchor="middle" font-size="18" font-weight="700" fill="#1e3a8a">${i+1}</text>`;}
-   else{$('#e'+i).setAttribute('stroke',COL.orange);const e=B[i],mx=(X(e[0][0])+X(e[1][0]))/2,my=(Y(e[0][1])+Y(e[1][1]))/2,dx=e[1][1]-e[0][1],dy=-(e[1][0]-e[0][0]);
-    ant.innerHTML+=`<text x="${mx+dx*18}" y="${my+dy*18+6}" text-anchor="middle" font-size="16" font-weight="700" fill="${COL.orange}">${i+1}</text>`;}
+ const total=kind==='S'?2600:Math.max(4200,n*260),dt=Math.max(110,total/n);let rn=null,rot=0;
+ if(kind==='P'){rn=document.createElementNS('http://www.w3.org/2000/svg','g');rn.id='runner';rn.style.transition=`transform ${dt}ms linear`;
+  rn.innerHTML='<circle r="21" fill="#fff7ed" stroke="'+COL.orange+'" stroke-width="3"/><text text-anchor="middle" dominant-baseline="central" font-size="28">🐜</text>';
+  const [x0,y0]=B[0][0];rot=180;rn.setAttribute('transform',`translate(${X(x0)},${Y(y0)}) rotate(${rot})`);$('#sv').appendChild(rn);}
+ seq(n,total,i=>{if(kind==='S'){$('#c'+i).setAttribute('fill-opacity','.28');const [x,y]=cs[i];ant.innerHTML+=`<text x="${X(x)+U/2}" y="${Y(y)+U/2+7}" text-anchor="middle" font-size="18" font-weight="700" fill="#1e3a8a">${i+1}</text>`;}
+   else{const e=B[i],mx=(X(e[0][0])+X(e[1][0]))/2,my=(Y(e[0][1])+Y(e[1][1]))/2,dx=e[1][1]-e[0][1],dy=-(e[1][0]-e[0][0]);
+    const ang=Math.atan2(e[1][1]-e[0][1],e[1][0]-e[0][0])*180/Math.PI+180;let d=((ang-rot)%360+540)%360-180;rot+=d;
+    rn.setAttribute('transform',`translate(${X(e[1][0])},${Y(e[1][1])}) rotate(${rot})`);
+    setTimeout(()=>{const l=$('#e'+i);if(l)l.setAttribute('stroke',COL.orange);ant.insertAdjacentHTML('beforeend',`<text x="${mx+dx*18}" y="${my+dy*18+6}" text-anchor="middle" font-size="16" font-weight="700" fill="${COL.orange}">${i+1}</text>`);},dt*.6);}
    $(kind==='S'?'#ls':'#lp').textContent=(kind==='S'?'שטח':'היקף')+` (${i+1} מתוך ${n})`;},
-  ()=>{anim=null;setTimeout(out,400);});}
+  ()=>{setTimeout(()=>{anim=null;if(rn)rn.remove();out();},kind==='P'?dt+700:400);});}
 function fix(){if(L){if(w<2||h<2){L=false;$('#bL').classList.remove('on');$('#tipL').style.display='none';}cw=Math.min(cw,w-1);ch=Math.min(ch,h-1);}}
 const CH=[()=>{const S=pick([12,16,18,20,24]);return {t:`בנו מלבן ש<b class="blue">שטחו</b> ${M(S)} סמ״ר.`,ok:(s,p)=>s===S,all:pairs(S).map(([a,b])=>`${a}·${b}`)}},
  ()=>{const P=pick([12,14,16,18,20]);return {t:`בנו מלבן ש<b class="orange">היקפו</b> ${M(P)} ס״מ.`,ok:(s,p)=>p===P,all:sums(P/2).map(([a,b])=>`${a} ו־${b}`)}},
