@@ -119,9 +119,9 @@ const EX=[
    {c:'△ABE ≅ △ADE',r:'צ.ז.צ',k:'צ.ז.צ',cong:['ABE','ADE'],parts:[0,4,5]},{c:'BE = DE',r:CS,k:CS,m:{s:['BE','DE'],n:3,col:'pink'},h:'ולכן האלכסון AC חוצה את האלכסון BD.'}]}];
 const POOL=[G,SH,VA,PA,MID,BIS,ALT,CS,CA];
 let ex=0,step=0,classMode=false,shownG=false,shownT=false,pick2=null;
-const E=()=>EX[ex],pt=k=>{const [x,y]=E().P[k];return {x,y};};
+let FIG=null;const E=()=>EX[ex],pt=k=>{const [x,y]=FIG.P[k];return {x,y};};
 /* ---------- שרטוט ---------- */
-function segMark(a,b,n,col){const p=pt(a),q=pt(b),mx=(p.x+q.x)/2,my=(p.y+q.y)/2,dx=q.x-p.x,dy=q.y-p.y,L=Math.hypot(dx,dy),ux=dx/L,uy=dy/L;let s=`<line x1="${p.x}" y1="${p.y}" x2="${q.x}" y2="${q.y}" stroke="${COL[col]}" stroke-width="7" stroke-linecap="round" opacity=".85"/>`;
+function segMark(a,b,n,col,o=0){let p=pt(a),q=pt(b);{const L0=Math.hypot(q.x-p.x,q.y-p.y),nx=-(q.y-p.y)/L0*o,ny=(q.x-p.x)/L0*o;p={x:p.x+nx,y:p.y+ny};q={x:q.x+nx,y:q.y+ny};}const mx=(p.x+q.x)/2,my=(p.y+q.y)/2,dx=q.x-p.x,dy=q.y-p.y,L=Math.hypot(dx,dy),ux=dx/L,uy=dy/L;let s=`<line x1="${p.x}" y1="${p.y}" x2="${q.x}" y2="${q.y}" stroke="${COL[col]}" stroke-width="7" stroke-linecap="round" opacity=".85"/>`;
  for(let i=0;i<n;i++){const o=(i-(n-1)/2)*9,cx=mx+ux*o,cy=my+uy*o;s+=`<line x1="${cx-uy*12}" y1="${cy+ux*12}" x2="${cx+uy*12}" y2="${cy-ux*12}" stroke="${COL[col]}" stroke-width="3.5"/>`;}return s;}
 function angMark(p,v,q,n,col,right){const P=pt(p),V=pt(v),Q=pt(q),a1=Math.atan2(P.y-V.y,P.x-V.x),a2=Math.atan2(Q.y-V.y,Q.x-V.x);
  if(right){const r=22,u={x:Math.cos(a1),y:Math.sin(a1)},w={x:Math.cos(a2),y:Math.sin(a2)};return `<path d="M${V.x+u.x*r},${V.y+u.y*r}L${V.x+(u.x+w.x)*r},${V.y+(u.y+w.y)*r}L${V.x+w.x*r},${V.y+w.y*r}" fill="${COL[col]}" fill-opacity=".25" stroke="${COL[col]}" stroke-width="3"/>`;}
@@ -129,7 +129,7 @@ function angMark(p,v,q,n,col,right){const P=pt(p),V=pt(v),Q=pt(q),a1=Math.atan2(
  for(let i=0;i<Math.max(1,n);i++){const r=30+i*8,sx=V.x+r*Math.cos(a1),sy=V.y+r*Math.sin(a1),ex2=V.x+r*Math.cos(a1+d),ey=V.y+r*Math.sin(a1+d);s+=`<path d="M${sx},${sy}A${r},${r} 0 0 ${d>0?1:0} ${ex2},${ey}" fill="none" stroke="${COL[col]}" stroke-width="4"/>`;}
  const r0=30,s0={x:V.x+r0*Math.cos(a1),y:V.y+r0*Math.sin(a1)},e0={x:V.x+r0*Math.cos(a1+d),y:V.y+r0*Math.sin(a1+d)};
  return `<path d="M${V.x},${V.y}L${s0.x},${s0.y}A${r0},${r0} 0 0 ${d>0?1:0} ${e0.x},${e0.y}Z" fill="${COL[col]}" fill-opacity=".22"/>`+s;}
-function markSVG(m){if(m.s)return m.s.map(s=>segMark(s[0],s[1],m.n,m.col)).join('');return m.a.map(a=>angMark(a[0],a[1],a[2],m.n||1,m.col,m.right)).join('');}
+function markSVG(m){if(m.s)return m.s.map((s,i)=>segMark(s[0],s[1],m.n,m.col,m.o?m.o[i]:0)).join('');return m.a.map(a=>angMark(a[0],a[1],a[2],m.n||1,m.col,m.right)).join('');}
 function triPath(t){return t.split('').map((k,i)=>{const p=pt(k);return (i?'L':'M')+p.x+','+p.y;}).join('')+'Z';}
 function draw(){const e=E();let s='';
  if(shownT){const c=e.rows.find(r=>r.cong).cong;s+=`<path d="${triPath(c[0])}" fill="${COL.teal}" fill-opacity=".14"/><path d="${triPath(c[1])}" fill="${COL.pink}" fill-opacity=".14"/>`;}
@@ -140,7 +140,7 @@ function draw(){const e=E();let s='';
  Object.keys(e.P).forEach(k=>{const p=pt(k);let dx=p.x-cx,dy=p.y-cy,L=Math.hypot(dx,dy);if(L<45){dx=.8;dy=-.6;L=1;}s+=`<circle cx="${p.x}" cy="${p.y}" r="5" fill="${COL.ink}"/><text x="${p.x+dx/L*28}" y="${p.y+dy/L*28+9}" text-anchor="middle" font-size="27" font-weight="800" fill="${COL.ink}">${k}</text>`;});
  $('#sv').innerHTML=s;}
 /* ---------- טבלה ---------- */
-const reasonHTML=r=>r.replace(/(∢?[A-Z]{1,3} = ∢?[A-Z]{1,3}|∢[A-Z]{3}|[A-Z]{1,3}(?: ∥ [A-Z]{2}| ⊥ [A-Z]{2})?)/g,m=>M(m));
+const reasonHTML=r=>r.replace(/(∢?[A-Z]{1,4} = ∢?[A-Z]{1,4}|∢[A-Z]{3}|[A-Z]{1,4}(?: ∥ [A-Z]{2}| ⊥ [A-Z]{2})?)/g,m=>M(m));
 function W(h){card('walk',h);const w=$('#walk'),ref=$('#corr')||$('#tbl');if(ref)$('#side').insertBefore(w,ref);}
 function table(){const e=E(),H=hidCls();let t=`<div class="big" style="font-size:19px">${'★'.repeat(e.lvl)} ${e.name}</div>`;
  t+=`<div class="tip"><b>נתון:</b> ${reasonHTML(e.given)}<br><b>צריך להוכיח:</b> ${M(e.prove)}${e.then?` ומכאן ${M(e.then)}`:''}</div>`;
@@ -170,12 +170,12 @@ function overlay(c){const a=$('#ani'),T1=c[0].split('').map(pt),T2=c[1].split(''
  const t0=performance.now(),ms=1800,mk=(P)=>'M'+P.map(p=>p.x+','+p.y).join('L')+'Z';
  a.innerHTML=`<path id="ov" d="${mk(T1)}" fill="${COL.teal}" fill-opacity=".45" stroke="${COL.teal}" stroke-width="4"/>`+c[0].split('').map((k,i)=>`<text id="ol${i}" font-size="22" font-weight="800" fill="${COL.teal}" text-anchor="middle">${k}</text>`).join('');
  const st=now=>{const k=Math.min(1,(now-t0)/ms),e2=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2,P=T1.map((p,i)=>({x:p.x+(T2[i].x-p.x)*e2,y:p.y+(T2[i].y-p.y)*e2}));
-  $('#ov').setAttribute('d',mk(P));P.forEach((p,i)=>{const t=$('#ol'+i);t.setAttribute('x',p.x);t.setAttribute('y',p.y-12);});
-  if(k<1)requestAnimationFrame(st);else{ST.busy=false;$('#ov').setAttribute('fill',COL.pink);setTimeout(()=>{if($('#ani'))$('#ani').innerHTML='';},1500);}};requestAnimationFrame(st);
+  if(!$('#ov')){ST.busy=false;return;}$('#ov').setAttribute('d',mk(P));P.forEach((p,i)=>{const t=$('#ol'+i);if(t){t.setAttribute('x',p.x);t.setAttribute('y',p.y-12);}});
+  if(k<1)requestAnimationFrame(st);else{ST.busy=false;if($('#ov'))$('#ov').setAttribute('fill',COL.pink);setTimeout(()=>{if($('#ani'))$('#ani').innerHTML='';},1500);}};requestAnimationFrame(st);
  const corr=c[0].split('').map((k,i)=>`${C(k,'teal')}↔${C(c[1][i],'pink')}`).join(' · ');
  card('corr',`<div class="tip"><b>קודקודים מתאימים:</b> ${M(corr)}</div>`);$('#side').insertBefore($('#corr'),$('#tbl'));}
 /* ---------- כפתורים ---------- */
-function given(){shownG=true;draw();table();const e=E();
+function given(){setMode('l');shownG=true;draw();table();const e=E();
  W(`<div class="big">👀 מה נתון?</div><div class="tip">${reasonHTML(e.given)}</div><div class="tip">כל נתון סומן בשרטוט בצבע: אותו צבע ואותו מספר קווים = שווים.</div>`);
  const h=$('#hl');h.innerHTML=e.rows.filter(r=>r.g&&r.m).map(r=>markSVG(r.m)).join('');}
 function target(){shownT=true;draw();const c=E().rows.find(r=>r.cong).cong;overlay(c);
@@ -191,7 +191,7 @@ function dict(){W(`<div class="big">📖 מילון מילים: מה כתוב �
  ['"אמצע"','שני חלקים <b>שווים</b> (קו אחד על כל חצי)'],['"חוצה זווית"','שתי זוויות <b>שוות</b>'],['"גובה" / "מאונך" '+M('⊥'),'זווית <b>ישרה</b> '+M('90°')],
  ['"מקבילים" '+M('∥'),'זוויות <b>מתחלפות</b> שוות (צורת Z)'],['שני ישרים נחתכים','זוויות <b>קודקודיות</b> שוות (צורת X)'],['צלע ששייכת לשני המשולשים','<b>צלע משותפת</b>'],['"שווה־שוקיים"','שתי <b>שוקיים</b> שוות'],['4 משפטי החפיפה','<b>צ.ז.צ</b> · <b>ז.צ.ז</b> · <b>צ.צ.צ</b> · <b>צ.צ.ז</b> (הזווית מול הצלע הגדולה)']
  ].map(([a,b])=>`<tr><td style="padding:5px;border:1px solid #cbd5e1;font-weight:800">${a}</td><td style="padding:5px;border:1px solid #cbd5e1">${b}</td></tr>`).join('')}</table>`);}
-function load(i){ex=i;step=0;shownG=false;shownT=false;pick2=null;ST.revealed=false;['walk','corr'].forEach(id=>{const e=$('#'+id);if(e)e.remove();});draw();table();bank();}
+function load(i){ex=i;FIG=EX[i];step=0;shownG=false;shownT=false;pick2=null;ST.revealed=false;['walk','corr'].forEach(id=>{const e=$('#'+id);if(e)e.remove();});draw();table();bank();}
 function bank(){card('bank','<div class="big" style="font-size:19px">📚 בנק תרגילים</div>'+EX.map((e,i)=>`<button class="lt noprint" data-x="${i}" style="display:block;width:100%;text-align:start;margin:4px 0;font-size:17px${i===ex?';outline:3px solid #f5b301':''}">${'★'.repeat(e.lvl)} ${i+1}. ${e.name}</button>`).join(''));
  $$('[data-x]').forEach(b=>b.onclick=()=>{if(!ST.busy)load(+b.dataset.x);});}
 function challenge(){const pool=EX.map((e,i)=>i).filter(i=>EX[i].lvl>=2&&i!==ex);classMode=true;$('#bM').innerHTML='🙋 הכיתה בוחרת';$('#bM').classList.add('on');load(pick(pool));given();
@@ -202,7 +202,121 @@ function start(){svgSize(760,500);
  tool('bR','🔁 מהתחלה',()=>load(ex));
  card('acts','<div class="noprint">'+[['aG','👀 מה נתון?'],['aT','🎯 מה צריך להוכיח?'],['aN','➕ השורה הבאה'],['aK','🔑 איזה משפט חפיפה?'],['aD','📖 מילון מילים'],['aC','🎯 אתגר לכיתה']].map(([i,t])=>`<button class="bigb" id="${i}">${t}</button>`).join('')+'</div>');
  const F={aG:given,aT:target,aN:next,aK:theorem,aD:dict,aC:challenge};Object.entries(F).forEach(([i,fn])=>$('#'+i).onclick=()=>{if(!ST.busy)fn();});
- card('tbl','');bank();load(0);}
+ card('tbl','');bank();load(0);lvCard();setMode('l');$('#sv').addEventListener('click',svgClick);}
+/* =====================================================================
+   תרגול מדורג: תבניות של צורות שחוזרות במבחנים + מחולל שאלות לפי רמות
+   ===================================================================== */
+const COM='זווית משותפת',BASE='זוויות בסיס במשולש שווה־שוקיים',ADD='הוספת קטע משותף',RECT='תכונות המלבן',RHO='תכונות המעוין',SQ='תכונות הריבוע',TRAP='זוויות בסיס בטרפז שווה־שוקיים',PAR='תכונות המקבילית';
+const POOL2=[G,SH,VA,PA,MID,BIS,ALT,COM,BASE,ADD,RECT,RHO,SQ,TRAP,PAR];
+const ISO={A:[380,70],B:[170,430],C:[590,430],D:[380,430]},KITE={A:[380,60],B:[200,230],C:[380,450],D:[560,230]};
+const TPL=[
+ {name:'פרפר',pts:{A:[150,110],B:[610,390],C:[150,390],D:[610,110],O:[380,250]},segs:['AB','CD','AC','BD'],given:'O אמצע AB,  O אמצע CD',
+  facts:{a:{c:'AO = BO',m:{s:['AO','BO'],n:1,col:'green'},k:MID,r:'O אמצע AB',g:1},b:{c:'CO = DO',m:{s:['CO','DO'],n:2,col:'purple'},k:MID,r:'O אמצע CD',g:1},v:{c:'∢AOC = ∢BOD',m:{a:['AOC','BOD'],n:1,col:'teal'},k:VA,r:VA}},
+  ks:{t:['AOC','BOD'],p:['a','v','b'],th:'צ.ז.צ',then:[{c:'AC = BD',k:CS,m:{s:['AC','BD'],n:3,col:'pink'}},{c:'∢OAC = ∢OBD',k:CA,m:{a:['OAC','OBD'],n:2,col:'orange'}}]}},
+ {name:'דלתון',pts:KITE,segs:['AB','BC','CD','DA','AC'],given:'AB = AD,  CB = CD',share:'AC',
+  facts:{a:{c:'AB = AD',m:{s:['AB','AD'],n:1,col:'green'},k:G,r:G,g:1},b:{c:'CB = CD',m:{s:['CB','CD'],n:2,col:'purple'},k:G,r:G,g:1},s:{c:'AC = AC',m:{s:['AC'],n:0,col:'orange'},k:SH,r:SH}},
+  ks:{t:['ABC','ADC'],p:['a','b','s'],th:'צ.צ.צ',then:[{c:'∢BAC = ∢DAC',k:CA,m:{a:['BAC','DAC'],n:1,col:'teal'}},{c:'∢ABC = ∢ADC',k:CA,m:{a:['ABC','ADC'],n:2,col:'pink'}}]}},
+ {name:'שווה־שוקיים ותיכון',pts:ISO,segs:['AB','AC','BC','AD'],given:'AB = AC,  D אמצע BC',share:'AD',
+  facts:{a:{c:'AB = AC',m:{s:['AB','AC'],n:1,col:'green'},k:G,r:G,g:1},b:{c:'BD = CD',m:{s:['BD','CD'],n:2,col:'purple'},k:MID,r:'D אמצע BC',g:1},s:{c:'AD = AD',m:{s:['AD'],n:0,col:'orange'},k:SH,r:SH}},
+  ks:{t:['ABD','ACD'],p:['a','b','s'],th:'צ.צ.צ',then:[{c:'∢BAD = ∢CAD',k:CA,m:{a:['BAD','CAD'],n:1,col:'teal'}},{c:'∢ADB = ∢ADC',k:CA,m:{a:['ADB','ADC'],n:2,col:'pink'}}]}},
+ {name:'שווה־שוקיים וחוצה זווית',pts:ISO,segs:['AB','AC','BC','AD'],given:'AB = AC,  AD חוצה את ∢BAC',share:'AD',
+  facts:{a:{c:'AB = AC',m:{s:['AB','AC'],n:1,col:'green'},k:G,r:G,g:1},z:{c:'∢BAD = ∢CAD',m:{a:['BAD','CAD'],n:1,col:'teal'},k:BIS,r:'AD חוצה זווית',g:1},s:{c:'AD = AD',m:{s:['AD'],n:0,col:'orange'},k:SH,r:SH}},
+  ks:{t:['ABD','ACD'],p:['a','z','s'],th:'צ.ז.צ',then:[{c:'BD = CD',k:CS,m:{s:['BD','CD'],n:2,col:'purple'}},{c:'∢ADB = ∢ADC',k:CA,m:{a:['ADB','ADC'],n:2,col:'pink'}}]}},
+ {name:'שווה־שוקיים וגובה',pts:ISO,segs:['AB','AC','BC','AD'],given:'AB = AC,  AD ⊥ BC',share:'AD',
+  facts:{a:{c:'AB = AC',m:{s:['AB','AC'],n:1,col:'green'},k:G,r:G,g:1},s:{c:'AD = AD',m:{s:['AD'],n:0,col:'orange'},k:SH,r:SH},r:{c:'∢ADB = ∢ADC = 90°',m:{a:['ADB','ADC'],right:1,col:'purple'},k:ALT,r:'AD ⊥ BC',g:1}},
+  ks:{t:['ABD','ACD'],p:['a','s','r'],th:'צ.צ.ז',then:[{c:'BD = CD',k:CS,m:{s:['BD','CD'],n:2,col:'pink'}},{c:'∢BAD = ∢CAD',k:CA,m:{a:['BAD','CAD'],n:1,col:'teal'}}]}},
+ {name:'מקבילית ואלכסון',pts:{A:[160,400],B:[300,100],C:[600,110],D:[460,410]},segs:['AB','BC','CD','DA','BD'],given:'ABCD מקבילית',share:'BD',
+  facts:{a:{c:'AB = CD',m:{s:['AB','CD'],n:1,col:'green'},k:PAR,r:'במקבילית צלעות נגדיות שוות',g:1},b:{c:'AD = CB',m:{s:['AD','CB'],n:2,col:'purple'},k:PAR,r:'במקבילית צלעות נגדיות שוות',g:1},s:{c:'BD = DB',m:{s:['BD'],n:0,col:'orange'},k:SH,r:SH}},
+  ks:{t:['ABD','CDB'],p:['a','b','s'],th:'צ.צ.צ',then:[{c:'∢BAD = ∢DCB',k:CA,m:{a:['BAD','DCB'],n:1,col:'teal'}}]}},
+ {name:'ישרים מקבילים',pts:{A:[140,130],B:[330,130],C:[380,270],D:[430,410],E:[620,410]},segs:['AB','ED','AE','BD'],given:'AB ∥ ED,  C אמצע BD',
+  facts:{z:{c:'∢ABC = ∢EDC',m:{a:['ABC','EDC'],n:1,col:'teal'},k:PA,r:'זוויות מתחלפות (AB ∥ ED)',g:1},m:{c:'BC = DC',m:{s:['BC','DC'],n:1,col:'green'},k:MID,r:'C אמצע BD',g:1},v:{c:'∢ACB = ∢ECD',m:{a:['ACB','ECD'],n:2,col:'orange'},k:VA,r:VA}},
+  ks:{t:['ABC','EDC'],p:['z','m','v'],th:'ז.צ.ז',then:[{c:'AB = ED',k:CS,m:{s:['AB','ED'],n:2,col:'purple'}},{c:'AC = EC',k:CS,m:{s:['AC','EC'],n:3,col:'pink'}}]}},
+ {name:'נקודות על ישר אחד',pts:{B:[110,410],E:[280,410],C:[470,410],F:[640,410],A:[240,130],D:[410,130]},segs:['BF','AB','AC','DE','DF'],given:'AB = DE,  AC = DF,  BE = CF',
+  facts:{a:{c:'AB = DE',m:{s:['AB','DE'],n:1,col:'green'},k:G,r:G,g:1},b:{c:'AC = DF',m:{s:['AC','DF'],n:2,col:'purple'},k:G,r:G,g:1},e:{c:'BC = EF',m:{s:['BC','EF'],n:3,col:'orange',o:[-11,11]},k:ADD,r:'BE = CF והקטע EC משותף'}},
+  ks:{t:['ABC','DEF'],p:['a','b','e'],th:'צ.צ.צ',then:[{c:'∢ABC = ∢DEF',k:CA,m:{a:['ABC','DEF'],n:1,col:'teal'}},{c:'∢ACB = ∢DFE',k:CA,m:{a:['ACB','DFE'],n:2,col:'pink'}}]}},
+ {name:'זווית משותפת',pts:{A:[380,60],B:[150,440],C:[610,440],D:[253,269],E:[507,269]},segs:['AB','AC','BE','CD'],given:'AB = AC,  AD = AE',
+  facts:{a:{c:'AB = AC',m:{s:['AB','AC'],n:1,col:'green'},k:G,r:G,g:1},d:{c:'AD = AE',m:{s:['AD','AE'],n:2,col:'purple',o:[9,-9]},k:G,r:G,g:1},z:{c:'∢BAE = ∢CAD',m:{a:['BAC'],n:1,col:'teal'},k:COM,r:COM}},
+  ks:{t:['ABE','ACD'],p:['a','z','d'],th:'צ.ז.צ',then:[{c:'BE = CD',k:CS,m:{s:['BE','CD'],n:3,col:'pink'}},{c:'∢ABE = ∢ACD',k:CA,m:{a:['ABE','ACD'],n:2,col:'orange'}}]}},
+ {name:'נקודות על בסיס שווה־שוקיים',pts:{A:[380,70],B:[140,430],C:[620,430],D:[290,430],E:[470,430]},segs:['AB','AC','BC','AD','AE'],given:'AB = AC,  BD = CE',
+  facts:{a:{c:'AB = AC',m:{s:['AB','AC'],n:1,col:'green'},k:G,r:G,g:1},z:{c:'∢ABD = ∢ACE',m:{a:['ABD','ACE'],n:1,col:'teal'},k:BASE,r:BASE},d:{c:'BD = CE',m:{s:['BD','CE'],n:2,col:'purple'},k:G,r:G,g:1}},
+  ks:{t:['ABD','ACE'],p:['a','z','d'],th:'צ.ז.צ',then:[{c:'AD = AE',k:CS,m:{s:['AD','AE'],n:3,col:'pink'}},{c:'∢BAD = ∢CAE',k:CA,m:{a:['BAD','CAE'],n:2,col:'orange'}}]}},
+ {name:'מלבן ואמצע צלע',pts:{A:[170,130],M:[380,130],B:[590,130],C:[590,400],D:[170,400]},segs:['AB','BC','CD','DA','MD','MC'],given:'ABCD מלבן,  M אמצע AB',
+  facts:{m:{c:'AM = BM',m:{s:['AM','BM'],n:1,col:'green'},k:MID,r:'M אמצע AB',g:1},r:{c:'∢DAM = ∢CBM = 90°',m:{a:['DAM','CBM'],right:1,col:'teal'},k:RECT,r:'במלבן כל הזוויות ישרות',g:1},s:{c:'AD = BC',m:{s:['AD','BC'],n:2,col:'purple'},k:RECT,r:'במלבן צלעות נגדיות שוות',g:1}},
+  ks:{t:['AMD','BMC'],p:['m','r','s'],th:'צ.ז.צ',then:[{c:'MD = MC',k:CS,m:{s:['MD','MC'],n:3,col:'pink'}},{c:'∢AMD = ∢BMC',k:CA,m:{a:['AMD','BMC'],n:1,col:'orange'}}]}},
+ {name:'מעוין ואלכסונים',pts:{A:[380,60],B:[200,250],C:[380,440],D:[560,250],O:[380,250]},segs:['AB','BC','CD','DA','AC','BD'],given:'ABCD מעוין',share:'AO',
+  facts:{a:{c:'AB = AD',m:{s:['AB','AD'],n:1,col:'green'},k:RHO,r:'במעוין כל הצלעות שוות',g:1},o:{c:'BO = DO',m:{s:['BO','DO'],n:2,col:'purple'},k:RHO,r:'במעוין האלכסונים חוצים זה את זה',g:1},s:{c:'AO = AO',m:{s:['AO'],n:0,col:'orange'},k:SH,r:SH}},
+  ks:{t:['ABO','ADO'],p:['a','o','s'],th:'צ.צ.צ',then:[{c:'∢AOB = ∢AOD',k:CA,m:{a:['AOB','AOD'],n:1,col:'teal'}},{c:'∢BAO = ∢DAO',k:CA,m:{a:['BAO','DAO'],n:2,col:'pink'}}]}},
+ {name:'ריבוע ונקודות על הצלעות',pts:{A:[190,70],B:[570,70],C:[570,450],D:[190,450],E:[570,220],F:[420,450]},segs:['AB','BC','CD','DA','AE','BF'],given:'ABCD ריבוע,  BE = CF',
+  facts:{s:{c:'AB = BC',m:{s:['AB','BC'],n:1,col:'green'},k:SQ,r:'בריבוע כל הצלעות שוות',g:1},r:{c:'∢ABE = ∢BCF = 90°',m:{a:['ABE','BCF'],right:1,col:'teal'},k:SQ,r:'בריבוע כל הזוויות ישרות',g:1},e:{c:'BE = CF',m:{s:['BE','CF'],n:2,col:'purple',o:[-10,10]},k:G,r:G,g:1}},
+  ks:{t:['ABE','BCF'],p:['s','r','e'],th:'צ.ז.צ',then:[{c:'AE = BF',k:CS,m:{s:['AE','BF'],n:3,col:'pink'}},{c:'∢BAE = ∢CBF',k:CA,m:{a:['BAE','CBF'],n:1,col:'orange'}}]}},
+ {name:'טרפז שווה־שוקיים',pts:{A:[250,110],B:[510,110],C:[640,410],D:[120,410]},segs:['AB','BC','CD','DA','AC','BD'],given:'ABCD טרפז שווה־שוקיים (AD = BC)',share:'DC',
+  facts:{a:{c:'AD = BC',m:{s:['AD','BC'],n:1,col:'green'},k:G,r:G,g:1},z:{c:'∢ADC = ∢BCD',m:{a:['ADC','BCD'],n:1,col:'teal'},k:TRAP,r:TRAP},s:{c:'DC = CD',m:{s:['DC'],n:0,col:'orange'},k:SH,r:SH}},
+  ks:{t:['ADC','BCD'],p:['a','z','s'],th:'צ.ז.צ',then:[{c:'AC = BD',k:CS,m:{s:['AC','BD'],n:2,col:'pink'}}]}}];
+const HINT={[G]:'מה כתוב בנתונים?',[SH]:'האם הצלע שייכת לשני המשולשים?',[VA]:'חפשו צורת X: שני ישרים שנחתכים.',[PA]:'חפשו צורת Z בין שני ישרים מקבילים.',[MID]:'מה אומרת המילה "אמצע"?',[BIS]:'מה עושה חוצה זווית?',[ALT]:'מה זה "מאונך"?',[COM]:'הזווית שייכת לשני המשולשים.',[BASE]:'מה ידוע על זוויות הבסיס במשולש שווה־שוקיים?',[ADD]:'מוסיפים לשני קטעים שווים את אותו קטע.',[RECT]:'מה ידוע על מלבן?',[RHO]:'מה ידוע על מעוין?',[SQ]:'מה ידוע על ריבוע?',[TRAP]:'מה ידוע על טרפז שווה־שוקיים?',[PAR]:'מה ידוע על מקבילית?',[CS]:'המשולשים כבר חופפים.',[CA]:'המשולשים כבר חופפים.'};
+const THD={'צ.ז.צ':'שתי צלעות והזווית שביניהן','ז.צ.ז':'שתי זוויות והצלע שביניהן','צ.צ.צ':'שלוש צלעות','צ.צ.ז':'שתי צלעות והזווית שמול הגדולה מביניהן'};
+const LV=[{n:1,t:'★ זיהוי',d:'איזה משפט? למה? מה מתאים? לחצו בשרטוט',ty:['th','why','corr','click']},{n:2,t:'★★ הוכחה מודרכת',d:'השלימו את הטבלה, מה חסר?, סדר האותיות',ty:['missing','need','order','why']}];
+let PR=null; /* מצב תרגול: {lv,list,i,score,tries,done} */
+const shuf=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+function relabel(t){const L=[...new Set(Object.keys(t.pts))].sort(),pool=shuf([...'ABCDEFGHKLMNOPRST']).slice(0,L.length),map={};L.forEach((k,i)=>map[k]=Math.random()<.5?k:pool[i]);
+ const used=new Set(Object.values(map));if(used.size<L.length)L.forEach((k,i)=>map[k]=k);
+ const js=JSON.stringify(t).replace(/[A-Z]/g,ch=>map[ch]||ch),o=JSON.parse(js);if(Math.random()<.5)Object.values(o.pts).forEach(p=>p[0]=760-p[0]);return o;}
+function genQ(ty){const t=relabel(pick(TPL)),K=t.ks,F=t.facts,parts=K.p.map(k=>F[k]);let q={ty,t,marks:[],tri:false};
+ const opts3=(ok,pool)=>shuf([ok,...shuf(pool.filter(x=>x!==ok)).slice(0,2)]);
+ if(ty==='th'){q.text=`איזה משפט חפיפה מוכיח ש־${M('△'+K.t[0]+' ≅ △'+K.t[1])}?`;q.marks=parts.map(p=>p.m);q.tri=true;q.opts=shuf(['צ.ז.צ','ז.צ.ז','צ.צ.צ','צ.צ.ז']);q.ok=K.th;
+  q.h1='ספרו: כמה צלעות (צ) וכמה זוויות (ז) מסומנות? איפה הזווית?';q.ex=`${K.th}: ${THD[K.th]}. `+parts.map(p=>M(p.c)).join(' · ');}
+ else if(ty==='why'){const f=pick(Object.values(F));q.text=`למה ${M(f.c)}?`;q.marks=[f.m];q.flash=f.m;q.opts=opts3(f.k,POOL2.filter(x=>!(f.g&&f.k!==G&&x===G)));q.ok=f.k;q.h1=HINT[f.k]||'';q.ex=`כי ${reasonHTML(f.r)}.`;}
+ else if(ty==='corr'){const i=R(0,2),j=(i+1)%3,a=K.t[0][i]+K.t[0][j],b=K.t[1][i]+K.t[1][j],sides=[0,1,2].map(k=>K.t[1][k]+K.t[1][(k+1)%3]);
+  q.text=`נתון: ${M('△'+K.t[0]+' ≅ △'+K.t[1])}. איזו צלע שווה ל־${M(a)}?`;q.tri=true;q.opts=shuf(sides).map(x=>x);q.ok=b;q.h1='לפי סדר האותיות: ראשונה↔ראשונה, שנייה↔שנייה, שלישית↔שלישית.';q.ex=`${M(K.t[0][i]+'↔'+K.t[1][i])} ו־${M(K.t[0][j]+'↔'+K.t[1][j])}, ולכן ${M(a+' = '+b)}.`;q.math=1;}
+ else if(ty==='click'){const sh=Object.values(F).find(f=>f.k===SH);if(sh){q.ok=sh.m.s[0];q.text='לחצו בשרטוט על <b>הצלע המשותפת</b> לשני המשולשים.';q.h1=HINT[SH];}
+  else{const th=K.then.find(x=>x.k===CS)||{m:{s:[K.t[0].slice(0,2),K.t[1].slice(0,2)]}};q.ok=th.m.s[1];q.text=`נתון: ${M('△'+K.t[0]+' ≅ △'+K.t[1])}. לחצו בשרטוט על הצלע ששווה ל־${M(th.m.s[0])}.`;q.tri=true;q.h1='לפי סדר האותיות במשולשים החופפים.';}
+  q.click=1;q.ex=`זו הצלע ${M(q.ok)}.`;}
+ else if(ty==='missing'){const rows=[...parts.map(p=>({c:p.c,r:p.r,k:p.k,m:p.m})),{c:'△'+K.t[0]+' ≅ △'+K.t[1],r:K.th,k:K.th},{c:K.then[0].c,r:K.then[0].k,k:K.then[0].k,m:K.then[0].m}];
+  const hi=R(0,rows.length-1),col=rows[hi].k===K.th?'r':(Math.random()<.5?'c':'r');q.rows=rows;q.hi=hi;q.col=col;q.marks=parts.map(p=>p.m);q.tri=true;
+  if(col==='r'){q.text=`מה חסר במקום <b>?</b> בטבלה (נימוק)?`;q.ok=rows[hi].k;q.opts=rows[hi].k===K.th?shuf(['צ.ז.צ','ז.צ.ז','צ.צ.צ','צ.צ.ז']):opts3(rows[hi].k,POOL2.concat([CS,CA]).filter(x=>!(rows[hi].k!==G&&x===G)));q.h1=HINT[rows[hi].k]||'הסתכלו על הסימונים בשרטוט.';q.ex=`${M(rows[hi].c)} כי ${reasonHTML(rows[hi].r)}.`;}
+  else{q.text='מה חסר במקום <b>?</b> בטבלה (טענה)?';q.ok=rows[hi].c;const all=Object.values(F).map(f=>f.c).concat(K.then.map(x=>x.c)).filter(c=>c!==rows[hi].c);q.opts=shuf([rows[hi].c,...shuf(all).slice(0,2)]);q.math=1;q.h1='קראו את הנימוק בשורה. מה הוא מוכיח? בדקו בשרטוט.';q.ex=`${M(rows[hi].c)} כי ${reasonHTML(rows[hi].r)}.`;}}
+ else if(ty==='need'){const miss=R(0,2),have=parts.filter((p,i)=>i!==miss),m=parts[miss];q.marks=have.map(p=>p.m);q.tri=true;
+  q.text=`נתון: ${have.map(p=>M(p.c)).join(' , ')}. מה עוד צריך כדי להוכיח ש־${M('△'+K.t[0]+' ≅ △'+K.t[1])} לפי <b>${K.th}</b>?`;
+  const bad=K.then.map(x=>x.c).concat(Object.values(F).filter(f=>!K.p.map(k=>F[k]).includes(f)).map(f=>f.c));const wrongPair=(()=>{const a=K.t[0],b=K.t[1];return a[0]+a[1]+' = '+b[1]+b[2];})();
+  q.opts=shuf([m.c,...shuf(bad.concat([wrongPair])).filter(x=>x!==m.c).slice(0,2)]);q.ok=m.c;q.math=1;q.h1=`${K.th} = ${THD[K.th]}. מה כבר יש? מה חסר?`;q.ex=`חסר ${M(m.c)} (${reasonHTML(m.r)}).`;}
+ else if(ty==='order'){q.marks=parts.map(p=>p.m);q.text=`השלימו לפי הסימונים: ${M('△'+K.t[0]+' ≅ △___')}`;const b=K.t[1],perm=[b,b[0]+b[2]+b[1],b[1]+b[0]+b[2],b[2]+b[1]+b[0]];q.opts=shuf([b,...shuf(perm.slice(1)).slice(0,2)]).map(x=>'△'+x);q.ok='△'+b;q.math=1;
+  q.h1=`בדקו לכל קודקוד: לאיזה קודקוד הוא מתאים לפי הסימונים?`;q.ex=K.t[0].split('').map((k,i)=>M(k+'↔'+b[i])).join(' · ');}
+ return q;}
+function buildLevel(n){const L=LV[n-1],list=[];const ty=shuf([...L.ty,...L.ty,...L.ty,...L.ty,...L.ty]).slice(0,20);ty.forEach(x=>list.push(genQ(x)));return list;}
+function drawQ(q){FIG={P:q.t.pts};const K=q.t.ks;let s='';
+ if(q.tri)s+=`<path d="${triPath(K.t[0])}" fill="${COL.teal}" fill-opacity=".13"/><path d="${triPath(K.t[1])}" fill="${COL.pink}" fill-opacity=".13"/>`;
+ q.t.segs.forEach(sg=>{const p=pt(sg[0]),r=pt(sg[1]);s+=`<line x1="${p.x}" y1="${p.y}" x2="${r.x}" y2="${r.y}" stroke="${COL.ink}" stroke-width="3.5" stroke-linecap="round"/>`;});
+ q.marks.forEach(m=>s+=markSVG(m));s+='<g id="hl"></g><g id="ani"></g>';
+ if(q.click){const cand=new Set(q.t.segs);Object.values(q.t.facts).forEach(f=>f.m.s&&f.m.s.forEach(x=>cand.add(x)));q.t.ks.then.forEach(f=>f.m.s&&f.m.s.forEach(x=>cand.add(x)));q.cand=[...cand];}
+ const ks=Object.keys(q.t.pts),cx=ks.reduce((a,k)=>a+pt(k).x,0)/ks.length,cy=ks.reduce((a,k)=>a+pt(k).y,0)/ks.length;
+ ks.forEach(k=>{const p=pt(k);let dx=p.x-cx,dy=p.y-cy,L=Math.hypot(dx,dy);if(L<45){dx=.8;dy=-.6;L=1;}s+=`<circle cx="${p.x}" cy="${p.y}" r="5" fill="${COL.ink}"/><text x="${p.x+dx/L*28}" y="${p.y+dy/L*28+9}" text-anchor="middle" font-size="27" font-weight="800" fill="${COL.ink}">${k}</text>`;});
+ $('#sv').innerHTML=s;if(q.flash){const h=$('#hl');h.innerHTML=markSVG(q.flash);let k=0;const iv=setInterval(()=>{h.style.opacity=k%2?1:.15;if(++k>5){clearInterval(iv);h.style.opacity=1;}},260);}}
+function segDist(p,a,b){const dx=b.x-a.x,dy=b.y-a.y,t=Math.max(0,Math.min(1,((p.x-a.x)*dx+(p.y-a.y)*dy)/(dx*dx+dy*dy)));return Math.hypot(p.x-a.x-t*dx,p.y-a.y-t*dy);}
+function svgClick(e){if(!PR||PR.done)return;const q=PR.list[PR.i];if(!q.click||PR.ans)return;const p=svgPt(e);let best=null,bd=1e9;
+ q.cand.forEach(sg=>{const d=segDist(p,pt(sg[0]),pt(sg[1])),L=Math.hypot(pt(sg[0]).x-pt(sg[1]).x,pt(sg[0]).y-pt(sg[1]).y);const sc=d+L*0.004;if(d<26&&sc<bd){bd=sc;best=sg;}});if(!best)return;
+ const same=best===q.ok||best===q.ok[1]+q.ok[0];$('#hl').innerHTML=segMark(best[0],best[1],0,same?'green':'red');answer(same,M(best));}
+function showQ(){const q=PR.list[PR.i];PR.tries=0;PR.ans=false;drawQ(q);
+ let t=`<div class="tip" style="margin:0">${LV[PR.lv-1].t} · שאלה ${PR.i+1} מתוך ${PR.list.length} · ⭐ ${PR.score}</div><div style="height:8px;background:#e2e8f0;border-radius:6px;margin:6px 0"><div style="height:8px;width:${PR.i/PR.list.length*100}%;background:#16a34a;border-radius:6px"></div></div>`;
+ t+=`${q.ty==='need'?'':`<div class="tip"><b>נתון:</b> ${reasonHTML(q.t.given)}</div>`}<div class="big" style="font-size:22px">❓ ${q.text}</div>`;
+ if(q.rows)t+='<table style="width:100%;border-collapse:collapse;font-size:18px;margin:6px 0"><tr style="background:#eef2ff"><th style="padding:5px;border:1px solid #cbd5e1">טענה</th><th style="padding:5px;border:1px solid #cbd5e1">נימוק</th></tr>'+q.rows.map((r,i)=>`<tr${r.k===q.t.ks.th?' style="background:#fef9c3"':''}><td style="padding:5px;border:1px solid #cbd5e1;font-weight:800;color:${r.m?COL[r.m.col]:COL.ink}">${i===q.hi&&q.col==='c'?'<b style="color:#dc2626;font-size:22px">?</b>':M(r.c)}</td><td style="padding:5px;border:1px solid #cbd5e1">${i===q.hi&&q.col==='r'?'<b style="color:#dc2626;font-size:22px">?</b>':reasonHTML(r.r)}</td></tr>`).join('')+'</table>';
+ if(q.opts)t+=`<div id="opts">${q.opts.map(o=>`<button class="bigb" style="background:#334155" data-o="${o}">${q.math?M(o):o}</button>`).join('')}</div>`;
+ t+='<div id="fb"></div>';card('pq',t);
+ $$('#opts [data-o]').forEach(b=>b.onclick=()=>{if(PR.ans)return;const ok=b.dataset.o===q.ok;b.style.background=ok?COL.green:COL.red;answer(ok);});}
+function answer(ok,picked){const q=PR.list[PR.i];if(ok){PR.ans=true;if(PR.tries===0)PR.score++;
+  $('#fb').innerHTML=`<div class="okbox">✅ <b>${pick(['מצוין!','נכון!','כל הכבוד!','בדיוק!'])}</b> ${q.ex}</div><button class="bigb" id="bNx" style="background:#2563eb">➡️ שאלה הבאה</button>`;$('#bNx').onclick=nextQ;if(q.t.ks&&q.tri)overlay(q.t.ks.t);}
+ else{PR.tries++;if(PR.tries===1)$('#fb').innerHTML=`<div class="badbox">💡 <b>עוד ניסיון.</b> ${q.h1}</div>`;
+  else{PR.ans=true;$('#fb').innerHTML=`<div class="badbox">🔎 <b>התשובה:</b> ${q.math||q.click?M(q.ok):q.ok}. ${q.ex}</div><button class="bigb" id="bNx" style="background:#2563eb">➡️ שאלה הבאה</button>`;$('#bNx').onclick=nextQ;
+   $$('#opts [data-o]').forEach(b=>{if(b.dataset.o===q.ok)b.style.background=COL.green;});if(q.click)$('#hl').innerHTML=segMark(q.ok[0],q.ok[1],0,'green');}}}
+function nextQ(){ST.busy=false;PR.i++;if(PR.i>=PR.list.length){PR.done=true;const s=PR.score,n=PR.list.length;
+  card('pq',`<div class="big">🏁 סיימתם את ${LV[PR.lv-1].t}!</div><div class="big" style="font-size:34px">⭐ ${s} מתוך ${n}</div><div class="${s>=n*0.8?'okbox':'tip'}">${s>=n*0.8?'💪 מעולה! אפשר לעבור לרמה הבאה.':'כדאי לתרגל את הרמה הזו עוד פעם.'}</div>`+LV.map(l=>`<button class="bigb" style="background:${l.n===PR.lv?'#64748b':'#2563eb'}" data-lv="${l.n}">${l.t}</button>`).join(''));
+  $$('[data-lv]').forEach(b=>b.onclick=()=>practice(+b.dataset.lv));return;}showQ();}
+function practice(n){PR={lv:n,list:buildLevel(n),i:0,score:0,tries:0,done:false};setMode('p');showQ();}
+function setMode(m){const lesson=['acts','tbl','bank','corr','walk'];lesson.forEach(id=>{const e=$('#'+id);if(e)e.style.display=m==='p'?'none':'';});const pq=$('#pq');if(pq)pq.style.display=m==='p'?'':'none';
+ $$('#lvs [data-m]').forEach(b=>b.classList.toggle('on',(m==='l'&&b.dataset.m==='l')||(m==='p'&&PR&&b.dataset.m==='p'+PR.lv)));
+ if(m==='l'){FIG=EX[ex];draw();}}
+function lvCard(){card('lvs','<div class="big" style="font-size:19px">🧭 בחרו:</div><div style="display:flex;flex-wrap:wrap;gap:6px">'+
+ '<button class="lt" data-m="l">📋 שיעור: הוכחה מלאה (★★★)</button>'+LV.map(l=>`<button class="lt" data-m="p${l.n}" title="${l.d}">🎯 ${l.t}</button>`).join('')+'<button class="lt" disabled style="opacity:.55">★★★★ חשיבה גבוהה · בשלב הבא</button></div>');
+ $('#side').insertBefore($('#lvs'),$('#side').firstChild);
+ $$('#lvs [data-m]').forEach(b=>b.onclick=()=>{if(ST.busy)return;const m=b.dataset.m;if(m==='l')setMode('l');else practice(+m.slice(1));});}
 
 /* ===== הפעלה ===== */
 if(typeof LAB!=='undefined'){if(LAB.tip)$('#tip').innerHTML=LAB.tip;
