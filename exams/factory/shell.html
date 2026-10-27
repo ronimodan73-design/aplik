@@ -91,6 +91,7 @@ button,input,select{font:inherit}
 .qh{display:flex;gap:3mm;align-items:flex-start}
 .qn{flex:none;font-family:'Rubik',sans-serif;font-weight:900;background:var(--acc);color:#fff;border-radius:50%;width:8.5mm;height:8.5mm;display:inline-flex;align-items:center;justify-content:center;font-size:12.5pt;margin-top:.5mm}
 .qt{flex:1}
+.mm{flex:none;font-family:'Rubik',sans-serif;font-weight:900;color:var(--gold);font-size:22pt;line-height:1;margin:-0.5mm -1mm 0 0}
 .fig{flex:none;align-self:center;margin:0 1mm}
 .fig svg{display:block;direction:ltr}
 .multi{display:flex;gap:3mm;flex-wrap:wrap;justify-content:center;max-width:120mm}
@@ -198,6 +199,8 @@ function shuffle(arr,r){const a=arr.slice();for(let i=a.length-1;i>0;i--){const 
 const banksOf=g=>BANKS.filter(b=>b.grade===g).sort((x,y)=>STRANDS.indexOf(x.strand)-STRANDS.indexOf(y.strand)||x.order-y.order);
 const chosen=()=>banksOf(S.g).filter(b=>S.t.includes(b.id));
 const gname=()=>GRADES.find(x=>x.g===S.g).name;
+// כוכבית = שאלה מהמודל של משרד החינוך (מאגר שמקורו במודל, ולא שאלה שנוספה)
+const isM=(b,q)=>b.src==='מודל'&&!q.n,MM=(b,q)=>isM(b,q)?'<span class="mm" title="שאלה מהמודל">*</span>':'';
 const req=q=>q.r==='calc'?'<div class="req"><b>הציגו את דרך החישוב.</b></div>':q.r==='why'?'<div class="req"><b>נמקו.</b></div>':'';
 const lines=n=>'<div class="lines" style="height:'+(n*9)+'mm"></div>';
 
@@ -252,16 +255,16 @@ function examHTML(E){
     h+=sheet(head(v),body);body='';
     E.parts.forEach((p,i)=>{
       body+='<div class="banner"><u>חלק '+HEB[i]+' – '+esc(p.name)+'</u><span class="pts">('+p.idx.reduce((a,j)=>a+E.pts[j],0)+' נקודות)</span></div>';
-      p.idx.forEach(j=>{num++;const {q,L}=qs[j];
-        body+='<div class="q"><div class="qh"><span class="qn">'+num+'</span><div class="qt">'+F(q.t)+req(q)+'</div>'+D(q.d)+'<span class="qp">'+E.pts[j]+'<small>נק׳</small></span></div>'+lines(EXAM_LINES[L])+'</div>'});
+      p.idx.forEach(j=>{num++;const {q,L,b}=qs[j];
+        body+='<div class="q"><div class="qh"><span class="qn">'+num+'</span>'+MM(b,q)+'<div class="qt">'+F(q.t)+req(q)+'</div>'+D(q.d)+'<span class="qp">'+E.pts[j]+'<small>נק׳</small></span></div>'+lines(EXAM_LINES[L])+'</div>'});
     });
     body+='<div class="end">בהצלחה לכל התלמידים!</div>';
     h+=sheet(head(v),body);
   });
   if(S.key){let k='';E.vers.forEach((qs,v)=>{let num=0;
       k+='<div class="key'+(v?' brk':'')+'"><h2>דף תשובות ומחוון למורה'+(E.vers.length>1?' · טור '+HEB[v]+'׳':'')+'</h2><table class="kt"><tr><th>שאלה</th><th>נושא · רמה</th><th>תשובה</th><th>ניקוד</th></tr>'+
-      E.parts.flatMap(p=>p.idx).map(j=>{num++;const {q,b,L}=qs[j];return'<tr><td>'+num+'</td><td>'+esc(b.topic)+' · '+LV[L].n+'</td><td>'+F(q.a)+'</td><td>'+E.pts[j]+'</td></tr>'}).join('')+
-      '<tr><th colspan="3">סך הכול</th><th>100</th></tr></table><p class="small">ניקוד חלקי: דרך נכונה עם טעות חישוב – כמחצית מהניקוד. תשובה נכונה בלי דרך, כשנדרשה דרך – כמחצית מהניקוד.</p></div>'});
+      E.parts.flatMap(p=>p.idx).map(j=>{num++;const {q,b,L}=qs[j];return'<tr><td>'+num+(isM(b,q)?' *':'')+'</td><td>'+esc(b.topic)+' · '+LV[L].n+'</td><td>'+F(q.a)+'</td><td>'+E.pts[j]+'</td></tr>'}).join('')+
+      '<tr><th colspan="3">סך הכול</th><th>100</th></tr></table><p class="small">* = שאלה מהמודל של משרד החינוך. ניקוד חלקי: דרך נכונה עם טעות חישוב – כמחצית מהניקוד. תשובה נכונה בלי דרך, כשנדרשה דרך – כמחצית מהניקוד.</p></div>'});
     h+=sheet('דף תשובות למורה · '+esc(topics),k)}
   return h}
 
@@ -274,9 +277,9 @@ function wsHTML(){
     for(const L of [1,2,3,4]){const qs=shuffle(b.qs.filter(q=>q.lv===L),r).slice(0,cnt[L]);
       if(!qs.length)continue;
       body+='<div class="lvl">'+'★'.repeat(L)+' '+LV[L].n+' <small>· '+LV[L].d+'</small></div>';
-      qs.forEach(q=>{num++;a.push([num,q,L]);body+='<div class="q"><div class="qh"><span class="qn">'+num+'</span><div class="qt">'+F(q.t)+req(q)+'</div>'+D(q.d)+'<span class="st">'+'★'.repeat(L)+'</span></div>'+lines(WS_LINES[L])+'</div>'})}
+      qs.forEach(q=>{num++;a.push([num,q,L]);body+='<div class="q"><div class="qh"><span class="qn">'+num+'</span>'+MM(b,q)+'<div class="qt">'+F(q.t)+req(q)+'</div>'+D(q.d)+'<span class="st">'+'★'.repeat(L)+'</span></div>'+lines(WS_LINES[L])+'</div>'})}
     h+=sheet('דף עבודה · '+esc(b.topic)+' · כיתה '+esc(S.cls||gname()),body);ans.push([b,a])});
-  if(S.key){let k='';ans.forEach(([b,a],i)=>{k+='<div class="key"><h2>תשובות למורה · '+esc(b.topic)+'</h2><table class="kt"><tr><th>שאלה</th><th>רמה</th><th>תשובה</th></tr>'+a.map(([n,q,L])=>'<tr><td>'+n+'</td><td>'+LV[L].n+'</td><td>'+F(q.a)+'</td></tr>').join('')+'</table></div>'});
+  if(S.key){let k='';ans.forEach(([b,a],i)=>{k+='<div class="key"><h2>תשובות למורה · '+esc(b.topic)+'</h2><table class="kt"><tr><th>שאלה</th><th>רמה</th><th>תשובה</th></tr>'+a.map(([n,q,L])=>'<tr><td>'+n+(isM(b,q)?' *':'')+'</td><td>'+LV[L].n+'</td><td>'+F(q.a)+'</td></tr>').join('')+'</table><p class="small">* = שאלה מהמודל של משרד החינוך</p></div>'});
     h+=sheet('תשובות למורה · דף עבודה',k)}
   return h}
 
