@@ -83,7 +83,7 @@ function geo(d){
   (d.tk||[]).forEach(([a,b,n])=>{const p=S(P[a]),q=S(P[b]),m=mul(add(p,q),.5),v=nrm(sub(q,p)),nn=[-v[1],v[0]];
     for(let i=0;i<(n||1);i++){const o=add(m,mul(v,(i-((n||1)-1)/2)*4));s+=ln(o[0]-nn[0]*5,o[1]-nn[1]*5,o[0]+nn[0]*5,o[1]+nn[1]*5,{w:1.4})}});
   (d.sl||[]).forEach(([a,b,lab])=>{const p=S(P[a]),q=S(P[b]),m=mul(add(p,q),.5),v=nrm(sub(q,p));let nn=[-v[1],v[0]];
-    const cc=S(cen);if((m[0]-cc[0])*nn[0]+(m[1]-cc[1])*nn[1]<0)nn=mul(nn,-1);const o=add(m,mul(nn,11));s+=tx(o[0],o[1],lab,{fs:11})});
+    const own=polys.find(ns=>ns.includes(a)&&ns.includes(b)),cc=own?S(mul(own.reduce((t,n)=>add(t,P[n]),[0,0]),1/own.length)):S(cen);if((m[0]-cc[0])*nn[0]+(m[1]-cc[1])*nn[1]<0)nn=mul(nn,-1);const o=add(m,mul(nn,11));s+=tx(o[0],o[1],lab,{fs:11})});
   const scen=S(cen);ks.filter(n=>!(d.hide||[]).includes(n)).forEach(n=>{const p=S(P[n]);let v=sub(p,scen);v=len(v)?nrm(v):[0,-1];const o=add(p,mul(v,12));s+=tx(o[0],o[1],n,{fs:13,b:1})});
   return svg(w,h,s)}
 
