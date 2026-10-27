@@ -13,7 +13,7 @@ const TWO = (r1, r2) => { const a = RECT(...r1), b = RECT(...r2); return {t: 'g'
 const SHAPE = (pts, labels) => { const P = {}; pts.forEach((p, i) => { P['p' + i] = p; }); return {t: 'g', P, poly: [pts.map((p, i) => 'p' + i)], sl: labels.map(([i, j, s]) => ['p' + i, 'p' + j, s]), hide: pts.map((p, i) => 'p' + i), w: 52}; };
 const CMPX = 'הצורה מורכבת ממלבנים: כל הצלעות שלה אופקיות או אנכיות, וכל האורכים בס״מ. השלימו את האורכים החסרים. א. חשבו את היקף הצורה בס״מ. ב. חשבו את שטח הצורה בסמ״ר.';
 BANK({
-  id: 'z7_area', grade: 'ז', topic: 'שטח והיקף',
+  id: 'z7_area', grade: 'ז', topic: 'שטח והיקף', strand: 'גאומטריה', order: 1,
   rule: 'היקף = סכום כל הצלעות (ס״מ) · שטח מלבן = אורך × רוחב (סמ״ר) · צורה מורכבת: משלימים למלבן ומחסירים, או מחלקים למלבנים',
   qs: [
     // שטח והיקף של ריבוע

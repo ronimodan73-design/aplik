@@ -38,6 +38,14 @@ button,input,select{font:inherit}
 .big{border:0;border-radius:14px;padding:12px 20px;font-weight:700;font-size:18px;cursor:pointer}
 .big.p{background:#ffc928;color:#1f2433}
 .big.s{background:#fff;color:var(--acc);border:2px solid var(--acc)}
+.go{display:block;width:100%;margin-top:12px;background:var(--acc);color:#fff;font-size:21px;padding:14px}
+.go:disabled{opacity:.45;cursor:not-allowed}
+.done{border:2px solid var(--acc);background:#eef7f4}
+.more{margin-top:8px;font-size:15px}
+.more summary{cursor:pointer;color:var(--acc);font-weight:700}
+.top-al{align-items:flex-start}
+.strand{font-family:'Rubik',sans-serif;font-weight:700;color:var(--mut);font-size:14px;margin:4px 0 2px}
+.chip.soon{opacity:.45;cursor:not-allowed;border-style:dashed}
 .help{font-size:14px;color:var(--mut);margin:8px 2px 0}
 .prev{font-family:'Rubik',sans-serif;color:var(--acc);font-weight:700;margin:16px auto 6px;max-width:860px;padding:0 16px}
 
@@ -127,22 +135,28 @@ button,input,select{font:inherit}
   <div class="top"><img src="/*LOGO*/" alt="שחקים"><div><h1>מחולל מבחנים ודפי עבודה</h1><p>ערכה: רוני מודן · שחקים · לפי רמות החשיבה של משרד החינוך</p></div></div>
   <div class="box">
     <div class="row"><span class="lab">1. כיתה</span><div class="seg" id="grades"></div></div>
-    <div class="row"><span class="lab">2. מה מכינים?</span><div class="seg" id="kinds"><button data-k="exam">📝 מבחן</button><button data-k="ws">✏️ דף עבודה</button></div></div>
-    <div class="row"><span class="lab">3. נושאים</span><div class="seg" id="topics"></div></div>
-    <div class="row exam-only"><span class="lab">4. מספר שאלות</span><div class="step"><button data-d="-1" data-f="n">−</button><b id="nv"></b><button data-d="1" data-f="n">+</button></div>
-      <span class="small">זמן:</span><div class="step"><button data-d="-5" data-f="min">−</button><b id="minv"></b><button data-d="5" data-f="min">+</button></div><span class="small">דקות</span></div>
-    <div class="row ws-only"><span class="lab">4. שאלות בכל רמה</span><div class="step"><button data-d="-1" data-f="per">−</button><b id="perv"></b><button data-d="1" data-f="per">+</button></div><span class="small">4 רמות חשיבה, מהקל לקשה</span></div>
-    <div class="row"><span class="lab">5. פרטים</span><input class="txt" id="cls" placeholder="כיתה, למשל ח׳ א2"><input class="txt" id="yr" placeholder="שנה"></div>
-    <div class="row"><span class="lab">6. תוספות</span>
-      <label class="ck exam-only"><input type="checkbox" id="two">טור א׳ וטור ב׳</label>
-      <label class="ck exam-only"><input type="checkbox" id="calc">מותר מחשבון</label>
-      <label class="ck"><input type="checkbox" id="key">דף תשובות למורה</label></div>
+    <div class="row top-al"><span class="lab">2. נושא</span><div id="topics"></div></div>
+    <div class="row"><span class="lab">3. מה מכינים?</span><div class="seg" id="kinds"><button data-k="exam">📝 מבחן</button><button data-k="ws">✏️ דף עבודה</button></div></div>
+    <div class="row"><span class="lab">4. מספר שאלות</span><div class="step"><button data-d="-1" data-f="n">−</button><b id="nv"></b><button data-d="1" data-f="n">+</button></div><span class="small" id="nhint"></span></div>
+    <div class="row"><span class="lab">5. רמת הכיתה</span><div class="seg" id="lvls">
+      <button data-lv="weak">חלשים</button><button data-lv="mid">בינוניים</button><button data-lv="strong">חזקים</button><button data-lv="mix">משולב</button></div></div>
+    <p class="small" id="lvhint"></p>
+    <details class="more"><summary>עוד אפשרויות (לא חובה)</summary>
+      <div class="row"><span class="lab">שם הכיתה</span><input class="txt" id="cls" placeholder="למשל ז׳ 2"><input class="txt" id="yr" placeholder="שנה"></div>
+      <div class="row exam-only"><span class="lab">זמן</span><div class="step"><button data-d="-5" data-f="min">−</button><b id="minv"></b><button data-d="5" data-f="min">+</button></div><span class="small">דקות</span></div>
+      <div class="row"><label class="ck exam-only"><input type="checkbox" id="two">טור א׳ וטור ב׳</label>
+        <label class="ck exam-only"><input type="checkbox" id="calc">מותר מחשבון</label>
+        <label class="ck"><input type="checkbox" id="key">דף תשובות למורה</label></div>
+    </details>
     <div id="msg"></div>
+    <button class="big go" id="go"></button>
+  </div>
+  <div class="box done" id="done" hidden>
+    <b>✅ מוכן! הדף מופיע למטה.</b>
     <div class="acts"><button class="big p" id="print">🖨️ הדפסה / שמירה כ־PDF</button><button class="big s" id="again">🔀 שאלות אחרות</button></div>
-    <p class="help">לשמירה כ־PDF: לוחצים "הדפסה" ובוחרים "שמירה כ־PDF". הכי טוב מהמחשב, בדפדפן Chrome. כל לחיצה על "שאלות אחרות" מגרילה שאלות חדשות באותו מבנה.</p>
+    <p class="help">לשמירה כ־PDF: לוחצים "הדפסה" ובוחרים "שמירה כ־PDF". הכי נוח מהמחשב.</p>
   </div>
 </div>
-<div class="prev noprint">תצוגה מקדימה:</div>
 <div id="out"></div>
 
 <script>
@@ -158,11 +172,19 @@ const MOT=['אם אתם מאמינים בעצמכם – שאתם יכולים ל
 const HEB='אבגדהוזחט';
 
 // ---------- מצב ----------
-const DEF={g:'ח',k:'exam',t:[],n:8,min:45,per:3,cls:'',yr:'תשפ״ז',two:true,calc:true,key:true};
+const DEF={g:'ז',k:'exam',t:[],n:8,min:45,lv:'mix',cls:'',yr:'תשפ״ז',two:true,calc:true,key:true};
 let S=Object.assign({},DEF);
-try{Object.assign(S,JSON.parse(localStorage.getItem('roni_exam_gen')||'{}'))}catch(e){}
+try{Object.assign(S,JSON.parse(localStorage.getItem('roni_exam_gen2')||'{}'))}catch(e){}
 let seed=(Date.now()%100000)+1;
-const save=()=>{try{localStorage.setItem('roni_exam_gen',JSON.stringify(S))}catch(e){}};
+const save=()=>{try{localStorage.setItem('roni_exam_gen2',JSON.stringify(S))}catch(e){}};
+// רמת הכיתה: כמה שאלות מכל רמת חשיבה (w = חלק יחסי, min = מינימום שאלות), ואיזו רמה מקבלת עודף כשחסרות שאלות
+const MODES={weak:{n:'חלשים',w:[.35,.35,.3,0],min:[1,1,1,0],pref:[1,2,3,4],d:'בעיקר זיהוי והבנה, ומעט יישום'},
+  mid:{n:'בינוניים',w:[.2,.3,.35,.15],min:[1,1,1,0],pref:[3,2,4,1],d:'חלוקה מאוזנת בין הרמות'},
+  strong:{n:'חזקים',w:[.05,.2,.4,.35],min:[0,1,1,1],pref:[4,3,2,1],d:'בעיקר יישום וחשיבה מסדר גבוה'},
+  mix:{n:'משולב',w:[.2,.25,.35,.2],min:[1,1,1,1],pref:[3,2,4,1],d:'כל רמות החשיבה, מהקל לקשה (כמו במשרד החינוך)'}};
+// נושאים שעוד אין להם מאגר (יופיעו כ"בקרוב" במקום שלהם ברשימה)
+const SOON=[{grade:'ז',strand:'מספרים ואלגברה',order:1,topic:'מספרים מכוונים, השוואה וערך מוחלט'},{grade:'ז',strand:'מספרים ואלגברה',order:2,topic:'חיבור וחיסור מספרים מכוונים'},{grade:'ז',strand:'מספרים ואלגברה',order:7,topic:'חזקות ושורש'}];
+const STRANDS=['מספרים ואלגברה','יחס ופרופורציה','גאומטריה'];
 
 // ---------- עזרים ----------
 const $=s=>document.querySelector(s);
@@ -173,7 +195,7 @@ function mathIn(s){return s.replace(/\[([^\/\]]+)\/([^\]]+)\]|([^\[]+)/g,(m,n,d,
 function F(t){return esc(t).replace(/\{([^{}]*)\}/g,(m,x)=>'<span class="m">'+mathIn(x)+'</span>').replace(/\[([^\/\]]+)\/([^\]]+)\]/g,(m,n,d)=>'<span class="m">'+frac(n,d)+'</span>')}
 function rng(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 function shuffle(arr,r){const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
-const banksOf=g=>BANKS.filter(b=>b.grade===g);
+const banksOf=g=>BANKS.filter(b=>b.grade===g).sort((x,y)=>STRANDS.indexOf(x.strand)-STRANDS.indexOf(y.strand)||x.order-y.order);
 const chosen=()=>banksOf(S.g).filter(b=>S.t.includes(b.id));
 const gname=()=>GRADES.find(x=>x.g===S.g).name;
 const req=q=>q.r==='calc'?'<div class="req"><b>הציגו את דרך החישוב.</b></div>':q.r==='why'?'<div class="req"><b>נמקו.</b></div>':'';
@@ -183,9 +205,11 @@ const lines=n=>'<div class="lines" style="height:'+(n*9)+'mm"></div>';
 function largest(total,weights){const s=weights.reduce((a,b)=>a+b,0);const raw=weights.map(w=>total*w/s);const fl=raw.map(Math.floor);let left=total-fl.reduce((a,b)=>a+b,0);raw.map((v,i)=>[v-fl[i],i]).sort((a,b)=>b[0]-a[0]).forEach(([,i])=>{if(left>0){fl[i]++;left--}});return fl}
 function capacity(bs,V){const c={};for(const L of [1,2,3,4])c[L]=Math.floor(bs.reduce((a,b)=>a+b.qs.filter(q=>q.lv===L).length,0)/V);return c}
 function planLevels(N,cap){
-  // חלוקה לפי רמות החשיבה של משרד החינוך: כ־20% זיהוי, 25% הבנה, 35% יישום, 20% חשיבה מסדר גבוה (לפחות שאלה אחת מכל רמה)
-  let c=largest(N-4,[.2,.25,.35,.2]).map(x=>x+1);const cnt={1:c[0],2:c[1],3:c[2],4:c[3]};
-  for(const L of [1,2,3,4])while(cnt[L]>cap[L]){cnt[L]--;const o=[3,2,4,1].find(k=>cnt[k]<cap[k]);if(!o)break;cnt[o]++}
+  const M=MODES[S.lv]||MODES.mix,min=M.min.map(x=>Math.min(x,N));
+  let rest=N-min.reduce((a,b)=>a+b,0);if(rest<0)rest=0;
+  const add=largest(rest,M.w),cnt={};[1,2,3,4].forEach((L,i)=>cnt[L]=min[i]+add[i]);
+  // אם ברמה מסוימת אין מספיק שאלות במאגר – מעבירים לרמה הקרובה לפי סדר העדיפות של רמת הכיתה
+  for(const L of [1,2,3,4])while(cnt[L]>cap[L]){cnt[L]--;const o=M.pref.find(k=>cnt[k]<cap[k]);if(!o)break;cnt[o]++}
   return cnt}
 function buildExam(){
   const bs=chosen(),V=S.two?2:1,cap=capacity(bs,V);
@@ -246,7 +270,8 @@ function wsHTML(){
   const bs=chosen(),r=rng(seed);let h='',ans=[];
   bs.forEach(b=>{let body='<div class="wsh"><h2>דף עבודה · '+esc(b.topic)+'</h2><div class="nm"><span>שם: <u></u></span><span>כיתה: <u style="width:28mm"></u></span><span>תאריך: <u style="width:30mm"></u></span></div></div>'+
       '<div class="rule"><b>השיטה</b>'+F(b.rule)+'</div>';let num=0,a=[];
-    for(const L of [1,2,3,4]){const qs=shuffle(b.qs.filter(q=>q.lv===L),r).slice(0,S.per);
+    const cnt=planLevels(Math.min(S.n,b.qs.length),capacity([b],1));
+    for(const L of [1,2,3,4]){const qs=shuffle(b.qs.filter(q=>q.lv===L),r).slice(0,cnt[L]);
       if(!qs.length)continue;
       body+='<div class="lvl">'+'★'.repeat(L)+' '+LV[L].n+' <small>· '+LV[L].d+'</small></div>';
       qs.forEach(q=>{num++;a.push([num,q,L]);body+='<div class="q"><div class="qh"><span class="qn">'+num+'</span><div class="qt">'+F(q.t)+req(q)+'</div>'+D(q.d)+'<span class="st">'+'★'.repeat(L)+'</span></div>'+lines(WS_LINES[L])+'</div>'})}
@@ -260,31 +285,41 @@ function sheet(title,body){return'<div class="sheet"><table class="doc"><thead><
 
 // ---------- ממשק ----------
 function ui(){
-  $('#grades').innerHTML=GRADES.map(x=>{const has=banksOf(x.g).length;return'<button data-g="'+x.g+'" class="'+(S.g===x.g?'on':'')+'"'+(has?'':' disabled title="המאגר בבנייה"')+'>כיתה '+x.name+(has?'':' (בקרוב)')+'</button>'}).join('');
+  $('#grades').innerHTML=GRADES.map(x=>'<button data-g="'+x.g+'" class="'+(S.g===x.g?'on':'')+'">כיתה '+x.name+'</button>').join('');
   [...document.querySelectorAll('#kinds button')].forEach(b=>b.classList.toggle('on',b.dataset.k===S.k));
-  const bs=banksOf(S.g);S.t=S.t.filter(id=>bs.some(b=>b.id===id));if(!S.t.length&&bs.length)S.t=bs.map(b=>b.id);
-  $('#topics').innerHTML=bs.map(b=>'<button class="chip'+(S.t.includes(b.id)?' on':'')+'" data-t="'+b.id+'">'+esc(b.topic)+' <span class="small" style="color:inherit;opacity:.75">('+b.qs.length+')</span></button>').join('');
-  $('#nv').textContent=S.n;$('#minv').textContent=S.min;$('#perv').textContent=S.per;
+  [...document.querySelectorAll('#lvls button')].forEach(b=>b.classList.toggle('on',b.dataset.lv===S.lv));
+  const bs=banksOf(S.g);S.t=S.t.filter(id=>bs.some(b=>b.id===id));
+  const all=bs.map(b=>({b,strand:b.strand,order:b.order})).concat(SOON.filter(x=>x.grade===S.g).map(x=>({soon:x,strand:x.strand,order:x.order})));
+  $('#topics').innerHTML=STRANDS.filter(st=>all.some(x=>x.strand===st)).map(st=>'<div class="strand">'+st+'</div><div class="seg">'+
+    all.filter(x=>x.strand===st).sort((x,y)=>x.order-y.order).map(x=>x.b?'<button class="chip'+(S.t.includes(x.b.id)?' on':'')+'" data-t="'+x.b.id+'">'+esc(x.b.topic)+'</button>':
+      '<button class="chip soon" disabled title="מחכה לשאלות מהמודל">'+esc(x.soon.topic)+' (בקרוב)</button>').join('')+'</div>').join('')||'<span class="small">אין עדיין נושאים לכיתה הזו</span>';
+  $('#nv').textContent=S.n;$('#minv').textContent=S.min;
+  $('#nhint').textContent=S.k==='exam'?'במבחן כולו':'בכל נושא';
+  $('#lvhint').textContent=(MODES[S.lv]||MODES.mix).n+': '+(MODES[S.lv]||MODES.mix).d;
   document.querySelectorAll('.exam-only').forEach(e=>e.style.display=S.k==='exam'?'':'none');
-  document.querySelectorAll('.ws-only').forEach(e=>e.style.display=S.k==='ws'?'':'none');
   $('#cls').value=S.cls;$('#yr').value=S.yr;$('#two').checked=S.two;$('#calc').checked=S.calc;$('#key').checked=S.key;
-  render()}
+  const ok=chosen().length>0;$('#go').disabled=!ok;
+  $('#go').textContent=ok?(S.k==='exam'?'✨ צרי מבחן':'✨ צרי דף עבודה'):'בחרי נושא כדי להמשיך';
+  clearOut();save()}
+// כל שינוי בבחירות מוחק את התוצאה הקודמת: המחולל פועל רק כשלוחצים "צרי"
+function clearOut(){$('#out').innerHTML='';$('#done').hidden=true;$('#msg').innerHTML=''}
 function render(){
   save();let msg='';
-  if(!chosen().length){$('#out').innerHTML='';$('#msg').innerHTML='<div class="warn">בחרי לפחות נושא אחד.</div>';return}
+  if(!chosen().length){clearOut();return}
   if(S.k==='exam'){const E=buildExam();msg=E.note;$('#out').innerHTML=examHTML(E)}else $('#out').innerHTML=wsHTML();
-  $('#msg').innerHTML=msg?'<div class="warn">'+msg+'</div>':'';fit()}
+  $('#msg').innerHTML=msg?'<div class="warn">'+msg+'</div>':'';$('#done').hidden=false;fit()}
 function fit(){const z=Math.min(1,(window.innerWidth-16)/800);document.querySelectorAll('.sheet').forEach(s=>s.style.zoom=z)}
 addEventListener('resize',fit);
-document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled)return;
   if(b.dataset.g){S.g=b.dataset.g;S.t=[];ui()}
   else if(b.dataset.k){S.k=b.dataset.k;ui()}
+  else if(b.dataset.lv){S.lv=b.dataset.lv;ui()}
   else if(b.dataset.t){const id=b.dataset.t;S.t=S.t.includes(id)?S.t.filter(x=>x!==id):S.t.concat(id);ui()}
-  else if(b.dataset.f){const f=b.dataset.f,lim={n:[4,16],min:[15,120],per:[1,5]}[f];S[f]=Math.max(lim[0],Math.min(lim[1],S[f]+ +b.dataset.d));ui()}
-  else if(b.id==='again'){seed=Math.floor(Math.random()*1e9);render()}
+  else if(b.dataset.f){const f=b.dataset.f,lim={n:[3,20],min:[15,120]}[f];S[f]=Math.max(lim[0],Math.min(lim[1],S[f]+ +b.dataset.d));ui()}
+  else if(b.id==='go'||b.id==='again'){seed=Math.floor(Math.random()*1e9);render();if(b.id==='go')$('#done').scrollIntoView({behavior:'smooth'})}
   else if(b.id==='print'){window.print()}});
-['cls','yr'].forEach(id=>$('#'+id).addEventListener('input',e=>{S[id]=e.target.value;render()}));
-['two','calc','key'].forEach(id=>$('#'+id).addEventListener('change',e=>{S[id]=e.target.checked;render()}));
+['cls','yr'].forEach(id=>$('#'+id).addEventListener('input',e=>{S[id]=e.target.value;clearOut();save()}));
+['two','calc','key'].forEach(id=>$('#'+id).addEventListener('change',e=>{S[id]=e.target.checked;clearOut();save()}));
 ui();
 </script>
 </body>
