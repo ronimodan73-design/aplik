@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>מחולל מבחנים ודפי עבודה</title>
+<style>
+/*FONTS*/
+:root{--ink:#1f2433;--acc:#1a4d45;--acc2:#e2efec;--line:#c9d6d3;--mut:#5b6472;--gold:#d97706;--bg:#eef2f1}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:'Assistant',Arial,sans-serif;color:var(--ink);background:var(--bg);direction:rtl}
+button,input,select{font:inherit}
+
+/* ---------- לוח הבחירה (מסך בלבד) ---------- */
+.panel{max-width:860px;margin:0 auto;padding:14px 16px 6px}
+.top{display:flex;align-items:center;gap:12px;background:var(--acc);color:#fff;border-radius:16px;padding:12px 16px}
+.top img{height:38px;background:#fff;border-radius:8px;padding:3px 6px}
+.top h1{font-family:'Rubik',sans-serif;margin:0;font-size:21px}
+.top p{margin:0;font-size:14px;opacity:.9}
+.box{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-top:10px}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:6px 0}
+.lab{font-family:'Rubik',sans-serif;font-weight:700;color:var(--acc);min-width:118px}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button,.chip{border:2px solid var(--line);background:#fff;border-radius:12px;padding:7px 14px;cursor:pointer;font-weight:700;color:var(--ink)}
+.seg button.on,.chip.on{border-color:var(--acc);background:var(--acc);color:#fff}
+.seg button:disabled{opacity:.45;cursor:not-allowed}
+.chip input{display:none}
+.step{display:inline-flex;align-items:center;border:2px solid var(--line);border-radius:12px;overflow:hidden}
+.step button{border:0;background:var(--acc2);color:var(--acc);width:36px;height:36px;font-size:20px;font-weight:700;cursor:pointer}
+.step b{min-width:42px;text-align:center;font-size:18px}
+.txt{border:2px solid var(--line);border-radius:12px;padding:6px 10px;width:150px}
+.ck{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+.ck input{width:20px;height:20px;accent-color:var(--acc)}
+.small{font-size:14px;color:var(--mut)}
+.warn{font-size:14px;color:#9a3412;background:#fff7e6;border-radius:10px;padding:6px 10px}
+.acts{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.big{border:0;border-radius:14px;padding:12px 20px;font-weight:700;font-size:18px;cursor:pointer}
+.big.p{background:#ffc928;color:#1f2433}
+.big.s{background:#fff;color:var(--acc);border:2px solid var(--acc)}
+.help{font-size:14px;color:var(--mut);margin:8px 2px 0}
+.prev{font-family:'Rubik',sans-serif;color:var(--acc);font-weight:700;margin:16px auto 6px;max-width:860px;padding:0 16px}
+
+/* ---------- הדף המודפס ---------- */
+#out{padding:0 0 40px}
+.sheet{width:210mm;margin:0 auto 14px;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.12);padding:12mm 15mm 14mm}
+.doc{width:100%;border-collapse:collapse}
+.doc>thead td,.doc>tbody>tr>td{padding:0}
+.rh{display:flex;align-items:center;gap:4mm;border-bottom:1.5px solid var(--acc);padding-bottom:1.5mm;margin-bottom:4mm;font-size:10.5pt;color:var(--mut)}
+.rh img{height:9mm}
+.rh span{flex:1;text-align:center;font-family:'Rubik',sans-serif;margin-left:13mm}
+.rh i{font-style:normal;font-family:'Rubik',sans-serif;font-weight:700;color:var(--acc)}
+.pg{font-size:13.5pt;line-height:1.5}
+.m{direction:ltr;unicode-bidi:isolate;display:inline-block;white-space:nowrap;font-family:'Rubik',sans-serif;font-weight:400}
+.m i{font-family:'Times New Roman',serif;font-style:italic;font-weight:400;font-size:1.12em}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .12em;line-height:1.05;font-size:.92em}
+.fr>span{padding:0 .15em}
+.fr>span+span{border-top:1.5px solid currentColor}
+.title{font-family:'Rubik',sans-serif;color:var(--acc);text-align:center;margin:2mm 0 1mm;font-size:28pt;font-weight:900}
+.sub{text-align:center;font-family:'Rubik',sans-serif;font-size:15pt;color:var(--ink);margin-bottom:5mm}
+.ver{display:inline-block;background:var(--acc);color:#fff;border-radius:3mm;padding:.5mm 4mm;margin-right:2mm}
+.det{width:100%;border-collapse:collapse;margin:3mm 0 6mm;font-size:13pt}
+.det td{padding:2.5mm 1mm .5mm;width:50%}
+.det u{display:inline-block;width:52mm;border-bottom:1.2px solid #333;text-decoration:none}
+.dear{font-weight:700;text-decoration:underline;font-size:15pt;margin:2mm 0}
+.inst{margin:1mm 0 3mm;padding-right:7mm}
+.inst li{margin:.6mm 0}
+.inst li.k{font-weight:700;font-size:15pt}
+.score{border-collapse:collapse;margin:0 auto 3mm;font-size:12pt}
+.score th,.score td{border:1.4px solid #6b7f7b;padding:.8mm 5mm;text-align:center}
+.score th{background:var(--acc2);font-family:'Rubik',sans-serif}
+.luck{text-align:center;font-family:'Rubik',sans-serif;font-weight:900;font-size:22pt;color:var(--acc);margin:2mm 0}
+.mot{text-align:center;font-style:italic;font-size:13.5pt;color:#333;margin-top:2mm}
+.cover{break-inside:avoid}
+.cover .grow{height:3mm}
+.brk{break-before:page;page-break-before:always}
+.banner{font-family:'Rubik',sans-serif;font-weight:700;font-size:15pt;background:#e9eceb;border-right:5mm solid var(--acc);border-radius:2mm;padding:2mm 4mm;margin:2mm 0 4mm;break-after:avoid}
+.banner u{text-underline-offset:3px}
+.banner .pts{float:left;font-size:13pt;color:var(--acc)}
+.rule{border:2.5px solid var(--acc);background:#eef7f4;border-radius:4mm;padding:2.5mm 5mm;margin:1mm 0 4mm;break-inside:avoid}
+.rule b{font-family:'Rubik',sans-serif;color:var(--acc);display:block;font-size:12.5pt}
+.q{border:1.5px solid var(--line);border-radius:3mm;padding:3mm 4mm 2mm;margin-bottom:4mm;break-inside:avoid}
+.qh{display:flex;gap:3mm;align-items:flex-start}
+.qn{flex:none;font-family:'Rubik',sans-serif;font-weight:900;background:var(--acc);color:#fff;border-radius:50%;width:8.5mm;height:8.5mm;display:inline-flex;align-items:center;justify-content:center;font-size:12.5pt;margin-top:.5mm}
+.qt{flex:1}
+.qp{flex:none;text-align:center;font-family:'Rubik',sans-serif;font-weight:700;color:var(--acc);border:1.5px solid var(--acc);border-radius:2mm;padding:.5mm 2mm;font-size:11.5pt;line-height:1.15}
+.qp small{display:block;font-weight:400;font-size:9.5pt}
+.st{color:var(--gold);font-size:12pt;flex:none}
+.req{margin-top:1mm;font-size:12.5pt}
+.req b{font-family:'Rubik',sans-serif}
+.lines{margin-top:2mm;background-image:repeating-linear-gradient(to bottom,transparent 0,transparent 8.6mm,#b9c4c2 8.6mm,#b9c4c2 9mm)}
+.end{text-align:center;font-family:'Rubik',sans-serif;font-weight:700;text-decoration:underline;font-size:15pt;margin-top:6mm}
+.wsh{border-bottom:3px solid var(--acc);padding-bottom:2mm;margin-bottom:4mm}
+.wsh h2{font-family:'Rubik',sans-serif;font-size:22pt;color:var(--acc);margin:0}
+.wsh .nm{display:flex;gap:8mm;margin-top:2mm;font-size:13pt}
+.wsh .nm u{display:inline-block;width:50mm;border-bottom:1.2px solid #333;text-decoration:none}
+.lvl{font-family:'Rubik',sans-serif;font-weight:700;font-size:14pt;color:#fff;background:var(--acc);border-radius:3mm;padding:1.5mm 5mm;margin:3mm 0 3mm;break-after:avoid}
+.lvl small{font-weight:400;font-size:11.5pt;opacity:.9}
+.key h2{font-family:'Rubik',sans-serif;color:var(--acc);font-size:18pt;margin:0 0 3mm}
+.kt{width:100%;border-collapse:collapse;font-size:12pt;margin-bottom:6mm}
+.kt th,.kt td{border:1.3px solid #6b7f7b;padding:1.6mm 2.5mm;vertical-align:top}
+.kt th{background:var(--acc2);font-family:'Rubik',sans-serif}
+.kt td:first-child,.kt td:last-child{text-align:center;white-space:nowrap}
+.kt tr{break-inside:avoid}
+
+@page{size:A4;margin:10mm 13mm 14mm;@bottom-center{content:"עמוד " counter(page) " מתוך " counter(pages);font-family:Assistant,Arial,sans-serif;font-size:10pt;color:#555}}
+@media print{
+  body{background:#fff}
+  .noprint{display:none!important}
+  #out{padding:0}
+  .sheet{width:auto;margin:0;box-shadow:none;padding:0;zoom:1!important}
+  .sheet+.sheet{break-before:page}
+  .rh,.banner,.lvl,.qn,.rule,.kt th,.score th,.ver{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+<div class="panel noprint">
+  <div class="top"><img src="/*LOGO*/" alt="שחקים"><div><h1>מחולל מבחנים ודפי עבודה</h1><p>ערכה: רוני מודן · שחקים · לפי רמות החשיבה של משרד החינוך</p></div></div>
+  <div class="box">
+    <div class="row"><span class="lab">1. כיתה</span><div class="seg" id="grades"></div></div>
+    <div class="row"><span class="lab">2. מה מכינים?</span><div class="seg" id="kinds"><button data-k="exam">📝 מבחן</button><button data-k="ws">✏️ דף עבודה</button></div></div>
+    <div class="row"><span class="lab">3. נושאים</span><div class="seg" id="topics"></div></div>
+    <div class="row exam-only"><span class="lab">4. מספר שאלות</span><div class="step"><button data-d="-1" data-f="n">−</button><b id="nv"></b><button data-d="1" data-f="n">+</button></div>
+      <span class="small">זמן:</span><div class="step"><button data-d="-5" data-f="min">−</button><b id="minv"></b><button data-d="5" data-f="min">+</button></div><span class="small">דקות</span></div>
+    <div class="row ws-only"><span class="lab">4. שאלות בכל רמה</span><div class="step"><button data-d="-1" data-f="per">−</button><b id="perv"></b><button data-d="1" data-f="per">+</button></div><span class="small">4 רמות חשיבה, מהקל לקשה</span></div>
+    <div class="row"><span class="lab">5. פרטים</span><input class="txt" id="cls" placeholder="כיתה, למשל ח׳ א2"><input class="txt" id="yr" placeholder="שנה"></div>
+    <div class="row"><span class="lab">6. תוספות</span>
+      <label class="ck exam-only"><input type="checkbox" id="two">טור א׳ וטור ב׳</label>
+      <label class="ck exam-only"><input type="checkbox" id="calc">מותר מחשבון</label>
+      <label class="ck"><input type="checkbox" id="key">דף תשובות למורה</label></div>
+    <div id="msg"></div>
+    <div class="acts"><button class="big p" id="print">🖨️ הדפסה / שמירה כ־PDF</button><button class="big s" id="again">🔀 שאלות אחרות</button></div>
+    <p class="help">לשמירה כ־PDF: לוחצים "הדפסה" ובוחרים "שמירה כ־PDF". הכי טוב מהמחשב, בדפדפן Chrome. כל לחיצה על "שאלות אחרות" מגרילה שאלות חדשות באותו מבנה.</p>
+  </div>
+</div>
+<div class="prev noprint">תצוגה מקדימה:</div>
+<div id="out"></div>
+
+<script>
+const LOGO='/*LOGO*/';
+const BANKS=[];function BANK(b){BANKS.push(b)}
+/*BANKS*/
+
+const GRADES=[{g:'ז',name:'ז׳'},{g:'ח',name:'ח׳'}];
+const LV={1:{n:'ידע',d:'זוכרים ומזהים',w:8},2:{n:'יישום',d:'פותרים לפי השיטה',w:12},3:{n:'הבנה',d:'מסבירים ומנתחים טעות',w:13},4:{n:'חשיבה מסדר גבוה ואוריינות',d:'נימוק, יצירה ומצבים מהחיים',w:15}};
+const EXAM_LINES={1:4,2:6,3:6,4:7},WS_LINES={1:3,2:5,3:5,4:6};
+const MOT=['אם אתם מאמינים בעצמכם – שאתם יכולים לנצח,<br>אתם יכולים!','כל שאלה היא הזדמנות להראות מה למדתם.<br>קראו לאט, חשבו בשקט – ואתם תצליחו!','טעות היא חלק מהלמידה.<br>נסו, בדקו, ואל תוותרו!','אתם יודעים יותר ממה שנדמה לכם.<br>תאמינו בעצמכם!'];
+const HEB='אבגדהוזחט';
+
+// ---------- מצב ----------
+const DEF={g:'ח',k:'exam',t:[],n:8,min:45,per:3,cls:'',yr:'תשפ״ז',two:true,calc:true,key:true};
+let S=Object.assign({},DEF);
+try{Object.assign(S,JSON.parse(localStorage.getItem('roni_exam_gen')||'{}'))}catch(e){}
+let seed=(Date.now()%100000)+1;
+const save=()=>{try{localStorage.setItem('roni_exam_gen',JSON.stringify(S))}catch(e){}};
+
+// ---------- עזרים ----------
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const it=s=>s.replace(/[A-Za-z]/g,c=>'<i>'+c+'</i>').replace(/-/g,'−');
+const frac=(n,d)=>'<span class="fr"><span>'+it(n)+'</span><span>'+it(d)+'</span></span>';
+function mathIn(s){return s.replace(/\[([^\/\]]+)\/([^\]]+)\]|([^\[]+)/g,(m,n,d,o)=>o!==undefined?it(o):frac(n,d))}
+function F(t){return esc(t).replace(/\{([^{}]*)\}/g,(m,x)=>'<span class="m">'+mathIn(x)+'</span>').replace(/\[([^\/\]]+)\/([^\]]+)\]/g,(m,n,d)=>'<span class="m">'+frac(n,d)+'</span>')}
+function rng(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function shuffle(arr,r){const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+const banksOf=g=>BANKS.filter(b=>b.grade===g);
+const chosen=()=>banksOf(S.g).filter(b=>S.t.includes(b.id));
+const gname=()=>GRADES.find(x=>x.g===S.g).name;
+const req=q=>q.r==='calc'?'<div class="req"><b>הציגו את דרך החישוב.</b></div>':q.r==='why'?'<div class="req"><b>נמקו.</b></div>':'';
+const lines=n=>'<div class="lines" style="height:'+(n*9)+'mm"></div>';
+
+// ---------- תכנון מבחן ----------
+function largest(total,weights){const s=weights.reduce((a,b)=>a+b,0);const raw=weights.map(w=>total*w/s);const fl=raw.map(Math.floor);let left=total-fl.reduce((a,b)=>a+b,0);raw.map((v,i)=>[v-fl[i],i]).sort((a,b)=>b[0]-a[0]).forEach(([,i])=>{if(left>0){fl[i]++;left--}});return fl}
+function capacity(bs,V){const c={};for(const L of [1,2,3,4])c[L]=Math.floor(bs.reduce((a,b)=>a+b.qs.filter(q=>q.lv===L).length,0)/V);return c}
+function planLevels(N,cap){
+  // חלוקה לפי רמות החשיבה: כ־20% ידע, 35% יישום, 25% הבנה, 20% חשיבה ואוריינות (לפחות שאלה אחת מכל רמה)
+  let c=largest(N-4,[.2,.35,.25,.2]).map(x=>x+1);const cnt={1:c[0],2:c[1],3:c[2],4:c[3]};
+  for(const L of [1,2,3,4])while(cnt[L]>cap[L]){cnt[L]--;const o=[2,3,4,1].find(k=>cnt[k]<cap[k]);if(!o)break;cnt[o]++}
+  return cnt}
+function buildExam(){
+  const bs=chosen(),V=S.two?2:1,cap=capacity(bs,V);
+  const maxN=Object.values(cap).reduce((a,b)=>a+b,0);
+  let N=Math.min(S.n,maxN),note='';
+  if(S.n>maxN)note='במאגר של הנושאים שבחרת יש מקום ל־'+maxN+' שאלות לכל היותר'+(S.two?' בשני טורים':'')+'. המבחן נבנה עם '+maxN+' שאלות.';
+  const cnt=planLevels(N,cap),r=rng(seed);
+  // משבצות: לכל רמה מפזרים בין הנושאים לסירוגין
+  const slots=[];let rot=Math.floor(r()*bs.length);
+  for(const L of [1,2,3,4])for(let i=0;i<cnt[L];i++){slots.push({L,b:bs[rot%bs.length]});rot++}
+  // בחירת שאלות לכל טור בלי חזרות; ברמה 4 מעדיפים שאלות מהחיים (אוריינות)
+  const used=new Set(),pools={};
+  const pool=(b,L)=>pools[b.id+L]||(pools[b.id+L]=shuffle(b.qs.filter(q=>q.lv===L),r).sort((x,y)=>L===4?(y.lit||0)-(x.lit||0):0));
+  const take=(b,L)=>{let q=pool(b,L).find(x=>!used.has(x));if(!q){for(const o of bs){q=pool(o,L).find(x=>!used.has(x));if(q){b=o;break}}}used.add(q);return{q,b}};
+  const vers=[];for(let v=0;v<V;v++)vers.push(slots.map(s=>Object.assign({L:s.L},take(s.b,s.L))));
+  // ניקוד: משקל לפי רמה, סך הכול 100 בדיוק
+  const pts=largest(100,slots.map(s=>LV[s.L].w));
+  // חלקים
+  let parts;
+  if(bs.length>1){parts=bs.map(b=>({name:b.topic,idx:slots.map((s,i)=>i).filter(i=>slots[i].L<4&&slots[i].b===b)})).filter(p=>p.idx.length);
+    parts.push({name:'אוריינות וחשיבה',idx:slots.map((s,i)=>i).filter(i=>slots[i].L===4)})}
+  else parts=[{name:'ידע ויישום',idx:slots.map((s,i)=>i).filter(i=>slots[i].L<=2)},{name:'הבנה',idx:slots.map((s,i)=>i).filter(i=>slots[i].L===3)},{name:'אוריינות וחשיבה',idx:slots.map((s,i)=>i).filter(i=>slots[i].L===4)}];
+  parts=parts.filter(p=>p.idx.length);
+  return{vers,pts,parts,N,note}}
+
+function examHTML(E){
+  const topics=chosen().map(b=>b.topic).join(', ');
+  const head=(v)=>'מבחן במתמטיקה · כיתה '+esc(S.cls||gname())+' · '+esc(S.yr)+(E.vers.length>1?' · טור '+HEB[v]+'׳':'');
+  let h='';
+  E.vers.forEach((qs,v)=>{
+    const order=E.parts.flatMap(p=>p.idx);let num=0;
+    let body='<div class="cover"><div class="title">מבחן במתמטיקה</div><div class="sub">כיתה '+esc(S.cls||gname())+' · '+esc(topics)+(E.vers.length>1?' <span class="ver">טור '+HEB[v]+'׳</span>':'')+'</div>'+
+      '<table class="det"><tr><td>שם התלמיד/ה: <u></u></td><td>כיתה: <u></u></td></tr><tr><td>שם המורה: <u></u></td><td>תאריך: <u></u></td></tr></table>'+
+      '<div class="dear">תלמידים יקרים,</div><div>לפניכם מבחן במתמטיקה לכיתה '+esc(S.cls||gname())+'.<br>לרשותכם '+S.min+' דקות.</div>'+
+      '<ul class="inst"><li>במבחן '+E.N+' שאלות, ב־'+E.parts.length+' חלקים.</li><li class="k">שימו לב: יש לענות על כל השאלות.</li><li>כתבו את דרך החישוב על דפי המבחן, במקום שמתחת לכל שאלה.</li><li>אפשר לכתוב בעט או בעיפרון.</li><li>'+(S.calc?'מותר להשתמש במחשבון.':'אסור להשתמש במחשבון.')+'</li><li>לפני מסירת המבחן בדקו היטב את תשובותיכם ותקנו לפי הצורך.</li><li>שמרו על טוהר הבחינה.</li></ul>'+
+      '<table class="score"><tr><th>חלק</th><th>נושא</th><th>ניקוד</th><th>קיבלת</th></tr>'+E.parts.map((p,i)=>'<tr><td>'+HEB[i]+'</td><td>'+esc(p.name)+'</td><td>'+p.idx.reduce((a,j)=>a+E.pts[j],0)+'</td><td></td></tr>').join('')+'<tr><th colspan="2">סך הכול</th><th>100</th><th></th></tr></table>'+
+      '<div class="grow"></div><div class="luck">בהצלחה!</div><div class="mot">'+MOT[(seed+v)%MOT.length]+'</div></div>';
+    h+=sheet(head(v),body);body='';
+    E.parts.forEach((p,i)=>{
+      body+='<div class="banner"><u>חלק '+HEB[i]+' – '+esc(p.name)+'</u><span class="pts">('+p.idx.reduce((a,j)=>a+E.pts[j],0)+' נקודות)</span></div>';
+      p.idx.forEach(j=>{num++;const {q,L}=qs[j];
+        body+='<div class="q"><div class="qh"><span class="qn">'+num+'</span><div class="qt">'+F(q.t)+req(q)+'</div><span class="qp">'+E.pts[j]+'<small>נק׳</small></span></div>'+lines(EXAM_LINES[L])+'</div>'});
+    });
+    body+='<div class="end">בהצלחה לכל התלמידים!</div>';
+    h+=sheet(head(v),body);
+  });
+  if(S.key){let k='';E.vers.forEach((qs,v)=>{let num=0;
+      k+='<div class="key'+(v?' brk':'')+'"><h2>דף תשובות ומחוון למורה'+(E.vers.length>1?' · טור '+HEB[v]+'׳':'')+'</h2><table class="kt"><tr><th>שאלה</th><th>נושא · רמה</th><th>תשובה</th><th>ניקוד</th></tr>'+
+      E.parts.flatMap(p=>p.idx).map(j=>{num++;const {q,b,L}=qs[j];return'<tr><td>'+num+'</td><td>'+esc(b.topic)+' · '+LV[L].n+'</td><td>'+F(q.a)+'</td><td>'+E.pts[j]+'</td></tr>'}).join('')+
+      '<tr><th colspan="3">סך הכול</th><th>100</th></tr></table><p class="small">ניקוד חלקי: דרך נכונה עם טעות חישוב – כמחצית מהניקוד. תשובה נכונה בלי דרך, כשנדרשה דרך – כמחצית מהניקוד.</p></div>'});
+    h+=sheet('דף תשובות למורה · '+esc(topics),k)}
+  return h}
+
+// ---------- דף עבודה ----------
+function wsHTML(){
+  const bs=chosen(),r=rng(seed);let h='',ans=[];
+  bs.forEach(b=>{let body='<div class="wsh"><h2>דף עבודה · '+esc(b.topic)+'</h2><div class="nm"><span>שם: <u></u></span><span>כיתה: <u style="width:28mm"></u></span><span>תאריך: <u style="width:30mm"></u></span></div></div>'+
+      '<div class="rule"><b>השיטה</b>'+F(b.rule)+'</div>';let num=0,a=[];
+    for(const L of [1,2,3,4]){const qs=shuffle(b.qs.filter(q=>q.lv===L),r).slice(0,S.per);
+      if(!qs.length)continue;
+      body+='<div class="lvl">'+'★'.repeat(L)+' '+LV[L].n+' <small>· '+LV[L].d+'</small></div>';
+      qs.forEach(q=>{num++;a.push([num,q,L]);body+='<div class="q"><div class="qh"><span class="qn">'+num+'</span><div class="qt">'+F(q.t)+req(q)+'</div><span class="st">'+'★'.repeat(L)+'</span></div>'+lines(WS_LINES[L])+'</div>'})}
+    h+=sheet('דף עבודה · '+esc(b.topic)+' · כיתה '+esc(S.cls||gname()),body);ans.push([b,a])});
+  if(S.key){let k='';ans.forEach(([b,a],i)=>{k+='<div class="key"><h2>תשובות למורה · '+esc(b.topic)+'</h2><table class="kt"><tr><th>שאלה</th><th>רמה</th><th>תשובה</th></tr>'+a.map(([n,q,L])=>'<tr><td>'+n+'</td><td>'+LV[L].n+'</td><td>'+F(q.a)+'</td></tr>').join('')+'</table></div>'});
+    h+=sheet('תשובות למורה · דף עבודה',k)}
+  return h}
+
+// כל "גיליון" הוא טבלה שהכותרת שלה (לוגו + שורת כותרת) חוזרת בראש כל עמוד מודפס
+function sheet(title,body){return'<div class="sheet"><table class="doc"><thead><tr><td><div class="rh"><img src="'+LOGO+'" alt=""><span>'+title+'</span></div></td></tr></thead><tbody><tr><td><div class="pg">'+body+'</div></td></tr></tbody></table></div>'}
+
+// ---------- ממשק ----------
+function ui(){
+  $('#grades').innerHTML=GRADES.map(x=>{const has=banksOf(x.g).length;return'<button data-g="'+x.g+'" class="'+(S.g===x.g?'on':'')+'"'+(has?'':' disabled title="המאגר בבנייה"')+'>כיתה '+x.name+(has?'':' (בקרוב)')+'</button>'}).join('');
+  [...document.querySelectorAll('#kinds button')].forEach(b=>b.classList.toggle('on',b.dataset.k===S.k));
+  const bs=banksOf(S.g);S.t=S.t.filter(id=>bs.some(b=>b.id===id));if(!S.t.length&&bs.length)S.t=bs.map(b=>b.id);
+  $('#topics').innerHTML=bs.map(b=>'<button class="chip'+(S.t.includes(b.id)?' on':'')+'" data-t="'+b.id+'">'+esc(b.topic)+' <span class="small" style="color:inherit;opacity:.75">('+b.qs.length+')</span></button>').join('');
+  $('#nv').textContent=S.n;$('#minv').textContent=S.min;$('#perv').textContent=S.per;
+  document.querySelectorAll('.exam-only').forEach(e=>e.style.display=S.k==='exam'?'':'none');
+  document.querySelectorAll('.ws-only').forEach(e=>e.style.display=S.k==='ws'?'':'none');
+  $('#cls').value=S.cls;$('#yr').value=S.yr;$('#two').checked=S.two;$('#calc').checked=S.calc;$('#key').checked=S.key;
+  render()}
+function render(){
+  save();let msg='';
+  if(!chosen().length){$('#out').innerHTML='';$('#msg').innerHTML='<div class="warn">בחרי לפחות נושא אחד.</div>';return}
+  if(S.k==='exam'){const E=buildExam();msg=E.note;$('#out').innerHTML=examHTML(E)}else $('#out').innerHTML=wsHTML();
+  $('#msg').innerHTML=msg?'<div class="warn">'+msg+'</div>':'';fit()}
+function fit(){const z=Math.min(1,(window.innerWidth-16)/800);document.querySelectorAll('.sheet').forEach(s=>s.style.zoom=z)}
+addEventListener('resize',fit);
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.g){S.g=b.dataset.g;S.t=[];ui()}
+  else if(b.dataset.k){S.k=b.dataset.k;ui()}
+  else if(b.dataset.t){const id=b.dataset.t;S.t=S.t.includes(id)?S.t.filter(x=>x!==id):S.t.concat(id);ui()}
+  else if(b.dataset.f){const f=b.dataset.f,lim={n:[4,16],min:[15,120],per:[1,5]}[f];S[f]=Math.max(lim[0],Math.min(lim[1],S[f]+ +b.dataset.d));ui()}
+  else if(b.id==='again'){seed=Math.floor(Math.random()*1e9);render()}
+  else if(b.id==='print'){window.print()}});
+['cls','yr'].forEach(id=>$('#'+id).addEventListener('input',e=>{S[id]=e.target.value;render()}));
+['two','calc','key'].forEach(id=>$('#'+id).addEventListener('change',e=>{S[id]=e.target.checked;render()}));
+ui();
+</script>
+</body>
+</html>
