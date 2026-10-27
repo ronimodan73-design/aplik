@@ -83,6 +83,14 @@ button,input,select{font:inherit}
 .qh{display:flex;gap:3mm;align-items:flex-start}
 .qn{flex:none;font-family:'Rubik',sans-serif;font-weight:900;background:var(--acc);color:#fff;border-radius:50%;width:8.5mm;height:8.5mm;display:inline-flex;align-items:center;justify-content:center;font-size:12.5pt;margin-top:.5mm}
 .qt{flex:1}
+.fig{flex:none;align-self:center;margin:0 1mm}
+.fig svg{display:block;direction:ltr}
+.multi{display:flex;gap:3mm;flex-wrap:wrap;justify-content:center;max-width:120mm}
+.multi>div{text-align:center;font-family:'Rubik',sans-serif;font-weight:700}
+.cw{border-collapse:collapse;font-family:'Rubik',sans-serif;font-size:13pt}
+.cw td{width:10mm;height:10mm;text-align:center}
+.cw td.nb{border:1.5px solid #1f2433}
+.cw td.op{color:#1a4d45;font-weight:700}
 .qp{flex:none;text-align:center;font-family:'Rubik',sans-serif;font-weight:700;color:var(--acc);border:1.5px solid var(--acc);border-radius:2mm;padding:.5mm 2mm;font-size:11.5pt;line-height:1.15}
 .qp small{display:block;font-weight:400;font-size:9.5pt}
 .st{color:var(--gold);font-size:12pt;flex:none}
@@ -139,6 +147,7 @@ button,input,select{font:inherit}
 
 <script>
 const LOGO='/*LOGO*/';
+/*DIAGRAMS*/
 const BANKS=[];function BANK(b){BANKS.push(b)}
 /*BANKS*/
 
@@ -220,7 +229,7 @@ function examHTML(E){
     E.parts.forEach((p,i)=>{
       body+='<div class="banner"><u>חלק '+HEB[i]+' – '+esc(p.name)+'</u><span class="pts">('+p.idx.reduce((a,j)=>a+E.pts[j],0)+' נקודות)</span></div>';
       p.idx.forEach(j=>{num++;const {q,L}=qs[j];
-        body+='<div class="q"><div class="qh"><span class="qn">'+num+'</span><div class="qt">'+F(q.t)+req(q)+'</div><span class="qp">'+E.pts[j]+'<small>נק׳</small></span></div>'+lines(EXAM_LINES[L])+'</div>'});
+        body+='<div class="q"><div class="qh"><span class="qn">'+num+'</span><div class="qt">'+F(q.t)+req(q)+'</div>'+D(q.d)+'<span class="qp">'+E.pts[j]+'<small>נק׳</small></span></div>'+lines(EXAM_LINES[L])+'</div>'});
     });
     body+='<div class="end">בהצלחה לכל התלמידים!</div>';
     h+=sheet(head(v),body);
@@ -240,7 +249,7 @@ function wsHTML(){
     for(const L of [1,2,3,4]){const qs=shuffle(b.qs.filter(q=>q.lv===L),r).slice(0,S.per);
       if(!qs.length)continue;
       body+='<div class="lvl">'+'★'.repeat(L)+' '+LV[L].n+' <small>· '+LV[L].d+'</small></div>';
-      qs.forEach(q=>{num++;a.push([num,q,L]);body+='<div class="q"><div class="qh"><span class="qn">'+num+'</span><div class="qt">'+F(q.t)+req(q)+'</div><span class="st">'+'★'.repeat(L)+'</span></div>'+lines(WS_LINES[L])+'</div>'})}
+      qs.forEach(q=>{num++;a.push([num,q,L]);body+='<div class="q"><div class="qh"><span class="qn">'+num+'</span><div class="qt">'+F(q.t)+req(q)+'</div>'+D(q.d)+'<span class="st">'+'★'.repeat(L)+'</span></div>'+lines(WS_LINES[L])+'</div>'})}
     h+=sheet('דף עבודה · '+esc(b.topic)+' · כיתה '+esc(S.cls||gname()),body);ans.push([b,a])});
   if(S.key){let k='';ans.forEach(([b,a],i)=>{k+='<div class="key"><h2>תשובות למורה · '+esc(b.topic)+'</h2><table class="kt"><tr><th>שאלה</th><th>רמה</th><th>תשובה</th></tr>'+a.map(([n,q,L])=>'<tr><td>'+n+'</td><td>'+LV[L].n+'</td><td>'+F(q.a)+'</td></tr>').join('')+'</table></div>'});
     h+=sheet('תשובות למורה · דף עבודה',k)}

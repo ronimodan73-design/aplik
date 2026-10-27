@@ -21,7 +21,7 @@ const {chromium}=require('playwright');
   res[name]=await p.evaluate(()=>{
     const pts=[...document.querySelectorAll('.qp')].map(e=>parseInt(e.textContent));
     const sheets=[...document.querySelectorAll('.sheet')].length;
-    const qs=[...document.querySelectorAll('.q .qt')].map(e=>e.textContent.trim());
+    const qs=[...document.querySelectorAll('.q .qh')].map(e=>e.innerHTML.replace(/<span class="q[np]">.*?<\/span>/g,''));
     return{pts,sheets,nq:qs.length,uniq:new Set(qs).size,msg:document.querySelector('#msg').textContent,
       slash:/\d\/\d/.test(document.querySelector('#out').textContent),brace:/[{}]/.test(document.querySelector('#out').textContent)}});
   await p.pdf({path:out+'/'+name+'.pdf',preferCSSPageSize:true,printBackground:true});
