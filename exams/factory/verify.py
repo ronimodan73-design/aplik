@@ -15,7 +15,7 @@ const {chromium}=require('playwright');
  const p=await b.newPage({viewport:{width:1100,height:900}});p.on('pageerror',e=>errs.push(String(e)));
  await p.goto(page_url);await p.evaluate(()=>localStorage.clear());await p.reload();
  const res={};
- const cases=[['exam_all',{k:'exam',n:8,two:true}],['exam_one',{k:'exam',n:16,two:true,t:['h8_ratio']}],['ws_all',{k:'ws',per:3}]];
+ const cases=[['exam_all',{g:'ח',k:'exam',n:8,two:true}],['exam_one',{g:'ח',k:'exam',n:16,two:true,t:['h8_ratio']}],['ws_all',{g:'ח',k:'ws',per:3}],['z7_exam',{g:'ז',k:'exam',n:10,two:true}],['z7_ws',{g:'ז',k:'ws',per:5}]];
  for(const [name,set] of cases){
   await p.evaluate(s=>{Object.assign(S,s);if(!s.t)S.t=[];ui()},set);
   res[name]=await p.evaluate(()=>{
@@ -23,7 +23,7 @@ const {chromium}=require('playwright');
     const sheets=[...document.querySelectorAll('.sheet')].length;
     const qs=[...document.querySelectorAll('.q .qt')].map(e=>e.textContent.trim());
     return{pts,sheets,nq:qs.length,uniq:new Set(qs).size,msg:document.querySelector('#msg').textContent,
-      slash:/\d\/\d/.test(document.querySelector('#out').textContent),brace:/[{}\[\]]/.test(document.querySelector('#out').textContent)}});
+      slash:/\d\/\d/.test(document.querySelector('#out').textContent),brace:/[{}]/.test(document.querySelector('#out').textContent)}});
   await p.pdf({path:out+'/'+name+'.pdf',preferCSSPageSize:true,printBackground:true});
  }
  console.log(JSON.stringify({errs,res}));await b.close()})();

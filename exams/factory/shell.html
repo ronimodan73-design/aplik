@@ -143,7 +143,7 @@ const BANKS=[];function BANK(b){BANKS.push(b)}
 /*BANKS*/
 
 const GRADES=[{g:'ז',name:'ז׳'},{g:'ח',name:'ח׳'}];
-const LV={1:{n:'ידע',d:'זוכרים ומזהים',w:8},2:{n:'יישום',d:'פותרים לפי השיטה',w:12},3:{n:'הבנה',d:'מסבירים ומנתחים טעות',w:13},4:{n:'חשיבה מסדר גבוה ואוריינות',d:'נימוק, יצירה ומצבים מהחיים',w:15}};
+const LV={1:{n:'זיהוי וידע',d:'זוכרים ומזהים',w:8},2:{n:'הבנה',d:'מסבירים במילים ומבינים מושג',w:12},3:{n:'יישום',d:'פותרים לפי השיטה',w:13},4:{n:'חשיבה מסדר גבוה',d:'מנמקים, מנתחים טעות, יוצרים ופותרים מצבים מהחיים',w:15}};
 const EXAM_LINES={1:4,2:6,3:6,4:7},WS_LINES={1:3,2:5,3:5,4:6};
 const MOT=['אם אתם מאמינים בעצמכם – שאתם יכולים לנצח,<br>אתם יכולים!','כל שאלה היא הזדמנות להראות מה למדתם.<br>קראו לאט, חשבו בשקט – ואתם תצליחו!','טעות היא חלק מהלמידה.<br>נסו, בדקו, ואל תוותרו!','אתם יודעים יותר ממה שנדמה לכם.<br>תאמינו בעצמכם!'];
 const HEB='אבגדהוזחט';
@@ -158,7 +158,7 @@ const save=()=>{try{localStorage.setItem('roni_exam_gen',JSON.stringify(S))}catc
 // ---------- עזרים ----------
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-const it=s=>s.replace(/[A-Za-z]/g,c=>'<i>'+c+'</i>').replace(/-/g,'−');
+const it=s=>s.replace(/[a-z]/g,c=>'<i>'+c+'</i>').replace(/-/g,'−');
 const frac=(n,d)=>'<span class="fr"><span>'+it(n)+'</span><span>'+it(d)+'</span></span>';
 function mathIn(s){return s.replace(/\[([^\/\]]+)\/([^\]]+)\]|([^\[]+)/g,(m,n,d,o)=>o!==undefined?it(o):frac(n,d))}
 function F(t){return esc(t).replace(/\{([^{}]*)\}/g,(m,x)=>'<span class="m">'+mathIn(x)+'</span>').replace(/\[([^\/\]]+)\/([^\]]+)\]/g,(m,n,d)=>'<span class="m">'+frac(n,d)+'</span>')}
@@ -174,9 +174,9 @@ const lines=n=>'<div class="lines" style="height:'+(n*9)+'mm"></div>';
 function largest(total,weights){const s=weights.reduce((a,b)=>a+b,0);const raw=weights.map(w=>total*w/s);const fl=raw.map(Math.floor);let left=total-fl.reduce((a,b)=>a+b,0);raw.map((v,i)=>[v-fl[i],i]).sort((a,b)=>b[0]-a[0]).forEach(([,i])=>{if(left>0){fl[i]++;left--}});return fl}
 function capacity(bs,V){const c={};for(const L of [1,2,3,4])c[L]=Math.floor(bs.reduce((a,b)=>a+b.qs.filter(q=>q.lv===L).length,0)/V);return c}
 function planLevels(N,cap){
-  // חלוקה לפי רמות החשיבה: כ־20% ידע, 35% יישום, 25% הבנה, 20% חשיבה ואוריינות (לפחות שאלה אחת מכל רמה)
-  let c=largest(N-4,[.2,.35,.25,.2]).map(x=>x+1);const cnt={1:c[0],2:c[1],3:c[2],4:c[3]};
-  for(const L of [1,2,3,4])while(cnt[L]>cap[L]){cnt[L]--;const o=[2,3,4,1].find(k=>cnt[k]<cap[k]);if(!o)break;cnt[o]++}
+  // חלוקה לפי רמות החשיבה של משרד החינוך: כ־20% זיהוי, 25% הבנה, 35% יישום, 20% חשיבה מסדר גבוה (לפחות שאלה אחת מכל רמה)
+  let c=largest(N-4,[.2,.25,.35,.2]).map(x=>x+1);const cnt={1:c[0],2:c[1],3:c[2],4:c[3]};
+  for(const L of [1,2,3,4])while(cnt[L]>cap[L]){cnt[L]--;const o=[3,2,4,1].find(k=>cnt[k]<cap[k]);if(!o)break;cnt[o]++}
   return cnt}
 function buildExam(){
   const bs=chosen(),V=S.two?2:1,cap=capacity(bs,V);
@@ -195,10 +195,12 @@ function buildExam(){
   // ניקוד: משקל לפי רמה, סך הכול 100 בדיוק
   const pts=largest(100,slots.map(s=>LV[s.L].w));
   // חלקים
+  // חלק החשיבה נקרא "אוריינות וחשיבה" רק כשיש בו שאלה מהחיים
+  const hiName=vers.some(v=>v.some(x=>x.L===4&&x.q.lit))?'אוריינות וחשיבה':'חשיבה מסדר גבוה';
   let parts;
   if(bs.length>1){parts=bs.map(b=>({name:b.topic,idx:slots.map((s,i)=>i).filter(i=>slots[i].L<4&&slots[i].b===b)})).filter(p=>p.idx.length);
-    parts.push({name:'אוריינות וחשיבה',idx:slots.map((s,i)=>i).filter(i=>slots[i].L===4)})}
-  else parts=[{name:'ידע ויישום',idx:slots.map((s,i)=>i).filter(i=>slots[i].L<=2)},{name:'הבנה',idx:slots.map((s,i)=>i).filter(i=>slots[i].L===3)},{name:'אוריינות וחשיבה',idx:slots.map((s,i)=>i).filter(i=>slots[i].L===4)}];
+    parts.push({name:hiName,idx:slots.map((s,i)=>i).filter(i=>slots[i].L===4)})}
+  else parts=[{name:'זיהוי והבנה',idx:slots.map((s,i)=>i).filter(i=>slots[i].L<=2)},{name:'יישום',idx:slots.map((s,i)=>i).filter(i=>slots[i].L===3)},{name:hiName,idx:slots.map((s,i)=>i).filter(i=>slots[i].L===4)}];
   parts=parts.filter(p=>p.idx.length);
   return{vers,pts,parts,N,note}}
 
