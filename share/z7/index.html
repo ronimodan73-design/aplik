@@ -32,10 +32,10 @@ const B='https://htmlpreview.github.io/?https://github.com/ronimodan73-design/ap
 const L=[
  ['1','ערך מוחלט: המרחק מ־0','מה זה ערך מוחלט, ולמה הוא אף פעם לא שלילי.','decks/z7_abs_only.html','labs/axes_lab.html'],
  ['2','מספרים מכוונים: חיבור וחיסור','ערך מוחלט כ"שפה אחת לכל המינוסים", וחיבור וחיסור בעזרת חיילים בשני צבעים.','decks/z7_abs.html','labs/directed_lab.html'],
- ['3','שטח והיקף של ריבוע ומלבן','נמלה רצה סביב ההיקף, משבצות ממלאות את השטח, והנוסחה בצבעים.','','labs/area_lab.html'],
+ ['3','שטח והיקף של ריבוע ומלבן','נמלה רצה סביב ההיקף, משבצות ממלאות את השטח, והנוסחה בצבעים.','','labs/area_lab.html','apps/z7_area.html'],
  ['4','מלבן על מערכת הצירים','קוראים אורכי צלעות מהצירים, ומחשבים היקף ושטח. אותו היקף ושטח שונה, וחיסור שטחים.','','labs/rect_lab.html'],
  ['5','מדידת זווית במד זווית','מניחים את המד נכון, בוחרים סולם, ונזהרים מהטעות הנפוצה. גם זווית מוטה.','','labs/protractor_lab.html']];
 const NOV=`<div class="card" style="border:3px solid #f5b83d"><h2>⭐ נובמבר · כל 15 השיעורים במקום אחד</h2><p>מספרים מכוונים (שיעורים 1–7) וגאומטריה (שיעורים 8–15). בכל שיעור: מצגת, משימות לכיתה ולבית עם משימות חובה כמו המודל, והבוחן במודל.</p><div class="btns"><a class="d" href="${B}decks/z7_nov.html" target="_blank" rel="noopener">🎞️ מצגת נובמבר</a><a class="l" href="${B}share/z7/nov_tasks.html" target="_blank" rel="noopener">🖨️ משימות לכיתה ולבית · פתיחה והדפסה</a><a class="l" href="${B}share/z7/nov_teacher.html" target="_blank" rel="noopener">📘 נספח למורה</a></div></div>`;
-document.getElementById('app').innerHTML=NOV+L.map(([n,t,w,d,l])=>`<div class="card"><h2>שיעור ${n} · ${t}</h2><p>${w}</p><div class="btns">${d?`<a class="d" href="${B+d}" target="_blank" rel="noopener">🎞️ מצגת</a>`:'<span>🎞️ מצגת · בקרוב</span>'}${l?`<a class="l" href="${B+l}" target="_blank" rel="noopener">🖥️ יישומון ללוח</a>`:'<span>🖥️ יישומון ללוח · בקרוב</span>'}</div></div>`).join('');
+document.getElementById('app').innerHTML=NOV+L.map(([n,t,w,d,l,a])=>`<div class="card"><h2>שיעור ${n} · ${t}</h2><p>${w}</p><div class="btns">${d?`<a class="d" href="${B+d}" target="_blank" rel="noopener">🎞️ מצגת</a>`:'<span>🎞️ מצגת · בקרוב</span>'}${l?`<a class="l" href="${B+l}" target="_blank" rel="noopener">🖥️ יישומון ללוח</a>`:'<span>🖥️ יישומון ללוח · בקרוב</span>'}${a?`<a class="d" href="${B+a}" target="_blank" rel="noopener">📱 תרגול לתלמידים</a>`:''}</div></div>`).join('');
 </script>
 </body></html>
