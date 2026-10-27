@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>מי המתחזה? משחק יחס</title>
+<style>
+:root{--bg:#f3f4f8;--ink:#1f2937;--muted:#6b7280;--line:#e5e7eb;--navy:#1e1b4b;--gold:#f5b301;--ok:#16a34a;--bad:#dc2626;
+ --green:#16a34a;--purple:#9333ea;--orange:#ea580c;--blue:#2563eb;--red:#dc2626;--pink:#db2777;--teal:#0891b2}
+*{box-sizing:border-box}html,body{margin:0}
+body{font-family:"Rubik","Segoe UI","Arial Hebrew",Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:22px;min-height:100vh;display:flex;flex-direction:column}
+.m{direction:ltr;unicode-bidi:isolate;display:inline-block;font-weight:700;white-space:nowrap}
+svg text{direction:ltr;unicode-bidi:bidi-override}
+header{background:var(--navy);color:#fff;padding:10px 14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+header h1{font-size:28px;margin:0 0 0 auto}
+button{font:inherit;font-size:19px;border:0;border-radius:12px;padding:9px 14px;cursor:pointer;background:#312e81;color:#fff}
+button.on{background:var(--gold);color:#1f2937;font-weight:700}
+button.lt{background:#fff;color:var(--ink);border:2px solid var(--line)}
+button:active{transform:scale(.96)}
+main{flex:1;display:flex;flex-wrap:wrap;gap:14px;padding:14px;align-items:flex-start;justify-content:center}
+.card{background:#fff;border-radius:18px;box-shadow:0 2px 10px #0001;padding:14px}
+#stage{flex:1 1 560px;max-width:860px}
+#side{flex:1 1 300px;max-width:440px;display:flex;flex-direction:column;gap:12px}
+#side:empty{display:none}
+svg{width:100%;height:auto;touch-action:none;user-select:none;display:block}
+.ctl{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0}.ctl b{min-width:70px}
+.big{font-size:30px;font-weight:800;line-height:1.5}
+.green{color:var(--green)}.purple{color:var(--purple)}.orange{color:var(--orange)}.blue{color:var(--blue)}.red{color:var(--red)}.pink{color:var(--pink)}.teal{color:var(--teal)}
+.hid{filter:blur(9px)}
+.chal{border:3px dashed var(--gold);background:#fffbeb}
+.okbox{background:#ecfdf5;border:2px solid var(--ok);border-radius:12px;padding:8px 12px;margin-top:8px}
+.badbox{background:#fef2f2;border:2px solid var(--bad);border-radius:12px;padding:8px 12px;margin-top:8px}
+.tip{font-size:18px;color:var(--muted)}
+footer{text-align:center;color:var(--ink);font-size:17px;font-weight:600;padding:10px}
+@media print{header,.noprint{display:none!important}body{background:#fff}}
+</style>
+</head>
+<body>
+<header><h1>🕵️ מי המתחזה? משחק יחס<small style="display:block;font-size:15px;font-weight:500;opacity:.85">ערכה: רוני מודן · שחקים</small></h1><span id="tools" style="display:contents"></span>
+ <button id="bHide" class="noprint" style="display:none">🙈 הסתר תוצאות</button>
+ <button id="bFs" class="noprint">⛶ מסך מלא</button><button id="bPr" class="noprint" aria-label="הדפסה">🖨️</button></header>
+<main>
+ <section id="stage" class="card"><svg id="sv" aria-label="מי המתחזה? משחק יחס"></svg><div class="tip noprint" id="tip"></div></section>
+ <section id="side"></section>
+</main>
+<footer>ערכה: רוני מודן · שחקים</footer>
+<script>
+/* ===== מפעל המעבדות של רוני: עזרים משותפים ===== */
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const M=t=>`<span class="m">${t}</span>`;                       // ביטוי מתמטי משמאל לימין
+const COL={green:'#16a34a',purple:'#9333ea',orange:'#ea580c',blue:'#2563eb',red:'#dc2626',pink:'#db2777',teal:'#0891b2',gold:'#f5b301',ink:'#1f2937',grid:'#e5e7eb'};
+const C=(t,c)=>`<span class="${c}">${t}</span>`;                  // טקסט צבוע לפי שם צבע
+const pick=a=>a[Math.floor(Math.random()*a.length)],R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const ST={hide:false,revealed:false,busy:false};
+const hidCls=()=>ST.hide&&!ST.revealed?'hid':'';                 // מטשטש תוצאות במצב "נחשו"
+function tool(id,label,fn,o={}){const b=document.createElement('button');b.id=id;b.innerHTML=label;if(o.lt)b.className='lt';b.classList.add('noprint');b.onclick=()=>{if(ST.busy&&!o.always)return;fn(b);};$('#tools').appendChild(b);return b;}
+function card(id,html,cls=''){let c=$('#'+id);if(!c){c=document.createElement('div');c.id=id;$('#side').appendChild(c);}c.className='card '+cls;c.innerHTML=html;return c;}
+function svgSize(w,h){$('#sv').setAttribute('viewBox',`0 0 ${w} ${h}`);ST.vw=w;ST.vh=h;}
+function svgPt(ev){const r=$('#sv').getBoundingClientRect(),p=ev.touches?ev.touches[0]:ev;return {x:(p.clientX-r.left)*ST.vw/r.width,y:(p.clientY-r.top)*ST.vh/r.height};}
+/* גרירה: ids = מזהי אלמנטים שאפשר לגרור; fn(id, point) נקרא בכל תזוזה */
+function draggable(ids,fn){let d=null;$('#sv').addEventListener('pointerdown',e=>{if(ids.includes(e.target.id)){d=e.target.id;e.target.setPointerCapture?.(e.pointerId);e.preventDefault();}});
+ window.addEventListener('pointermove',e=>{if(d&&!ST.busy)fn(d,svgPt(e));});window.addEventListener('pointerup',()=>d=null);}
+/* אנימציה בצעדים: n צעדים במשך total מ״ש בערך; step(i) לכל צעד, done בסוף */
+function seq(n,total,step,done){ST.busy=true;let i=0;const t=()=>{if(i<n){step(i);i++;setTimeout(t,Math.max(110,total/n));}else{ST.busy=false;done&&done();}};t();}
+$('#bFs').onclick=()=>{try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();}catch(e){}};
+$('#bPr').onclick=()=>print();
+/* ===== תוכן המעבדה ===== */
+/*META {"id":"impostor","title":"מי המתחזה? משחק יחס","icon":"🕵️"} */
+const LAB={hide:false,tip:'כל קבוצה מרימה כרטיס הצבעה (א, ב, ג, ד). אחר כך לוחצים <b>🔍 חשיפה</b>, ומוסיפים נקודות לקבוצות שצדקו.',refresh:()=>{}};
+const HE='style="direction:rtl;unicode-bidi:embed"';
+const LET=['א','ב','ג','ד'],LCOL=['#16a34a','#2563eb','#ea580c','#9333ea'],SY='#be123c',WA='#7dd3fc',TL='#0891b2',PK='#db2777';
+const LVN={1:'🥤 כוסות',2:'📊 פסים',3:'🔢 מספרים'};
+/* סוגי שאלות: שם, ניקוד, ושאלה שמוצגת לכיתה */
+const TYP={imp:{n:'🕵️ מי המתחזה?',p:1,q:'שלוש כוסות טעימות בדיוק אותו דבר. איזו כוס היא המתחזה?'},
+ rat:{n:'⚖️ מה היחס?',p:1,q:'מה היחס בין התרכיז למים בכוס?'},
+ mis:{n:'🧩 השלימו',p:2,q:'כמה תרכיז צריך בכוס הגדולה כדי שהטעם יהיה זהה?'},
+ part:{n:'🍰 כמה חלק?',p:3,q:'כמה כוסיות יש בקנקן?'}};
+const ORDER=['imp','rat','mis','part'];
+let lvl=1,autoL=true,typ='mix',rnd=0,Q=null,mixed=0,shown=false,mode='game',chal=null,score=[0,0,0,0];
+function mix(c,w){const f=c/(c+w),a=[0xe0,0xf2,0xfe],b=[0xbe,0x12,0x3c],k=.08+f*.92;return 'rgb('+a.map((v,i)=>Math.round(v+(b[i]-v)*k)).join(',')+')';}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=R(0,i);[a[i],a[j]]=[a[j],a[i]];}return a;}
+const BASES={1:[[1,2],[1,3],[2,1],[3,1]],2:[[1,2],[1,3],[2,3],[1,4],[3,2],[2,5],[3,4],[4,1]],3:[[1,2],[2,3],[1,4],[3,2],[2,5],[3,4],[3,5],[4,5],[5,3],[2,7]]};
+const fit=(c,w)=>lvl===1?c+w<=12:lvl===2?Math.max(c,w)<=16:Math.max(c,w)<=40;
+const ksFor=(a,b)=>{const o=[];for(let k=1;k<=(lvl===3?8:6);k++)if(fit(k*a,k*b))o.push(k);return o;};
+/* ===== יצירת שאלה לפי סוג ===== */
+function genImp(){for(let t=0;t<300;t++){const [a,b]=pick(BASES[lvl]),ks=ksFor(a,b);if(ks.length<3)continue;
+  const good=shuffle(ks.slice()).slice(0,3).map(k=>({c:k*a,w:k*b,k}));let I;
+  if(lvl===3&&a!==b&&Math.random()<.3){const k=pick(ks);I={c:k*b,w:k*a,how:'swap'};}
+  else{const k=pick(ks),d=R(1,lvl===1?2:3);I={c:k*a+d,w:k*b+d,how:'add',d,k};}
+  if(!fit(I.c,I.w)||Math.abs(I.c/(I.c+I.w)-a/(a+b))<.05)continue;
+  I.imp=true;const it=shuffle([...good,I]);return {t:'imp',a,b,items:it,ans:it.findIndex(x=>x.imp)};}}
+/* 4 תשובות: הנכונה + מסיחים שכל אחד מייצג טעות נפוצה */
+function opts(right,wrongs){const o=[right];wrongs.forEach(w=>{if(o.length<4&&w.v>0&&!o.some(x=>x.key===w.key))o.push(w);});
+ let n=1;while(o.length<4){const v=right.v+n+1;const w={v,key:'n'+v,why:'מספר שלא מתאים לחישוב.'};if(!o.some(x=>x.key===w.key))o.push(w);n++;}
+ const s=shuffle(o);return {opts:s,ans:s.indexOf(right)};}
+function genRat(){for(let t=0;t<300;t++){const [a,b]=pick(BASES[lvl]),k=pick(ksFor(a,b));if(lvl===3&&k===1)continue;const c=k*a,w=k*b;
+  const sc=lvl===3?a:c,sw=lvl===3?b:w,P=(x,y,why)=>({c:x,w:y,key:x+':'+y,v:1,why});
+  const r=P(sc,sw,lvl===3?`מחלקים את שני המספרים ב־${k} ומקבלים את היחס הפשוט.`:'סופרים: קודם התרכיז ואחר כך המים.');
+  const o=opts(r,[P(sw,sc,'הפכו את הסדר: קודם מים ואחר כך תרכיז.'),P(sc,sc+sw,'זה התרכיז מתוך <b>כל</b> הכוס, לא תרכיז מול מים.'),lvl===3?P(a+1,b+1,'הוסיפו 1 לכל מספר. הוספה משנה את היחס.'):P(sw,sc+sw,'זה המים מתוך כל הכוס.'),P(sc+1,sw+1,'הוסיפו 1 לכל מספר.')]);
+  return {t:'rat',a,b,k,c,w,...o};}}
+function genMis(){for(let t=0;t<300;t++){const [a,b]=pick(BASES[lvl]),ks=ksFor(a,b).filter(k=>k>1);if(!ks.length)continue;const k=pick(ks);
+  const N=(v,why)=>({v,key:'n'+v,why});const o=opts(N(k*a,`המים גדלו פי ${k}, אז גם התרכיז גדל פי ${k}.`),[N(a+(k*b-b),`הוסיפו ${k*b-b} כמו שנוספו למים. צריך <b>לכפול</b>, לא להוסיף.`),N(k*b,'זו כמות המים, לא התרכיז.'),N(k,'זה רק מספר הפעמים שהכוס גדלה.')]);
+  return {t:'mis',a,b,k,...o};}}
+function genPart(){for(let t=0;t<300;t++){const [a,b]=pick(BASES[lvl]),k=pick(ksFor(a,b));if(a===b||k<2)continue;const T=k*(a+b),askC=Math.random()<.6;
+  const N=(v,why)=>({v,key:'n'+v,why}),right=askC?k*a:k*b,other=askC?k*b:k*a;
+  const o=opts(N(right,`${T} כוסיות מתחלקות ל־${a+b} חלקים שווים, ${k} בכל חלק. ${askC?'לתרכיז':'למים'} ${askC?a:b} חלקים: ${askC?a:b} כפול ${k}.`),[N(other,`זה ${askC?'המים':'התרכיז'}. בדקו מה שאלו.`),N(T%2===0?T/2:T-1,'חילקו לשני חצאים שווים, אבל החלקים לא שווים.'),N(k,'זה רק חלק אחד.'),N(askC?a:b,'זה המספר מהיחס, לא הכמות בקנקן.')]);
+  return {t:'part',a,b,k,T,askC,...o};}}
+function newRound(){rnd++;if(autoL)lvl=rnd<=4?1:rnd<=8?2:3;const t=typ==='mix'?ORDER[(rnd-1)%4]:typ;
+ Q={imp:genImp,rat:genRat,mis:genMis,part:genPart}[t]();mixed=0;shown=false;mode='game';chal=null;$('#chal')&&$('#chal').remove();
+ $('#bLv').innerHTML='רמה: '+LVN[lvl];$('#bV').classList.remove('on');draw();}
+/* ===== ציור ===== */
+function label(x,y,i,r=30){return `<circle cx="${x}" cy="${y}" r="${r}" fill="${LCOL[i]}"/><text x="${x}" y="${y+r*.36}" text-anchor="middle" font-size="${r*1.1}" font-weight="800" fill="#fff">${LET[i]}</text>`;}
+function miniCup(x,y,c,w){return `<path d="M${x-22} ${y-34} L${x+22} ${y-34} L${x+17} ${y+30} L${x-17} ${y+30} Z" fill="${mix(c,w)}" stroke="${COL.ink}" stroke-width="2.5"/>`;}
+const htx=(x,y,t,sz=28,col=COL.ink,w=700)=>`<text x="${x}" y="${y}" text-anchor="middle" font-size="${sz}" font-weight="${w}" fill="${col}" ${HE}>${t}</text>`;
+const rtx=(x,y,c,w,sz=60)=>`<text x="${x}" y="${y}" text-anchor="middle" font-size="${sz}" font-weight="800"><tspan fill="${PK}">${c}</tspan><tspan fill="${COL.ink}"> : </tspan><tspan fill="${TL}">${w}</tspan></text>`;
+/* כוס עם קוביות: ורוד למטה (תרכיז), תכלת למעלה (מים). q = התרכיז מסומן ב"?" */
+function blockCup(x,top,H,c,w,u,q=false,mixd=false){const bot=top+H;let g=`<rect x="${x-64}" y="${top}" width="128" height="${H}" rx="14" fill="#f8fafc" stroke="${COL.ink}" stroke-width="3"/>`;
+ if(mixd)return g+`<rect x="${x-58}" y="${bot-(c+w)*u}" width="116" height="${(c+w)*u-4}" rx="9" fill="${mix(c,w)}"/>`;
+ if(q)g+=`<rect x="${x-58}" y="${bot-c*u}" width="116" height="${c*u-4}" rx="6" fill="#fff" stroke="${SY}" stroke-dasharray="6 4" stroke-width="2"/><text x="${x}" y="${bot-c*u/2+14}" text-anchor="middle" font-size="40" font-weight="800" fill="${SY}">?</text>`;
+ for(let j=q?c:0;j<c+w;j++)g+=`<rect x="${x-58}" y="${bot-(j+1)*u}" width="116" height="${u-4}" rx="6" fill="${j<c?SY:WA}"/>`;return g;}
+function bars(x0,y,c,w,u){let g='';for(let j=0;j<c;j++)g+=`<rect x="${x0-(j+1)*u}" y="${y}" width="${u-3}" height="34" rx="5" fill="${SY}"/>`;
+ for(let j=0;j<w;j++)g+=`<rect x="${x0-(j+1)*u}" y="${y+40}" width="${u-3}" height="34" rx="5" fill="${WA}"/>`;return g;}
+let XY=[];
+function wrapG(i,inner,isAns){const out=shown&&Q.t==='imp'&&isAns,fade=shown&&Q.t!=='imp'&&!isAns,glow=shown&&Q.t!=='imp'&&isAns;
+ return `<g style="transition:transform .9s,opacity .9s;transform-box:fill-box;transform-origin:center;${out?'transform:translate(0px,-26px) rotate(-8deg);opacity:.55':''}${fade?'opacity:.3':''}">${inner}${out?htx(XY[i][0],XY[i][1],'🚨 המתחזה!',34,COL.red,800):''}${glow?htx(XY[i][0],XY[i][1],'✅ נכון!',30,COL.green,800):''}</g>`;}
+function drawImp(){let s='';const it=Q.items;
+ if(lvl===1)it.forEach((x,i)=>{const cx=750-i*213;XY[i]=[cx,58];s+=wrapG(i,blockCup(cx,70,360,x.c,x.w,30,false,i<mixed)+label(cx,478,i),i===Q.ans);});
+ else if(lvl===2)it.forEach((x,i)=>{const y=40+i*122;XY[i]=[420,y+44];s+=wrapG(i,label(810,y+38,i,28)+bars(760,y,x.c,x.w,29)+(i<mixed?miniCup(60,y+38,x.c,x.w):''),i===Q.ans);});
+ else it.forEach((x,i)=>{const cx=i%2?215:645,y=i<2?135:395;XY[i]=[cx,y+142];s+=wrapG(i,`<rect x="${cx-190}" y="${y-105}" width="380" height="210" rx="24" fill="#fff" stroke="${LCOL[i]}" stroke-width="5"/>`+label(cx+150,y-65,i,26)
+   +htx(cx-75,y-30,'תרכיז',24,PK)+htx(cx+75,y-30,'מים',24,TL)+rtx(cx,y+55,x.c,x.w,76)+(i<mixed?miniCup(cx-150,y-55,x.c,x.w):''),i===Q.ans);});
+ return s;}
+/* שאלות עם 4 תשובות: למעלה ההמחשה, למטה 4 כרטיסי תשובה */
+function drawOpts(){let s='';Q.opts.forEach((o,i)=>{const cx=750-i*213,y=480;XY[i]=[cx,y-66];
+  const body=Q.t==='rat'?rtx(cx,y+22,o.c,o.w,54):`<text x="${cx}" y="${y+24}" text-anchor="middle" font-size="64" font-weight="800" fill="${Q.t==='part'&&!Q.askC?TL:PK}">${o.v}</text>`;
+  s+=wrapG(i,`<rect x="${cx-95}" y="${y-50}" width="190" height="104" rx="20" fill="#fff" stroke="${LCOL[i]}" stroke-width="5"/>`+label(cx+86,y-46,i,24)+body,i===Q.ans);});return s;}
+function drawRat(){let s='';const {c,w}=Q;
+ if(lvl===1)s+=blockCup(430,20,300,c,w,25)+htx(600,170,'🍒 תרכיז',26,PK)+htx(600,210,'💧 מים',26,TL);
+ else if(lvl===2)s+=htx(800,95,'תרכיז',26,PK)+htx(800,135,'מים',26,TL)+bars(740,70,c,w,36);
+ else s+=htx(430,130,`בכוס יש ${c} כוסיות תרכיז ו־${w} כוסיות מים.`,34)+htx(430,200,'מה היחס הכי פשוט?',34,COL.ink,800);
+ return s+drawOpts();}
+function drawMis(){let s='';const {a,b,k}=Q;
+ if(lvl===1){s+=blockCup(640,120,200,a,b,20)+htx(640,360,'כוס קטנה',24)+blockCup(260,20,300,a*k,b*k,25,true)+htx(260,360,'כוס גדולה',24)+htx(450,200,'⬅',50);}
+ else{s+=htx(430,80,'אותו טעם בשתי הכוסות:',30,COL.ink,800);
+  s+=htx(640,150,'כוס קטנה',26)+rtx(640,240,a,b,70)+htx(230,150,'כוס גדולה',26)+`<text x="230" y="240" text-anchor="middle" font-size="70" font-weight="800"><tspan fill="${PK}">?</tspan><tspan fill="${COL.ink}"> : </tspan><tspan fill="${TL}">${b*k}</tspan></text>`+htx(435,225,'=',60);}
+ return s+drawOpts();}
+function drawPart(){let s='';const {a,b,T,askC}=Q,u=Math.min(60,600/(a+b));
+ s+=htx(430,60,`בקנקן ${T} כוסיות מיץ. היחס בין התרכיז למים:`,28)+rtx(430,130,a,b,60);
+ if(lvl<3){const x0=430+(a+b)*u/2;for(let j=0;j<a+b;j++)s+=`<rect x="${x0-(j+1)*u}" y="180" width="${u-4}" height="70" rx="8" fill="${j<a?SY:WA}" opacity=".85"/>`;
+  s+=`<line x1="${x0}" y1="275" x2="${x0-(a+b)*u+4}" y2="275" stroke="${COL.ink}" stroke-width="3"/>`+htx(430,315,`סה״כ ${T}`,26,COL.ink,800);}
+ s+=htx(430,375,askC?'כמה כוסיות תרכיז?':'כמה כוסיות מים?',30,askC?PK:TL,800);return s+drawOpts();}
+function draw(){XY=[];if(mode==='cards'){let s='';LET.forEach((l,i)=>{const x=i%2?215:645,y=i<2?135:395;s+=`<rect x="${x-190}" y="${y-115}" width="380" height="230" rx="28" fill="${LCOL[i]}"/><text x="${x}" y="${y+60}" text-anchor="middle" font-size="170" font-weight="800" fill="#fff">${l}</text>`;});
+  $('#sv').innerHTML=s;card('info','<div class="big">🗳️ כרטיסי הצבעה</div><div class="tip">לוחצים 🖨️ ומדפיסים עמוד אחד לכל קבוצה, וגוזרים 4 כרטיסים. לוחצים שוב על "כרטיסי הצבעה" כדי לחזור למשחק.</div>');return;}
+ $('#sv').innerHTML={imp:drawImp,rat:drawRat,mis:drawMis,part:drawPart}[Q.t]();side();}
+function side(){const T=TYP[Q.t];card('info',`<div class="big">סבב ${M(rnd)} · ${T.n}</div><div style="font-size:20px;font-weight:700">⭐ שווה ${M(T.p)} ${T.p>1?'נקודות':'נקודה'} · ${LVN[lvl]}</div>
+  <div style="font-size:20px">🍒 <b style="color:${PK}">ורוד = תרכיז</b> · 💧 <b style="color:${TL}">תכלת = מים</b></div><div class="big" style="font-size:22px;margin-top:6px">${T.q}</div>`);
+ if(shown){let t=`<div class="big" style="font-size:24px">🔍 למה?</div>`;const RT=(c,w)=>M(`${C(c,'pink')} : ${C(w,'teal')}`);
+  if(Q.t==='imp'){const {a,b}=Q;Q.items.forEach((it,i)=>{t+=`<div style="margin:6px 0;font-size:20px"><b style="color:${LCOL[i]}">${LET[i]}</b>: ${RT(it.c,it.w)} `;
+   if(!it.imp)t+=it.k===1?'✅ זה הטעם המקורי</div>':`✅ פי ${M(it.k)} מ־${RT(a,b)}, אותו טעם</div>`;
+   else t+=it.how==='add'?`<span class="red">🚨 הוסיפו ${M(it.d)} לכל צד במקום להכפיל. הטעם השתנה!</span></div>`:`<span class="red">🚨 הפכו את הסדר: התרכיז והמים התחלפו!</span></div>`;});}
+  else Q.opts.forEach((o,i)=>{const v=Q.t==='rat'?RT(o.c,o.w):M(o.v);t+=`<div style="margin:6px 0;font-size:20px"><b style="color:${LCOL[i]}">${LET[i]}</b>: ${v} ${i===Q.ans?'✅ '+o.why:'<span class="red">❌ '+o.why+'</span>'}</div>`;});
+  t+=`<div class="tip" style="margin-top:8px">❓ <b>שאלו את הכיתה:</b> איך ידעתם? מי טעה, ולמה זו טעות שקל לעשות?</div>`;card('why',t,'okbox');}
+ else if($('#why'))$('#why').remove();scoreCard();}
+function scoreCard(){const p=TYP[Q.t].p;card('score',`<div class="big" style="font-size:24px">🏆 ניקוד</div><div class="tip">קבוצה צדקה? לוחצים ${M('+'+p)}</div>`+score.map((v,i)=>`<div class="ctl"><b>קבוצה ${M(i+1)}</b><button class="lt" data-s="${i},-1">−</button><span class="big">${M(v)}</span><button class="lt" data-s="${i},${p}">${M('+'+p)}</button></div>`).join('')+`<button class="lt noprint" id="bZ" style="margin-top:6px">🔄 איפוס ניקוד</button>`);
+ $$('[data-s]').forEach(b=>b.onclick=()=>{const [i,d]=b.dataset.s.split(',').map(Number);score[i]=Math.max(0,score[i]+d);scoreCard();});$('#bZ').onclick=()=>{score=[0,0,0,0];scoreCard();};}
+function reveal(){if(shown||mode!=='game')return;if(Q.t==='imp')seq(4,2000,i=>{mixed=i+1;draw();},()=>{shown=true;draw();});else{shown=true;draw();}}
+function chalCard(){const [a,b]=chal.t,ok=chal.c*b===chal.w*a,cup=(c,w,x)=>`<path d="M${x-30} 8 L${x+30} 8 L${x+24} 92 L${x-24} 92 Z" fill="${mix(c,w)}" stroke="${COL.ink}" stroke-width="3"/>`;
+ card('chal',`<div class="big" style="font-size:24px">🎯 הכינו כוס עם <b>אותו טעם</b> כמו ${M(`${C(a,'pink')} : ${C(b,'teal')}`)}</div>
+  <div class="ctl"><b style="color:${PK}">תרכיז</b><button class="lt" data-c="c,-1">−</button><span class="big pink">${M(chal.c)}</span><button class="lt" data-c="c,1">+</button></div>
+  <div class="ctl"><b style="color:${TL}">מים</b><button class="lt" data-c="w,-1">−</button><span class="big teal">${M(chal.w)}</span><button class="lt" data-c="w,1">+</button></div>
+  <svg viewBox="0 0 240 100" style="max-width:240px">${cup(a,b,180)}${cup(chal.c,chal.w,60)}</svg><div class="tip">מימין: הטעם המקורי · משמאל: הכוס שלכם</div>
+  <div id="chs">${ok?'<div class="okbox">✅ <b>מצוין!</b> אותו טעם בדיוק. יש עוד אפשרות?</div>':'<div class="tip">שנו תרכיז ומים עד שהטעם זהה.</div>'}</div>
+  <button class="lt noprint" id="bAll" style="margin-top:8px">כל האפשרויות</button><div id="allx"></div>`,'chal');
+ $$('[data-c]').forEach(x=>x.onclick=()=>{const [k,d]=x.dataset.c.split(',');chal[k]=Math.max(1,Math.min(30,chal[k]+ +d));chalCard();});
+ $('#bAll').onclick=()=>{$('#allx').innerHTML='<div class="tip">'+[1,2,3,4,5,6].map(k=>M(`${k*a} : ${k*b}`)).join(' · ')+' · ועוד…</div>';};}
+const TN={mix:'🔀 מעורב',imp:TYP.imp.n,rat:TYP.rat.n,mis:TYP.mis.n,part:TYP.part.n},TK=['mix',...ORDER];
+function start(){svgSize(860,560);
+ tool('bN','🎲 סבב חדש',()=>newRound());
+ tool('bR','🔍 חשיפה!',()=>reveal());
+ tool('bT','סוג: '+TN[typ],b=>{typ=TK[(TK.indexOf(typ)+1)%TK.length];b.innerHTML='סוג: '+TN[typ];rnd--;newRound();},{lt:1});
+ tool('bLv','רמה: '+LVN[lvl],()=>{autoL=false;lvl=lvl%3+1;rnd--;newRound();},{lt:1});
+ tool('bC','🎯 אתגר',()=>{chal={t:[Q.a,Q.b],c:1,w:1};chalCard();},{lt:1});
+ tool('bV','🗳️ כרטיסי הצבעה',b=>{mode=mode==='cards'?'game':'cards';b.classList.toggle('on',mode==='cards');draw();},{lt:1});
+ newRound();}
+
+/* ===== הפעלה ===== */
+if(typeof LAB!=='undefined'){if(LAB.tip)$('#tip').innerHTML=LAB.tip;
+ if(LAB.hide){const b=$('#bHide');b.style.display='';b.onclick=()=>{ST.hide=!ST.hide;ST.revealed=false;b.classList.toggle('on',ST.hide);LAB.refresh&&LAB.refresh();};}}
+addEventListener('keydown',e=>{if(e.key==='f'||e.key==='F')$('#bFs').click();});
+start();
+</script>
+</body>
+</html>
