@@ -265,6 +265,9 @@ const WHATS=['ישרים מקבילים, חותך, קודקוד, <b>בין הי�
 const DL=n=>n===0?3:n===1?3.2:n===4?3.6:1.4;
 const RECAP=TITLES.map((h,n)=>({h,svg:()=>recapSvg(n),says:SAYS[n],def:DEFS[n],what:WHATS[n],d:DL(n)}));
 
+/* בדיקת הבנה אחרי הסבר (לכרטיסים בלי שאלה משויכת) */
+RECAP[0].chk=[()=>genType(pick(["corr","alt","vert","adj"]))];RECAP[7].chk=[genVar,genVar1];RECAP[8].chk=[genEqOrSum];
+
 const TL=['★ ידע','★★ יישום','★★★ הבנה ונימוק','★★★★ חשיבה ואוריינות'],TCOL=[GR,BL,OR,PU];
 const TOTAL=20;let S={};
 const rcOf=q=>{if(q.rc!=null)return q.rc;if(APP.rcFn){const v=APP.rcFn(q);if(v!=null)return v;}return APP.rc?APP.rc[q.kind]:null;};
@@ -281,8 +284,8 @@ function menu(){$('#sc').textContent='';const tl=store.get('test');
  $('#go-recap').onclick=()=>recap(0);$('#go-test').onclick=testIntro;V.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>start(+b.dataset.l));}
 function start(l){const L=LEVELS[l];S={mode:'lv',l,i:0,score:0,n:TOTAL,streak:0};
  if(L.ladder){const list=[],meta=[];L.ladder.forEach(e=>{for(let k=0;k<e.n;k++){list.push(e.g);meta.push(e);}});S.list=list;S.meta=meta;S.n=list.length;}next();}
-function next(){if(S.q)S.i++;if(S.i>=S.n)return S.mode==='test'?endTest():S.mode==='warm'?endWarm():end();S.q=S.list?S.list[S.i]():LEVELS[S.l].g();S.tries=0;S.done=false;S.si=0;S.stepNext=false;S.chainBad=false;S.askTries=0;
- const me=S.meta?S.meta[S.i]:null;S.ph=me?(me.h||0):S.mode==='warm'?1:0;S.askDone=!S.q.ask||S.mode==='test'||(me&&me.a===0);draw();}
+function next(){if(S.q)S.i++;if(S.i>=S.n)return S.mode==='test'?endTest():S.mode==='warm'?endWarm():S.mode==='chk'?endChk():end();S.q=S.list?S.list[S.i]():LEVELS[S.l].g();S.tries=0;S.done=false;S.si=0;S.stepNext=false;S.chainBad=false;S.askTries=0;
+ const me=S.meta?S.meta[S.i]:null;S.ph=me?(me.h||0):S.mode==='warm'||S.mode==='chk'?1:0;S.askDone=!S.q.ask||S.mode==='test'||S.mode==='chk'||(me&&me.a===0);draw();}
 const curQ=()=>S.q.steps?S.q.steps[S.si]:S.q;
 function hintHtml(c){const H=c.hint||c.rule;if(!H||S.mode==='test'||!S.ph)return '';return S.ph>=2?`<div class="hint">💡 ${H}</div>`:`<button class="btn sec mini" id="hb" type="button">💡 רמז</button><div class="hint" id="hint" hidden>${H}</div>`;}
 function choicesHtml(c){return c.choice?`<div class="choices">${c.choiceLab?`<span class="lab">${c.choiceLab}</span>`:''}${c.choice.map((x,i)=>`<button type="button" data-c="${i}">${x}</button>`).join('')}</div>`:'';}
@@ -297,7 +300,7 @@ function drawAsk(){const q=S.q;$('#sc').textContent=`נקודות: ${S.score}`;
   if(S.sel===q.ask.correct){S.askDone=true;S.askOk=true;draw();return;}
   S.askTries++;const m=q.ask.diag?q.ask.diag({sel:S.sel}):null;fb.className='fb no pop';fb.innerHTML=`<b>לא בדיוק.</b> ${m||q.ask.why||''} ${S.askTries>=2?'<br>לחצו על <b>"הראו לי"</b>.':'נסו שוב.'}`;};
  $('#show').onclick=()=>{S.askDone=true;S.askOk=false;draw();};}
-function lab(){return S.mode==='warm'?'חימום':S.mode==='test'?'מבחן מדורג · '+TL[S.lv[S.i]]:'★'.repeat(LEVELS[S.l].n)+' '+LEVELS[S.l].t;}
+function lab(){return S.mode==='chk'?'🧠 בדיקת הבנה · '+RECAP[S.card].h.replace(/<[^>]+>/g,''):S.mode==='warm'?'חימום':S.mode==='test'?'מבחן מדורג · '+TL[S.lv[S.i]]:'★'.repeat(LEVELS[S.l].n)+' '+LEVELS[S.l].t;}
 function qDia(q,hl){return typeof QDIA==='function'?QDIA(q,hl):(q.dia?q.dia(hl):(hl&&S.q&&q!==S.q&&S.q.dia?S.q.dia(true):''));}
 function draw(){if(!S.askDone)return drawAsk();const q=S.q,c=curQ(),T=S.mode==='test',ST=q.steps;$('#sc').textContent=T?'':`נקודות: ${S.score}`;
  V.innerHTML=`<div class="meta"><span>${lab()} · שאלה ${S.i+1} מתוך ${S.n}</span><span>${!T&&S.streak>=3?'🔥 '+S.streak+' ברצף':''}</span></div><div class="prog"><i style="width:${S.i/S.n*100}%"></i></div>
@@ -327,6 +330,7 @@ function check(q){const fb=$('#fb');const ins=[...V.querySelectorAll('input')];
  S.streak=0;let msg=q.diag?q.diag({vals,sel:S.sel}):null;
  if(okIn&&!okCh&&q.ans)msg='החישוב נכון! אבל <b>הנימוק</b> לא מתאים. רמז: '+q.rule;
  if(!msg)msg=S.mode==='warm'?'רמז: '+q.rule:'רמז: '+q.rule;
+ if(S.mode==='chk'){if(S.tries===1&&S.extra<2&&!S.q.fx){S.q.fx=1;S.extra++;S.list.push(S.gen);S.n++;}msg+=`<div class="what" style="margin-top:8px"><b>זוכרים מההסבר:</b> ${RECAP[S.card].what}</div>`;}
  fb.className='fb no pop';fb.innerHTML=`<b>כמעט!</b> ${msg} ${S.tries>=2?'<br>לחצו על <b>"הראו לי"</b> כדי לראות את הפתרון.'+(rcBtn(q)?'<br>'+rcBtn(q):''):' נסו שוב.'}`;bindRc();}
 function solve(q){const sol=$('#sol');sol.className='sol on';
  sol.innerHTML=`${(()=>{const d=qDia(q,true);return d?`<div class="dia">${d}</div>`:''})()}${q.lines.map(l=>`<div class="sline">${l}</div>`).join('')}<div class="rule sline">${q.rule}</div>`;
@@ -343,10 +347,27 @@ function recap(n,one){$('#sc').textContent='';const N=RECAP.length,c=RECAP[n],d0
  ${c.says.map((t,k)=>`<div class="say rv" style="--d:${d0+k*.9}s">${t}</div>`).join('')}</div>
  ${c.def?`<div class="what rv" style="border-right-color:var(--blue);--d:${d0+c.says.length*.9}s">${c.def}</div>`:''}
  <div class="what rv" style="--d:${d0+c.says.length*.9+.6}s"><b>מה עשינו?</b> ${c.what}</div>
- <div class="btns">${one?'<button class="btn main" id="bk1" type="button">חזרה ←</button>':''}<button class="btn ${one?'sec':'main'}" id="nx" type="button">${n<N-1?'הבא':'לחימום ←'}</button><button class="btn sec" id="rp" type="button">שוב ↻</button>${n?'<button class="btn sec" id="pv" type="button">הקודם</button>':''}</div>
+ <div class="btns">${one?'<button class="btn main" id="bk1" type="button">חזרה ←</button>':''}<button class="btn ${one?'sec':'main'}" id="nx" type="button">${one?(n<N-1?'הבא':'לחימום ←'):'לבדיקת הבנה ←'}</button><button class="btn sec" id="rp" type="button">שוב ↻</button>${n?'<button class="btn sec" id="pv" type="button">הקודם</button>':''}</div>
  <div class="dots">${RECAP.map((_,j)=>`<i class="${j===n?'on':''}"></i>`).join('')}</div></div>`;
  const back=S&&S.mode?{...S}:null;if($('#bk1'))$('#bk1').onclick=()=>{if(back&&back.mode&&back.mode!=='test'&&back.q&&!back.done){S=back;draw();}else if(back&&back.mode==='test'&&back.res&&back.res.length===back.n){S=back;endTest();}else menu();};
- $('#nx').onclick=()=>n<N-1?recap(n+1):warm();$('#rp').onclick=()=>recap(n);if($('#pv'))$('#pv').onclick=()=>recap(n-1);window.scrollTo(0,0);}
+ $('#nx').onclick=()=>one?(n<N-1?recap(n+1,true):warm()):chkStart(n);$('#rp').onclick=()=>recap(n);if($('#pv'))$('#pv').onclick=()=>recap(n-1);window.scrollTo(0,0);}
+/* ===== בדיקת הבנה אחרי כל הסבר: 3 שאלות + שאלת ייצוב אחרי טעות ===== */
+let CHKPOOL=null;
+function chkPool(){if(CHKPOOL)return CHKPOOL;const gs=new Set();
+ LEVELS.forEach(l=>{(l.ladder||[]).forEach(e=>e.g&&gs.add(e.g));if(!l.ladder&&l.g)gs.add(l.g);});
+ (typeof TEST!=='undefined'?TEST:[]).flat().forEach(g=>gs.add(g));(typeof WARM!=='undefined'?WARM:[]).forEach(g=>gs.add(g));
+ CHKPOOL=[];gs.forEach(g=>{const rcs=new Set();let st=false;for(let k=0;k<8;k++){try{const q=g();const r=rcOf(q);if(r!=null)rcs.add(r);if(q.steps)st=true;}catch(e){}}if(rcs.size)CHKPOOL.push({g,rcs,st});});return CHKPOOL;}
+function chkGen(n){const c=RECAP[n];if(c.chk&&c.chk.length){const L=c.chk;return ()=>pick(L)();}
+ const all=chkPool().filter(p=>p.rcs.has(n)),short=all.filter(p=>!p.st),pool=short.length?short:all;if(!pool.length)return null;
+ return ()=>{for(let k=0;k<30;k++){const q=pick(pool).g();if(rcOf(q)===n)return q;}return pick(pool).g();};}
+function chkStart(n){const G=chkGen(n),N=RECAP.length;if(!G)return n<N-1?recap(n+1):warm();
+ const list=[G,G,G];S={mode:'chk',card:n,i:0,score:0,n:3,list,extra:0,streak:0,gen:G};next();}
+function endChk(){$('#sc').textContent='';const n=S.card,N=RECAP.length,c=RECAP[n],all=S.score>=S.n;
+ V.innerHTML=`<div class="card pop" style="text-align:center"><span class="kind">בדיקת הבנה · הסבר ${n+1} מתוך ${N}</span><h2>${all?'הבנתם! 🎉':'עכשיו זה יושב 💪'}</h2><div class="big">${S.score} / ${S.n}</div>
+ <p>${all?'כל השאלות נכונות בניסיון הראשון.':'טעות היא חלק מהלמידה. תיקנתם, וזה מה שחשוב.'}</p>
+ <div class="what" style="text-align:right"><b>זוכרים:</b> ${c.what}</div>
+ <div class="btns" style="justify-content:center"><button class="btn main" id="cn" type="button">${n<N-1?'להסבר הבא ←':'לחימום ←'}</button><button class="btn sec" id="cr" type="button">שוב את ההסבר</button>${all?'':'<button class="btn sec" id="cm" type="button">עוד 3 שאלות</button>'}</div></div>`;
+ $('#cn').onclick=()=>n<N-1?recap(n+1):warm();$('#cr').onclick=()=>recap(n);if($('#cm'))$('#cm').onclick=()=>chkStart(n);window.scrollTo(0,0);}
 function warm(){S={mode:'warm',i:0,score:0,n:WARM.length,list:WARM};next();}
 function endWarm(){$('#sc').textContent='';
  V.innerHTML=`<div class="card pop" style="text-align:center"><h2>החימום הסתיים!</h2><div class="big">${S.score} / ${S.n}</div>

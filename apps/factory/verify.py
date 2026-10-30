@@ -27,8 +27,30 @@ async def main():
         print('generator problems:', bad)
         n = await pg.evaluate('RECAP.length')
         await pg.click('#go-recap')
+        async def answer(right):
+            q = await pg.evaluate('({c:curQ().choice?curQ().correct:null,n:curQ().choice?curQ().choice.length:0,v:curQ().ans?curQ().ans.map(a=>a.val):null})')
+            if q['v']:
+                for j, v in enumerate(q['v']): await pg.locator('input').nth(j).fill(str(v if right else v + 1))
+            if q['c'] is not None: await pg.click(f'[data-c="{q["c"] if right else (q["c"]+1)%q["n"]}"]')
+            await pg.click('#chk'); await pg.wait_for_timeout(150)
+        chk_info = []
         for i in range(n):
-            await pg.wait_for_timeout(5200); await pg.screenshot(path=f'{OUT}/r{i}.png', full_page=True); await pg.click('#nx')
+            await pg.wait_for_timeout(5200); await pg.screenshot(path=f'{OUT}/r{i}.png', full_page=True); await pg.click('#nx'); await pg.wait_for_timeout(200)
+            if await pg.evaluate("S.mode!=='chk'"): chk_info.append(f'card{i}:NO-CHECK'); continue
+            first = True
+            while await pg.evaluate("S.mode==='chk'&&!!S.q&&S.i<S.n&&!!document.querySelector('#chk')"):
+                if first and i == 0:   # deliberate mistake on the first card: feedback + stabilization question
+                    await answer(False); await pg.screenshot(path=f'{OUT}/c0_wrong.png', full_page=True)
+                    await answer(True); first = False
+                else:
+                    await answer(True)
+                    while await pg.evaluate('S.stepNext'): await pg.click('#chk'); await pg.wait_for_timeout(100); await answer(True)
+                await pg.click('#chk'); await pg.wait_for_timeout(150)
+            chk_info.append(f'card{i}:{await pg.inner_text(".big")}')
+            if i == 0: await pg.screenshot(path=f'{OUT}/c0_end.png', full_page=True)
+            await pg.click('#cn'); await pg.wait_for_timeout(200)
+        print('understanding checks:', chk_info)
+        print('after explanations →', await pg.evaluate('S.mode'))
         for L in range(4):
             await pg.evaluate(f"start({L})"); await pg.wait_for_timeout(200)
             if await pg.locator('.askbox').count():
