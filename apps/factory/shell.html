@@ -85,6 +85,15 @@ p{font-size:19px;line-height:1.55;margin:0}
 .legend{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;font-size:15px}.legend span{border-radius:99px;padding:3px 10px;font-weight:700}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv,.drawl{opacity:1;stroke-dashoffset:0}}
 @media (max-width:560px){.tin{width:56px!important;font-size:22px!important;padding:6px 2px!important}.inputs.tpl{font-size:24px;gap:3px}.levels,.hero{grid-template-columns:1fr}.qtext{font-size:20px}.card{padding:14px}.btns .btn{padding:11px 16px;font-size:18px}.lvrow .nm{width:112px;font-size:15px}.say{font-size:18px}.inp input{width:104px}}
+.spbtn{position:fixed;left:14px;bottom:14px;z-index:60;background:var(--acc);color:#14213a;border:0;border-radius:999px;padding:12px 18px;font:800 18px Heebo,Rubik,sans-serif;box-shadow:0 6px 18px #0008;cursor:pointer}
+.sp{position:fixed;left:0;right:0;bottom:0;height:62vh;z-index:70;background:#0b1626;border-top:3px solid var(--acc);border-radius:18px 18px 0 0;display:flex;flex-direction:column;box-shadow:0 -10px 30px #000a}
+.sp[hidden]{display:none}.sptools{display:flex;gap:6px;align-items:center;padding:8px 10px;flex-wrap:wrap;direction:rtl}
+.sptools b{font-size:17px;margin-left:auto}.sptools button{background:var(--chip);color:var(--ink);border:2px solid var(--line);border-radius:10px;min-width:40px;height:42px;font:700 17px Heebo,sans-serif;cursor:pointer;padding:0 6px}
+.sptools button.on{border-color:var(--acc);background:#2a3b57}.sptools .dot{width:22px;height:22px;border-radius:50%;display:inline-block;vertical-align:middle}
+.spwrap{flex:1;position:relative;margin:0 8px 8px;border-radius:12px;overflow:hidden;background-color:#0f2036;background-image:linear-gradient(#22395a 1px,transparent 1px),linear-gradient(90deg,#22395a 1px,transparent 1px);background-size:28px 28px}
+.spwrap canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair}
+.app{padding-bottom:70px}body.spopen .app{padding-bottom:62vh}
+@media print{.spbtn,.sp{display:none!important}}
 </style></head>
 <body>
 <div class="app">
@@ -92,6 +101,13 @@ p{font-size:19px;line-height:1.55;margin:0}
  <div id="view"></div>
  <div class="foot"><b>ערכה: רוני מודן · שחקים</b> · © כל הזכויות שמורות</div>
 </div>
+<button class="spbtn" id="spb" type="button" aria-label="פתיחת דף טיוטה">✏️ טיוטה</button>
+<div class="sp" id="sp" hidden role="dialog" aria-label="דף טיוטה"><div class="sptools"><button type="button" id="spx" aria-label="סגירת הטיוטה" style="margin-left:auto">✖ סגירה</button>
+ <button type="button" data-pc="#f3f6fb" class="on" aria-label="עט לבן"><span class="dot" style="background:#f3f6fb"></span></button>
+ <button type="button" data-pc="#ffb020" aria-label="עט כתום"><span class="dot" style="background:#ffb020"></span></button>
+ <button type="button" data-pc="#5ec8ff" aria-label="עט כחול"><span class="dot" style="background:#5ec8ff"></span></button>
+ <button type="button" id="spe" aria-label="מחק">🧽</button><button type="button" id="spu" aria-label="בטל פעולה אחרונה">↶</button><button type="button" id="spc" aria-label="נקה הכול">🗑️</button></div>
+ <div class="spwrap"><canvas id="spcv"></canvas></div></div>
 <script>
 const $=s=>document.querySelector(s);const V=$('#view');
 const M=t=>`<span class="m">${t}</span>`;
@@ -244,6 +260,26 @@ const ONSITE=/github\.io$/.test(location.hostname)&&location.hostname!=='htmlpre
 const INST=IOS&&!STANDALONE&&ONSITE;
 if(ONSITE&&'serviceWorker' in navigator){navigator.serviceWorker.register('../sw.js',{scope:'../'}).catch(()=>{});
  if(window.caches)caches.open('aplik-v1').then(c=>c.addAll([location.pathname,'/*ID*/.webmanifest','icon-/*ID*/-180.png','icon-/*ID*/-192.png'])).catch(()=>{});}
+/* ===== דף טיוטה: כותבים באצבע, נשמר לכל שאלה ===== */
+(function(){const P=$('#sp'),B=$('#spb'),cv=$('#spcv'),cx=cv.getContext('2d'),wrap=cv.parentNode;
+ const objMem=new WeakMap(),strMem=new Map();let key=null,col='#f3f6fb',er=false,strokes=[],cur=null;
+ const keyNow=()=>{if(V.querySelector('.qtext')&&S&&S.q)return S.q;const h=V.querySelector('h2');return (V.querySelector('.say')?'rc:':'sc:')+(h?h.textContent:'');};
+ const get=k=>typeof k==='object'?objMem.get(k):strMem.get(k),put=(k,v)=>typeof k==='object'?objMem.set(k,v):strMem.set(k,v);
+ function size(){const r=wrap.getBoundingClientRect(),d=window.devicePixelRatio||1;cv.width=Math.max(1,r.width*d);cv.height=Math.max(1,r.height*d);cx.setTransform(d,0,0,d,0,0);paint();}
+ function paint(){cx.clearRect(0,0,cv.width,cv.height);strokes.forEach(st=>{cx.globalCompositeOperation=st.er?'destination-out':'source-over';cx.strokeStyle=st.c;cx.lineWidth=st.er?26:3.2;cx.lineCap=cx.lineJoin='round';cx.beginPath();st.p.forEach(([x,y],i)=>i?cx.lineTo(x,y):cx.moveTo(x,y));if(st.p.length===1)cx.lineTo(st.p[0][0]+.1,st.p[0][1]);cx.stroke();});cx.globalCompositeOperation='source-over';}
+ function sync(){const k=keyNow();if(k===key)return;if(key!=null)put(key,strokes);key=k;strokes=get(k)||[];if(!P.hidden)paint();}
+ new MutationObserver(sync).observe(V,{childList:true});
+ const pos=e=>{const r=cv.getBoundingClientRect();return [e.clientX-r.left,e.clientY-r.top];};
+ cv.addEventListener('pointerdown',e=>{e.preventDefault();cv.setPointerCapture(e.pointerId);cur={c:col,er,p:[pos(e)]};strokes.push(cur);paint();});
+ cv.addEventListener('pointermove',e=>{if(!cur)return;e.preventDefault();cur.p.push(pos(e));paint();});
+ const up=()=>{if(cur){cur=null;put(key,strokes);}};cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+ P.querySelectorAll('[data-pc]').forEach(b=>b.onclick=()=>{col=b.dataset.pc;er=false;P.querySelectorAll('.sptools button').forEach(x=>x.classList.remove('on'));b.classList.add('on');});
+ $('#spe').onclick=()=>{er=true;P.querySelectorAll('.sptools button').forEach(x=>x.classList.remove('on'));$('#spe').classList.add('on');};
+ $('#spu').onclick=()=>{strokes.pop();put(key,strokes);paint();};
+ $('#spc').onclick=()=>{strokes=[];put(key,strokes);paint();};
+ const close=()=>{P.hidden=true;B.hidden=false;document.body.classList.remove('spopen');};
+ $('#spx').onclick=close;B.onclick=()=>{sync();P.hidden=false;B.hidden=true;document.body.classList.add('spopen');size();};
+ addEventListener('resize',()=>{if(!P.hidden)size();});})();
 $('#home').onclick=menu;menu();
 </script>
 </body></html>
