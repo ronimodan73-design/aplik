@@ -32,30 +32,33 @@ function rSvg(m,b,o={}){const H0=40,h=Math.min(150,30+m*16),wx=170,wb=Math.min(1
  <text class="${cl}" style="--d:${d+.6}s;font-family:Rubik" x="${X+wx+wb/2}" y="${Y+h/2+10}" text-anchor="middle" font-size="26" font-weight="800" fill="${OR}">${o.hide?'?':m*b}</text></svg>`;}
 const steps=(m,a,b)=>[`<b style="color:${RD}">${M(NP(m))}</b> כפול <b style="color:${BL}">${M(fX(a))}</b>: ${M(NP(m)+' · '+fX(a).replace(/^−/,'(−')+(a<0?')':'')+' = '+fX(m*a))}`,`<b style="color:${RD}">${M(NP(m))}</b> כפול <b style="color:${OR}">${M(N(b))}</b>: ${M(NP(m)+' · '+NP(b)+' = '+N(m*b))}`,`ביחד: ${M(poly(m*a,m*b))}`];
 const RU={base:'כל איבר בתוך הסוגריים מקבל כפל: <b>קשת לכל איבר</b>.',sign:'כפל: אותם סימנים ← פלוס. סימנים שונים ← מינוס.',minus:'מינוס לפני סוגריים = כפול (−1): כל איבר בפנים מחליף סימן.',col:'פותחים סוגריים, ואז מחברים איברים דומים (x עם x, מספר עם מספר).'};
+const C=(t,c)=>`<span style="color:${c}">${t}</span>`;
+const WP=(m,a,b)=>[{t:`קשת 1: ${C('הכופל',RD)} כפול ${C('האיבר עם x',BL)}: ${M(NP(m)+' · '+fX(a).replace(/^−/,'(−')+(a<0?')':'')+' = ?')} <small>(רק המספר שלפני x)</small>`,ans:[{label:'',val:m*a}],why:'כפל סימנים: <b>מינוס כפול מינוס = פלוס</b>, מינוס כפול פלוס = מינוס.'},
+ {t:`קשת 2: ${C('הכופל',RD)} כפול ${C('המספר',OR)}: ${M(NP(m)+' · '+NP(b)+' = ?')}`,ans:[{label:'',val:m*b}],why:`גם ${C('המספר',OR)} מקבל כפל, <b>עם הסימן שלו</b>. מינוס כפול מינוס = פלוס.`}];
 const TPL='[] x &nbsp; []';
 const ansP=(A,B)=>[{label:'המקדם של x',col:BL,val:A,neg:true},{label:'המספר',col:OR,val:B,neg:true}];
 const dgP=(m,a,b)=>({vals:[p,q]})=>p===m*a&&q===b?'פתחתם רק קשת אחת! גם '+M(N(b))+' מקבל כפל ב־'+M(N(m))+'.':p===a&&q===m*b?'גם '+M(fX(a))+' מקבל כפל ב־'+M(N(m))+'.':p===m*a&&q===-m*b?'טעות בסימן של המספר: '+M(NP(m)+' · '+NP(b)+' = '+N(m*b))+'.':p===-m*a&&q===m*b?'טעות בסימן של x: '+M(NP(m)+' · '+NP(a)+' = '+N(m*a))+'.':p===m+a?'<b>חיברתם</b> את '+M(N(m))+'. בפילוג <b>כופלים</b>.':null;
 /* ★ */
 function gPick(){const m=R(2,6),a=pick([1,1,1,2]),b=Math.random()<.75?R(1,9):-R(1,9),good=poly(m*a,m*b);
  const opts=[good];[poly(m*a,b),poly(a,m*b),poly(m*a,-m*b),poly(m*a,m+b),poly(m+a,m*b)].forEach(o=>{if(!opts.includes(o)&&opts.length<4)opts.push(o);});const o2=shuf(opts);
- return {kind:'פותחים סוגריים',dia:h=>eSvg(m,a,b,{anim:true,res:h?[m*a,m*b]:null}),text:'פתחו את הסוגריים. איזו תשובה נכונה?',choice:o2.map(M),correct:o2.indexOf(good),lines:steps(m,a,b),rule:RU.base,
+ return {kind:'פותחים סוגריים',dia:h=>eSvg(m,a,b,{anim:true,res:h?[m*a,m*b]:null}),text:'פתחו את הסוגריים. איזו תשובה נכונה?',choice:o2.map(M),correct:o2.indexOf(good),work:WP(m,a,b),lines:steps(m,a,b),rule:RU.base,
   diag:({sel})=>{const s=o2[sel];return s===poly(m*a,b)?'פתחתם רק קשת אחת! גם '+M(N(b))+' מקבל כפל.':s===poly(a,m*b)?'גם '+M(fX(a))+' מקבל כפל.':s===poly(m*a,-m*b)?'בדקו את הסימן של המספר.':'בדקו: קשת אחת לכל איבר, ובכל קשת <b>כופלים</b>.';}};}
 function gMental(){const m=R(3,9),base=pick([10,20,30,100]),dd=R(1,4),neg=Math.random()<.4,n=neg?base-dd:base+dd,ans=m*n;
- return {kind:'חשבון בראש עם פילוג',text:`חשבו בראש: ${M(m+' · '+n)} (רמז: ${M(n+' = '+base+(neg?' − ':' + ')+dd)})`,ans:[{label:'התשובה',col:GR,val:ans}],
+ return {kind:'חשבון בראש עם פילוג',text:`חשבו בראש: ${M(m+' · '+n)} (רמז: ${M(n+' = '+base+(neg?' − ':' + ')+dd)})`,ans:[{label:'התשובה',col:GR,val:ans}],work:[{t:`${M(m+' · '+base+' = ?')}`,ans:[{label:'',val:m*base}],why:'כופלים את החלק העגול.'},{t:`${M(m+' · '+dd+' = ?')}`,ans:[{label:'',val:m*dd}],why:`גם ${M(dd)} מקבל כפל ב־${M(m)}!`},{t:`${M(m*base+(neg?' − ':' + ')+m*dd+' = ?')}`,ans:[{label:'',val:ans}],why:neg?'היה מינוס בפירוק, אז מחסירים.':'מחברים את שני החלקים.'}],
   lines:[`${M(m+' · ('+base+(neg?' − ':' + ')+dd+')')}`,`${M(m+' · '+base+' = '+m*base)} ו־${M(m+' · '+dd+' = '+m*dd)}`,`${M(m*base+(neg?' − ':' + ')+m*dd+' = '+ans)}`],rule:'מפרקים מספר "עגול" + קטן, וכופלים כל חלק. ככה מחשבים בראש!',
   diag:({vals:[v]})=>v===m*base+dd||v===m*base-dd?'שכחתם לכפול גם את '+M(dd)+' ב־'+M(m)+'.':null};}
 /* ★★ */
 function gFill(){const m=R(2,9),a=pick([1,1,2,3]),b=pick([1,-1])*R(1,9);
- return {kind:'כותבים את התשובה',dia:h=>eSvg(m,a,b,{anim:true,res:h?[m*a,m*b]:null}),text:'פתחו את הסוגריים. כתבו את המספר <b>עם הסימן שלו</b> (למשל ‎−8).',tpl:TPL,ans:ansP(m*a,m*b),lines:steps(m,a,b),rule:RU.base,diag:dgP(m,a,b)};}
+ return {kind:'כותבים את התשובה',dia:h=>eSvg(m,a,b,{anim:true,res:h?[m*a,m*b]:null}),text:'פתחו את הסוגריים. כתבו את המספר <b>עם הסימן שלו</b> (למשל ‎−8).',tpl:TPL,ans:ansP(m*a,m*b),work:WP(m,a,b),lines:steps(m,a,b),rule:RU.base,diag:dgP(m,a,b)};}
 /* ★★★ */
 function gNeg(){const m=-R(2,7),a=pick([1,1,2,-1]),b=pick([1,-1])*R(1,9);
- return {kind:'כופל שלילי',dia:h=>eSvg(m,a,b,h?{anim:true,res:[m*a,m*b]}:{arcs:false}),text:'פתחו את הסוגריים. זהירות עם הסימנים!',tpl:TPL,ans:ansP(m*a,m*b),lines:[...steps(m,a,b)],rule:RU.sign,diag:dgP(m,a,b),dia2:1};}
+ return {kind:'כופל שלילי',dia:h=>eSvg(m,a,b,h?{anim:true,res:[m*a,m*b]}:{arcs:false}),text:'פתחו את הסוגריים. זהירות עם הסימנים!',tpl:TPL,ans:ansP(m*a,m*b),work:WP(m,a,b),lines:[...steps(m,a,b)],rule:RU.sign,diag:dgP(m,a,b),dia2:1};}
 function gMinus(){const a=pick([1,1,2,3]),b=pick([1,-1])*R(1,9);
- return {kind:'מינוס לפני סוגריים',dia:h=>eSvg(-1,a,b,h?{anim:true,res:[-a,-b]}:{arcs:false}),text:'פתחו את הסוגריים.',tpl:TPL,ans:ansP(-a,-b),lines:['מינוס לפני סוגריים = כפול ‎(−1).',...steps(-1,a,b)],rule:RU.minus,
+ return {kind:'מינוס לפני סוגריים',dia:h=>eSvg(-1,a,b,h?{anim:true,res:[-a,-b]}:{arcs:false}),text:'פתחו את הסוגריים.',tpl:TPL,ans:ansP(-a,-b),work:[{t:'מינוס לפני סוגריים זה כמו לכפול ב־…?',choice:[M('(−1)'),M('0'),M('(+1)')],correct:0,why:'המינוס שלפני הסוגריים = כפול ‎(−1): כל איבר בפנים <b>מחליף סימן</b>.'},...WP(-1,a,b)],lines:['מינוס לפני סוגריים = כפול ‎(−1).',...steps(-1,a,b)],rule:RU.minus,
   diag:({vals:[p,q]})=>p===-a&&q===b?'המינוס פועל על <b>כל</b> האיברים: גם המספר מחליף סימן.':p===a?'המינוס שלפני הסוגריים הופך גם את '+M(fX(a))+'.':null};}
 function gCollect(){const m=R(2,5),a=pick([1,1,2]),b=pick([1,-1])*R(1,8);let c;do{c=pick([1,-1])*R(1,6);}while(m*a+c===0);const d=pick([1,-1])*R(1,9);const A=m*a+c,B=m*b+d;
  const tail=[{t:c<0?'−':'+',c:INK,s:1},{t:fX(Math.abs(c)),c:BL},{t:d<0?'−':'+',c:INK,s:1},{t:''+Math.abs(d),c:OR}];
- return {kind:'פותחים וכונסים',dia:()=>eSvg(m,a,b,{tail,arcs:true}),text:'פתחו סוגריים, ואז כנסו איברים דומים.',tpl:TPL,ans:ansP(A,B),
+ return {kind:'פותחים וכונסים',dia:()=>eSvg(m,a,b,{tail,arcs:true}),text:'פתחו סוגריים, ואז כנסו איברים דומים.',tpl:TPL,ans:ansP(A,B),work:[...WP(m,a,b),{t:`${C('x עם x',BL)}: ${M(N(m*a)+(c<0?' − ':' + ')+Math.abs(c)+' = ?')}`,ans:[{label:'',val:A}],why:'מכנסים רק איברים עם x ביחד. חושבים על ציר המספרים.'},{t:`${C('מספר עם מספר',OR)}: ${M(N(m*b)+(d<0?' − ':' + ')+Math.abs(d)+' = ?')}`,ans:[{label:'',val:B}],why:'מספר עם מספר, עם הסימנים. חושבים על ציר המספרים.'}],
   lines:[`פותחים: ${M(poly(m*a,m*b))}`,`כל הביטוי: ${M(poly(m*a,m*b)+(c<0?' − ':' + ')+fX(Math.abs(c))+(d<0?' − ':' + ')+Math.abs(d))}`,`<b style="color:${BL}">x עם x</b>: ${M(N(m*a)+(c<0?' − ':' + ')+Math.abs(c)+' = '+N(A))} · <b style="color:${OR}">מספר עם מספר</b>: ${M(N(m*b)+(d<0?' − ':' + ')+Math.abs(d)+' = '+N(B))}`,`תשובה: ${M(poly(A,B))}`],rule:RU.col,
   diag:({vals:[p,q]})=>p===a+c?'קודם פותחים סוגריים: '+M(N(m)+' · '+fX(a)+' = '+fX(m*a))+'.':q===b+d?'גם המספר בסוגריים מקבל כפל: '+M(m+' · '+NP(b)+' = '+N(m*b))+'.':null};}
 /* ★★★★ */

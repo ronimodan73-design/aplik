@@ -23,7 +23,11 @@ async def main():
             (q.steps||[]).forEach((st,k)=>{if(st.ans)st.ans.forEach(a=>{if(!Number.isFinite(a.val)||(!a.neg&&a.val<=0)||(!a.dec&&!Number.isInteger(a.val)))bad.push(q.kind+' step'+k+' ans '+a.val)});
               if(st.choice&&(st.correct==null||st.correct<0||st.correct>=st.choice.length||new Set(st.choice).size!==st.choice.length))bad.push(q.kind+' step'+k+' bad choice');
               if(!st.rule||!st.lines||!st.text)bad.push(q.kind+' step'+k+' missing parts');});
-            if(q.check&&!q.check())bad.push(q.kind+' self-check failed');}});return [...new Set(bad)].slice(0,15)}''')
+            if(q.check&&!q.check())bad.push(q.kind+' self-check failed');
+            [q,...(q.steps||[])].forEach(c=>{if(!c.work)return;c.work.forEach((w,k)=>{if(!w.t||(!w.ans&&!w.choice))bad.push(q.kind+' work'+k+' empty');
+              if(w.ans)w.ans.forEach(a=>{if(!Number.isFinite(a.val))bad.push(q.kind+' work'+k+' val '+a.val)});
+              if(w.choice&&(w.correct==null||w.correct<0||w.correct>=w.choice.length||new Set(w.choice).size!==w.choice.length))bad.push(q.kind+' work'+k+' bad choice');});
+              const L=[...c.work].reverse().find(w=>w.ans);if(L&&c.ans&&!c.ans.some(a=>a.val===L.ans[0].val))bad.push(q.kind+' work last step ≠ answer');});}});return [...new Set(bad)].slice(0,15)}''')
         print('generator problems:', bad)
         n = await pg.evaluate('RECAP.length')
         await pg.click('#go-recap')

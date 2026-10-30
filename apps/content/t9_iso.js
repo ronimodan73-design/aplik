@@ -68,11 +68,11 @@ function gIsIso(){const iso=Math.random()<.5;let B,C;if(iso){B=C=bEasy();}else{d
 /* ★★ */
 function gBase(){const b=bEasy(),h=180-2*b,t=isoT(h);
  return {kind:'מוצאים זווית בסיס',dia:()=>svgT(t,legsT(t)+angleMark(t,'a',PU,h+'°')+angleMark(t,'l',OR,'?')),text:`${M(sd(t,'al')+' = '+sd(t,'ar'))}, ${M(ang(t,'a')+' = '+h+'°')}. מצאו את ${M(ang(t,'l'))}.`,
-  ans:[{label:ang(t,'l'),col:OR,val:b,lt:1}],lines:[`לשתי זוויות הבסיס יחד: ${M(`180° − ${h}° = ${180-h}°`)}`,`הן שוות ← מחלקים לשתיים: ${M(`${180-h} : 2 = ${b}°`)}`],rule:RULE.sum,
+  ans:[{label:ang(t,'l'),col:OR,val:b,lt:1}],work:[{t:'במשולש, כמה מעלות יש בכל שלוש הזוויות ביחד?',ans:[{label:'',val:180}],why:'סכום הזוויות במשולש הוא תמיד 180°.'},{t:`מורידים את זווית הראש. מה נשאר לשתי זוויות הבסיס יחד? ${M(`180° − ${h}° = ?`)}`,ans:[{label:'',val:180-h}],why:'בחיסור ובחילוק בודקים פעמיים. חושבים על ציר המספרים.'},{t:`שתי זוויות הבסיס <b>שוות</b>. כמה כל אחת? ${M(`${180-h} : 2 = ?`)}`,ans:[{label:'',val:b}],why:'יש <b>שתי</b> זוויות בסיס שוות ← מחלקים ב־2.'}],lines:[`לשתי זוויות הבסיס יחד: ${M(`180° − ${h}° = ${180-h}°`)}`,`הן שוות ← מחלקים לשתיים: ${M(`${180-h} : 2 = ${b}°`)}`],rule:RULE.sum,
   diag:({vals:[x]})=>x===180-h?'זה <b>שתי</b> זוויות הבסיס יחד. מחלקים ב־2.':x===h?'זווית הבסיס לא שווה לזווית הראש. ':x===180-2*h?'חיסרתם את זווית הראש פעמיים. רק זוויות הבסיס שוות.':null};}
 function gHead(){const b=bEasy(),h=180-2*b,t=isoT(h);
  return {kind:'מוצאים זווית ראש',dia:()=>svgT(t,legsT(t)+angleMark(t,'r',OR,b+'°')+angleMark(t,'a',PU,'?')),text:`${M(sd(t,'al')+' = '+sd(t,'ar'))}, ${M(ang(t,'r')+' = '+b+'°')}. מצאו את ${M(ang(t,'a'))}.`,
-  ans:[{label:ang(t,'a'),col:PU,val:h,lt:1}],lines:[`זוויות הבסיס שוות: ${M(ang(t,'l')+' = '+b+'°')}`,`זווית הראש: ${M(`180° − ${b}° − ${b}° = ${h}°`)}`],rule:RULE.th,
+  ans:[{label:ang(t,'a'),col:PU,val:h,lt:1}],work:[{t:`במשולש שווה שוקיים זוויות הבסיס שוות. כמה מעלות ${M(ang(t,'l'))}?`,ans:[{label:'',val:b}],why:'זוויות הבסיס (מול השוקיים) <b>שוות</b>.'},{t:`שתי זוויות הבסיס יחד: ${M(`${b}° + ${b}° = ?`)}`,ans:[{label:'',val:2*b}],why:'יש <b>שתי</b> זוויות בסיס.'},{t:`זווית הראש: ${M(`180° − ${2*b}° = ?`)}`,ans:[{label:'',val:h}],why:'בחיסור ובחילוק בודקים פעמיים. חושבים על ציר המספרים.'}],lines:[`זוויות הבסיס שוות: ${M(ang(t,'l')+' = '+b+'°')}`,`זווית הראש: ${M(`180° − ${b}° − ${b}° = ${h}°`)}`],rule:RULE.th,
   diag:({vals:[x]})=>x===180-b?'חיסרתם רק זווית בסיס אחת. יש <b>שתיים</b>, והן שוות.':x===b?'זווית הראש לא חייבת להיות שווה לזווית הבסיס.':null};}
 function gConvSide(){const b=bEasy(),t=isoT(180-2*b),s=R(4,15);
  return {kind:'משפט הפוך · צלע',dia:()=>svgT(t,sideCol(t,'al',OR)+sideCol(t,'ar',BL)+angleMark(t,'r',OR,b+'°')+angleMark(t,'l',BL,b+'°')+sideLab(t,'al',s+'',OR)+sideLab(t,'ar','?',BL)),
@@ -87,7 +87,7 @@ function gMedian(){const h=pick([40,50,60,70,80,100]),t=isoT(h),k=R(3,12);
 function gVarAng(){const b=pick([R(35,75)]),h=180-2*b,t=isoT(h),x0=R(5,20),[a1,b1]=mkExpr(b,x0),[a2,b2]=mkExpr(b,x0,a1);
  const ca=Math.abs(a1-a2),cb=a1>a2?b2-b1:b1-b2;
  return withReason({kind:'משתנים · זוויות בסיס',dia:()=>svgT(t,legsT(t)+angleMark(t,'l',OR,ex(a1,b1))+angleMark(t,'r',BL,ex(a2,b2))),
-  text:`${M(sd(t,'al')+' = '+sd(t,'ar'))}. מצאו את x ואת ${M(ang(t,'l'))}.`,ans:[{label:'x =',col:PU,val:x0,unit:''},{label:ang(t,'l'),col:OR,val:b,lt:1}],
+  text:`${M(sd(t,'al')+' = '+sd(t,'ar'))}. מצאו את x ואת ${M(ang(t,'l'))}.`,ans:[{label:'x =',col:PU,val:x0,unit:''},{label:ang(t,'l'),col:OR,val:b,lt:1}],work:[{t:`זוויות הבסיס שוות: ${M(`${ex(a1,b1)} = ${ex(a2,b2)}`)}. מעבירים x לצד אחד ומספרים לשני: ${M(ca+'x = ?')}`,ans:[{label:'',val:cb}],why:'מה שעובר לצד השני <b>מחליף סימן</b>.'},{t:`${M(`x = ${cb} : ${ca} = ?`)}`,ans:[{label:'x =',val:x0}],why:'מחלקים את שני הצדדים.'},{t:`מציבים את x בביטוי ${M(ex(a1,b1))}: כמה מעלות?`,ans:[{label:'',val:b}],why:'x הוא לא הזווית! מציבים אותו בביטוי: קודם כפל, אחר כך חיבור.'}],
   lines:['זוויות הבסיס שוות ←',M(`${ex(a1,b1)} = ${ex(a2,b2)}`),M(`${ca}x = ${cb}`)+' ← '+M('x = '+x0),`מציבים: ${sub(a1,b1,x0)}°`],rule:RULE.th,
   diag:({vals:[x,y]})=>x===x0&&y!==b?'את x מצאתם! עכשיו <b>מציבים</b> בביטוי '+M(ex(a1,b1))+'.':y===x0?'x הוא לא הזווית. מציבים את x בביטוי.':null},0);}
 function gVarSide(){const b=bEasy(),t=isoT(180-2*b),x0=R(2,9),s=R(9,30),[a1,b1]=mkExpr(s,x0),[a2,b2]=mkExpr(s,x0,a1);const ca=Math.abs(a1-a2),cb=a1>a2?b2-b1:b1-b2;
@@ -97,7 +97,7 @@ function gVarSide(){const b=bEasy(),t=isoT(180-2*b),x0=R(2,9),s=R(9,30),[a1,b1]=
   diag:({vals:[x,y]})=>x===x0&&y!==s?'את x מצאתם! מציבים בביטוי '+M(ex(a1,b1))+'.':null},1);}
 function gVarSum(){const b=R(30,70),h=180-2*b,t=isoT(h),x0=R(5,20),[a1,b1]=mkExpr(h,x0);
  return withReason({kind:'משתנים · סכום 180°',dia:()=>svgT(t,legsT(t)+angleMark(t,'a',PU,ex(a1,b1))+angleMark(t,'l',OR,b+'°')),
-  text:`${M(sd(t,'al')+' = '+sd(t,'ar'))}, ${M(ang(t,'l')+' = '+b+'°')}. מצאו את x.`,ans:[{label:'x =',col:PU,val:x0,unit:''}],
+  text:`${M(sd(t,'al')+' = '+sd(t,'ar'))}, ${M(ang(t,'l')+' = '+b+'°')}. מצאו את x.`,ans:[{label:'x =',col:PU,val:x0,unit:''}],work:[{t:`כמה מעלות ${M(ang(t,'r'))}?`,ans:[{label:'',val:b}],why:'זוויות הבסיס <b>שוות</b>.'},{t:`${M(`${ex(a1,b1)} + ${b} + ${b} = 180`)}. מעבירים את המספרים: ${M(a1+'x = ?')}`,ans:[{label:'',val:180-2*b-b1}],why:'יש <b>שתי</b> זוויות בסיס. מספר שעובר לצד השני מחליף סימן.'},{t:`${M(`x = ${180-2*b-b1} : ${a1} = ?`)}`,ans:[{label:'x =',val:x0}],why:'מחלקים את שני הצדדים.'}],
   lines:[`זוויות הבסיס שוות: ${M(ang(t,'r')+' = '+b+'°')}`,M(`${ex(a1,b1)} + ${b} + ${b} = 180`),M(`${a1}x = ${180-2*b-b1}`)+' ← '+M('x = '+x0)],rule:RULE.sum,
   diag:({vals:[x]})=>Math.abs(x-(180-b-b1)/a1)<1e-9?'חיברתם רק זווית בסיס אחת. יש <b>שתיים</b> שוות.':null},2);}
 function gThreeR(){const h=pick([40,50,60,70,80,100,110]),t=isoT(h);

@@ -19,21 +19,24 @@ const RU={gcd:'הגורם המשותף הגדול ביותר: המספר הגד�
 function pair(){let a,b;do{a=R(1,7);b=R(1,9);}while(a===b||gcd(a,b)!==1);return [a,b];}
 const divLines=(ts,F)=>{const fs=mono(F[0],F[1]);return [`הגורם המשותף: <b style="color:${RD}">${M(fs)}</b>`,...ts.map((t,i)=>`<b style="color:${COLS[i]}">${M(mono(t[0],t[1])+' : '+fs+' = '+mono(t[0]/F[0],t[1]-F[1]))}</b>`),`תשובה: ${M(fs+'('+expr(ts.map(([c,p])=>[c/F[0],p-F[1]]))+')')}`];};
 /* ★ */
+/* "איפה טעיתי?": מוצאים גורם, ואז מחלקים כל איבר */
+const WG=(ts,F,find)=>[...(find?[{t:`מהו המספר הגדול ביותר שמחלק את ${M(Math.abs(ts[0][0]))} וגם את ${M(Math.abs(ts[1][0]))}?`,ans:[{label:'',val:Math.abs(F[0])}],why:'עוברים על לוח הכפל: מה המספר <b>הגדול ביותר</b> שנכנס בשניהם בלי שארית?'}]:[]),
+ ...ts.map(([c,p],i)=>({t:`מחלקים את האיבר ${['הראשון','השני','השלישי'][i]}: ${M(mono(c,p)+' : '+mono(F[0],F[1])+' = ?')} <small>(${p-F[1]?'המספר שלפני x':'רק המספר'})</small>`,ans:[{label:'',val:c/F[0]}],why:(c<0)!==(F[0]<0)?'סימנים שונים בחילוק ← התוצאה <b>שלילית</b>.':c===F[0]?'איבר שמתחלק בעצמו ← נשאר <b>1</b>, לא 0!':'מחלקים <b>כל</b> איבר בגורם. בדקו בלוח הכפל.'}))];
 function gNum(){const g=R(2,7),[a,b]=pair(),ts=[[g*a,1],[g*b,0]];
  return {kind:'מוצאים את הגורם המשותף',dia:h=>gHtml(ts,[g,0],h?{div:1,res:1,anim:1,d:.3}:{}),text:`מהו <b style="color:${RD}">הגורם המשותף הגדול ביותר</b> של ${M(expr(ts))}?`,ans:[{label:'הגורם',col:RD,val:g}],
   lines:[`המספרים: ${M(g*a)} ו־${M(g*b)}.`,`המספר הגדול ביותר שמחלק את שניהם: <b style="color:${RD}">${M(g)}</b>`],rule:RU.gcd,
   diag:({vals:[v]})=>v>1&&g%v===0&&v<g?M(v)+' הוא גורם משותף, אבל <b>לא הגדול ביותר</b>. נסו מספר גדול יותר.':((g*a)%v||(g*b)%v)?M(v)+' לא מחלק את שני המספרים.':null};}
 function gPick(){const g=R(2,6),[a,b]=pair(),ts=[[g*a,1],[g*b,0]],good=`${g}(${expr([[a,1],[b,0]])})`;
  const opts=[good];[`${g}(${expr([[a,1],[g*b,0]])})`,`${g}(${expr([[g*a,1],[b,0]])})`,`${g*a}(x + ${b})`,`${g}(${a}x)`].forEach(o=>{if(!opts.includes(o)&&opts.length<4)opts.push(o);});const o2=shuf(opts);
- return {kind:'מפרקים לגורמים',dia:h=>gHtml(ts,[g,0],h?{div:1,res:1,anim:1,d:.3}:{}),text:`הוציאו גורם משותף: ${M(expr(ts))}`,choice:o2.map(M),correct:o2.indexOf(good),lines:divLines(ts,[g,0]),rule:RU.div,
+ return {kind:'מפרקים לגורמים',dia:h=>gHtml(ts,[g,0],h?{div:1,res:1,anim:1,d:.3}:{}),text:`הוציאו גורם משותף: ${M(expr(ts))}`,choice:o2.map(M),correct:o2.indexOf(good),work:WG(ts,[g,0],1),lines:divLines(ts,[g,0]),rule:RU.div,
   diag:()=>'מחלקים <b>כל</b> איבר בגורם המשותף, ובודקים בפילוג.'};}
 /* ★★ */
 function gFill(){const g=R(2,8),[a,b0]=pair(),b=Math.random()<.7?b0:-b0,ts=[[g*a,1],[g*b,0]];
  return {kind:'כותבים את הפירוק',dia:h=>gHtml(ts,[g,0],h?{div:1,res:1,anim:1,d:.3}:{}),text:'הוציאו גורם משותף (הגדול ביותר). את המספר האחרון כתבו עם הסימן שלו.',tpl:'[] ( [] x &nbsp; [] )',
-  ans:[{label:'הגורם',col:RD,val:g},{label:'מקדם x',col:BL,val:a},{label:'המספר',col:OR,val:b,neg:true}],lines:divLines(ts,[g,0]),rule:RU.div,
+  ans:[{label:'הגורם',col:RD,val:g},{label:'מקדם x',col:BL,val:a},{label:'המספר',col:OR,val:b,neg:true}],work:WG(ts,[g,0],1),lines:divLines(ts,[g,0]),rule:RU.div,
   diag:({vals:[F,p,q]})=>F===g&&p===g*a?'את '+M(g*a+'x')+' צריך <b>לחלק</b> ב־'+M(g)+'. מה יוצא?':F===g&&q===-b?'שמרו על הסימן: '+M(N(g*b)+' : '+g+' = '+N(b))+'.':F>1&&g%F===0&&F<g?'יש גורם משותף <b>גדול יותר</b> מ־'+M(F)+'.':null};}
 function gOne(){const g=R(2,9),a=R(2,6),ts=[[g*a,1],[g,0]];
- return {kind:'כשנשאר 1',dia:h=>gHtml(ts,[g,0],h?{div:1,res:1,anim:1,d:.3}:{}),text:`השלימו: ${M(expr(ts)+' = '+g+'(  x +  )')}`,tpl:`${g} ( [] x + [] )`,ans:[{label:'מקדם x',col:BL,val:a},{label:'המספר',col:OR,val:1}],lines:divLines(ts,[g,0]),rule:RU.one,
+ return {kind:'כשנשאר 1',dia:h=>gHtml(ts,[g,0],h?{div:1,res:1,anim:1,d:.3}:{}),text:`השלימו: ${M(expr(ts)+' = '+g+'(  x +  )')}`,tpl:`${g} ( [] x + [] )`,ans:[{label:'מקדם x',col:BL,val:a},{label:'המספר',col:OR,val:1}],work:WG(ts,[g,0]),lines:divLines(ts,[g,0]),rule:RU.one,
   diag:({vals:[p,q]})=>q===0?M(g+' : '+g+' = 1')+'. איבר שמתחלק בעצמו ← נשאר <b>1</b>, לא 0!':p===g*a?'מחלקים גם את '+M(g*a+'x')+' ב־'+M(g)+'.':null};}
 /* ★★★ */
 function gX(){const ts=Math.random()<.5?[[1,2],[R(2,9)*(Math.random()<.7?1:-1),1]]:[[1,3],[R(2,9),2]];const F=[1,ts[1][1]];
@@ -42,14 +45,14 @@ function gX(){const ts=Math.random()<.5?[[1,2],[R(2,9)*(Math.random()<.7?1:-1),1
  return {kind:'x הוא הגורם',dia:()=>gHtml(ts,F),text:`הוציאו גורם משותף: ${M(expr(ts))}`,choice:o2.map(M),correct:o2.indexOf(good),lines:divLines(ts,F),rule:RU.x,diag:()=>'בכל איבר יש x. מחלקים כל איבר ב־'+M(mono(1,F[1]))+'.'};}
 function gNX(){const g=R(2,6),[a,b0]=pair(),b=Math.random()<.75?b0:-b0,ts=[[g*a,2],[g*b,1]];
  return {kind:'מספר וגם x',dia:h=>gHtml(ts,[g,1],h?{div:1,res:1,anim:1,d:.3}:{}),text:'הוציאו את הגורם המשותף הגדול ביותר (מספר וגם x).',tpl:'[] x ( [] x &nbsp; [] )',
-  ans:[{label:'מספר בגורם',col:RD,val:g},{label:'מקדם x',col:BL,val:a},{label:'המספר',col:OR,val:b,neg:true}],lines:divLines(ts,[g,1]),rule:RU.x+' '+RU.div,
+  ans:[{label:'מספר בגורם',col:RD,val:g},{label:'מקדם x',col:BL,val:a},{label:'המספר',col:OR,val:b,neg:true}],work:WG(ts,[g,1],1),lines:divLines(ts,[g,1]),rule:RU.x+' '+RU.div,
   diag:({vals:[F,p,q]})=>F===g&&p===g*a?'מחלקים את '+M(mono(g*a,2))+' ב־'+M(g+'x')+': יוצא '+M(a+'x')+'.':F<g&&g%F===0?'יש מספר משותף <b>גדול יותר</b>.':null};}
 function gOneX(){const g=R(2,7),a=R(2,6),ts=[[g*a,2],[g,1]];
- return {kind:'נשאר 1 גם עם x',dia:h=>gHtml(ts,[g,1],h?{div:1,res:1,anim:1,d:.3}:{}),text:`השלימו: ${M(expr(ts)+' = '+g+'x(  x +  )')}`,tpl:`${g}x ( [] x + [] )`,ans:[{label:'מקדם x',col:BL,val:a},{label:'המספר',col:OR,val:1}],lines:divLines(ts,[g,1]),rule:RU.one,
+ return {kind:'נשאר 1 גם עם x',dia:h=>gHtml(ts,[g,1],h?{div:1,res:1,anim:1,d:.3}:{}),text:`השלימו: ${M(expr(ts)+' = '+g+'x(  x +  )')}`,tpl:`${g}x ( [] x + [] )`,ans:[{label:'מקדם x',col:BL,val:a},{label:'המספר',col:OR,val:1}],work:WG(ts,[g,1]),lines:divLines(ts,[g,1]),rule:RU.one,
   diag:({vals:[p,q]})=>q===0||q===g?M(g+'x : '+g+'x = 1')+'. נשאר <b>1</b>!':null};}
 /* ★★★★ */
 function gNeg(){const g=R(2,6),[a,b]=pair(),ts=[[-g*a,1],[-g*b,0]],good=`−${g}(${expr([[a,1],[b,0]])})`;const opts=shuf([good,`−${g}(${expr([[a,1],[-b,0]])})`,`${g}(${expr([[-a,1],[b,0]])})`,`−${g}(${expr([[-a,1],[-b,0]])})`]);
- return {kind:'גורם שלילי',dia:h=>gHtml(ts,[-g,0],h?{div:1,res:1,anim:1,d:.3}:{}),text:`הוציאו את ${M('−'+g)} כגורם משותף: ${M(expr(ts))}`,choice:opts.map(M),correct:opts.indexOf(good),lines:divLines(ts,[-g,0]),rule:'מחלקים במספר שלילי: מינוס חלקי מינוס = פלוס.',diag:()=>'חלקו כל איבר ב־'+M('−'+g)+'. מינוס חלקי מינוס = <b>פלוס</b>.'};}
+ return {kind:'גורם שלילי',dia:h=>gHtml(ts,[-g,0],h?{div:1,res:1,anim:1,d:.3}:{}),text:`הוציאו את ${M('−'+g)} כגורם משותף: ${M(expr(ts))}`,choice:opts.map(M),correct:opts.indexOf(good),work:WG(ts,[-g,0]),lines:divLines(ts,[-g,0]),rule:'מחלקים במספר שלילי: מינוס חלקי מינוס = פלוס.',diag:()=>'חלקו כל איבר ב־'+M('−'+g)+'. מינוס חלקי מינוס = <b>פלוס</b>.'};}
 function gFull(){const g=R(2,4),h=R(2,3),[a,b]=pair(),ts=[[g*h*a,1],[g*h*b,0]],full=Math.random()<.5;const shown=full?`${g*h}(${expr([[a,1],[b,0]])})`:`${g}(${expr([[h*a,1],[h*b,0]])})`;
  return {kind:'האם הפירוק מלא?',dia:h=>gHtml(ts,[g*h,0],h?{div:1,res:1,anim:1,d:.3}:{}),text:`תלמיד כתב: ${M(expr(ts)+' = '+shown)}. האם הוציא את הגורם המשותף <b>הגדול ביותר</b>?`,
   choice:['כן, בתוך הסוגריים אין יותר גורם משותף','לא, בתוך הסוגריים יש עוד גורם משותף','לא, הפירוק לא נכון בכלל'],correct:full?0:1,

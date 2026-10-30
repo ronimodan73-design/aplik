@@ -55,7 +55,7 @@ function gOn(){const t=pick(['x','y','n']),k=R(1,9),j=R(1,9),[x,y]=t==='x'?[k,0]
 /* ===== ★★ קטעים ===== */
 function segQ(){const hor=Math.random()<.5,[a,b]=two(1,9),c=R(1,9);return hor?{hor,A:[Math.min(a,b),c],B:[Math.max(a,b),c],len:Math.abs(a-b)}:{hor,A:[c,Math.min(a,b)],B:[c,Math.max(a,b)],len:Math.abs(a-b)};}
 function gLen(){const s=segQ(),{hor,A,B,len}=s,[p,q]=shuf([A,B]),i=hor?0:1;
- return {kind:'אורך קטע',rc:hor?4:5,text:`${M('A'+Pt(...p))} , ${M('B'+Pt(...q))}. מה אורך הקטע ${M('AB')}?`,ans:[{label:'אורך =',col:GR,val:len,unit:''}],
+ return {kind:'אורך קטע',rc:hor?4:5,text:`${M('A'+Pt(...p))} , ${M('B'+Pt(...q))}. מה אורך הקטע ${M('AB')}?`,ans:[{label:'אורך =',col:GR,val:len,unit:''}],work:[{t:'מה שווה בשתי הנקודות?',choice:['ה־x שווה ← הקטע אנכי (עומד)','ה־y שווה ← הקטע אופקי (שוכב)'],correct:hor?1:0,why:'משווים את שתי הנקודות: איזה מספר זהה בשתיהן?'},{t:`אז משווים את ה־${hor?'x':'y'}: גדול פחות קטן: ${M(Math.max(A[i],B[i])+' − '+Math.min(A[i],B[i])+' = ?')}`,ans:[{label:'',val:len}],why:'אורך = <b>הפרש</b>: מחסרים את הקטן מהגדול (לא מחברים).'}],
   dia:h=>Q({pts:[{x:p[0],y:p[1],col:PU,lab:'A'},{x:q[0],y:q[1],col:PU,lab:'B'}],segs:[{a:A,b:B,col:h?GR:'#9fb3cc',lab:h?len:'',side:hor?1:1}],anim:h}),
   lines:[hor?`ה־${C('y',OR)} שווה (${C(A[1],OR)}) ← הקטע <b>אופקי</b> (שוכב).`:`ה־${C('x',BL)} שווה (${C(A[0],BL)}) ← הקטע <b>אנכי</b> (עומד).`,`האורך = ההפרש בין ה־${hor?C('x',BL):C('y',OR)}: ${M(B[i]+' − '+A[i]+' = '+len)}`],
   rule:'קטע אופקי: אורך = הפרש ה־x. קטע אנכי: אורך = הפרש ה־y. (גדול פחות קטן)',
@@ -80,7 +80,7 @@ function gFourth(){const sq=Math.random()<.4,r=rect(sq),k=R(0,3),V=r.V,D=V[k];
   lines:[`צלעות המלבן אופקיות ואנכיות.`,`${M(LET[k])} באותו <b>גובה</b> (y) כמו ${M(LET[k^1])}: ${C(D[1],OR)}.`,`${M(LET[k])} באותו מקום <b>ימינה</b> (x) כמו ${M(LET[3-k])}: ${C(D[0],BL)}.`,`${M(LET[k])} = ${PC(...D)}`],
   rule:'במלבן הצלעות אופקיות ואנכיות: כל קדקוד חולק x עם שכן אחד ו־y עם השכן השני.'};}
 function gPA(sq){sq=sq!=null?sq:Math.random()<.35;const r=rect(sq),ask=pick(['P','S']),P=2*(r.w+r.h),S=r.w*r.h,sh=sq?'הריבוע':'המלבן';
- return {kind:ask==='P'?'היקף':'שטח',rc:sq?7:6,text:`חשבו את ${ask==='P'?'<b>ההיקף</b>':'<b>השטח</b>'} של ${sh} ${M('ABCD')} (כל משבצת = 1).`,ans:[{label:ask==='P'?'היקף =':'שטח =',col:GR,val:ask==='P'?P:S,unit:''}],
+ return {kind:ask==='P'?'היקף':'שטח',rc:sq?7:6,text:`חשבו את ${ask==='P'?'<b>ההיקף</b>':'<b>השטח</b>'} של ${sh} ${M('ABCD')} (כל משבצת = 1).`,ans:[{label:ask==='P'?'היקף =':'שטח =',col:GR,val:ask==='P'?P:S,unit:''}],work:[{t:`רוחב ${M('AB')}: ${M((r.x1+r.w)+' − '+r.x1+' = ?')}`,ans:[{label:'',val:r.w}],why:'אורך קטע אופקי = הפרש ה־x.'},{t:`גובה ${M('BC')}: ${M((r.y1+r.h)+' − '+r.y1+' = ?')}`,ans:[{label:'',val:r.h}],why:'אורך קטע אנכי = הפרש ה־y.'},ask==='P'?{t:`היקף: ${M(r.w+' + '+r.h+' + '+r.w+' + '+r.h+' = ?')}`,ans:[{label:'',val:P}],why:'מחברים את <b>4</b> הצלעות.'}:{t:`שטח: ${M(r.w+' · '+r.h+' = ?')}`,ans:[{label:'',val:S}],why:'בשטח <b>כופלים</b> רוחב · גובה.'}],
   dia:h=>rDia(r,h,h&&ask==='S'?{cells:[r.x1,r.y1,r.x1+r.w,r.y1+r.h]}:{}),
   lines:[`רוחב ${M('AB = '+(r.x1+r.w)+' − '+r.x1+' = '+r.w)} , גובה ${M('BC = '+(r.y1+r.h)+' − '+r.y1+' = '+r.h)}`,ask==='P'?`היקף = סכום כל הצלעות: ${M(r.w+' + '+r.h+' + '+r.w+' + '+r.h+' = '+P)}`:`שטח = רוחב · גובה: ${M(r.w+' · '+r.h+' = '+S)} משבצות`],
   rule:'היקף = סכום הצלעות (הגבול). שטח = רוחב · גובה (המשבצות בפנים).',

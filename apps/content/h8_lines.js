@@ -55,6 +55,9 @@ function gB(e){const m=e?R(1,4):nz(-4,4),b=e?R(1,7):nz(-7,7);
   ans:[{label:'x =',lt:1,col:'#9fb3cc',val:0,neg:true,unit:''},{label:'y =',lt:1,col:OR,val:b,neg:true,unit:''}],
   dia:h=>h?G({lines:[{m,b,col:BL}],pts:[{x:0,y:b,col:OR,lab:Pt(0,b)}],yr:yrFor(b),anim:1}):'',
   lines:[`על ציר ${M('y')} תמיד ${M('x = 0')}.`,`מציבים ${M('x = 0')}: ${M('y = '+N(m)+' · 0'+bs(b)+' = '+N(b))}`,`הנקודה ${M(Pt(0,b))}. זה בדיוק ${C('b',OR)}!`],
+  work:[{t:`על ציר ${M('y')}, מה תמיד ה־${M('x')}?`,ans:[{label:'x =',val:0}],why:`על ציר y לא זזים ימינה או שמאלה ← ${M('x = 0')}.`},
+   {t:`מציבים ${M('x = 0')}: ${M('y = '+N(m)+' · 0'+bs(b)+' = ?')}`,ans:[{label:'y =',val:b}],why:`${M(N(m)+' · 0 = 0')}, אז נשאר רק ${C('b',OR)}: המספר שעומד לבד, עם הסימן שלו.`},
+   {t:`אז הנקודה היא ${M('(x, y)')}. מה כותבים קודם?`,choice:[`קודם x ← ${M(Pt(0,b))}`,`קודם y ← ${M(Pt(b,0))}`],correct:0,why:'בנקודה תמיד כותבים <b>קודם x, אחר כך y</b>.'}],
   rule:'ישר חותך את ציר y בנקודה <span class="m">(0, b)</span>: ה־x הוא 0, וה־y הוא b.',
   diag:({vals:[vx,vy]})=>vx===b&&vy===0?'<b>הפכתם את הסדר!</b> על ציר y ה־x תמיד 0. כותבים קודם x ואחר כך y: <span class="m">(0, b)</span>.':vx!==0?'כל נקודה על ציר y: <b>ה־x שלה 0</b>.':vy===m?`זה ${C('m',BL)}, השיפוע. החיתוך עם ציר y הוא ${C('b',OR)}: המספר שעומד לבד, בלי x.`:vy===-b?`שימו לב לסימן של ${C('b',OR)}: הוא ${M(N(b))}.`:null};}
 function gReadB(){const m=pick([1,2,3,-1,-2,-3]);let b;do b=nz(-5,5);while(b===m);const b3=b>0?b+2:b-2;
@@ -80,6 +83,10 @@ function gXint(ph,e){let r,m;do{r=nz(-5,5);m=e?pick([1,2]):pick([1,2,3,-1,-2,-3]
  return {kind:'חיתוך עם ציר x',rc:5,ask:ph?ASK_F0():ASK_X(),text:ph?`מצאו את הנקודה שבה ${M('f(x) = 0')}, עבור ${EQ(m,b,'f(x)')}.`:`באיזו נקודה הישר ${EQ(m,b)} חותך את ציר ${M('x')}?`,tpl:'( [] , [] )',
   ans:[{label:'x =',lt:1,col:GR,val:r,neg:true,unit:''},{label:'y =',lt:1,col:'#9fb3cc',val:0,neg:true,unit:''}],
   dia:h=>h?G({lines:[{m,b,col:BL}],pts:[{x:r,y:0,col:GR,lab:Pt(r,0),dy:-10},{x:0,y:b,col:OR,d:2.4}],yr:yrFor(b),anim:1}):'',
+  work:[{t:`על ציר ${M('x')}, מה תמיד ה־${M('y')}?`,ans:[{label:'y =',val:0}],why:`על ציר x הגובה הוא 0 ← ${M('y = 0')}.`},
+   {t:`מציבים ${M('y = 0')}: ${M(RHS(m,b)+' = 0')}. מעבירים את ${M(N(b))} לצד השני: ${M(mx(m)+' = ?')}`,ans:[{label:mx(m)+' =',val:-b}],why:`כשמעבירים מספר לצד השני, <b>הסימן שלו מתהפך</b>: ${M(N(b))} ← ${M(N(-b))}.`},
+   ...(m!==1?[{t:`מחלקים ב־${M(par(m))}: ${M('x = '+N(-b)+' : '+par(m)+' = ?')}`,ans:[{label:'x =',val:r}],why:`בחילוק: סימנים שווים ← פלוס, סימנים שונים ← מינוס.`}]:[]),
+   ...(()=>{const o=shuf([[M(Pt(r,0)),1],[M(Pt(0,r)),0]]);return [{t:`הנקודה: קודם x, אחר כך y. מה היא?`,choice:o.map(x=>x[0]),correct:o.findIndex(x=>x[1]),why:`על ציר x הנקודה נראית כך: ${M('(x, 0)')}.`}];})()],
   lines:[`על ציר x תמיד ${M('y = 0')}${ph?` (וזה בדיוק ${M('f(x) = 0')})`:''}. מציבים:`,...st,`הנקודה: ${M(C(Pt(r,0),GR))}`],rule:'ציר x ← מציבים <span class="m">y = 0</span> ופותרים. התשובה: <span class="m">(x, 0)</span>.',
   diag:({vals:[vx,vy]})=>vx===0&&vy===b?'זו נקודת החיתוך עם ציר <b>y</b>. כאן מחפשים את ציר <b>x</b>: מציבים 0 במקום y.':vx===0&&vy===r?'הסדר הפוך: קודם x ואחר כך y.':vy!==0?'על ציר x <b>ה־y תמיד 0</b>: התשובה נראית כך <span class="m">(?, 0)</span>.':vx===b?`${M(N(b))} זה b, החיתוך עם ציר y. כאן פותרים משוואה: ${M(RHS(m,b)+' = 0')}.`:vx===-r?'כמעט! בדקו את הסימן כשמעבירים את b לצד השני.':null};}
 function gMatch(){const L=shuf(['א','ב']),slope=Math.random()<.6;let I,II,rc,rw,dw;
@@ -96,6 +103,9 @@ function gPointOn(){const m=nz(-3,3),b=nz(-6,6),p=nz(-4,4),yv=m*p+b,on=Math.rand
   ans:[{label:'y =',lt:1,col:OR,val:yv,neg:true,unit:''}],choice:['כן, היא על הישר','לא, היא לא על הישר'],correct:on?0:1,choiceLab:'האם הנקודה על הישר?',
   dia:h=>h?G({lines:[{m,b,col:BL}],pts:[{x:p,y:q,col:on?GR:RD,lab:Pt(p,q)}],yr:yrFor(q,b),anim:1}):'',
   lines:[`${M('y = '+N(m)+' · '+par(p)+bs(b)+' = '+N(yv))}`,on?`יצא ${M(N(yv))}, בדיוק כמו בנקודה ← <b>על הישר</b> ✓`:`יצא ${M(N(yv))}, אבל בנקודה ${M('y = '+N(q))} ← <b>לא על הישר</b>.`],
+  work:[{t:`קודם כפל: ${M(N(m)+' · '+par(p)+' = ?')}`,ans:[{label:'',val:m*p}],why:'כפל סימנים: <b>מינוס כפול מינוס = פלוס</b>, מינוס כפול פלוס = מינוס.'},
+   {t:`עכשיו מוסיפים את b: ${M(N(m*p)+bs(b)+' = ?')}`,ans:[{label:'y =',val:yv}],why:`חושבים על ציר המספרים: מתחילים ב־${M(N(m*p))} וזזים ${b>0?'ימינה':'שמאלה'} ${Math.abs(b)}.`},
+   {t:`יצא ${M('y = '+N(yv))}. בנקודה ${M('y = '+N(q))}. מה המסקנה?`,choice:['שווים ← הנקודה על הישר','לא שווים ← הנקודה לא על הישר'],correct:on?0:1,why:'נקודה על הישר <b>רק</b> אם יוצא בדיוק ה־y שלה.'}],
   rule:'נקודה על הישר ← כשמציבים את ה־x שלה, יוצא בדיוק ה־y שלה.',
   diag:({vals:[v]})=>v!==yv?`מציבים: ${M(N(m)+' · '+par(p)+bs(b))}. זהירות: מינוס כפול מינוס זה פלוס.`:null};}
 /* ===== ★★★ הבנה ===== */
@@ -124,6 +134,9 @@ function gMeet(){const o=meetPair(),{a1,a2,x0,y0,b1,b2}=o,d=a1-a2;
  return {kind:'נקודת מפגש',rc:7,ask:ASK_EQ(),text:`${EQf(a1,b1,'f(x)',FC)}<br>${EQf(a2,b2,'g(x)',GC)}<br>מצאו את x שעבורו ${M('f(x) = g(x)')}.`,ans:[{label:'x =',col:PU,val:x0,neg:true,unit:''}],
   dia:h=>h?twoDia(o,1,{pts:[{x:x0,y:y0,col:OR,lab:Pt(x0,y0)}]}):'',
   lines:[`${M('f(x) = g(x)')} ← שני הגרפים באותו גובה ← נקודת המפגש.`,M(C(RHS(a1,b1),FC)+' = '+C(RHS(a2,b2),GC)),M(mx(d)+' = '+N(b2-b1)),...(d!==1?[M('x = '+N(b2-b1)+' : '+par(d)+' = '+N(x0))]:[])],
+  work:[{t:`משווים: ${M(C(RHS(a1,b1),FC)+' = '+C(RHS(a2,b2),GC))}. מעבירים את ה־x לצד שמאל: ${M(N(a1)+' − '+par(a2)+' = ?')}`,ans:[{label:'',val:d}],why:`מעבירים ${M(mx(a2))} לצד שמאל ← <b>הסימן מתהפך</b> ← מחסירים: ${M(N(a1)+' − '+par(a2))}.`},
+   {t:`מעבירים את המספרים לצד ימין: ${M(N(b2)+' − '+par(b1)+' = ?')}`,ans:[{label:'',val:b2-b1}],why:`מעבירים ${M(N(b1))} לצד ימין ← הסימן מתהפך.`},
+   ...(d!==1?[{t:`${M(mx(d)+' = '+N(b2-b1))}. מחלקים: ${M('x = '+N(b2-b1)+' : '+par(d)+' = ?')}`,ans:[{label:'x =',val:x0}],why:'בחילוק: סימנים שווים ← פלוס, סימנים שונים ← מינוס.'}]:[])],
   rule:'<span class="m">f(x) = g(x)</span> ← משווים את שני הביטויים ופותרים. זה ה־x של נקודת המפגש.',
   diag:({vals:[v]})=>v===y0&&y0!==x0?'זה ה־<b>y</b> של נקודת המפגש. השאלה שואלת על <b>x</b>.':v===-x0?'בדקו את הסימן בחילוק.':null};}
 function gAbove(){const o=meetPair(),{a1,a2,x0,y0,b1,b2}=o,d=a1-a2,gt=Math.random()<.6,s=gt?'>':'<',big=(d>0)===gt,T=v=>M('x > '+N(v)),S=v=>M('x < '+N(v)),dv=y0!==x0?y0:-x0;

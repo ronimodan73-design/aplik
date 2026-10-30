@@ -57,16 +57,20 @@ function genEqOrSum(){const t=pick(TYPES),[A,B]=sw(pick(PAIRS[t])),u=uEasy();
  return {kind:'שוות או 180°?',u,A,B,t,text:`<b style="color:${OR}">זווית א</b> ו<b style="color:${BL}">זווית ב</b>:`,marks:[{i:A[0],p:A[1],c:OR,t:'א'},{i:B[0],p:B[1],c:BL,t:'ב'}],
   choice:['שוות זו לזו','סכומן 180°'],correct:EQ(t)?0:1,lines:[`הן ${NAME[t]}: ${HOW[t]}.`,EQ(t)?'ולכן <b>שוות</b>.':'ולכן <b>סכומן 180°</b>.'],rule:'שתי חדות או שתי קהות ← שוות. חדה + קהה ← 180°.',
   diag:()=>`זאת זוג <b>${NAME[t]}</b> (${HOW[t]}). ${EQ(t)?'הן שוות.':'יחד הן קו ישר: 180°.'}`};}
+/* "איפה טעיתי?" */
+const WT=t=>({t:`הזוויות ${NAME[t]}. מה נכון לגביהן?`,choice:['הן שוות','סכומן 180°'],correct:EQ(t)?0:1,why:RULE[t]});
+const WSUB=(a,b,x0,v)=>({t:`מציבים את x בביטוי: ${M(`${a} · ${x0} ${b<0?'−':'+'} ${Math.abs(b)} = ?`)}`,ans:[{label:'',val:v}],why:'קודם כפל, אחר כך חיבור או חיסור. x הוא <b>לא</b> הזווית: מציבים אותו בביטוי.'});
+const WDIV=(a,c,x0)=>({t:`${M(`${a}x = ${c}`)}. מחלקים: ${M(`x = ${c} : ${a} = ?`)}`,ans:[{label:'x =',val:x0}],why:`${M(a+'x')} זה ${M(a+' · x')} ← מחלקים את שני הצדדים ב־${M(a)}.`});
 function genFind(tt){const t=tt||pick(TYPES),[A,B]=sw(pick(PAIRS[t])),u=uEasy(),vA=val(u,A[1]),vB=val(u,B[1]);
  return {kind:'מוצאים זווית',u,A,B,t,text:`<b style="color:${OR}">הזווית הכתומה</b> היא ${M(vA+deg)}. כמה מעלות <b style="color:${BL}">הזווית הכחולה</b>?`,
-  marks:[{i:A[0],p:A[1],c:OR,t:vA+deg},{i:B[0],p:B[1],c:BL,t:'?'}],ans:[{label:'הזווית הכחולה',col:BL,val:vB}],
+  marks:[{i:A[0],p:A[1],c:OR,t:vA+deg},{i:B[0],p:B[1],c:BL,t:'?'}],ans:[{label:'הזווית הכחולה',col:BL,val:vB}],work:[WT(t),...(EQ(t)?[]:[{t:`${M('180° − '+vA+'° = ?')}`,ans:[{label:'',val:vB}],why:'צמודות יחד הן קו ישר: מחסירים מ־180.'}])],
   lines:[`הזוויות ${NAME[t]}: ${HOW[t]}.`,EQ(t)?`ולכן שוות: ${M(vB+deg)}`:`ולכן ${M('180° − '+vA+'° = '+vB+'°')}`],rule:RULE[t],
   diag:({vals:[x]})=>EQ(t)&&x===180-vA?`הזוויות ${NAME[t]} <b>שוות</b>. לא מחסירים מ־180.`:(!EQ(t)&&x===vA?'זוויות צמודות <b>אינן שוות</b>. יחד הן קו ישר: '+M('180° − '+vA):null)};}
 function reasonQ(q,t){q.choice=[REASON.corr,REASON.alt,REASON.vert,REASON.adj];q.correct=['corr','alt','vert','adj'].indexOf(t);q.choiceLab='הנימוק:';return q;}
 function genVar1(withR){const t=pick(TYPES),[A,B]=sw(pick(PAIRS[t])),u=uAny(),vA=val(u,A[1]),vB=val(u,B[1]),x0=R(6,25),[a,b]=mkExpr(vA,x0);
  const eqs=EQ(t)?`${ex(a,b)} = ${vB}`:`${ex(a,b)} + ${vB} = 180`;
  const q={kind:'משתנה אחד',u,A,B,t,text:`מצאו את x ואת <b style="color:${OR}">הזווית הכתומה</b>.`,
-  marks:[{i:A[0],p:A[1],c:OR,t:ex(a,b)},{i:B[0],p:B[1],c:BL,t:vB+deg}],ans:[{label:'x =',col:PU,val:x0},{label:'הזווית הכתומה',col:OR,val:vA}],
+  marks:[{i:A[0],p:A[1],c:OR,t:ex(a,b)},{i:B[0],p:B[1],c:BL,t:vB+deg}],ans:[{label:'x =',col:PU,val:x0},{label:'הזווית הכתומה',col:OR,val:vA}],work:[WT(t),{t:`המשוואה: ${M(eqs)}. מעבירים את המספרים לצד ימין: ${M(a+'x = ?')}`,ans:[{label:'',val:EQ(t)?vB-b:180-vB-b}],why:'כשמעבירים מספר לצד השני, <b>הסימן מתהפך</b>.'},WDIV(a,EQ(t)?vB-b:180-vB-b,x0),WSUB(a,b,x0,vA)],
   lines:[`הזוויות ${NAME[t]} ← ${EQ(t)?'שוות':'סכומן 180°'}`,M(eqs),M(`${a}x = ${EQ(t)?vB-b:180-vB-b}`)+' ← '+M('x = '+x0),`מציבים: ${M(`${a} · ${x0} ${b<0?'−':'+'} ${Math.abs(b)} = ${vA}°`)}`],rule:RULE[t],
   diag:({vals:[x,y]})=>{if(x===x0&&y!==vA)return 'את x מצאתם! עכשיו <b>מציבים</b> את x בביטוי '+M(ex(a,b))+'.';
    const xw=EQ(t)?(180-vB-b)/a:(vB-b)/a;if(Math.abs(x-xw)<1e-9)return EQ(t)?'בניתם משוואה של 180, אבל הזוויות <b>'+NAME[t]+'</b> ← <b>שוות</b>.':'השוויתם, אבל הזוויות <b>צמודות</b> ← מחברים ומשווים ל־180.';
@@ -74,10 +78,10 @@ function genVar1(withR){const t=pick(TYPES),[A,B]=sw(pick(PAIRS[t])),u=uAny(),vA
  return withR?reasonQ(q,t):q;}
 function genVar(withR){const t=pick(TYPES),[A,B]=sw(pick(PAIRS[t])),u=uAny(),vA=val(u,A[1]),vB=val(u,B[1]),x0=R(6,22);
  const [a1,b1]=mkExpr(vA,x0),[a2,b2]=mkExpr(vB,x0,EQ(t)?a1:0);
- let l2,l3;if(EQ(t)){const big=a1>a2,ca=Math.abs(a1-a2),cb=big?b2-b1:b1-b2;l2=M(`${ex(a1,b1)} = ${ex(a2,b2)}`);l3=M(`${ca}x = ${cb}`)+' ← '+M('x = '+x0);}
- else{l2=M(`${ex(a1,b1)} + ${ex(a2,b2)} = 180`);l3=M(`${a1+a2}x ${b1+b2<0?'−':'+'} ${Math.abs(b1+b2)} = 180`)+' ← '+M(`${a1+a2}x = ${180-b1-b2}`)+' ← '+M('x = '+x0);}
+ let l2,l3,wk;if(EQ(t)){const big=a1>a2,ca=Math.abs(a1-a2),cb=big?b2-b1:b1-b2;l2=M(`${ex(a1,b1)} = ${ex(a2,b2)}`);l3=M(`${ca}x = ${cb}`)+' ← '+M('x = '+x0);wk=[{t:`המשוואה: ${l2}. מעבירים את ה־x לצד אחד ואת המספרים לצד השני: ${M(ca+'x = ?')}`,ans:[{label:'',val:cb}],why:'מה שמעבירים לצד השני <b>מחליף סימן</b>. מחסירים את ה־x הקטן מהגדול.'},WDIV(ca,cb,x0)];}
+ else{l2=M(`${ex(a1,b1)} + ${ex(a2,b2)} = 180`);l3=M(`${a1+a2}x ${b1+b2<0?'−':'+'} ${Math.abs(b1+b2)} = 180`)+' ← '+M(`${a1+a2}x = ${180-b1-b2}`)+' ← '+M('x = '+x0);wk=[{t:`המשוואה: ${l2}. מכנסים ומעבירים את המספרים: ${M((a1+a2)+'x = ?')}`,ans:[{label:'',val:180-b1-b2}],why:'x עם x, מספר עם מספר. מספר שעובר לצד השני <b>מחליף סימן</b>.'},WDIV(a1+a2,180-b1-b2,x0)];}
  const q={kind:'שני ביטויים',u,A,B,t,text:`מצאו את x ואת <b style="color:${OR}">הזווית הכתומה</b>.`,
-  marks:[{i:A[0],p:A[1],c:OR,t:ex(a1,b1)},{i:B[0],p:B[1],c:BL,t:ex(a2,b2)}],ans:[{label:'x =',col:PU,val:x0},{label:'הזווית הכתומה',col:OR,val:vA}],
+  marks:[{i:A[0],p:A[1],c:OR,t:ex(a1,b1)},{i:B[0],p:B[1],c:BL,t:ex(a2,b2)}],ans:[{label:'x =',col:PU,val:x0},{label:'הזווית הכתומה',col:OR,val:vA}],work:[WT(t),...wk,WSUB(a1,b1,x0,vA)],
   lines:[`הזוויות ${NAME[t]} ← ${EQ(t)?'שוות':'סכומן 180°'}`,l2,l3,`מציבים: ${M(`${a1} · ${x0} ${b1<0?'−':'+'} ${Math.abs(b1)} = ${vA}°`)}`],rule:RULE[t],
   diag:({vals:[x,y]})=>{if(x===x0&&y!==vA)return 'את x מצאתם! עכשיו <b>מציבים</b> אותו בביטוי הכתום '+M(ex(a1,b1))+'.';
    if(y===x0)return 'x הוא לא גודל הזווית. מציבים את x בביטוי '+M(ex(a1,b1))+'.';

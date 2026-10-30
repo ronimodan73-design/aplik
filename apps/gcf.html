@@ -88,23 +88,31 @@ p{font-size:19px;line-height:1.55;margin:0}
 .legend{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;font-size:15px}.legend span{border-radius:99px;padding:3px 10px;font-weight:700}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv,.drawl{opacity:1;stroke-dashoffset:0}}
 @media (max-width:560px){.tin{width:56px!important;font-size:22px!important;padding:6px 2px!important}.inputs.tpl{font-size:24px;gap:3px}.levels,.hero{grid-template-columns:1fr}.qtext{font-size:20px}.card{padding:14px}.btns .btn{padding:11px 16px;font-size:18px}.lvrow .nm{width:112px;font-size:15px}.say{font-size:18px}.inp input{width:104px}}
-.spbtn{position:fixed;left:14px;bottom:14px;z-index:60;background:var(--acc);color:#14213a;border:0;border-radius:999px;padding:12px 18px;font:800 18px Heebo,Rubik,sans-serif;box-shadow:0 6px 18px #0008;cursor:pointer}
+.wk{margin-top:14px;border:2px dashed var(--blue);border-radius:14px;padding:12px 14px;background:#5ec8ff10}
+.wkh{font-weight:800;color:var(--blue);margin-bottom:8px;font-size:19px}
+.wks{border-radius:10px;padding:9px 12px;margin:7px 0;background:var(--chip);font-size:18px;line-height:1.6}
+.wks.ok{border-right:5px solid var(--ok)}.wks.ok .wv{color:var(--ok);font-weight:800}
+.wks.here{border:2px solid var(--red);background:#ff7a8a1c}.wks.cur{border:2px solid var(--blue)}
+.wkpin{color:var(--red);font-weight:900}.wkwhy{margin-top:6px;color:var(--ink)}
+.wks .inp input{width:100px;font-size:22px;padding:6px}
+.wkc{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.wkc button{background:#0b1626;color:var(--ink);border:2px solid var(--line);border-radius:10px;padding:8px 12px;font:600 17px Heebo,sans-serif;cursor:pointer}.wkc button.sel{border-color:var(--acc)}
+.wkdone{margin-top:8px;font-weight:800;color:var(--ok)}
+.top .spbtn{background:var(--acc);color:#14213a;border:0;font-weight:800}
 .sp{position:fixed;left:0;right:0;bottom:0;height:62vh;z-index:70;background:#0b1626;border-top:3px solid var(--acc);border-radius:18px 18px 0 0;display:flex;flex-direction:column;box-shadow:0 -10px 30px #000a}
 .sp[hidden]{display:none}.sptools{display:flex;gap:6px;align-items:center;padding:8px 10px;flex-wrap:wrap;direction:rtl}
 .sptools b{font-size:17px;margin-left:auto}.sptools button{background:var(--chip);color:var(--ink);border:2px solid var(--line);border-radius:10px;min-width:40px;height:42px;font:700 17px Heebo,sans-serif;cursor:pointer;padding:0 6px}
 .sptools button.on{border-color:var(--acc);background:#2a3b57}.sptools .dot{width:22px;height:22px;border-radius:50%;display:inline-block;vertical-align:middle}
 .spwrap{flex:1;position:relative;margin:0 8px 8px;border-radius:12px;overflow:hidden;background-color:#0f2036;background-image:linear-gradient(#22395a 1px,transparent 1px),linear-gradient(90deg,#22395a 1px,transparent 1px);background-size:28px 28px}
 .spwrap canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair}
-.app{padding-bottom:70px}body.spopen .app{padding-bottom:62vh}
+body.spopen .app{padding-bottom:62vh}
 @media print{.spbtn,.sp{display:none!important}}
 </style></head>
 <body>
 <div class="app">
- <div class="top"><b>הוצאת גורם משותף</b><span id="sc"></span><button id="home" type="button">תפריט</button></div>
+ <div class="top"><b>הוצאת גורם משותף</b><span id="sc"></span><button id="spb" class="spbtn" type="button" aria-label="פתיחת דף טיוטה">✏️ טיוטה</button><button id="home" type="button">תפריט</button></div>
  <div id="view"></div>
  <div class="foot"><b>ערכה: רוני מודן · שחקים</b> · © כל הזכויות שמורות</div>
 </div>
-<button class="spbtn" id="spb" type="button" aria-label="פתיחת דף טיוטה">✏️ טיוטה</button>
 <div class="sp" id="sp" hidden role="dialog" aria-label="דף טיוטה"><div class="sptools"><button type="button" id="spx" aria-label="סגירת הטיוטה" style="margin-left:auto">✖ סגירה</button>
  <button type="button" data-pc="#f3f6fb" class="on" aria-label="עט לבן"><span class="dot" style="background:#f3f6fb"></span></button>
  <button type="button" data-pc="#ffb020" aria-label="עט כתום"><span class="dot" style="background:#ffb020"></span></button>
@@ -142,21 +150,24 @@ const RU={gcd:'הגורם המשותף הגדול ביותר: המספר הגד�
 function pair(){let a,b;do{a=R(1,7);b=R(1,9);}while(a===b||gcd(a,b)!==1);return [a,b];}
 const divLines=(ts,F)=>{const fs=mono(F[0],F[1]);return [`הגורם המשותף: <b style="color:${RD}">${M(fs)}</b>`,...ts.map((t,i)=>`<b style="color:${COLS[i]}">${M(mono(t[0],t[1])+' : '+fs+' = '+mono(t[0]/F[0],t[1]-F[1]))}</b>`),`תשובה: ${M(fs+'('+expr(ts.map(([c,p])=>[c/F[0],p-F[1]]))+')')}`];};
 /* ★ */
+/* "איפה טעיתי?": מוצאים גורם, ואז מחלקים כל איבר */
+const WG=(ts,F,find)=>[...(find?[{t:`מהו המספר הגדול ביותר שמחלק את ${M(Math.abs(ts[0][0]))} וגם את ${M(Math.abs(ts[1][0]))}?`,ans:[{label:'',val:Math.abs(F[0])}],why:'עוברים על לוח הכפל: מה המספר <b>הגדול ביותר</b> שנכנס בשניהם בלי שארית?'}]:[]),
+ ...ts.map(([c,p],i)=>({t:`מחלקים את האיבר ${['הראשון','השני','השלישי'][i]}: ${M(mono(c,p)+' : '+mono(F[0],F[1])+' = ?')} <small>(${p-F[1]?'המספר שלפני x':'רק המספר'})</small>`,ans:[{label:'',val:c/F[0]}],why:(c<0)!==(F[0]<0)?'סימנים שונים בחילוק ← התוצאה <b>שלילית</b>.':c===F[0]?'איבר שמתחלק בעצמו ← נשאר <b>1</b>, לא 0!':'מחלקים <b>כל</b> איבר בגורם. בדקו בלוח הכפל.'}))];
 function gNum(){const g=R(2,7),[a,b]=pair(),ts=[[g*a,1],[g*b,0]];
  return {kind:'מוצאים את הגורם המשותף',dia:h=>gHtml(ts,[g,0],h?{div:1,res:1,anim:1,d:.3}:{}),text:`מהו <b style="color:${RD}">הגורם המשותף הגדול ביותר</b> של ${M(expr(ts))}?`,ans:[{label:'הגורם',col:RD,val:g}],
   lines:[`המספרים: ${M(g*a)} ו־${M(g*b)}.`,`המספר הגדול ביותר שמחלק את שניהם: <b style="color:${RD}">${M(g)}</b>`],rule:RU.gcd,
   diag:({vals:[v]})=>v>1&&g%v===0&&v<g?M(v)+' הוא גורם משותף, אבל <b>לא הגדול ביותר</b>. נסו מספר גדול יותר.':((g*a)%v||(g*b)%v)?M(v)+' לא מחלק את שני המספרים.':null};}
 function gPick(){const g=R(2,6),[a,b]=pair(),ts=[[g*a,1],[g*b,0]],good=`${g}(${expr([[a,1],[b,0]])})`;
  const opts=[good];[`${g}(${expr([[a,1],[g*b,0]])})`,`${g}(${expr([[g*a,1],[b,0]])})`,`${g*a}(x + ${b})`,`${g}(${a}x)`].forEach(o=>{if(!opts.includes(o)&&opts.length<4)opts.push(o);});const o2=shuf(opts);
- return {kind:'מפרקים לגורמים',dia:h=>gHtml(ts,[g,0],h?{div:1,res:1,anim:1,d:.3}:{}),text:`הוציאו גורם משותף: ${M(expr(ts))}`,choice:o2.map(M),correct:o2.indexOf(good),lines:divLines(ts,[g,0]),rule:RU.div,
+ return {kind:'מפרקים לגורמים',dia:h=>gHtml(ts,[g,0],h?{div:1,res:1,anim:1,d:.3}:{}),text:`הוציאו גורם משותף: ${M(expr(ts))}`,choice:o2.map(M),correct:o2.indexOf(good),work:WG(ts,[g,0],1),lines:divLines(ts,[g,0]),rule:RU.div,
   diag:()=>'מחלקים <b>כל</b> איבר בגורם המשותף, ובודקים בפילוג.'};}
 /* ★★ */
 function gFill(){const g=R(2,8),[a,b0]=pair(),b=Math.random()<.7?b0:-b0,ts=[[g*a,1],[g*b,0]];
  return {kind:'כותבים את הפירוק',dia:h=>gHtml(ts,[g,0],h?{div:1,res:1,anim:1,d:.3}:{}),text:'הוציאו גורם משותף (הגדול ביותר). את המספר האחרון כתבו עם הסימן שלו.',tpl:'[] ( [] x &nbsp; [] )',
-  ans:[{label:'הגורם',col:RD,val:g},{label:'מקדם x',col:BL,val:a},{label:'המספר',col:OR,val:b,neg:true}],lines:divLines(ts,[g,0]),rule:RU.div,
+  ans:[{label:'הגורם',col:RD,val:g},{label:'מקדם x',col:BL,val:a},{label:'המספר',col:OR,val:b,neg:true}],work:WG(ts,[g,0],1),lines:divLines(ts,[g,0]),rule:RU.div,
   diag:({vals:[F,p,q]})=>F===g&&p===g*a?'את '+M(g*a+'x')+' צריך <b>לחלק</b> ב־'+M(g)+'. מה יוצא?':F===g&&q===-b?'שמרו על הסימן: '+M(N(g*b)+' : '+g+' = '+N(b))+'.':F>1&&g%F===0&&F<g?'יש גורם משותף <b>גדול יותר</b> מ־'+M(F)+'.':null};}
 function gOne(){const g=R(2,9),a=R(2,6),ts=[[g*a,1],[g,0]];
- return {kind:'כשנשאר 1',dia:h=>gHtml(ts,[g,0],h?{div:1,res:1,anim:1,d:.3}:{}),text:`השלימו: ${M(expr(ts)+' = '+g+'(  x +  )')}`,tpl:`${g} ( [] x + [] )`,ans:[{label:'מקדם x',col:BL,val:a},{label:'המספר',col:OR,val:1}],lines:divLines(ts,[g,0]),rule:RU.one,
+ return {kind:'כשנשאר 1',dia:h=>gHtml(ts,[g,0],h?{div:1,res:1,anim:1,d:.3}:{}),text:`השלימו: ${M(expr(ts)+' = '+g+'(  x +  )')}`,tpl:`${g} ( [] x + [] )`,ans:[{label:'מקדם x',col:BL,val:a},{label:'המספר',col:OR,val:1}],work:WG(ts,[g,0]),lines:divLines(ts,[g,0]),rule:RU.one,
   diag:({vals:[p,q]})=>q===0?M(g+' : '+g+' = 1')+'. איבר שמתחלק בעצמו ← נשאר <b>1</b>, לא 0!':p===g*a?'מחלקים גם את '+M(g*a+'x')+' ב־'+M(g)+'.':null};}
 /* ★★★ */
 function gX(){const ts=Math.random()<.5?[[1,2],[R(2,9)*(Math.random()<.7?1:-1),1]]:[[1,3],[R(2,9),2]];const F=[1,ts[1][1]];
@@ -165,14 +176,14 @@ function gX(){const ts=Math.random()<.5?[[1,2],[R(2,9)*(Math.random()<.7?1:-1),1
  return {kind:'x הוא הגורם',dia:()=>gHtml(ts,F),text:`הוציאו גורם משותף: ${M(expr(ts))}`,choice:o2.map(M),correct:o2.indexOf(good),lines:divLines(ts,F),rule:RU.x,diag:()=>'בכל איבר יש x. מחלקים כל איבר ב־'+M(mono(1,F[1]))+'.'};}
 function gNX(){const g=R(2,6),[a,b0]=pair(),b=Math.random()<.75?b0:-b0,ts=[[g*a,2],[g*b,1]];
  return {kind:'מספר וגם x',dia:h=>gHtml(ts,[g,1],h?{div:1,res:1,anim:1,d:.3}:{}),text:'הוציאו את הגורם המשותף הגדול ביותר (מספר וגם x).',tpl:'[] x ( [] x &nbsp; [] )',
-  ans:[{label:'מספר בגורם',col:RD,val:g},{label:'מקדם x',col:BL,val:a},{label:'המספר',col:OR,val:b,neg:true}],lines:divLines(ts,[g,1]),rule:RU.x+' '+RU.div,
+  ans:[{label:'מספר בגורם',col:RD,val:g},{label:'מקדם x',col:BL,val:a},{label:'המספר',col:OR,val:b,neg:true}],work:WG(ts,[g,1],1),lines:divLines(ts,[g,1]),rule:RU.x+' '+RU.div,
   diag:({vals:[F,p,q]})=>F===g&&p===g*a?'מחלקים את '+M(mono(g*a,2))+' ב־'+M(g+'x')+': יוצא '+M(a+'x')+'.':F<g&&g%F===0?'יש מספר משותף <b>גדול יותר</b>.':null};}
 function gOneX(){const g=R(2,7),a=R(2,6),ts=[[g*a,2],[g,1]];
- return {kind:'נשאר 1 גם עם x',dia:h=>gHtml(ts,[g,1],h?{div:1,res:1,anim:1,d:.3}:{}),text:`השלימו: ${M(expr(ts)+' = '+g+'x(  x +  )')}`,tpl:`${g}x ( [] x + [] )`,ans:[{label:'מקדם x',col:BL,val:a},{label:'המספר',col:OR,val:1}],lines:divLines(ts,[g,1]),rule:RU.one,
+ return {kind:'נשאר 1 גם עם x',dia:h=>gHtml(ts,[g,1],h?{div:1,res:1,anim:1,d:.3}:{}),text:`השלימו: ${M(expr(ts)+' = '+g+'x(  x +  )')}`,tpl:`${g}x ( [] x + [] )`,ans:[{label:'מקדם x',col:BL,val:a},{label:'המספר',col:OR,val:1}],work:WG(ts,[g,1]),lines:divLines(ts,[g,1]),rule:RU.one,
   diag:({vals:[p,q]})=>q===0||q===g?M(g+'x : '+g+'x = 1')+'. נשאר <b>1</b>!':null};}
 /* ★★★★ */
 function gNeg(){const g=R(2,6),[a,b]=pair(),ts=[[-g*a,1],[-g*b,0]],good=`−${g}(${expr([[a,1],[b,0]])})`;const opts=shuf([good,`−${g}(${expr([[a,1],[-b,0]])})`,`${g}(${expr([[-a,1],[b,0]])})`,`−${g}(${expr([[-a,1],[-b,0]])})`]);
- return {kind:'גורם שלילי',dia:h=>gHtml(ts,[-g,0],h?{div:1,res:1,anim:1,d:.3}:{}),text:`הוציאו את ${M('−'+g)} כגורם משותף: ${M(expr(ts))}`,choice:opts.map(M),correct:opts.indexOf(good),lines:divLines(ts,[-g,0]),rule:'מחלקים במספר שלילי: מינוס חלקי מינוס = פלוס.',diag:()=>'חלקו כל איבר ב־'+M('−'+g)+'. מינוס חלקי מינוס = <b>פלוס</b>.'};}
+ return {kind:'גורם שלילי',dia:h=>gHtml(ts,[-g,0],h?{div:1,res:1,anim:1,d:.3}:{}),text:`הוציאו את ${M('−'+g)} כגורם משותף: ${M(expr(ts))}`,choice:opts.map(M),correct:opts.indexOf(good),work:WG(ts,[-g,0]),lines:divLines(ts,[-g,0]),rule:'מחלקים במספר שלילי: מינוס חלקי מינוס = פלוס.',diag:()=>'חלקו כל איבר ב־'+M('−'+g)+'. מינוס חלקי מינוס = <b>פלוס</b>.'};}
 function gFull(){const g=R(2,4),h=R(2,3),[a,b]=pair(),ts=[[g*h*a,1],[g*h*b,0]],full=Math.random()<.5;const shown=full?`${g*h}(${expr([[a,1],[b,0]])})`:`${g}(${expr([[h*a,1],[h*b,0]])})`;
  return {kind:'האם הפירוק מלא?',dia:h=>gHtml(ts,[g*h,0],h?{div:1,res:1,anim:1,d:.3}:{}),text:`תלמיד כתב: ${M(expr(ts)+' = '+shown)}. האם הוציא את הגורם המשותף <b>הגדול ביותר</b>?`,
   choice:['כן, בתוך הסוגריים אין יותר גורם משותף','לא, בתוך הסוגריים יש עוד גורם משותף','לא, הפירוק לא נכון בכלל'],correct:full?0:1,
@@ -220,7 +231,7 @@ function menu(){$('#sc').textContent='';const tl=store.get('test');
  $('#go-recap').onclick=()=>recap(0);$('#go-test').onclick=testIntro;V.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>start(+b.dataset.l));}
 function start(l){const L=LEVELS[l];S={mode:'lv',l,i:0,score:0,n:TOTAL,streak:0};
  if(L.ladder){const list=[],meta=[];L.ladder.forEach(e=>{for(let k=0;k<e.n;k++){list.push(e.g);meta.push(e);}});S.list=list;S.meta=meta;S.n=list.length;}next();}
-function next(){if(S.q)S.i++;if(S.i>=S.n)return S.mode==='test'?endTest():S.mode==='warm'?endWarm():S.mode==='chk'?endChk():end();S.q=S.list?S.list[S.i]():LEVELS[S.l].g();S.tries=0;S.done=false;S.si=0;S.stepNext=false;S.chainBad=false;S.askTries=0;
+function next(){if(S.q)S.i++;if(S.i>=S.n)return S.mode==='test'?endTest():S.mode==='warm'?endWarm():S.mode==='chk'?endChk():end();S.q=S.list?S.list[S.i]():LEVELS[S.l].g();S.tries=0;S.done=false;S.si=0;S.wkOpen=false;S.stepNext=false;S.chainBad=false;S.askTries=0;
  const me=S.meta?S.meta[S.i]:null;S.ph=me?(me.h||0):S.mode==='warm'||S.mode==='chk'?1:0;S.askDone=!S.q.ask||S.mode==='test'||S.mode==='chk'||(me&&me.a===0);draw();}
 const curQ=()=>S.q.steps?S.q.steps[S.si]:S.q;
 function hintHtml(c){const H=c.hint||c.rule;if(!H||S.mode==='test'||!S.ph)return '';return S.ph>=2?`<div class="hint">💡 ${H}</div>`:`<button class="btn sec mini" id="hb" type="button">💡 רמז</button><div class="hint" id="hint" hidden>${H}</div>`;}
@@ -250,9 +261,9 @@ function draw(){if(!S.askDone)return drawAsk();const q=S.q,c=curQ(),T=S.mode==='
  <div class="btns"><button class="btn main" id="chk" type="button">${T?'שמירת התשובה':'בדיקה'}</button>${T?'':'<button class="btn sec" id="show" type="button">הראו לי</button>'}</div>
  <div class="fb" id="fb" role="status" aria-live="polite"></div><div class="sol" id="sol"></div></div>`;
  bindChoices(T);if($('#hb'))$('#hb').onclick=()=>{$('#hint').hidden=false;$('#hb').remove();};
- V.querySelectorAll('input').forEach(x=>x.onkeydown=e=>{if(e.key==='Enter')$('#chk').click();});
- $('#chk').onclick=()=>{if(S.stepNext){S.stepNext=false;S.si++;S.tries=0;return draw();}if(S.done)return next();check(c);};if($('#show'))$('#show').onclick=()=>solve(c);}
-function check(q){const fb=$('#fb');const ins=[...V.querySelectorAll('input')];
+ V.querySelectorAll('input:not(.wkin)').forEach(x=>x.onkeydown=e=>{if(e.key==='Enter')$('#chk').click();});
+ $('#chk').onclick=()=>{if(S.stepNext){S.stepNext=false;S.si++;S.tries=0;S.wkOpen=false;return draw();}if(S.done)return next();check(c);};if($('#show'))$('#show').onclick=()=>solve(c);}
+function check(q){const fb=$('#fb');const ins=[...V.querySelectorAll('input:not(.wkin)')];
  const vals=ins.map(x=>parseFloat(x.value.replace(',','.').replace(/[−–]/g,'-').replace(/\s/g,'')));
  if(q.ans&&vals.some(isNaN)){fb.className='fb no';fb.innerHTML='מלאו את כל התשובות.';return;}
  if(q.choice&&S.sel<0){fb.className='fb no';fb.innerHTML=q.ans?'בחרו גם נימוק.':'בחרו תשובה.';return;}
@@ -267,7 +278,33 @@ function check(q){const fb=$('#fb');const ins=[...V.querySelectorAll('input')];
  if(okIn&&!okCh&&q.ans)msg='החישוב נכון! אבל <b>הנימוק</b> לא מתאים. רמז: '+q.rule;
  if(!msg)msg=S.mode==='warm'?'רמז: '+q.rule:'רמז: '+q.rule;
  if(S.mode==='chk'){if(S.tries===1&&S.extra<2&&!S.q.fx){S.q.fx=1;S.extra++;S.list.push(S.gen);S.n++;}msg+=`<div class="what" style="margin-top:8px"><b>זוכרים מההסבר:</b> ${RECAP[S.card].what}</div>`;}
- fb.className='fb no pop';fb.innerHTML=`<b>כמעט!</b> ${msg} ${S.tries>=2?'<br>לחצו על <b>"הראו לי"</b> כדי לראות את הפתרון.'+(rcBtn(q)?'<br>'+rcBtn(q):''):' נסו שוב.'}`;bindRc();}
+ fb.className='fb no pop';fb.innerHTML=`<b>כמעט!</b> ${msg} ${S.tries>=2?'<br>לחצו על <b>"הראו לי"</b> כדי לראות את הפתרון.'+(rcBtn(q)?'<br>'+rcBtn(q):''):' נסו שוב.'}`;if(q.work&&!S.wkOpen){fb.insertAdjacentHTML('beforeend','<div class="btns" style="margin-top:10px"><button class="btn sec" id="wkb" type="button">🔍 איפה טעיתי? בודקים שלב אחרי שלב</button></div>');$('#wkb').onclick=()=>workOpen(q);}bindRc();}
+/* ===== "איפה טעיתי?": פירוק לשלבים ובדיקת כל שלב ===== */
+const numv=x=>parseFloat(String(x).replace(',','.').replace(/[−–]/g,'-').replace(/\s/g,''));
+function workOpen(q){S.wkOpen=true;S.wk={i:0,t:0,q};const b=$('#wkb');if(b)b.parentNode.remove();
+ let box=$('#wk');if(!box){box=document.createElement('div');box.id='wk';box.className='wk';$('#sol').before(box);}workDraw();box.scrollIntoView({behavior:'smooth',block:'start'});}
+function workDraw(){const W=S.wk,q=W.q,box=$('#wk');if(!box)return;const val=st=>st.ans?st.ans.map(a=>M(N0(a.val))).join(' , '):st.choice[st.correct];
+ box.innerHTML=`<div class="wkh">🔍 פותרים יחד, שלב אחרי שלב (החישוב בטיוטה ✏️)</div>`+q.work.map((st,k)=>{
+  if(k<W.i)return `<div class="wks ok">✓ ${st.t} ← <span class="wv">${val(st)}</span></div>`;
+  if(k>W.i)return '';
+  return `<div class="wks ${W.bad?'here':'cur'}">${W.bad?'<div class="wkpin">📍 כאן הטעות!</div>':''}<div>${st.t}</div>
+   ${st.ans?`<div class="inputs">${st.ans.map((a,i)=>`<label class="inp"><span>${a.label?M(a.label):''}</span><input class="wkin" inputmode="text" data-w="${i}" aria-label="${a.label||'תשובה'}"></label>`).join('')}</div>`:''}
+   ${st.choice?`<div class="wkc">${st.choice.map((c,i)=>`<button type="button" data-wc="${i}">${c}</button>`).join('')}</div>`:''}
+   ${W.bad?`<div class="wkwhy">💡 ${st.why||q.rule}</div>`:''}${W.show?`<div class="wkwhy">התשובה בשלב הזה: <b>${val(st)}</b></div>`:''}
+   <div class="btns"><button class="btn main mini" id="wkc" type="button">${W.show?'הבנתי, הלאה ←':'בדיקת השלב'}</button></div></div>`;}).join('')+
+  (W.i>=q.work.length?`<div class="wkdone">✓ עברנו על כל השלבים! עכשיו תקנו את התשובה למעלה ולחצו "בדיקה".</div>`:'');
+ box.querySelectorAll('[data-wc]').forEach(b=>b.onclick=()=>{box.querySelectorAll('[data-wc]').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');W.sel=+b.dataset.wc;});
+ box.querySelectorAll('.wkin').forEach(x=>x.onkeydown=e=>{if(e.key==='Enter')$('#wkc').click();});
+ if($('#wkc'))$('#wkc').onclick=workCheck;}
+function workCheck(){const W=S.wk,st=W.q.work[W.i];
+ if(W.show){W.i++;W.t=0;W.bad=false;W.show=false;W.sel=-1;return workDraw();}
+ const ins=[...$('#wk').querySelectorAll('.wkin')],vals=ins.map(x=>numv(x.value));
+ if(st.ans&&vals.some(isNaN))return;if(st.choice&&(W.sel==null||W.sel<0))return;
+ const ok=(!st.ans||vals.every((v,i)=>Math.abs(v-st.ans[i].val)<1e-9))&&(!st.choice||W.sel===st.correct);
+ if(ok){W.i++;W.t=0;W.bad=false;W.sel=-1;W.last=null;return workDraw();}
+ W.t++;W.bad=true;W.last={vals:ins.map(x=>x.value),sel:W.sel};if(W.t>=2)W.show=true;workDraw();
+ if(!W.show){const L=W.last;$('#wk').querySelectorAll('.wkin').forEach((x,i)=>{x.value=L.vals[i]||'';x.classList.add('bad');});if(L.sel!=null&&L.sel>=0){const b=$('#wk').querySelector(`[data-wc="${L.sel}"]`);if(b){b.classList.add('sel');b.style.borderColor='var(--red)';}W.sel=-1;}}}
+const N0=v=>v<0?'−'+(-v):''+v;
 function solve(q){const sol=$('#sol');sol.className='sol on';
  sol.innerHTML=`${(()=>{const d=qDia(q,true);return d?`<div class="dia">${d}</div>`:''})()}${q.lines.map(l=>`<div class="sline">${l}</div>`).join('')}<div class="rule sline">${q.rule}</div>`;
  [...sol.querySelectorAll('.sline')].forEach((el,i)=>setTimeout(()=>el.classList.add('show'),500+i*650));

@@ -15,6 +15,14 @@ function eqHtml(st,o={}){const A=o.anim?'rv':'';let h=ECSS+'<div class="eqs">';
   if(s.op)h+=`<span class="op ${A}" style="--d:${d+.45}s">${s.op}</span><span></span><span class="op ${A}" style="--d:${d+.45}s">${s.op}</span>`;
   if(s.nt)h+=`<span class="nt ${A}" style="--d:${d+.45}s">${s.nt}</span>`;});
  return h+'</div>';}
+
+/* "איפה טעיתי?": שלבי הפתרון מתוך שלבי המאזניים */
+function WK(st){const num=r=>{const t=String(r).replace(/[−–]/g,'-').trim();return /^-?\d+(\.\d+)?$/.test(t)?+t:null;},out=[];
+ for(let k=1;k<st.length;k++){const a=st[k-1],b=st[k],v=num(b.R);if(v==null||String(a.R)===String(b.R))continue;
+  const act=a.op?`עושים ${M(a.op)} בשני הצדדים`:(a.nt||'מסדרים');
+  const why=a.nt?a.nt+'. בדקו כל איבר ואת הסימן שלו.':/^:/.test(a.op||'')?'מחלקים את <b>שני</b> הצדדים. בחילוק: סימנים שווים ← פלוס, סימנים שונים ← מינוס.':/^·/.test(a.op||'')?'כופלים את <b>שני</b> הצדדים באותו מספר.':'מה שעושים בצד אחד, עושים <b>גם</b> בצד השני. בדקו את החשבון ואת הסימן.';
+  out.push({t:`${M(a.L+' = '+a.R)}<br>${act}:  ${M(b.L+' = ?')}`,ans:[{label:'',val:v}],why});}
+ return out.length?out:undefined;}
 const D=st=>h=>h?eqHtml(st,{anim:true}):eqHtml([{L:st[0].L,R:st[0].R}]);
 /* balance scale */
 function bal(L,R,o={}){const tilt=o.tilt||0;return `<svg viewBox="0 0 400 190" style="max-width:380px"><polygon points="200,92 176,176 224,176" fill="#2b4466"/><g transform="rotate(${tilt} 200 92)"><line x1="50" y1="92" x2="350" y2="92" stroke="#dfe8f5" stroke-width="6" stroke-linecap="round"/>
@@ -29,7 +37,7 @@ function g1(t){t=t||pick(['add','sub','mul','div']);let L,Rv,x0,a,op,line,diag;
  if(t==='mul'){a=R(2,9);x0=R(1,12);L=a+'x';Rv=a*x0;op=': '+a;line=`${M(a+'x')} זה ${M(a+' · x')}. מבטלים את הכפל: <b>מחלקים</b> ב־${M(a)}.`;diag=v=>v===Rv-a?'<b>חיסרתם</b>. בין '+M(a)+' ל־x יש <b>כפל</b> ← מחלקים.':v===Rv*a?'<b>כפלתם</b>. ההפך מכפל הוא <b>חילוק</b>.':null;}
  if(t==='div'){a=R(2,6);const k=R(1,9);x0=a*k;L=FRh('x',a);Rv=k;op='· '+a;line=`x מחולק ב־${M(a)}. מבטלים את החילוק: <b>כופלים</b> ב־${M(a)}.`;diag=v=>v===k/a||v===k-a?'ההפך מחילוק הוא <b>כפל</b>: '+M(k+' · '+a)+'.':null;}
  const st=[{L,R:''+Rv,op},{L:'x',R:''+x0}];
- return {kind:'צעד אחד',dia:D(st),text:'מצאו את x.',ans:[{label:'x =',col:PU,val:x0}],lines:[line,`${M('x = '+x0)}`],rule:'פעולה הפוכה: חיבור ↔ חיסור, כפל ↔ חילוק. מה שעושים בצד אחד עושים גם בשני.',diag:({vals:[v]})=>diag(v)};}
+ return {kind:'צעד אחד',dia:D(st),work:WK(st),text:'מצאו את x.',ans:[{label:'x =',col:PU,val:x0}],lines:[line,`${M('x = '+x0)}`],rule:'פעולה הפוכה: חיבור ↔ חיסור, כפל ↔ חילוק. מה שעושים בצד אחד עושים גם בשני.',diag:({vals:[v]})=>diag(v)};}
 function gCheck(){const a=R(2,6),b=R(1,12),x0=R(1,9),c=a*x0+b,k=Math.random()<.5?x0:x0+pick([1,-1]),ok=k===x0,lv=a*k+b;
  return {kind:'האם זה פתרון?',dia:D([{L:lin(a,b),R:''+c}]),text:`האם ${M('x = '+k)} הוא פתרון של המשוואה?`,choice:[`כן, כי ${M(a+' · '+k+' + '+b+' = '+c)}`,`לא, כי ${M(a+' · '+k+' + '+b+' = '+lv)} ולא ${M(c)}`],correct:ok?0:1,
   lines:[`מציבים ${M('x = '+k)}: ${M(a+' · '+k+' + '+b+' = '+lv)}`,ok?`${M(lv+' = '+c)} ← <b>כן</b>, פתרון.`:`${M(lv+' ≠ '+c)} ← <b>לא</b> פתרון.`],rule:'פתרון = מספר שאחרי ההצבה שני הצדדים שווים.',diag:()=>'הציבו את המספר במקום x וחשבו את הצד השמאלי.'};}
@@ -38,25 +46,25 @@ function g2(t){t=t==null?R(0,3):t;const a=R(2,6);let x0=R(1,10),b=R(1,15),L,c,st
  if(t===3){const k=R(1,8);x0=a*k;c=k+b;L=FRh('x',a)+' + '+b;st=[{L,R:''+c,op:'− '+b},{L:FRh('x',a),R:''+k,op:'· '+a},{L:'x',R:''+x0}];l1=`מחסירים ${M(b)}, ואז כופלים ב־${M(a)}.`;}
  else{if(t===1){x0=R(Math.ceil((b+1)/a),12);}c=t===1?a*x0-b:a*x0+b;L=t===0?lin(a,b):t===1?lin(a,-b):b+' + '+a+'x';const bb=t===1?-b:b;
   st=[{L,R:''+c,op:opS(bb)},{L:a+'x',R:''+(c-bb),op:': '+a},{L:'x',R:''+x0}];l1=`קודם מבטלים את ${M((bb<0?'− ':'+ ')+Math.abs(bb))}, ואז מחלקים ב־${M(a)}.`;}
- return {kind:'שני צעדים',dia:D(st),text:'מצאו את x.',ans:[{label:'x =',col:PU,val:x0}],lines:[l1,`${M('x = '+x0)}`],rule:'שני צעדים: קודם מבטלים חיבור/חיסור, אחר כך כפל/חילוק.',
+ return {kind:'שני צעדים',dia:D(st),work:WK(st),text:'מצאו את x.',ans:[{label:'x =',col:PU,val:x0}],lines:[l1,`${M('x = '+x0)}`],rule:'שני צעדים: קודם מבטלים חיבור/חיסור, אחר כך כפל/חילוק.',
   diag:({vals:[v]})=>t<3&&v===a*x0?'שכחתם את הצעד השני: <b>לחלק</b> ב־'+M(a)+'.':t<3&&v===c/a-b?'קודם מבטלים את החיבור/החיסור, <b>ואחר כך</b> מחלקים.':t===0&&v===(c+b)/a?'מבטלים '+M('+ '+b)+' בחיסור, לא בחיבור.':null};}
 /* ★★★ */
 function g3both(){const a=R(3,8),c=R(1,a-1),x0=pick([R(1,10),-R(1,4)]),b=R(-9,12)||5,d=(a-c)*x0+b,k=a-c;
  const st=[{L:lin(a,b),R:lin(c,d),op:'− '+fx(c)},{L:lin(k,b),R:''+d,op:opS(b)},{L:fx(k),R:''+(d-b),op:k===1?'':': '+k},...(k===1?[]:[{L:'x',R:N(x0)}])];
- return {kind:'x בשני הצדדים',dia:D(st),text:'מצאו את x. (רמז: מעבירים את כל ה־x לצד אחד)',ans:[{label:'x =',col:PU,val:x0,neg:true}],
+ return {kind:'x בשני הצדדים',dia:D(st),work:WK(st),text:'מצאו את x. (רמז: מעבירים את כל ה־x לצד אחד)',ans:[{label:'x =',col:PU,val:x0,neg:true}],
   lines:[`מחסירים ${M(fx(c))} משני הצדדים ← ה־x רק בצד שמאל.`,`מבטלים את המספר, ואז מחלקים.`,chk(lin(a,b),x0,a*x0+b)+' וגם '+M(c+' · ('+N(x0)+') '+(d<0?'− '+(-d):'+ '+d)+' = '+(a*x0+b))],rule:'x בשני הצדדים: מעבירים את כל ה־x לצד אחד (פעולה הפוכה), ואת המספרים לצד השני.',
   diag:({vals:[v]})=>Math.abs(v-(d+b)/k)<1e-9?'כשמעבירים מספר לצד השני, <b>הסימן מתהפך</b>.':Math.abs(v-(d-b)/(a+c))<1e-9?'כשמעבירים '+M(fx(c))+' לצד השני, <b>מחסירים</b> אותו (לא מוסיפים).':null};}
 function g3dist(){const m=R(2,6),b=pick([1,-1])*R(1,8),x0=R(-3,10)||4,c=m*(x0+b),mb=m*b;
  const st=[{L:m+'('+lin(1,b)+')',R:''+c,nt:'פותחים סוגריים: קשת לכל איבר'},{L:lin(m,mb),R:''+c,op:opS(mb)},{L:m+'x',R:''+(c-mb),op:': '+m},{L:'x',R:N(x0)}];
- return {kind:'סוגריים',dia:D(st),text:'מצאו את x.',ans:[{label:'x =',col:PU,val:x0,neg:true}],lines:[`פותחים סוגריים: ${M(m+' · x = '+m+'x')} ו־${M(m+' · '+(b<0?'('+N(b)+')':b)+' = '+N(mb))}`,`ואז פותרים כמו משוואה בשני צעדים.`],rule:'קודם פותחים סוגריים (קשת לכל איבר), ואז פותרים.',
+ return {kind:'סוגריים',dia:D(st),work:WK(st),text:'מצאו את x.',ans:[{label:'x =',col:PU,val:x0,neg:true}],lines:[`פותחים סוגריים: ${M(m+' · x = '+m+'x')} ו־${M(m+' · '+(b<0?'('+N(b)+')':b)+' = '+N(mb))}`,`ואז פותרים כמו משוואה בשני צעדים.`],rule:'קודם פותחים סוגריים (קשת לכל איבר), ואז פותרים.',
   diag:({vals:[v]})=>Math.abs(v-(c-b)/m)<1e-9?'פתחתם רק קשת אחת: גם '+M(N(b))+' מקבל כפל ב־'+M(m)+'.':null};}
 function g3distBoth(){const m=R(3,6),c=R(1,m-1),b=R(1,6),x0=R(1,9),k=m-c,d=k*x0+m*b;
  const st=[{L:m+'('+lin(1,b)+')',R:lin(c,d),nt:'פותחים סוגריים'},{L:lin(m,m*b),R:lin(c,d),op:'− '+fx(c)},{L:lin(k,m*b),R:''+d,op:'− '+m*b},{L:fx(k),R:''+(d-m*b),op:k===1?'':': '+k},...(k===1?[]:[{L:'x',R:''+x0}])];
- return {kind:'סוגריים ו־x בשני הצדדים',dia:D(st),text:'מצאו את x.',ans:[{label:'x =',col:PU,val:x0,neg:true}],lines:['1. פותחים סוגריים. 2. מעבירים x לצד אחד. 3. מבטלים מספר. 4. מחלקים.',chk(m+'(x + '+b+')',x0,m*(x0+b))],rule:'סדר קבוע: סוגריים ← x לצד אחד ← מספרים לצד השני ← מחלקים.',
+ return {kind:'סוגריים ו־x בשני הצדדים',dia:D(st),work:WK(st),text:'מצאו את x.',ans:[{label:'x =',col:PU,val:x0,neg:true}],lines:['1. פותחים סוגריים. 2. מעבירים x לצד אחד. 3. מבטלים מספר. 4. מחלקים.',chk(m+'(x + '+b+')',x0,m*(x0+b))],rule:'סדר קבוע: סוגריים ← x לצד אחד ← מספרים לצד השני ← מחלקים.',
   diag:({vals:[v]})=>Math.abs(v-(d-b)/k)<1e-9?'פתחתם רק קשת אחת: גם '+M(b)+' מקבל כפל ב־'+M(m)+'.':null};}
 function g3minus(){const b=R(1,8),x0=R(1,9),c=R(b+x0+1,b+x0+15),d=c-x0-b,cb=c-b;
  const st=[{L:c+' − (x + '+b+')',R:''+d,nt:'מינוס לפני סוגריים: כל איבר מחליף סימן'},{L:c+' − x − '+b,R:''+d},{L:cb+' − x',R:''+d,op:'− '+cb},{L:'−x',R:N(d-cb),op:': (−1)'},{L:'x',R:''+x0}];
- return {kind:'מינוס לפני סוגריים',dia:D(st),text:'מצאו את x.',ans:[{label:'x =',col:PU,val:x0,neg:true}],lines:[`${M('−(x + '+b+') = −x − '+b)}`,`${M(c+' − '+b+' = '+cb)}`,`${M('−x = '+N(d-cb))} ← ${M('x = '+x0)}`],rule:`מינוס לפני סוגריים: כל איבר בפנים מחליף סימן. ואם יוצא ${M('−x = 5')} ← ${M('x = −5')}.`,
+ return {kind:'מינוס לפני סוגריים',dia:D(st),work:WK(st),text:'מצאו את x.',ans:[{label:'x =',col:PU,val:x0,neg:true}],lines:[`${M('−(x + '+b+') = −x − '+b)}`,`${M(c+' − '+b+' = '+cb)}`,`${M('−x = '+N(d-cb))} ← ${M('x = '+x0)}`],rule:`מינוס לפני סוגריים: כל איבר בפנים מחליף סימן. ואם יוצא ${M('−x = 5')} ← ${M('x = −5')}.`,
   diag:({vals:[v]})=>v===-x0?'הגעתם ל־'+M('−x = '+N(d-cb))+'? מחלקים ב־‎(−1): '+M('x = '+x0)+'.':v===c-d+b?'המינוס הופך <b>גם</b> את '+M(b)+'.':null};}
 /* ★★★★ */
 function gThink(){const a=R(2,6),b=R(1,12),x0=R(2,12),two=Math.random()<.5;const c=two?a*(x0+b):a*x0+b;
@@ -71,7 +79,7 @@ function gErrEq(){const a=R(2,6),k=pick([0,1,2]),b=k===0?a*R(1,3):R(2,12),x0=R(1
   lines:[`נכון: ${M(a+'x = '+(c-b))} ← ${M('x = '+x0)}`,chk(lin(a,b),x0,c)],rule:'מעבירים צד ← פעולה הפוכה. בודקים בהצבה!',diag:()=>'בדקו כל שלב: האם עשו את <b>הפעולה ההפוכה</b>?'};}
 function gFracEq(){const [a,b]=pick([[2,3],[2,4],[3,6],[2,5],[3,4],[2,6]]),L=a*b/gcdE(a,b),k=R(1,4),x0=L*k,c=x0/a+x0/b,p=L/a,q=L/b;
  const st=[{L:FRh('x',a)+' + '+FRh('x',b),R:''+c,op:'· '+L},{L:p+'x + '+q+'x',R:''+c*L},{L:(p+q)+'x',R:''+c*L,op:': '+(p+q)},{L:'x',R:''+x0}];
- return {kind:'משוואה עם שברים',dia:D(st),text:'מצאו את x. (רמז: כופלים את שני הצדדים במכנה המשותף)',ans:[{label:'x =',col:PU,val:x0}],lines:[`המכנה המשותף: ${M(L)}. כופלים <b>כל איבר</b> ב־${M(L)}.`,`${M(p+'x + '+q+'x = '+c*L)} ← ${M((p+q)+'x = '+c*L)} ← ${M('x = '+x0)}`],rule:'שברים במשוואה: כופלים את <b>כל</b> האיברים במכנה המשותף, והשברים נעלמים.',
+ return {kind:'משוואה עם שברים',dia:D(st),work:WK(st),text:'מצאו את x. (רמז: כופלים את שני הצדדים במכנה המשותף)',ans:[{label:'x =',col:PU,val:x0}],lines:[`המכנה המשותף: ${M(L)}. כופלים <b>כל איבר</b> ב־${M(L)}.`,`${M(p+'x + '+q+'x = '+c*L)} ← ${M((p+q)+'x = '+c*L)} ← ${M('x = '+x0)}`],rule:'שברים במשוואה: כופלים את <b>כל</b> האיברים במכנה המשותף, והשברים נעלמים.',
   diag:({vals:[v]})=>v===c*L?'שכחתם לכפול גם את הצד השמאלי, או לחלק בסוף.':null};}
 function gPerim(){const x0=R(2,12),a=R(1,8),P=4*x0+2*a;const sv=`<svg viewBox="0 0 400 170" style="max-width:360px"><rect x="90" y="30" width="220" height="100" fill="#5ec8ff22" stroke="${BL}" stroke-width="3"/><text x="200" y="22" text-anchor="middle" font-size="22" font-weight="800" fill="${OR}" style="font-family:Rubik">x + ${a}</text><text x="78" y="88" text-anchor="end" font-size="22" font-weight="800" fill="${BL}" style="font-family:Rubik">x</text></svg>`;
  return {kind:'היקף מלבן',dia:h=>h?sv+eqHtml([{L:'2x + 2(x + '+a+')',R:''+P,nt:'פותחים סוגריים'},{L:'4x + '+2*a,R:''+P,op:'− '+2*a},{L:'4x',R:''+(4*x0),op:': 4'},{L:'x',R:''+x0}],{anim:true}):sv,
