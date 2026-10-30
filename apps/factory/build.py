@@ -15,7 +15,8 @@ shell = open(os.path.join(HERE, 'shell.html'), encoding='utf-8').read()
 fonts = open(os.path.join(HERE, 'fonts.css'), encoding='utf-8').read()
 out = (shell.replace('/*FONTS*/', fonts, 1).replace('/*CONTENT*/', src, 1)
        .replace('/*TITLE*/', meta['title']).replace('/*SHORT*/', meta['short'])
-       .replace('/*TOPIC*/', meta['topic']).replace('/*ID*/', id_))
+       .replace('/*TOPIC*/', meta['topic']).replace('/*ID*/', id_)
+       .replace('/*AIURL*/', json.load(open(os.path.join(HERE, 'config.json'), encoding='utf-8')).get('ai_url', '')))
 open(os.path.join(APPS, id_ + '.html'), 'w', encoding='utf-8').write(out)
 json.dump({"name": meta['topic'], "short_name": meta['short'], "lang": "he", "dir": "rtl",
            "start_url": id_ + ".html", "scope": "./", "display": "standalone",

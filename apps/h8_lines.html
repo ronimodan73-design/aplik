@@ -99,7 +99,7 @@ p{font-size:19px;line-height:1.55;margin:0}
 .wkdone{margin-top:8px;font-weight:800;color:var(--ok)}
 .top .spbtn{background:var(--acc);color:#14213a;border:0;font-weight:800}
 .sp{position:fixed;left:0;right:0;bottom:0;height:62vh;z-index:70;background:#0b1626;border-top:3px solid var(--acc);border-radius:18px 18px 0 0;display:flex;flex-direction:column;box-shadow:0 -10px 30px #000a}
-.sp[hidden]{display:none}.sptools{display:flex;gap:6px;align-items:center;padding:8px 10px;flex-wrap:wrap;direction:rtl}
+.sp[hidden]{display:none}.aibox{margin:0 8px 6px;padding:8px 12px;border-radius:10px;background:#c084fc22;border:2px solid var(--pu);font-size:17px;line-height:1.5}.aibox[hidden]{display:none}.sptools{display:flex;gap:6px;align-items:center;padding:8px 10px;flex-wrap:wrap;direction:rtl}
 .sptools b{font-size:17px;margin-left:auto}.sptools button{background:var(--chip);color:var(--ink);border:2px solid var(--line);border-radius:10px;min-width:40px;height:42px;font:700 17px Heebo,sans-serif;cursor:pointer;padding:0 6px}
 .sptools button.on{border-color:var(--acc);background:#2a3b57}.sptools .dot{width:22px;height:22px;border-radius:50%;display:inline-block;vertical-align:middle}
 .spwrap{flex:1;position:relative;margin:0 8px 8px;border-radius:12px;overflow:hidden;background-color:#0f2036;background-image:linear-gradient(#22395a 1px,transparent 1px),linear-gradient(90deg,#22395a 1px,transparent 1px);background-size:28px 28px}
@@ -117,8 +117,8 @@ body.spopen .app{padding-bottom:62vh}
  <button type="button" data-pc="#f3f6fb" class="on" aria-label="עט לבן"><span class="dot" style="background:#f3f6fb"></span></button>
  <button type="button" data-pc="#ffb020" aria-label="עט כתום"><span class="dot" style="background:#ffb020"></span></button>
  <button type="button" data-pc="#5ec8ff" aria-label="עט כחול"><span class="dot" style="background:#5ec8ff"></span></button>
- <button type="button" id="spe" aria-label="מחק">🧽</button><button type="button" id="spu" aria-label="בטל פעולה אחרונה">↶</button><button type="button" id="spc" aria-label="נקה הכול">🗑️</button></div>
- <div class="spwrap"><canvas id="spcv"></canvas></div></div>
+ <button type="button" id="spe" aria-label="מחק">🧽</button><button type="button" id="spu" aria-label="בטל פעולה אחרונה">↶</button><button type="button" id="spc" aria-label="נקה הכול">🗑️</button><button type="button" id="spai" hidden aria-label="בדיקה חכמה של הטיוטה">🤖 תבדקו לי</button><button type="button" id="spcam" hidden aria-label="צילום דף מהמחברת">📷</button><input type="file" id="spfile" accept="image/*" capture="environment" hidden></div>
+ <div class="aibox" id="aibox" hidden role="status" aria-live="polite"></div><div class="spwrap"><canvas id="spcv"></canvas></div></div>
 <script>
 const $=s=>document.querySelector(s);const V=$('#view');
 const M=t=>`<span class="m">${t}</span>`;
@@ -307,10 +307,15 @@ const STORIES=[{t:'מחיר נסיעה במונית',x:'מספר הקילומט�
  {t:'מנוי לחדר כושר',x:'מספר האימונים',y:'המחיר בשקלים',m:[15,20,25],b:[50,80,100],mm:'המחיר לכל אימון',bm:'דמי הרשמה קבועים'}];
 function gStory(){const s=pick(STORIES),m=pick(s.m),b=pick(s.b),ask=pick(['b','m','v']),n=R(2,6);const head=`${s.t}: ${M('y = '+C(m+'x',BL)+C(' + '+b,OR))}<br>x = ${s.x}, y = ${s.y}.<br>`;
  if(ask==='v')return {kind:'בעיה מילולית',rc:2,text:head+`מה הערך של y כאשר ${M('x = '+n)}?`,ans:[{label:'y =',lt:1,col:OR,val:m*n+b,unit:''}],
+  crack:(()=>{const g=shuf([[`${s.x} = ${n}`,1],[`${s.y} = ${n}`,0],[`${s.bm} = ${n}`,0]]),w=shuf([[s.y,1],[s.x,0],['כמה מוסיפים בכל יחידה',0]]),t=shuf([[`מציבים ${n} במקום x`,1],[`מציבים ${n} במקום y`,0],[`מחברים ${m} + ${b} + ${n}`,0]]);
+   const S2=(a,lab,why)=>({lab,choice:a.map(x=>x[0]),correct:a.findIndex(x=>x[1]),why});
+   return [S2(g,'מה נתון?',`המספר ${n} הוא ה־x: ${s.x}.`),S2(w,'מה מבקשים?',`שואלים על y: ${s.y}.`),S2(t,'מה עושים?','נתון x ← מציבים אותו במשוואה ומחשבים את y.')];})(),
+  work:[{t:`קודם כפל: ${M(m+' · '+n+' = ?')}`,ans:[{label:'',val:m*n}],why:'כופלים את m במספר שהציבו במקום x.'},{t:`עכשיו מוסיפים את הקבוע: ${M(m*n+' + '+b+' = ?')}`,ans:[{label:'y =',val:m*n+b}],why:`אל תשכחו את ${C(b,OR)}, התשלום הקבוע.`}],
   lines:[M('y = '+m+' · '+n+' + '+b+' = '+(m*n)+' + '+b+' = '+(m*n+b))],rule:'מציבים את x בנוסחה ומחשבים.',diag:({vals:[v]})=>v===m*n?`שכחתם להוסיף את ${C(b,OR)}, הסכום הקבוע.`:v===(m+b)*n?'קודם כפל, אחר כך חיבור.':null};
  const num=ask==='b'?b:m,col=ask==='b'?OR:BL;
  const c=CH([{t:s.bm,ok:ask==='b',msg:`${C(m,BL)} צמוד ל־x ← הוא משתנה בכל יחידה: ${s.mm}.`},{t:s.mm,ok:ask==='m',msg:`${C(b,OR)} עומד לבד (בלי x) ← הוא קיים גם כש־x = 0: ${s.bm}.`},{t:'הסכום הכולל בסוף',msg:'הסכום הכולל הוא y, והוא משתנה לפי x.'},{t:s.x,msg:'זה x, הנעלם. המספר שבשאלה קבוע.'}]);
  return {kind:'בעיה מילולית',rc:2,text:head+`מה המשמעות של המספר ${M(C(num,col))}?`,...c,
+  crack:[{lab:'איפה המספר?',choice:['צמוד ל־x','עומד לבד (בלי x)'],correct:ask==='m'?0:1,why:'מסתכלים במשוואה: האם המספר כתוב ליד x?'}],
   lines:[`${C(b,OR)} = b ← עומד לבד ← ההתחלה, כש־${M('x = 0')}: ${s.bm}.`,`${C(m,BL)} = m ← צמוד ל־x ← ${s.mm}.`],rule:'בסיפור: b = ההתחלה (כש־<span class="m">x = 0</span>). m = כמה מוסיפים בכל יחידה.'};}
 function gErr(){const nm=pick(['נועה','דניאל','איתי','מאיה','יואב']);
  if(Math.random()<.5){let m,b;do{m=nz(-4,4);b=nz(-8,8);}while(m===b||m===-b);
@@ -356,29 +361,24 @@ const WARM=[gOnAxis,gB,gOnAxis,gB,gUpDown,gB,gUpDown,gReadB];
 /* ===== animated explanation ===== */
 const RECAP=[
  {h:'למה צריך את זה?',d:1.1,svg:()=>G({lines:[{m:2,b:1,col:BL}],pts:[{x:1,y:3,col:OR,lab:'(1, 3)'},{x:2,y:5,col:OR,lab:'(2, 5)',d:2.2}],yr:[-4,8],anim:1}),
-  says:[`המשוואה ${EQ(2,1)} היא <b>הוראה</b>: קחו x, כפלו ב־2, הוסיפו 1.`,`${M('x = 1')} ← ${M('y = 2 · 1 + 1 = 3')} ← הנקודה ${M('(1, 3)')} על הקו ✓`,'הגרף הוא <b>הציור</b> של כל הנקודות האלה.'],
-  def:'כל שאלה במבחן היא בעצם שאלה על הציור: איפה הקו חותך, עולה או יורד, מעל או מתחת, איפה נפגש עם קו אחר.',what:'משוואה = הוראות. גרף = הציור שלהן.'},
+  says:[`${EQ(2,1)}: לוקחים x, כפול 2, ועוד 1.`,`${M('x = 1')} ← ${M('y = 3')} ← הנקודה ${M('(1, 3)')} על הקו ✓`],what:'משוואה = הוראה. גרף = הציור שלה.'},
  {h:'ציר y: שם <span class="m">x = 0</span>',d:1.2,svg:()=>G({lines:[],pts:[{x:0,y:4,col:OR,lab:'(0, 4)'},{x:0,y:1,col:OR,lab:'(0, 1)'},{x:0,y:-3,col:OR,lab:'(0, −3)'}],anim:1}),
-  says:['ציר y הוא הקו <b>האנכי</b> (עומד).','לכל הנקודות עליו יש <b><span class="m">x = 0</span></b>: הן לא זזות ימינה או שמאלה.'],def:`<b>ציר y:</b> ${M('x = 0')}.  <b>ציר x:</b> ${M('y = 0')}.`,what:'נקודה על ציר y תמיד: <span class="m">x = 0</span>, וה־y משתנה.'},
+  says:[`על ציר y תמיד ${M('x = 0')}.`],def:`ציר y ← ${M('x = 0')} · ציר x ← ${M('y = 0')}`,what:`נקודה על ציר y: ${M('(0, ?)')}`},
  {h:'b = החיתוך עם ציר y',d:1.1,svg:()=>G({lines:[{m:2,b:3,col:BL}],pts:[{x:0,y:3,col:OR,lab:'(0, 3)'}],yr:[-4,8],anim:1}),
-  says:[`הישר ${EQ(2,3)}. איפה הוא חותך את ציר y?`,`על ציר y ${M('x = 0')}, אז מציבים: ${M('y = 2 · 0 + 3 = 3')}`,`ה־${C('2x',BL)} נעלם, ונשאר רק ${C('b',OR)}! הנקודה ${M(C('(0, 3)',OR))}.`],
-  def:`<b>${C('b',OR)}</b> = המספר שעומד לבד, בלי x. הישר חותך את ציר y בנקודה ${M('(0, b)')}.`,what:`מסתכלים על המשוואה ורואים מיד: ${C('b',OR)} הוא הגובה שבו הקו חוצה את ציר y.`},
- {h:'m = השיפוע: עולה או יורד',d:1.1,svg:()=>G({lines:[{m:2,b:1,col:BL},{m:-2,b:1,col:PU}],yr:[-6,6],anim:1}),
-  says:[`${C('m',BL)} = המספר שצמוד ל־x.`,`${C('m',BL)} חיובי ← הקו <b>עולה</b> ↗`,`${C('m',PU)} שלילי ← הקו <b>יורד</b> ↘`,'קוראים תמיד <b>משמאל לימין</b>, כמו באנגלית.'],what:'הסימן של m אומר לאן הקו הולך.'},
- {h:'מתאימים גרף למשוואה',d:1.1,svg:()=>G({lines:[{m:2,b:4,col:BL,lab:'א'},{m:-2,b:4,col:PU,lab:'ב'}],yr:[-2,10],anim:1}),
-  says:[`${M('I')}: ${EQ(-2,4)}   ${M('II')}: ${EQ(2,4)}`,'שאלה 1: עולה או יורד? (הסימן של m)',`ב־${M('I')} ${M('m = −2')} ← יורד ← גרף ${C('ב',PU)}.`,'אם m שווה בשניהם, שואלים: איפה חותך את ציר y? (b)'],what:'קודם m (עולה/יורד), ואם לא מספיק, b (גבוה/נמוך).'},
- {h:'חיתוך עם ציר x: שם <span class="m">y = 0</span>',d:1.1,svg:()=>G({lines:[{m:2,b:-4,col:BL}],pts:[{x:2,y:0,col:GR,lab:'(2, 0)'},{x:0,y:-4,col:OR,lab:'(0, −4)',d:2.6}],anim:1}),
-  says:[`הישר ${EQ(2,-4)}. על ציר x ${M('y = 0')}:`,M('2x − 4 = 0 ← 2x = 4 ← x = 2'),`הנקודה ${M(C('(2, 0)',GR))}.`],what:`ציר x ← מציבים ${M('y = 0')} ופותרים.  ציר y ← ${M('x = 0')}, והתשובה היא b.`},
- {h:'מילון: <span class="m">f(x) = 0, f(x) > 0, f(x) < 0</span>',d:1.1,svg:()=>G({lines:[{m:2,b:-4,col:BL}],pts:[{x:2,y:0,col:'#dfe8f5',lab:'(2, 0)'}],sign:0,anim:1}),
-  says:[`${M('f(x)')} זה פשוט ה־y: <b>הגובה</b> של הגרף.`,`${M('f(x) = 0')} ← גובה 0 ← <b>על ציר x</b>: ${M('x = 2')}`,`${M('f(x) > 0')} ← ${C('מעל ציר x',GR)} ← ${M('x > 2')}`,`${M('f(x) < 0')} ← ${C('מתחת לציר x',RD)} ← ${M('x < 2')}`],
-  def:'<b>ערכים חיוביים</b> = מעל ציר x.  <b>ערכים שליליים</b> = מתחת לציר x.',what:'עונים תמיד בתחום של x, שמתחיל בנקודת החיתוך עם ציר x.'},
- {h:'שני ישרים: איפה נפגשים? מי גבוה?',d:1.1,svg:()=>G({lines:[FF,GG],pts:[{x:2,y:-1,col:OR,lab:'(2, −1)',dx:10,dy:16}],above:[0,1],yr:[-7,7],anim:1}),
-  says:[`${EQf(-2,3,'f(x)',FC)} , ${EQf(3,-7,'g(x)',GC)}`,`${M('f(x) = g(x)')} ← <b>נפגשים</b>: ${M('−2x + 3 = 3x − 7 ← −5x = −10 ← x = 2')}`,`${M('f(x) > g(x)')} ← איפה ${C('f',FC)} <b>למעלה</b>: ${M('−5x > −10 ← x < 2')}`,'חילקנו ב־<span class="m">(−5)</span>, מספר שלילי ← <b>הסימן התהפך!</b>'],
-  what:'= ← נקודת המפגש.  > ← מי מעל מי (משמאל או מימין למפגש).'},
+  says:[`${EQ(2,3)} ← חותך ב־${M(C('(0, 3)',OR))}`,`${C('b',OR)} = המספר בלי x.`],what:`חיתוך עם ציר y ← ${M(C('(0, b)',OR))}`},
+ {h:'m: עולה או יורד?',d:1.1,svg:()=>G({lines:[{m:2,b:1,col:BL},{m:-2,b:1,col:PU}],yr:[-6,6],anim:1}),
+  says:[`${C('m',BL)} חיובי ← עולה ↗`,`${C('m',PU)} שלילי ← יורד ↘`],what:'קוראים משמאל לימין.'},
+ {h:'איזה גרף מתאים?',d:1.1,svg:()=>G({lines:[{m:2,b:4,col:BL,lab:'א'},{m:-2,b:4,col:PU,lab:'ב'}],yr:[-2,10],anim:1}),
+  says:['1. עולה או יורד? ← בודקים את m','2. איפה חותך את ציר y? ← בודקים את b'],what:'קודם m, אחר כך b.'},
+ {h:'חיתוך עם ציר x: <span class="m">y = 0</span>',d:1.1,svg:()=>G({lines:[{m:2,b:-4,col:BL}],pts:[{x:2,y:0,col:GR,lab:'(2, 0)'},{x:0,y:-4,col:OR,lab:'(0, −4)',d:2.6}],anim:1}),
+  says:[`${EQ(2,-4)} ← מציבים ${M('y = 0')}`,`${M('2x − 4 = 0 ← x = 2')} ← ${M(C('(2, 0)',GR))}`],what:`חיתוך עם ציר x ← ${M(C('(x, 0)',GR))}`},
+ {h:'מילון: <span class="m">f(x) > 0 , f(x) < 0</span>',d:1.1,svg:()=>G({lines:[{m:2,b:-4,col:BL}],pts:[{x:2,y:0,col:'#dfe8f5',lab:'(2, 0)'}],sign:0,anim:1}),
+  says:[`${M('f(x) > 0')} ← ${C('מעל ציר x',GR)}`,`${M('f(x) < 0')} ← ${C('מתחת לציר x',RD)}`],def:`${M('f(x)')} = הגובה. ${M('f(x) = 0')} ← על ציר x.`,what:'חיובי = מעל. שלילי = מתחת.'},
+ {h:'שני ישרים: נפגשים? מי למעלה?',d:1.1,svg:()=>G({lines:[FF,GG],pts:[{x:2,y:-1,col:OR,lab:'(2, −1)',dx:10,dy:16}],above:[0,1],yr:[-7,7],anim:1}),
+  says:[`${M('f(x) = g(x)')} ← נקודת המפגש`,`${M('f(x) > g(x)')} ← איפה ${C('f',FC)} למעלה`],what:'= מפגש. > מי למעלה.'},
  {h:'שטח משולש מהגרף',d:1.1,svg:()=>G({lines:[{m:2,b:8,col:BL},{m:-2,b:8,col:PU}],pts:[{x:-4,y:0,col:'#dfe8f5',lab:'A',dy:16,dx:-12},{x:4,y:0,col:'#dfe8f5',lab:'B',dy:16,dx:6},{x:0,y:8,col:OR,lab:'C',dx:8,dy:4}],tri:[[-4,0],[4,0],[0,8]],xr:[-6,6],yr:[-2,11],O:1,anim:1}),
-  says:[`${EQ(-2,8)} , ${EQ(2,8)} ← ${M('C = (0, 8)')}: זה ${C('b',OR)}!`,`A ו־B על ציר x ← מציבים ${M('y = 0')}: ${M('x = −4')} ו־${M('x = 4')}`,`בסיס ${M('AB = 8')}, גובה ${M('OC = 8')}`,`שטח = ${M('(8 · 8) : 2 = 32')}`],
-  what:'בסיס על ציר x, גובה = b. שטח = (בסיס · גובה) : 2.'},
- {h:'הטעות הנפוצה',d:.4,says:[`«${EQ(3,-6)} חותך את ציר y ב־${M('(−6, 0)')}» <span class="x">✗</span>`,'הסדר הפוך! בנקודה כותבים <b>קודם x, אחר כך y</b>.',`נכון: ${M('(0, −6)')} <span class="v">✓</span>`],what:`ציר y ← ${M('(0, b)')}.  ציר x ← ${M('(?, 0)')}.`}];
+  says:[`גובה = ${C('b',OR)} = 8 · בסיס ${M('AB = 8')}`,`שטח = ${M('(8 · 8) : 2 = 32')}`],what:'שטח = (בסיס · גובה) : 2'},
+ {h:'הטעות הנפוצה',d:.4,says:[`«${EQ(3,-6)} חותך את ציר y ב־${M('(−6, 0)')}» <span class="x">✗</span>`,`נכון: ${M('(0, −6)')} <span class="v">✓</span>`],what:'בנקודה: קודם x, אחר כך y.'}];
 
 const TL=['★ ידע','★★ יישום','★★★ הבנה ונימוק','★★★★ חשיבה ואוריינות'],TCOL=[GR,BL,OR,PU];
 const TOTAL=20;let S={};
@@ -397,7 +397,7 @@ function menu(){$('#sc').textContent='';const tl=store.get('test');
 function start(l){const L=LEVELS[l];S={mode:'lv',l,i:0,score:0,n:TOTAL,streak:0};
  if(L.ladder){const list=[],meta=[];L.ladder.forEach(e=>{for(let k=0;k<e.n;k++){list.push(e.g);meta.push(e);}});S.list=list;S.meta=meta;S.n=list.length;}next();}
 function next(){if(S.q)S.i++;if(S.i>=S.n)return S.mode==='test'?endTest():S.mode==='warm'?endWarm():S.mode==='chk'?endChk():end();S.q=S.list?S.list[S.i]():LEVELS[S.l].g();S.tries=0;S.done=false;S.si=0;S.wkOpen=false;S.stepNext=false;S.chainBad=false;S.askTries=0;
- const me=S.meta?S.meta[S.i]:null;S.ph=me?(me.h||0):S.mode==='warm'||S.mode==='chk'?1:0;S.askDone=!S.q.ask||S.mode==='test'||S.mode==='chk'||(me&&me.a===0);draw();}
+ const me=S.meta?S.meta[S.i]:null;S.ph=me?(me.h||0):S.mode==='warm'||S.mode==='chk'?1:0;S.ai=0;S.crk=[];S.askDone=!(S.q.ask||S.q.crack)||S.mode==='test'||S.mode==='chk'||(me&&me.a===0);draw();}
 const curQ=()=>S.q.steps?S.q.steps[S.si]:S.q;
 function hintHtml(c){const H=c.hint||c.rule;if(!H||S.mode==='test'||!S.ph)return '';return S.ph>=2?`<div class="hint">💡 ${H}</div>`:`<button class="btn sec mini" id="hb" type="button">💡 רמז</button><div class="hint" id="hint" hidden>${H}</div>`;}
 function choicesHtml(c){return c.choice?`<div class="choices">${c.choiceLab?`<span class="lab">${c.choiceLab}</span>`:''}${c.choice.map((x,i)=>`<button type="button" data-c="${i}">${x}</button>`).join('')}</div>`:'';}
@@ -405,19 +405,21 @@ function bindChoices(T){S.sel=-1;V.querySelectorAll('[data-c]').forEach(b=>b.onc
 function drawAsk(){const q=S.q;$('#sc').textContent=`נקודות: ${S.score}`;
  V.innerHTML=`<div class="meta"><span>${lab()} · שאלה ${S.i+1} מתוך ${S.n}</span><span></span></div><div class="prog"><i style="width:${S.i/S.n*100}%"></i></div>
  <div class="card pop"><span class="kind">${q.kind}</span>${(()=>{const d=qDia(q,false);return d?`<div class="dia">${d}</div>`:''})()}<div class="qtext">${q.text}</div>
- <div class="askbox"><div class="ah">🔎 לפני שפותרים: מה השאלה שואלת?</div>${q.ask.text?`<div>${q.ask.text}</div>`:''}${choicesHtml(q.ask)}</div>
+ ${(()=>{const L=q.crack||[q.ask],A=L[S.ai];return `<div class="askbox"><div class="ah">🔓 פיצוח השאלה${L.length>1?` · שלב ${S.ai+1} מתוך ${L.length}: ${A.lab||''}`:': מה השאלה שואלת?'}</div>
+ ${L.slice(0,S.ai).map((a,k)=>`<div class="stepdone"><b>${S.crk[k]?'✓':'👀'} ${a.lab||''}</b> ${a.choice[a.correct]}</div>`).join('')}${A.text?`<div>${A.text}</div>`:''}${choicesHtml(A)}</div>`;})()}
  <div class="btns"><button class="btn main" id="chk" type="button">בדיקה</button><button class="btn sec" id="show" type="button">הראו לי</button></div><div class="fb" id="fb" role="status" aria-live="polite"></div></div>`;
  bindChoices(false);
  $('#chk').onclick=()=>{const fb=$('#fb');if(S.sel<0){fb.className='fb no';fb.innerHTML='בחרו תשובה.';return;}
-  if(S.sel===q.ask.correct){S.askDone=true;S.askOk=true;draw();return;}
-  S.askTries++;const m=q.ask.diag?q.ask.diag({sel:S.sel}):null;fb.className='fb no pop';fb.innerHTML=`<b>לא בדיוק.</b> ${m||q.ask.why||''} ${S.askTries>=2?'<br>לחצו על <b>"הראו לי"</b>.':'נסו שוב.'}`;};
- $('#show').onclick=()=>{S.askDone=true;S.askOk=false;draw();};}
+  const L=q.crack||[q.ask],A=L[S.ai];
+  if(S.sel===A.correct){S.crk[S.ai]=S.askTries===0;S.ai++;S.askTries=0;if(S.ai>=L.length){S.askDone=true;S.askOk=S.crk.every(Boolean);}draw();return;}
+  S.askTries++;const m=A.diag?A.diag({sel:S.sel}):null;fb.className='fb no pop';fb.innerHTML=`<b>לא בדיוק.</b> ${m||A.why||''} ${S.askTries>=2?'<br>לחצו על <b>"הראו לי"</b>.':'נסו שוב.'}`;};
+ $('#show').onclick=()=>{const L=q.crack||[q.ask];S.crk[S.ai]=false;S.ai++;S.askTries=0;if(S.ai>=L.length){S.askDone=true;S.askOk=false;}draw();};}
 function lab(){return S.mode==='chk'?'🧠 בדיקת הבנה · '+RECAP[S.card].h.replace(/<[^>]+>/g,''):S.mode==='warm'?'חימום':S.mode==='test'?'מבחן מדורג · '+TL[S.lv[S.i]]:'★'.repeat(LEVELS[S.l].n)+' '+LEVELS[S.l].t;}
 function qDia(q,hl){return typeof QDIA==='function'?QDIA(q,hl):(q.dia?q.dia(hl):(hl&&S.q&&q!==S.q&&S.q.dia?S.q.dia(true):''));}
 function draw(){if(!S.askDone)return drawAsk();const q=S.q,c=curQ(),T=S.mode==='test',ST=q.steps;$('#sc').textContent=T?'':`נקודות: ${S.score}`;
  V.innerHTML=`<div class="meta"><span>${lab()} · שאלה ${S.i+1} מתוך ${S.n}</span><span>${!T&&S.streak>=3?'🔥 '+S.streak+' ברצף':''}</span></div><div class="prog"><i style="width:${S.i/S.n*100}%"></i></div>
  <div class="card pop"><span class="kind">${q.kind}</span>${(()=>{const d=qDia(q,false);return d?`<div class="dia">${d}</div>`:''})()}<div class="qtext">${q.text}</div>
- ${q.ask?`<div class="asknote">${S.askOk?'✓ נכון!':'👀'} השאלה שואלת: <b>${q.ask.choice[q.ask.correct]}</b></div>`:''}
+ ${q.crack&&S.mode!=='test'&&S.mode!=='chk'?`<div class="asknote"><b>🔓 פיצחנו:</b> ${q.crack.map(a=>`${a.lab||''} <b>${a.choice[a.correct]}</b>`).join(' · ')}</div>`:q.ask&&S.mode!=='test'&&S.mode!=='chk'?`<div class="asknote">${S.askOk?'✓ נכון!':'👀'} השאלה שואלת: <b>${q.ask.choice[q.ask.correct]}</b></div>`:''}
  ${ST?ST.slice(0,S.si).map((st,k)=>`<div class="stepdone"><b>✓ צעד ${k+1}:</b> ${st.short||st.text} ← ${ansText(st)}</div>`).join('')+`<div class="stephead">צעד ${S.si+1} מתוך ${ST.length}</div><div class="qtext">${c.text}</div>`:''}
  ${hintHtml(c)}
  ${(q=>`${q.ans&&q.tpl?`<div class="inputs tpl">${q.tpl.split('[]').map((p,i,arr)=>`<span class="tp">${p}</span>`+(i<arr.length-1?`<input class="tin" inputmode="${q.ans[i].neg?'text':'decimal'}" data-i="${i}" aria-label="${q.ans[i].label}" style="border-color:${q.ans[i].col}">`:'')).join('')}</div>`:''}
@@ -566,6 +568,24 @@ if(ONSITE&&'serviceWorker' in navigator){navigator.serviceWorker.register('../sw
  $('#spc').onclick=()=>{strokes=[];put(key,strokes);paint();};
  const close=()=>{P.hidden=true;B.hidden=false;document.body.classList.remove('spopen');};
  $('#spx').onclick=close;B.onclick=()=>{sync();P.hidden=false;B.hidden=true;document.body.classList.add('spopen');size();};
+ /* 🤖 בדיקה חכמה: רק אם הוגדר שרת, ורק עם אינטרנט */
+ const AIU='',box=$('#aibox'),strip=h=>String(h||'').replace(/<br\s*\/?>/g,' ').replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim();
+ const aiOn=()=>{const ok=!!AIU&&navigator.onLine&&!!(S&&S.q&&V.querySelector('.qtext'));$('#spai').hidden=$('#spcam').hidden=!ok;if(!ok)box.hidden=true;};
+ new MutationObserver(aiOn).observe(V,{childList:true});addEventListener('online',aiOn);addEventListener('offline',aiOn);
+ function qInfo(){const q=S.q,c=curQ(),w=c.work||[];
+  return {text:strip(q.text)+(q.steps?' · '+strip(c.text):''),steps:w.length?w.map(x=>strip(x.t)+' → '+(x.ans?x.ans.map(a=>N0(a.val)).join(', '):x.choice[x.correct])):(c.lines||[]).map(strip),answer:c.ans?c.ans.map(a=>strip(a.label)+' '+N0(a.val)).join(', '):(c.choice?strip(c.choice[c.correct]):'')};}
+ async function send(img,mime){box.hidden=false;box.innerHTML='🤖 בודק את הטיוטה…';
+  try{const r=await fetch(AIU,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({img,mime,q:qInfo(),app:APP.key})});const j=await r.json();
+   box.innerHTML='🤖 '+(j.step>0?`<b>שלב ${j.step}:</b> `:'')+String(j.msg||'').replace(/</g,'&lt;')+(j.step>0&&curQ().work?' <button type="button" class="btn sec mini" id="aiwk">🔍 לבדוק את השלבים</button>':'');
+   if($('#aiwk'))$('#aiwk').onclick=()=>{$('#spx').click();if($('#wkb'))$('#wkb').click();else if(!S.wkOpen)workOpen(curQ());};}
+  catch(e){box.innerHTML='🤖 אין חיבור כרגע. אפשר להשתמש ב"איפה טעיתי?".';}}
+ $('#spai').onclick=()=>{const c=document.createElement('canvas'),k=Math.min(1,1400/Math.max(cv.width,cv.height));c.width=Math.round(cv.width*k);c.height=Math.round(cv.height*k);const x=c.getContext('2d');x.fillStyle='#ffffff';x.fillRect(0,0,c.width,c.height);
+  const t=document.createElement('canvas');t.width=c.width;t.height=c.height;const tx=t.getContext('2d');tx.drawImage(cv,0,0,c.width,c.height);const d=tx.getImageData(0,0,c.width,c.height),a=d.data;
+  for(let i=0;i<a.length;i+=4){if(a[i+3]>20){const l=(a[i]+a[i+1]+a[i+2])/3;const v=l>200?0:Math.max(0,180-l);a[i]=a[i+1]=a[i+2]=v;a[i+3]=255;}}tx.putImageData(d,0,0);x.drawImage(t,0,0);
+  send(c.toDataURL('image/jpeg',.85).split(',')[1],'image/jpeg');};
+ $('#spcam').onclick=()=>$('#spfile').click();
+ $('#spfile').onchange=e=>{const f=e.target.files[0];if(!f)return;const im=new Image();im.onload=()=>{const k=Math.min(1,1400/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=im.width*k;c.height=im.height*k;c.getContext('2d').drawImage(im,0,0,c.width,c.height);send(c.toDataURL('image/jpeg',.85).split(',')[1],'image/jpeg');URL.revokeObjectURL(im.src);};im.src=URL.createObjectURL(f);e.target.value='';};
+ aiOn();
  addEventListener('resize',()=>{if(!P.hidden)size();});})();
 $('#home').onclick=menu;menu();
 </script>

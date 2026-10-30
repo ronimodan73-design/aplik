@@ -99,7 +99,7 @@ p{font-size:19px;line-height:1.55;margin:0}
 .wkdone{margin-top:8px;font-weight:800;color:var(--ok)}
 .top .spbtn{background:var(--acc);color:#14213a;border:0;font-weight:800}
 .sp{position:fixed;left:0;right:0;bottom:0;height:62vh;z-index:70;background:#0b1626;border-top:3px solid var(--acc);border-radius:18px 18px 0 0;display:flex;flex-direction:column;box-shadow:0 -10px 30px #000a}
-.sp[hidden]{display:none}.sptools{display:flex;gap:6px;align-items:center;padding:8px 10px;flex-wrap:wrap;direction:rtl}
+.sp[hidden]{display:none}.aibox{margin:0 8px 6px;padding:8px 12px;border-radius:10px;background:#c084fc22;border:2px solid var(--pu);font-size:17px;line-height:1.5}.aibox[hidden]{display:none}.sptools{display:flex;gap:6px;align-items:center;padding:8px 10px;flex-wrap:wrap;direction:rtl}
 .sptools b{font-size:17px;margin-left:auto}.sptools button{background:var(--chip);color:var(--ink);border:2px solid var(--line);border-radius:10px;min-width:40px;height:42px;font:700 17px Heebo,sans-serif;cursor:pointer;padding:0 6px}
 .sptools button.on{border-color:var(--acc);background:#2a3b57}.sptools .dot{width:22px;height:22px;border-radius:50%;display:inline-block;vertical-align:middle}
 .spwrap{flex:1;position:relative;margin:0 8px 8px;border-radius:12px;overflow:hidden;background-color:#0f2036;background-image:linear-gradient(#22395a 1px,transparent 1px),linear-gradient(90deg,#22395a 1px,transparent 1px);background-size:28px 28px}
@@ -117,8 +117,8 @@ body.spopen .app{padding-bottom:62vh}
  <button type="button" data-pc="#f3f6fb" class="on" aria-label="עט לבן"><span class="dot" style="background:#f3f6fb"></span></button>
  <button type="button" data-pc="#ffb020" aria-label="עט כתום"><span class="dot" style="background:#ffb020"></span></button>
  <button type="button" data-pc="#5ec8ff" aria-label="עט כחול"><span class="dot" style="background:#5ec8ff"></span></button>
- <button type="button" id="spe" aria-label="מחק">🧽</button><button type="button" id="spu" aria-label="בטל פעולה אחרונה">↶</button><button type="button" id="spc" aria-label="נקה הכול">🗑️</button></div>
- <div class="spwrap"><canvas id="spcv"></canvas></div></div>
+ <button type="button" id="spe" aria-label="מחק">🧽</button><button type="button" id="spu" aria-label="בטל פעולה אחרונה">↶</button><button type="button" id="spc" aria-label="נקה הכול">🗑️</button><button type="button" id="spai" hidden aria-label="בדיקה חכמה של הטיוטה">🤖 תבדקו לי</button><button type="button" id="spcam" hidden aria-label="צילום דף מהמחברת">📷</button><input type="file" id="spfile" accept="image/*" capture="environment" hidden></div>
+ <div class="aibox" id="aibox" hidden role="status" aria-live="polite"></div><div class="spwrap"><canvas id="spcv"></canvas></div></div>
 <script>
 const $=s=>document.querySelector(s);const V=$('#view');
 const M=t=>`<span class="m">${t}</span>`;
@@ -226,15 +226,15 @@ const TEST=[[()=>g1('add'),()=>g1('mul'),()=>g1(pick(['sub','div'])),gCheck],[()
 const WARM=[()=>g1('add'),()=>g1('sub'),()=>g1('mul'),()=>g1('add'),gCheck,()=>g1('mul'),()=>g1('div'),()=>g2(0)];
 /* ===== animated explanation ===== */
 const RECAP=[
- {h:'מה זה משוואה?',d:1,svg:()=>bal('x + 3','8'),says:['משוואה היא כמו <b>מאזניים במשקל</b>: שני הצדדים שווים.',`x הוא המספר החסר. כמה זה x?`],def:'<b>משוואה:</b> שוויון עם נעלם (x). <b>פתרון:</b> המספר שהופך את השוויון לנכון.',what:'צד שמאל = צד ימין. מחפשים את x.'},
+ {h:'מה זה משוואה?',d:1,svg:()=>bal('x + 3','8'),says:['משוואה = <b>מאזניים במשקל</b>.','x = המספר החסר.'],def:'<b>פתרון:</b> המספר שהופך את השוויון לנכון.',what:'שמאל = ימין. מחפשים את x.'},
  {h:'מה שעושים בצד אחד...',d:2.2,svg:()=>'<div style="display:flex;flex-direction:column;align-items:center;width:100%">'+bal('x + 3','8',{extra:`<g class="rv" style="--d:.6s"><text x="80" y="185" text-anchor="middle" font-size="20" font-weight="800" fill="${PU}" style="font-family:Rubik">− 3</text><text x="320" y="185" text-anchor="middle" font-size="20" font-weight="800" fill="${PU}" style="font-family:Rubik">− 3</text></g>`})+`<div class="rv" style="--d:1.6s;width:100%;display:flex;justify-content:center">${bal('x','5')}</div></div>`,
-  says:[`מורידים ${M('3')} <b>משני הצדדים</b>, והמאזניים נשארים במשקל.`,`${M('x = 5')} <span class="v">✓</span>`],what:'מה שעושים בצד אחד, עושים <b>גם בצד השני</b>.'},
- {h:'פעולות הפוכות',d:.4,says:[`${M('+')} ↔ ${M('−')}: ההפך מחיבור הוא חיסור.`,`${M('·')} ↔ ${M(':')}: ההפך מכפל הוא חילוק.`,`${M('3x')} זה ${M('3 · x')} ← מחלקים ב־3.`],what:'מבטלים כל פעולה עם <b>הפעולה ההפוכה</b> לה.'},
- {h:'שני צעדים',d:3.4,svg:()=>eqHtml([{L:'3x + 5',R:'20',op:'− 5'},{L:'3x',R:'15',op:': 3'},{L:'x',R:'5'}],{anim:true}),says:['קודם מבטלים את החיבור, ואחר כך את הכפל.',`בדיקה: ${M('3 · 5 + 5 = 20')} <span class="v">✓</span>`],what:'<b>חיבור/חיסור קודם</b>, ואז כפל/חילוק.'},
- {h:'x בשני הצדדים',d:3.8,svg:()=>eqHtml([{L:'5x + 2',R:'3x + 10',op:'− 3x'},{L:'2x + 2',R:'10',op:'− 2'},{L:'2x',R:'8',op:': 2'},{L:'x',R:'4'}],{anim:true}),says:['מעבירים את כל ה־x <b>לצד אחד</b> (מחסירים 3x).','ואז פותרים כרגיל.'],what:'x לצד אחד, מספרים לצד השני.'},
- {h:'עם סוגריים',d:3.8,svg:()=>eqHtml([{L:'3(x + 2)',R:'21',nt:'פותחים סוגריים: קשת לכל איבר'},{L:'3x + 6',R:'21',op:'− 6'},{L:'3x',R:'15',op:': 3'},{L:'x',R:'5'}],{anim:true}),says:[`${M('3 · x = 3x')} ו־${M('3 · 2 = 6')}`,'ואז שני צעדים רגילים.'],what:'קודם <b>פותחים סוגריים</b> (חוק הפילוג), ואז פותרים.'},
- {h:'תמיד בודקים',d:.4,says:[`פתרנו: ${M('x = 5')} במשוואה ${M('3x + 5 = 20')}.`,`מציבים: ${M('3 · 5 + 5 = 15 + 5 = 20')} <span class="v">✓</span>`,'שני הצדדים שווים ← הפתרון נכון!'],what:'מציבים את x במשוואה המקורית. <b>שווה? צדקנו.</b>'},
- {h:'הטעות הנפוצה',d:.4,says:[`${M('3x + 5 = 20')} ← מישהו כתב ${M('3x = 25')} <span class="x">✗</span>`,`ה־${M('+ 5')} עבר צד בלי להתהפך!`,`נכון: ${M('3x = 20 − 5 = 15')} <span class="v">✓</span>`],what:'מעבירים צד ← <b>הפעולה מתהפכת</b>.'}];
+  says:[`מורידים ${M('3')} <b>משני הצדדים</b>.`,`${M('x = 5')} <span class="v">✓</span>`],what:'מה שעושים בצד אחד, עושים גם בשני.'},
+ {h:'פעולות הפוכות',d:.4,says:[`חיבור ↔ חיסור: ${M('+ ↔ −')}`,`כפל ↔ חילוק: ${M('· ↔ :')}`],def:`${M('3x')} ← מחלקים ב־${M('3')}`,what:'מבטלים בפעולה ההפוכה.'},
+ {h:'שני צעדים',d:3.4,svg:()=>eqHtml([{L:'3x + 5',R:'20',op:'− 5'},{L:'3x',R:'15',op:': 3'},{L:'x',R:'5'}],{anim:true}),says:['קודם החיבור, אחר כך הכפל.'],what:'קודם ± ואז · או :'},
+ {h:'x בשני הצדדים',d:3.8,svg:()=>eqHtml([{L:'5x + 2',R:'3x + 10',op:'− 3x'},{L:'2x + 2',R:'10',op:'− 2'},{L:'2x',R:'8',op:': 2'},{L:'x',R:'4'}],{anim:true}),says:[`מחסירים ${M('3x')} ← כל ה־x בצד אחד.`],what:'x לצד אחד, מספרים לשני.'},
+ {h:'עם סוגריים',d:3.8,svg:()=>eqHtml([{L:'3(x + 2)',R:'21',nt:'פותחים סוגריים: קשת לכל איבר'},{L:'3x + 6',R:'21',op:'− 6'},{L:'3x',R:'15',op:': 3'},{L:'x',R:'5'}],{anim:true}),says:[`${M('3 · x = 3x')} ו־${M('3 · 2 = 6')}`],what:'קודם פותחים סוגריים.'},
+ {h:'תמיד בודקים',d:.4,says:[`${M('3x + 5 = 20')} ← יצא ${M('x = 5')}`,`${M('3 · 5 + 5 = 20')} <span class="v">✓</span>`],what:'מציבים את x. שווה? צדקנו.'},
+ {h:'הטעות הנפוצה',d:.4,says:[`${M('3x + 5 = 20')} ← ${M('3x = 25')} <span class="x">✗</span>`,`${M('3x = 20 − 5 = 15')} <span class="v">✓</span>`],what:'עובר צד ← הפעולה מתהפכת.'}];
 
 /* בדיקת הבנה אחרי הסבר */
 RECAP[0].chk=[gCheck];RECAP[1].chk=[()=>g1('add'),()=>g1('sub')];
@@ -256,7 +256,7 @@ function menu(){$('#sc').textContent='';const tl=store.get('test');
 function start(l){const L=LEVELS[l];S={mode:'lv',l,i:0,score:0,n:TOTAL,streak:0};
  if(L.ladder){const list=[],meta=[];L.ladder.forEach(e=>{for(let k=0;k<e.n;k++){list.push(e.g);meta.push(e);}});S.list=list;S.meta=meta;S.n=list.length;}next();}
 function next(){if(S.q)S.i++;if(S.i>=S.n)return S.mode==='test'?endTest():S.mode==='warm'?endWarm():S.mode==='chk'?endChk():end();S.q=S.list?S.list[S.i]():LEVELS[S.l].g();S.tries=0;S.done=false;S.si=0;S.wkOpen=false;S.stepNext=false;S.chainBad=false;S.askTries=0;
- const me=S.meta?S.meta[S.i]:null;S.ph=me?(me.h||0):S.mode==='warm'||S.mode==='chk'?1:0;S.askDone=!S.q.ask||S.mode==='test'||S.mode==='chk'||(me&&me.a===0);draw();}
+ const me=S.meta?S.meta[S.i]:null;S.ph=me?(me.h||0):S.mode==='warm'||S.mode==='chk'?1:0;S.ai=0;S.crk=[];S.askDone=!(S.q.ask||S.q.crack)||S.mode==='test'||S.mode==='chk'||(me&&me.a===0);draw();}
 const curQ=()=>S.q.steps?S.q.steps[S.si]:S.q;
 function hintHtml(c){const H=c.hint||c.rule;if(!H||S.mode==='test'||!S.ph)return '';return S.ph>=2?`<div class="hint">💡 ${H}</div>`:`<button class="btn sec mini" id="hb" type="button">💡 רמז</button><div class="hint" id="hint" hidden>${H}</div>`;}
 function choicesHtml(c){return c.choice?`<div class="choices">${c.choiceLab?`<span class="lab">${c.choiceLab}</span>`:''}${c.choice.map((x,i)=>`<button type="button" data-c="${i}">${x}</button>`).join('')}</div>`:'';}
@@ -264,19 +264,21 @@ function bindChoices(T){S.sel=-1;V.querySelectorAll('[data-c]').forEach(b=>b.onc
 function drawAsk(){const q=S.q;$('#sc').textContent=`נקודות: ${S.score}`;
  V.innerHTML=`<div class="meta"><span>${lab()} · שאלה ${S.i+1} מתוך ${S.n}</span><span></span></div><div class="prog"><i style="width:${S.i/S.n*100}%"></i></div>
  <div class="card pop"><span class="kind">${q.kind}</span>${(()=>{const d=qDia(q,false);return d?`<div class="dia">${d}</div>`:''})()}<div class="qtext">${q.text}</div>
- <div class="askbox"><div class="ah">🔎 לפני שפותרים: מה השאלה שואלת?</div>${q.ask.text?`<div>${q.ask.text}</div>`:''}${choicesHtml(q.ask)}</div>
+ ${(()=>{const L=q.crack||[q.ask],A=L[S.ai];return `<div class="askbox"><div class="ah">🔓 פיצוח השאלה${L.length>1?` · שלב ${S.ai+1} מתוך ${L.length}: ${A.lab||''}`:': מה השאלה שואלת?'}</div>
+ ${L.slice(0,S.ai).map((a,k)=>`<div class="stepdone"><b>${S.crk[k]?'✓':'👀'} ${a.lab||''}</b> ${a.choice[a.correct]}</div>`).join('')}${A.text?`<div>${A.text}</div>`:''}${choicesHtml(A)}</div>`;})()}
  <div class="btns"><button class="btn main" id="chk" type="button">בדיקה</button><button class="btn sec" id="show" type="button">הראו לי</button></div><div class="fb" id="fb" role="status" aria-live="polite"></div></div>`;
  bindChoices(false);
  $('#chk').onclick=()=>{const fb=$('#fb');if(S.sel<0){fb.className='fb no';fb.innerHTML='בחרו תשובה.';return;}
-  if(S.sel===q.ask.correct){S.askDone=true;S.askOk=true;draw();return;}
-  S.askTries++;const m=q.ask.diag?q.ask.diag({sel:S.sel}):null;fb.className='fb no pop';fb.innerHTML=`<b>לא בדיוק.</b> ${m||q.ask.why||''} ${S.askTries>=2?'<br>לחצו על <b>"הראו לי"</b>.':'נסו שוב.'}`;};
- $('#show').onclick=()=>{S.askDone=true;S.askOk=false;draw();};}
+  const L=q.crack||[q.ask],A=L[S.ai];
+  if(S.sel===A.correct){S.crk[S.ai]=S.askTries===0;S.ai++;S.askTries=0;if(S.ai>=L.length){S.askDone=true;S.askOk=S.crk.every(Boolean);}draw();return;}
+  S.askTries++;const m=A.diag?A.diag({sel:S.sel}):null;fb.className='fb no pop';fb.innerHTML=`<b>לא בדיוק.</b> ${m||A.why||''} ${S.askTries>=2?'<br>לחצו על <b>"הראו לי"</b>.':'נסו שוב.'}`;};
+ $('#show').onclick=()=>{const L=q.crack||[q.ask];S.crk[S.ai]=false;S.ai++;S.askTries=0;if(S.ai>=L.length){S.askDone=true;S.askOk=false;}draw();};}
 function lab(){return S.mode==='chk'?'🧠 בדיקת הבנה · '+RECAP[S.card].h.replace(/<[^>]+>/g,''):S.mode==='warm'?'חימום':S.mode==='test'?'מבחן מדורג · '+TL[S.lv[S.i]]:'★'.repeat(LEVELS[S.l].n)+' '+LEVELS[S.l].t;}
 function qDia(q,hl){return typeof QDIA==='function'?QDIA(q,hl):(q.dia?q.dia(hl):(hl&&S.q&&q!==S.q&&S.q.dia?S.q.dia(true):''));}
 function draw(){if(!S.askDone)return drawAsk();const q=S.q,c=curQ(),T=S.mode==='test',ST=q.steps;$('#sc').textContent=T?'':`נקודות: ${S.score}`;
  V.innerHTML=`<div class="meta"><span>${lab()} · שאלה ${S.i+1} מתוך ${S.n}</span><span>${!T&&S.streak>=3?'🔥 '+S.streak+' ברצף':''}</span></div><div class="prog"><i style="width:${S.i/S.n*100}%"></i></div>
  <div class="card pop"><span class="kind">${q.kind}</span>${(()=>{const d=qDia(q,false);return d?`<div class="dia">${d}</div>`:''})()}<div class="qtext">${q.text}</div>
- ${q.ask?`<div class="asknote">${S.askOk?'✓ נכון!':'👀'} השאלה שואלת: <b>${q.ask.choice[q.ask.correct]}</b></div>`:''}
+ ${q.crack&&S.mode!=='test'&&S.mode!=='chk'?`<div class="asknote"><b>🔓 פיצחנו:</b> ${q.crack.map(a=>`${a.lab||''} <b>${a.choice[a.correct]}</b>`).join(' · ')}</div>`:q.ask&&S.mode!=='test'&&S.mode!=='chk'?`<div class="asknote">${S.askOk?'✓ נכון!':'👀'} השאלה שואלת: <b>${q.ask.choice[q.ask.correct]}</b></div>`:''}
  ${ST?ST.slice(0,S.si).map((st,k)=>`<div class="stepdone"><b>✓ צעד ${k+1}:</b> ${st.short||st.text} ← ${ansText(st)}</div>`).join('')+`<div class="stephead">צעד ${S.si+1} מתוך ${ST.length}</div><div class="qtext">${c.text}</div>`:''}
  ${hintHtml(c)}
  ${(q=>`${q.ans&&q.tpl?`<div class="inputs tpl">${q.tpl.split('[]').map((p,i,arr)=>`<span class="tp">${p}</span>`+(i<arr.length-1?`<input class="tin" inputmode="${q.ans[i].neg?'text':'decimal'}" data-i="${i}" aria-label="${q.ans[i].label}" style="border-color:${q.ans[i].col}">`:'')).join('')}</div>`:''}
@@ -425,6 +427,24 @@ if(ONSITE&&'serviceWorker' in navigator){navigator.serviceWorker.register('../sw
  $('#spc').onclick=()=>{strokes=[];put(key,strokes);paint();};
  const close=()=>{P.hidden=true;B.hidden=false;document.body.classList.remove('spopen');};
  $('#spx').onclick=close;B.onclick=()=>{sync();P.hidden=false;B.hidden=true;document.body.classList.add('spopen');size();};
+ /* 🤖 בדיקה חכמה: רק אם הוגדר שרת, ורק עם אינטרנט */
+ const AIU='',box=$('#aibox'),strip=h=>String(h||'').replace(/<br\s*\/?>/g,' ').replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim();
+ const aiOn=()=>{const ok=!!AIU&&navigator.onLine&&!!(S&&S.q&&V.querySelector('.qtext'));$('#spai').hidden=$('#spcam').hidden=!ok;if(!ok)box.hidden=true;};
+ new MutationObserver(aiOn).observe(V,{childList:true});addEventListener('online',aiOn);addEventListener('offline',aiOn);
+ function qInfo(){const q=S.q,c=curQ(),w=c.work||[];
+  return {text:strip(q.text)+(q.steps?' · '+strip(c.text):''),steps:w.length?w.map(x=>strip(x.t)+' → '+(x.ans?x.ans.map(a=>N0(a.val)).join(', '):x.choice[x.correct])):(c.lines||[]).map(strip),answer:c.ans?c.ans.map(a=>strip(a.label)+' '+N0(a.val)).join(', '):(c.choice?strip(c.choice[c.correct]):'')};}
+ async function send(img,mime){box.hidden=false;box.innerHTML='🤖 בודק את הטיוטה…';
+  try{const r=await fetch(AIU,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({img,mime,q:qInfo(),app:APP.key})});const j=await r.json();
+   box.innerHTML='🤖 '+(j.step>0?`<b>שלב ${j.step}:</b> `:'')+String(j.msg||'').replace(/</g,'&lt;')+(j.step>0&&curQ().work?' <button type="button" class="btn sec mini" id="aiwk">🔍 לבדוק את השלבים</button>':'');
+   if($('#aiwk'))$('#aiwk').onclick=()=>{$('#spx').click();if($('#wkb'))$('#wkb').click();else if(!S.wkOpen)workOpen(curQ());};}
+  catch(e){box.innerHTML='🤖 אין חיבור כרגע. אפשר להשתמש ב"איפה טעיתי?".';}}
+ $('#spai').onclick=()=>{const c=document.createElement('canvas'),k=Math.min(1,1400/Math.max(cv.width,cv.height));c.width=Math.round(cv.width*k);c.height=Math.round(cv.height*k);const x=c.getContext('2d');x.fillStyle='#ffffff';x.fillRect(0,0,c.width,c.height);
+  const t=document.createElement('canvas');t.width=c.width;t.height=c.height;const tx=t.getContext('2d');tx.drawImage(cv,0,0,c.width,c.height);const d=tx.getImageData(0,0,c.width,c.height),a=d.data;
+  for(let i=0;i<a.length;i+=4){if(a[i+3]>20){const l=(a[i]+a[i+1]+a[i+2])/3;const v=l>200?0:Math.max(0,180-l);a[i]=a[i+1]=a[i+2]=v;a[i+3]=255;}}tx.putImageData(d,0,0);x.drawImage(t,0,0);
+  send(c.toDataURL('image/jpeg',.85).split(',')[1],'image/jpeg');};
+ $('#spcam').onclick=()=>$('#spfile').click();
+ $('#spfile').onchange=e=>{const f=e.target.files[0];if(!f)return;const im=new Image();im.onload=()=>{const k=Math.min(1,1400/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=im.width*k;c.height=im.height*k;c.getContext('2d').drawImage(im,0,0,c.width,c.height);send(c.toDataURL('image/jpeg',.85).split(',')[1],'image/jpeg');URL.revokeObjectURL(im.src);};im.src=URL.createObjectURL(f);e.target.value='';};
+ aiOn();
  addEventListener('resize',()=>{if(!P.hidden)size();});})();
 $('#home').onclick=menu;menu();
 </script>

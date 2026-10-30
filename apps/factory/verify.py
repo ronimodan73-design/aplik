@@ -34,7 +34,7 @@ async def main():
         async def answer(right):
             q = await pg.evaluate('({c:curQ().choice?curQ().correct:null,n:curQ().choice?curQ().choice.length:0,v:curQ().ans?curQ().ans.map(a=>a.val):null})')
             if q['v']:
-                for j, v in enumerate(q['v']): await pg.locator('input').nth(j).fill(str(v if right else v + 1))
+                for j, v in enumerate(q['v']): await pg.locator('input:not([type=file]):not(.wkin)').nth(j).fill(str(v if right else v + 1))
             if q['c'] is not None: await pg.click(f'[data-c="{q["c"] if right else (q["c"]+1)%q["n"]}"]')
             await pg.click('#chk'); await pg.wait_for_timeout(150)
         chk_info = []
@@ -58,8 +58,10 @@ async def main():
         for L in range(4):
             await pg.evaluate(f"start({L})"); await pg.wait_for_timeout(200)
             if await pg.locator('.askbox').count():
-                await pg.screenshot(path=f'{OUT}/L{L+1}_ask.png', full_page=True); await pg.click('#show'); await pg.wait_for_timeout(200)
-            for j in range(await pg.locator('input').count()): await pg.locator('input').nth(j).fill('1')
+                await pg.screenshot(path=f'{OUT}/L{L+1}_ask.png', full_page=True)
+            while await pg.locator('.askbox').count():
+                await pg.click('#show'); await pg.wait_for_timeout(200)
+            for j in range(await pg.locator('input:not([type=file]):not(.wkin)').count()): await pg.locator('input:not([type=file]):not(.wkin)').nth(j).fill('1')
             if await pg.locator('[data-c]').count():
                 c = await pg.evaluate('curQ().correct'); k = await pg.locator('[data-c]').count(); await pg.click(f'[data-c="{(c+1)%k}"]')
             await pg.click('#chk'); await pg.wait_for_timeout(250); await pg.click('#show'); await pg.wait_for_timeout(4500)
@@ -69,7 +71,7 @@ async def main():
             await pg.wait_for_timeout(120); right = i not in (5, 9, 13)
             q = await pg.evaluate('({c:S.q.choice?S.q.correct:null,n:S.q.choice?S.q.choice.length:0,v:S.q.ans?S.q.ans.map(a=>a.val):null})')
             if q['v']:
-                for j, v in enumerate(q['v']): await pg.locator('input').nth(j).fill(str(v if right else v + 1))
+                for j, v in enumerate(q['v']): await pg.locator('input:not([type=file]):not(.wkin)').nth(j).fill(str(v if right else v + 1))
             if q['c'] is not None: await pg.click(f'[data-c="{q["c"] if right or q["v"] else (q["c"]+1)%q["n"]}"]')
             await pg.click('#chk'); await pg.wait_for_timeout(100); await pg.click('#chk')
         await pg.wait_for_timeout(500); await pg.screenshot(path=f'{OUT}/report.png', full_page=True)
