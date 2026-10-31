@@ -9,7 +9,7 @@ def fly(t): return f'<span class="fly">{t}</span>'      # lands in place
 def st(t): return f'<span class="st">{t}</span>'        # struck out
 def fr(a,b): return f'<span class="fr"><span>{a}</span><span>{b}</span></span>'
 import re
-def mm(t): return re.sub(r'([A-Za-z0-9²(±−][A-Za-z0-9²()=+−:.,; ·±/]*[A-Za-z0-9²)])',lambda g:m(g.group(1)),t)
+def mm(t): return re.sub(r'([A-Za-z0-9²(±−√][A-Za-z0-9²()=+−:.,; ·±/√≠]*[A-Za-z0-9²)])',lambda g:m(g.group(1)),t)
 def sys(a,b): return f'<div class="sy">{a}<br>{b}</div>'
 # each exercise: (number, system html, clue text, [(line html, note)], answer)
 T=[
@@ -51,12 +51,14 @@ T=[
  ('תרגיל 29',sys(m(k('x²')+' + '+k('y²')+' = 13'),m(k('x²')+' − '+k('y²')+' = 5')),'🔍 רק ריבועים! אין x לבד',[
   (m(k('X')+' + '+k('Y')+' = 13 , X − Y = 5'),'X = x² , Y = y² ← קווית'),
   (m('2X = 18 ← X = 9 , Y = 4'),'מחברים: Y מתבטל'),
-  (m('x² = 9 ← x = ±3 , y² = 4 ← y = ±2'),'חוזרים: שורש ← ±')],'(3 ; 2) , (3 ; −2) , (−3 ; 2) , (−3 ; −2)'),
+  (m(st('√(x² + y²)')+' ≠ x + y ✗'),'למה לא שורש כבר בהתחלה? קודם x² לבד'),
+  (m('x² = 9 ← x = ±3 , y² = 4 ← y = ±2'),'רק עכשיו שורש, לשני האגפים ← ±')],'(3 ; 2) , (3 ; −2) , (−3 ; 2) , (−3 ; −2)'),
  ('תרגיל 31',sys(m('3'+k('x²')+' + 2'+k('y²')+' = 11'),m('4'+k('x²')+' − 3'+k('y²')+' = −8')),'🔍 רק x² ו־y²',[
   (m('3'+k('X')+' + 2'+k('Y')+' = 11 , 4X − 3Y = −8'),'X = x² , Y = y²'),
   (m('9X + 6Y = 33 , 8X − 6Y = −16'),'כופלים ב־3 וב־2'),
   (m('17X = 17 ← X = 1 , Y = 4'),'מחברים: Y מתבטל'),
-  (m('x = ±1 , y = ±2'),'שורש ← ±')],'(1 ; 2) , (1 ; −2) , (−1 ; 2) , (−1 ; −2)')]),
+  (m(st('√(3x² + 2y²)')+' ≠ √(3x²) + √(2y²) ✗'),'למה לא שורש כבר בהתחלה? קודם x² לבד'),
+  (m('x² = 1 ← x = ±1 , y² = 4 ← y = ±2'),'רק עכשיו שורש, לשני האגפים ← ±')],'(1 ; 2) , (1 ; −2) , (−1 ; 2) , (−1 ; −2)')]),
 ('🔄 שבר הופך לנעלם','הנעלם <b>במכנה</b> ← השבר כולו הופך לנעלם חדש.',[
  ('תרגיל 37',sys(m(k(fr(16,'x'))+' − '+k(fr(12,'y'))+' = 5'),m(k(fr(10,'x'))+' − '+k(fr(8,'y'))+' = 3')),'🔍 x ו־y במכנה',[
   (m(k(fr(1,'x'))+' = a , '+k(fr(1,'y'))+' = b'),'השבר = נעלם חדש'),
@@ -87,15 +89,16 @@ WHY=[
  ('כשפותחים את הסוגריים מקבלים xy, ובמשוואה השנייה כתוב כמה xy שווה. זה הרמז!',['x · y = xy , x · (−1) = −x , 2 · y = 2y , 2 · (−1) = −2','לפי המשוואה השנייה xy = 60, אז מחליפים.','יש 60 בשני הצדדים ← מורידים 60 משני הצדדים. נשארת משוואה בלי ריבועים.','−x + 2y = 2 ← −x = 2 − 2y ← כופלים ב־(−1).','x = 2y − 2, ומציבים במשוואה הפשוטה xy = 60.','y² − y − 30 = (y − 6)(y + 5). כל y מציבים ב־x = 2y − 2.']),
  ('אחרי פתיחת הסוגריים יופיע xy, והוא נתון: 24.',['x · y + 2 · x + 1 · y + 1 · 2','xy = 24 ← 24 + 2x + y + 2 = 40 ← 2x + y = 14','מעבירים 2x ← y = 14 − 2x','מציבים ב־xy = 24 ← 14x − 2x² = 24 ← מחלקים ב־(−2).','x² − 7x + 12 = (x − 3)(x − 4) ← מציבים ב־y = 14 − 2x.']),
  ('x² + 2xy + y² הוא בדיוק (x + y)². כך משוואה ריבועית קשה הופכת לקלה.',['(x + y)(x + y) = x² + xy + xy + y² = x² + 2xy + y²','מספר בריבוע = 64 ← המספר הוא 8 או −8.','כופלים x + y = 8 ב־2: 2x + 2y = 16. מחסירים מ־2x + 3y = 19 ← y = 3.','2x + 2y = −16 ← מחסירים ← y = 35 ← x = −8 − 35']),
- ('x מופיע רק כ־x² (ו־y רק כ־y²) ← אפשר לחשוב על x² כעל נעלם אחד.',['מסמנים X = x² , Y = y². אין חזקות ← מערכת קווית.','מחברים: +Y ו־−Y מבטלים זה את זה.','x² = 9 ← גם 3² וגם (−3)² שווים 9.']),
- ('שוב רק x² ו־y² ← X ו־Y.',['3X + 2Y = 11 , 4X − 3Y = −8: מערכת קווית.','רוצים לבטל את Y: 6Y ו־−6Y.','9X + 8X = 17X , 33 − 16 = 17 ← X = 1 ← 3 + 2Y = 11 ← Y = 4','x² = 1 ← x = ±1 , y² = 4 ← y = ±2. כל צירוף עובד.']),
+ ('x מופיע רק כ־x² (ו־y רק כ־y²) ← אפשר לחשוב על x² כעל נעלם אחד.',['מסמנים X = x² , Y = y². אין חזקות ← מערכת קווית.','מחברים: +Y ו־−Y מבטלים זה את זה.','שורש של סכום הוא לא סכום השורשים! √(9 + 16) = √25 = 5, אבל √9 + √16 = 3 + 4 = 7. לכן אי אפשר להוציא שורש מ־x² + y². קודם מוצאים כמה x² שווה לבד.','כש־x² = 9 לבד, מוציאים שורש משני האגפים: x = 3 או x = −3, כי גם 3² וגם (−3)² שווים 9.']),
+ ('שוב רק x² ו־y² ← X ו־Y.',['3X + 2Y = 11 , 4X − 3Y = −8: מערכת קווית.','רוצים לבטל את Y: 6Y ו־−6Y.','9X + 8X = 17X , 33 − 16 = 17 ← X = 1 ← 3 + 2Y = 11 ← Y = 4','שורש של סכום הוא לא סכום השורשים: √(9 + 16) = 5 אבל 3 + 4 = 7. ובמשוואה 3x² + 2y² = 11 גם יש מקדמים. לכן קודם פותרים כמערכת ומוצאים x² לבד.','x² = 1 ← שורש לשני האגפים: x = ±1 , y² = 4 ← y = ±2. במשוואות יש רק ריבועים, לכן כל צירוף סימנים עובד.']),
  ('x ו־y במכנה. 16/x = 16 · 1/x ← 1/x הוא נעלם שחוזר.',['מסמנים 1/x = a , 1/y = b.','16/x = 16a , 12/y = 12b ← משוואות בלי שברים.','כופלים כך שיהיה 24b בשתיהן, ואז b יתבטל.','32a − 30a = 2a , 10 − 9 = 1 ← a = 0.5 ← 5 − 8b = 3 ← b = 0.25','a = 1/x ← x = 1 : a = 2. אותו דבר ל־y.']),
  ('אותם מכנים (x + y) ו־(x − y) חוזרים ← כל שבר כזה הוא נעלם.',['1/(x + y) = a , 1/(x − y) = b','20/(x + y) = 20a , 10/(x − y) = 10b','40b בשתיהן ← מחסירים: 170a = 17','a = 1/(x + y) ← x + y = 1 : a = 10. וכך x − y = 2.','מחברים: (x + y) + (x − y) = 2x']),
  ('x² + y² כתוב בשתי המשוואות. מחסירים ← הוא נעלם ונשארת משוואה פשוטה.',['מחסירים צד שמאל מצד שמאל וצד ימין מצד ימין – כמו מאזניים.','−20y = −72 ← מחלקים ב־(−20).','y = 3.6 ← y² = 12.96 ← x² = 36 − 12.96']),
  ('(x − 1)² מופיע בשתיהן בדיוק אותו דבר ← מחסירים.',['(x − 1)² − (x − 1)² = 0 , 32 − 17 = 15','(y + 5)² = y² + 10y + 25 , (y + 2)² = y² + 4y + 4 ← y² מתבטל: 6y + 21','6y = −6 ← y = −1 ← (−1 + 2)² = 1','(x − 1)² = 16 ← x − 1 = 4 או −4'])]
+PR={'🔁 מבודדים ומציבים': 'אם y = 7 − x, אז y ו־(7 − x) הם <b>אותו מספר</b>. מותר להחליף אחד בשני בכל מקום.', '✂️ ה־xy נעלם': 'xy הוא מספר אחד (60). בכל מקום שכתוב xy – מותר לכתוב 60.', '🎁 ריבוע מוסתר': 'אם (x + y)² = 64, אז x + y הוא מספר שבריבוע נותן 64: <b>8 או −8</b>.', '📦 x² הוא נעלם חדש': 'x² הוא מספר אחד ← פותרים אותו כמו נעלם. <b>שורש מוציאים רק כש־x² לבד</b>: √(a + b) ≠ √a + √b.', '🔄 שבר הופך לנעלם': '16/x = 16 · 1/x. ואם 1/x = a, אז x = 1 : a.', '➖ מחסירים משוואות': 'שווה פחות שווה = שווה (כמו מאזניים). מה שזהה בשתי המשוואות – מתבטל.'}
 out=[];EI=0
 for ti,(name,how,exs) in enumerate(T):
-    out.append(f'<section><h2>{name}</h2><p class="how">{how}</p>')
+    out.append(f'<section><h2>{name}</h2><p class="how">{how}</p><div class="idea">🧠 <b>הרעיון המתמטי:</b> {mm(PR.get(name,""))}</div>')
     for (num,sy,clue,lines,ans) in exs:
         C=['#5ec8ff','#4fd18b','#c084fc','#ffb020','#2dd4bf','#f472b6','#a3e635']
         cw,ws=WHY[EI];EI+=1;assert len(ws)==len(lines),(num,len(ws),len(lines))
@@ -121,7 +124,7 @@ h2{{font:800 22px Heebo;margin:26px 0 4px;color:var(--acc)}}.how{{margin:0 0 10p
 @keyframes gl{{to{{box-shadow:0 0 14px 4px #ff5c6c}}}}
 .fly{{display:inline-block}}.on .fly{{animation:fly 1s ease-in-out both .3s}}@keyframes fly{{from{{transform:translateY(-36px) scale(1.3);opacity:0}}}}
 .st{{position:relative;display:inline-block}}.st::after{{content:'';position:absolute;left:-2px;right:-2px;top:52%;height:3px;background:var(--red);transform:scaleX(0);transform-origin:left}}.on .st::after{{animation:stk .5s ease-out .5s forwards}}@keyframes stk{{to{{transform:scaleX(1)}}}}
-.wy{{font-size:15px;color:var(--ink);text-align:center;margin:2px 0 4px;line-height:1.5}}.cw{{font-size:15px;color:var(--ink);font-weight:400;margin-top:4px}}.nx{{display:block;width:100%;margin-top:12px;border:0;border-radius:14px;padding:14px;font:800 20px Heebo,sans-serif;background:var(--acc);color:#14213a;cursor:pointer}}.nx.again{{background:#1c3352;color:var(--ink)}}.tap{{text-align:center;color:var(--muted);font-size:13px;margin-top:6px}}footer{{text-align:center;color:var(--muted);font-size:14px;margin-top:24px}}
+.idea{{background:#c084fc1a;border-right:5px solid #c084fc;border-radius:10px;padding:8px 12px;font-size:16px;margin:0 0 6px}}.wy{{font-size:15px;color:var(--ink);text-align:center;margin:2px 0 4px;line-height:1.5}}.cw{{font-size:15px;color:var(--ink);font-weight:400;margin-top:4px}}.nx{{display:block;width:100%;margin-top:12px;border:0;border-radius:14px;padding:14px;font:800 20px Heebo,sans-serif;background:var(--acc);color:#14213a;cursor:pointer}}.nx.again{{background:#1c3352;color:var(--ink)}}.tap{{text-align:center;color:var(--muted);font-size:13px;margin-top:6px}}footer{{text-align:center;color:var(--muted);font-size:14px;margin-top:24px}}
 </style></head><body><main><h1>6 הטריקים של המערכות</h1><p class="sub">לוחצים על הכפתור ← מופיע הצעד הבא, כל צעד בצבע אחר. <b style="color:#ff5c6c">באדום: הטריק המתחבא.</b></p>
 {''.join(out)}<footer><b>ערכה: רוני מודן · שחקים</b> · © כל הזכויות שמורות</footer></main>
 <script>
