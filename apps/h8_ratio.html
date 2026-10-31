@@ -98,6 +98,15 @@ p{font-size:19px;line-height:1.55;margin:0}
 .wkc{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.wkc button{background:#0b1626;color:var(--ink);border:2px solid var(--line);border-radius:10px;padding:8px 12px;font:600 17px Heebo,sans-serif;cursor:pointer}.wkc button.sel{border-color:var(--acc)}
 .wkdone{margin-top:8px;font-weight:800;color:var(--ok)}
 .top .chaps{display:flex;flex-direction:column;gap:10px;margin-top:10px}.chaps button{all:unset;box-sizing:border-box;width:100%;cursor:pointer;background:var(--chip);border:2px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:2px}.chaps button.rec{border-color:var(--acc)}.chaps .t{font-weight:800;font-size:19px}.chaps .d{font-size:15px;color:var(--muted)}
+.scn{position:relative;direction:ltr;text-align:center;font:700 26px Rubik;padding:46px 4px 6px;min-height:150px}
+.scn .ln{margin:10px 0;min-height:36px;transition:opacity .6s}.scn .ln.dim{opacity:.45}.scn .ln.hll{background:#ffb02026;box-shadow:0 0 0 2px #ffb020;border-radius:12px;animation:glow 1.1s ease-in-out infinite alternate}
+.scn .tok{display:inline-block;padding:0 3px;border-radius:7px;transition:transform .9s cubic-bezier(.5,0,.25,1),background .4s,color .4s}
+.scn .tok.new{animation:tkin .7s ease-out both}@keyframes tkin{from{opacity:0;transform:translateY(-14px) scale(1.2)}}
+.scn .tok.hl{background:#ffb02033;box-shadow:0 0 0 2px #ffb020;animation:glow 1.1s ease-in-out infinite alternate}@keyframes glow{to{box-shadow:0 0 14px 3px #ffb020}}
+.scn .tok.or{color:#ffb020}.scn .tok.bl{color:#5ec8ff}.scn .tok.gr{color:#4fd18b}.scn .tok.flip{color:#ff7a8a;animation:flip .7s ease-in-out}@keyframes flip{50%{transform:rotateX(90deg) scale(1.4)}}
+.scn .lbl{position:absolute;transform:translateX(-50%);background:#ffb020;color:#14213a;font:800 15px Heebo,sans-serif;direction:rtl;padding:4px 10px;border-radius:10px;white-space:nowrap;animation:tkin .6s both;z-index:2}
+.scn .lbl::before{content:'';position:absolute;bottom:-6px;left:50%;margin-left:-6px;border:6px solid transparent;border-bottom:0;border-top-color:#ffb020}
+.scap{text-align:center;font-size:19px;font-weight:700;min-height:56px;padding:6px 8px;border-radius:12px;background:#5ec8ff14;margin-top:4px;animation:tkin .6s both}
 .chr{border-radius:12px;padding:4px 6px;margin:6px 0;cursor:pointer}.chr .chl{font:700 19px Rubik;direction:ltr;text-align:center;overflow-wrap:anywhere}.chr .chl .m{white-space:normal}.chr .chn{font-size:16px;color:var(--acc);text-align:center;font-weight:700}.chr.red .chn{color:var(--red)}.chr .chw{font-size:16px;background:#c084fc14;border-right:4px solid var(--pu);border-radius:8px;padding:6px 10px;margin-top:4px}
 .chm{margin-top:14px;font-weight:800;color:var(--red);font-size:19px}.paused .rv,.paused .fly,.paused .bx,.paused .st::after{animation-play-state:paused!important}
 .chsys{margin:6px 0}.chl{font:700 20px Rubik;direction:ltr;text-align:center;padding:6px 8px;border-radius:10px;margin:4px 0}.chl.old{opacity:.5;font-size:17px}.chl.cur{background:#ffb02018;border:2px solid var(--acc)}
@@ -366,7 +375,7 @@ const rcOf=q=>{if(q.rc!=null)return q.rc;if(APP.rcFn){const v=APP.rcFn(q);if(v!=
 const rcBtn=q=>{const k=rcOf(q);return k!=null&&RECAP[k]?`<button type="button" class="btn sec mini" data-rc="${k}">📖 להסבר: ${RECAP[k].h}</button>`:'';};
 function bindRc(){V.querySelectorAll('[data-rc]').forEach(b=>b.onclick=()=>recap(+b.dataset.rc,true));}
 /* ===== screens ===== */
-function menu(){$('#sc').textContent='';const tl=store.get('test');
+function menu(){clearTimeout(SCT);$('#sc').textContent='';const tl=store.get('test');
  V.innerHTML=`<div class="card"><h1>${APP.topic}</h1><div class="hello">💛 ילדים יקרים, הכנתי לכם אפליקציה שתסייע לכם ללמוד ולהבין את החומר בצורה נוספת. <b>בהצלחה! רוני</b></div><p>${APP.sub} טעיתם? לוחצים על <b>"הראו לי"</b>.</p>
  <div class="hero"><button type="button" id="go-recap"><span class="ic">▶</span><span><b>מתחילים כאן</b><small>הסבר מונפש + חימום קל</small></span></button><button type="button" id="go-test"><span class="ic">📝</span><span><b>בחן את עצמך</b><small>מבחן מדורג · 16 שאלות · 4 רמות · ציון ודוח</small></span></button></div>
  ${tl?`<div class="last">המבחן האחרון שלי: ציון ${Math.round(tl.sc/16*100)} · ${tl.d}</div>`:''}
@@ -490,16 +499,28 @@ function endChk(){$('#sc').textContent='';const n=S.card,N=RECAP.length,c=RECAP[
  $('#cn').onclick=()=>n<N-1?recap(n+1):warm();$('#cr').onclick=()=>recap(n);if($('#cm'))$('#cm').onclick=()=>chkStart(n);window.scrollTo(0,0);}
 /* ===== פרקים מונפשים: תרגיל פתור צעד־צעד (מה עשינו + למה זה נכון) ← מוקש ← עכשיו אתה ← 10 תרגילים ===== */
 const chList=ci=>{const L=[],M2=[];(CHAPTERS[ci].gens||[]).forEach(e=>{for(let k=0;k<e.n;k++){L.push(e.g);M2.push(e);}});return L.length?{length:L.length,L,M2}:{length:0,L,M2};};
-function chap(ci){$('#sc').textContent='';const ch=CHAPTERS[ci],GAP=2.8;let t=.3;
+/* ===== מנוע סצנות: אסימונים זזים (FLIP), מהבהבים, עפים ממשוואה למשוואה, ותוויות רמז ===== */
+let SCT=null;
+function scenePlay(box,sc,done){clearTimeout(SCT);box.innerHTML='<div class="scn"></div><div class="scap"></div>';const st=box.querySelector('.scn'),cap=box.querySelector('.scap');let i=0;
+ const frame=()=>{const F=sc.states[i],old={};st.querySelectorAll('.tok').forEach(t=>old[t.dataset.k]=t.getBoundingClientRect());
+  st.innerHTML=F.lines.map((L,li)=>`<div class="ln${(F.dim||[]).includes(li)?' dim':''}${(F.hll||[]).includes(li)?' hll':''}">${L.map(([k,t,c,f])=>`<span class="tok ${c||''}" data-k="${k}"${f?` data-f="${f}"`:''}>${t}</span>`).join(' ')}</div>`).join('');
+  st.querySelectorAll('.tok').forEach(t=>{const o=old[t.dataset.k]||(t.dataset.f&&old[t.dataset.f]);if(!o){t.classList.add('new');return;}const n=t.getBoundingClientRect();
+   t.style.transition='none';t.style.transform=`translate(${o.left-n.left}px,${o.top-n.top}px)`;requestAnimationFrame(()=>requestAnimationFrame(()=>{t.style.transition='';t.style.transform='';}));});
+  if(F.lbl){const t=st.querySelector(`[data-k="${F.lbl[0]}"]`);if(t){const r=t.getBoundingClientRect(),b=st.getBoundingClientRect(),l=document.createElement('div');l.className='lbl';l.innerHTML=F.lbl[1];
+   l.style.left=Math.min(Math.max(r.left-b.left+r.width/2,90),b.width-90)+'px';l.style.top=(r.top-b.top-38)+'px';l.style.animationDelay=(F.ld||.9)+'s';st.appendChild(l);}}
+  cap.innerHTML=F.cap||'';cap.style.animation='none';void cap.offsetWidth;cap.style.animation='';
+  i++;if(i<sc.states.length)SCT=setTimeout(frame,(F.dur||3)*1000);else if(done)SCT=setTimeout(done,(F.dur||3)*1000);};
+ frame();}
+const sceneDur=sc=>sc.states.reduce((a,F)=>a+(F.dur||3),0);
+function chap(ci){$('#sc').textContent='';clearTimeout(SCT);const ch=CHAPTERS[ci],GAP=2.8,SC=ch.scene;let t=SC?sceneDur(SC)+.2:.3;
  const shift=(h,d)=>String(h).replace(/--d:\s*([\d.]+)s/g,(_,x)=>`--d:${(+x+d).toFixed(2)}s`);
  const row=(st,red)=>{const d=t;t+=GAP;return `<div class="chr rv${red?' red':''}" style="--d:${d}s"><div class="chl">${shift(st.l,d)}</div><div class="chn">← ${st.n||st.what}</div>${st.why?`<div class="chw" hidden>💡 ${st.why}</div>`:''}</div>`;};
- const ex=ch.ex.steps.map(x=>row(x)).join('');const mh=t;const mine=ch.mine?`<div class="chm rv" style="--d:${mh}s">💣 המוקש</div>`+ch.mine.steps.map(x=>row(x,1)).join(''):'';
+ const ex=ch.ex.steps.slice(SC?SC.skip||0:0).map(x=>row(x)).join('');const mh=t;const mine=ch.mine?`<div class="chm rv" style="--d:${mh}s">💣 המוקש</div>`+ch.mine.steps.map(x=>row(x,1)).join(''):'';
  V.innerHTML=`<div class="card pop" id="chc"><span class="kind">פרק ${ci+1} מתוך ${CHAPTERS.length} · 🎬 צפו, ואז פתרו לבד</span><h2>${ch.t}</h2>
- <div class="btns" style="margin:4px 0"><button class="btn sec mini" id="cps" type="button">⏸ עצירה</button><button class="btn sec mini" id="crp" type="button">↻ שוב</button><span style="font-size:14px;color:var(--muted);align-self:center">לחיצה על שורה ← הסבר מלא</span></div>
- ${ch.ex.sys?`<div class="chsys">${ch.ex.sys}</div>`:''}${ex}${mine}
+ ${SC?'<div id="scbox"></div>':ch.ex.sys?`<div class="chsys">${ch.ex.sys}</div>`:''}${ex}${mine}
  <div class="rv" style="--d:${t}s"><h2 style="margin-top:18px">✍️ עכשיו אתה</h2><div id="chyou"></div></div></div>`;
  V.querySelectorAll('.chr').forEach(r=>r.onclick=()=>{const w=r.querySelector('.chw');if(w)w.hidden=!w.hidden;});
- $('#crp').onclick=()=>chap(ci);$('#cps').onclick=()=>{const c=$('#chc'),p=c.classList.toggle('paused');$('#cps').textContent=p?'▶ המשך':'⏸ עצירה';};
+ if(SC)scenePlay($('#scbox'),SC);
  let base=null;if(ch.you)for(let k=0;k<50;k++){base=ch.you();if(base.work)break;}
  const Y=$('#chyou');if(base&&base.work){S={mode:'chex',ci,q:base};Y.innerHTML=`<div class="qtext">${base.text}</div>${(()=>{const d=base.dia?base.dia(false):'';return d?`<div class="dia">${d}</div>`:''})()}<div id="wk" class="wk"></div>`;S.wk={i:0,t:0,q:base};workDraw();}
  else Y.innerHTML=`<button class="btn main" type="button" id="cgo">🎯 ל־10 תרגילים</button>`,$('#cgo').onclick=()=>chPrac(ci);
