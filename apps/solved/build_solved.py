@@ -84,8 +84,9 @@ out=[]
 for ti,(name,how,exs) in enumerate(T):
     out.append(f'<section><h2>{name}</h2><p class="how">{how}</p>')
     for (num,sy,clue,lines,ans) in exs:
-        ls=''.join(f'<div class="ln"><div class="eq">{l}</div><div class="nt">← {mm(n)}</div></div>' for l,n in lines)
-        out.append(f'<div class="ex"><div class="num">{num}</div>{sy}<div class="clue ln">{mm(clue)}</div>{ls}<div class="ln ans">✅ {m(ans)}</div></div>')
+        C=['#5ec8ff','#4fd18b','#c084fc','#ffb020','#2dd4bf','#f472b6','#a3e635']
+        ls=''.join(f'<div class="ln" style="--c:{C[i%len(C)]}"><div class="eq">{l}</div><div class="nt">← {mm(n)}</div></div>' for i,(l,n) in enumerate(lines))
+        out.append(f'<div class="ex"><div class="num">{num}</div>{sy}<div class="clue ln">{mm(clue)}</div>{ls}<div class="ln ans">✅ {m(ans)}</div><button type="button" class="nx">🔍 מה הטריק? ←</button></div>')
     out.append('</section>')
 html=f'''<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>6 הטריקים – תרגילים פתורים · ערכה: רוני מודן</title><style>{fonts}
@@ -99,22 +100,22 @@ h2{{font:800 22px Heebo;margin:26px 0 4px;color:var(--acc)}}.how{{margin:0 0 10p
 .sy{{display:block;width:max-content;max-width:100%;margin:8px 0 8px auto;direction:ltr;text-align:left;border-left:3px solid #9fb3cc;padding:4px 12px;font:700 21px Rubik;line-height:1.9}}
 .fr{{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;line-height:1.15;margin:0 2px}}.fr>span:first-child{{border-bottom:2px solid currentColor;padding:0 3px}}
 .ln{{opacity:0;transform:translateY(8px);transition:opacity .5s,transform .5s}}.ln.on{{opacity:1;transform:none}}
-.eq{{direction:ltr;text-align:center;font:700 18px Rubik;margin-top:8px;overflow-x:auto}}.nt{{text-align:center;color:var(--acc);font-weight:700;font-size:15px}}
-.clue{{background:#ffb02022;border:2px solid var(--acc);border-radius:10px;padding:6px 10px;font-weight:800;text-align:center;margin:6px 0}}
+.ln{{border-right:5px solid var(--c,transparent);border-radius:10px;padding:2px 6px;margin-top:8px;background:color-mix(in srgb,var(--c,#000) 10%,transparent)}}.eq{{direction:ltr;text-align:center;font:700 19px Rubik;overflow-x:auto;color:var(--c,var(--ink))}}.nt{{text-align:center;color:var(--c,var(--acc));font-weight:700;font-size:15px}}.ln:not(.on){{display:none}}
+.clue{{color:#ff5c6c;background:#ff5c6c1f;border:2px solid #ff5c6c;border-radius:10px;padding:6px 10px;font-weight:800;text-align:center;margin:6px 0}}
 .ans{{overflow-x:auto;text-align:center;font-size:19px;margin-top:10px;color:var(--ok)}}
-.k{{border-radius:6px;padding:0 3px;transition:background .4s,box-shadow .4s}}.glow .k,.on .k{{background:#ffb02033;box-shadow:0 0 0 2px var(--acc);animation:gl 1s ease-in-out 3 alternate}}
-@keyframes gl{{to{{box-shadow:0 0 12px 3px var(--acc)}}}}
+.k{{border-radius:6px;padding:0 3px;transition:background .4s,box-shadow .4s}}.glow .k,.on .k{{color:#ff5c6c;background:#ff5c6c26;box-shadow:0 0 0 2px #ff5c6c;animation:gl 1s ease-in-out 3 alternate}}
+@keyframes gl{{to{{box-shadow:0 0 14px 4px #ff5c6c}}}}
 .fly{{display:inline-block}}.on .fly{{animation:fly 1s ease-in-out both .3s}}@keyframes fly{{from{{transform:translateY(-36px) scale(1.3);opacity:0}}}}
 .st{{position:relative;display:inline-block}}.st::after{{content:'';position:absolute;left:-2px;right:-2px;top:52%;height:3px;background:var(--red);transform:scaleX(0);transform-origin:left}}.on .st::after{{animation:stk .5s ease-out .5s forwards}}@keyframes stk{{to{{transform:scaleX(1)}}}}
-.tap{{text-align:center;color:var(--muted);font-size:13px;margin-top:6px}}footer{{text-align:center;color:var(--muted);font-size:14px;margin-top:24px}}
-</style></head><body><main><h1>6 הטריקים של המערכות</h1><p class="sub">תרגיל ← מתחתיו הפתרון נכתב לבד, והטריק מודגש. נגיעה בתרגיל = לצפות שוב.</p>
+.nx{{display:block;width:100%;margin-top:12px;border:0;border-radius:14px;padding:14px;font:800 20px Heebo,sans-serif;background:var(--acc);color:#14213a;cursor:pointer}}.nx.again{{background:#1c3352;color:var(--ink)}}.tap{{text-align:center;color:var(--muted);font-size:13px;margin-top:6px}}footer{{text-align:center;color:var(--muted);font-size:14px;margin-top:24px}}
+</style></head><body><main><h1>6 הטריקים של המערכות</h1><p class="sub">לוחצים על הכפתור ← מופיע הצעד הבא, כל צעד בצבע אחר. <b style="color:#ff5c6c">באדום: הטריק המתחבא.</b></p>
 {''.join(out)}<footer><b>ערכה: רוני מודן · שחקים</b> · © כל הזכויות שמורות</footer></main>
 <script>
 function fit(){{document.querySelectorAll('.eq,.ans,.sy').forEach(e=>{{let f=parseFloat(getComputedStyle(e).fontSize);e.style.fontSize='';f=parseFloat(getComputedStyle(e).fontSize);while(e.scrollWidth>e.clientWidth+1&&f>11){{f-=1;e.style.fontSize=f+'px';}}}});}}
 fit();addEventListener('resize',fit);
-function play(ex){{const L=[...ex.querySelectorAll('.ln')],sy=ex.querySelector('.sy');L.forEach(l=>l.classList.remove('on'));sy.classList.remove('glow');void ex.offsetWidth;
- clearTimeout(ex._t1);(ex._ts||[]).forEach(clearTimeout);sy.classList.add('glow');ex._ts=L.map((l,i)=>setTimeout(()=>l.classList.add('on'),600+i*1700));}}
-const io=new IntersectionObserver(es=>es.forEach(e=>{{if(e.isIntersecting&&!e.target._p){{e.target._p=1;play(e.target);}}}}),{{threshold:.35}});
-document.querySelectorAll('.ex').forEach(ex=>{{io.observe(ex);ex.onclick=()=>play(ex);}});
+document.querySelectorAll('.ex').forEach(ex=>{{const L=[...ex.querySelectorAll('.ln')],B=ex.querySelector('.nx'),sy=ex.querySelector('.sy');let i=0;
+ B.onclick=()=>{{if(i>=L.length){{L.forEach(l=>l.classList.remove('on'));sy.classList.remove('glow');i=0;B.classList.remove('again');B.textContent='🔍 מה הטריק? ←';return;}}
+  if(i===0)sy.classList.add('glow');L[i].classList.add('on');fit();i++;
+  B.textContent=i>=L.length?'↻ שוב מההתחלה':i===L.length-1?'✅ התשובה ←':'הצעד הבא ←';if(i>=L.length)B.classList.add('again');L[i-1].scrollIntoView({{behavior:'smooth',block:'nearest'}});}};}});
 </script></body></html>'''
 open(os.path.join(APPS,'y10_sys2_solved.html'),'w',encoding='utf-8').write(html);print('built',len(html))
