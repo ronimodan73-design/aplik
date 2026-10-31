@@ -61,6 +61,11 @@ p{font-size:19px;line-height:1.55;margin:0}
 .sol{margin-top:16px;display:none}.sol.on{display:block}
 .sline{font-size:20px;text-align:center;margin:8px 0;opacity:0;transition:opacity .5s;line-height:1.5}.sline.show{opacity:1}
 .hint{background:#ffb02018;border-right:5px solid var(--acc);padding:9px 13px;border-radius:10px;margin:10px 0;font-size:18px;line-height:1.5}
+.ptb{direction:ltr;text-align:center;margin:8px 0}.ptr{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:8px 0}
+.pt{background:#0b1626;color:var(--ink);border:2px dashed #5ec8ff88;border-radius:10px;padding:6px 10px;font:700 21px Rubik;cursor:pointer;min-height:44px}
+.pt.ok{border:3px solid var(--ok);background:#4fd18b33;animation:glow2 1s ease-in-out infinite alternate}@keyframes glow2{to{box-shadow:0 0 14px 2px #4fd18b}}
+.pt.no{border:3px solid var(--red);animation:shk .5s}@keyframes shk{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.pointing .qtext .sy{display:none}
 .askbox{background:#5ec8ff14;border:2px dashed var(--blue);border-radius:14px;padding:10px 12px;margin:12px 0}.askbox .ah{font-weight:800;color:var(--blue);font-size:18px;margin-bottom:6px}
 .asknote{background:#4fd18b18;border-right:5px solid var(--ok);padding:8px 12px;border-radius:10px;margin:8px 0;font-size:17px}
 .stepdone{background:var(--chip);border-radius:10px;padding:7px 12px;margin:6px 0;font-size:17px;color:var(--muted)}.stepdone b{color:var(--ok)}
@@ -206,19 +211,19 @@ function gTrapPair(){const a=nz(-5,6);let b;do b=nz(-5,6);while(b===a||b===-a);c
 /* ===== ★★ trick 1, 2, 3 ===== */
 function gSub(){let a,b;do{a=nz(-5,6);b=nz(-5,6);}while(a===b||a+b===0);const s=a+b,q=a*a+b*b,lo=Math.min(a,b),hi=Math.max(a,b);
  return {kind:'מבודדים ומציבים',rc:1,text:`${SYS('x + y = '+N(s),'x² + y² = '+q)}מה הפתרונות?`,...CH([{t:M(P(a,b)+' , '+P(b,a)),ok:1},{t:M(P(a,b)),msg:'💣 יש שני ערכים ל־x ← שני זוגות.'},{t:M(P(a,a)+' , '+P(b,b)),msg:'💣 כל x עם ה־y שלו: '+M('y = '+N(s)+' − x')+'.'},{t:M(P(-a,-b)+' , '+P(-b,-a)),msg:'בדקו את הסימנים: '+M('x + y = '+N(s))+'.'}]),
-  crack:[trickCK(0),CK('מאיזו משוואה מבודדים?',[['מהקווית x + y = '+N(s),1],['מהריבועית',0]],'מבודדים תמיד מהמשוואה הקווית: זה הכי קל.')],
+  crack:[{lab:'👆 הצביעו על הרמז',point:[[[M('x + y = '+N(s)),1]],[[M('x² + y² = '+q),0,'כאן יש ריבועים: קשה לבודד מכאן.']]],okMsg:'משוואה קווית ← מבודדים ממנה!'},trickCK(0),CK('מאיזו משוואה מבודדים?',[['מהקווית x + y = '+N(s),1],['מהריבועית',0]],'מבודדים תמיד מהמשוואה הקווית: זה הכי קל.')],
   work:[{t:`מבודדים: ${M('y = ? − x')}`,ans:[{label:'',val:s}],why:'מעבירים את x לצד ימין.'},{t:`מציבים, פותחים ומחלקים ב־2: ${M('x² − '+(s<0?'('+N(s)+')':s)+'x + ? = 0')} <small>(המספר)</small>`,ans:[{label:'',val:a*b}],why:`${M('x² + ('+N(s)+' − x)² = '+q)} ← ${M('2x² − '+(2*s<0?'('+N(2*s)+')':2*s)+'x + '+(s*s-q)+' = 0')} ← מחלקים ב־2.`},{t:'הפתרון הקטן של x:',ans:[{label:'x =',val:lo}],why:'מפרקים לגורמים או בנוסחת השורשים.'},{t:'הפתרון הגדול של x:',ans:[{label:'x =',val:hi}],why:'שני מספרים שסכומם '+N(s)+' ומכפלתם '+N(a*b)+'.'},{t:`כש־${M('x = '+N(lo))}, מה y?`,ans:[{label:'y =',val:s-lo}],why:'מציבים בקווית: '+M('y = '+N(s)+' − x')+'.'}],
   lines:[M('y = '+N(s)+' − x'),M('x² + ('+N(s)+' − x)² = '+q),M('x² '+(s<0?'+ '+(-s):'− '+s)+'x '+(a*b<0?'− '+(-a*b):'+ '+a*b)+' = 0'),`${M('x = '+N(lo))} או ${M('x = '+N(hi))}`,M(P(lo,s-lo)+' , '+P(hi,s-hi))],rule:'קווית + ריבועית ← מבודדים מהקווית ומציבים בריבועית.'};}
 function gXY(){const x0=nz(-6,8),y0=nz(-6,8),a=nz(-5,5),b=nz(-5,5),p=x0*y0,c=(x0+a)*(y0+b),k=c-p-a*b;
- return {kind:'ה־xy נעלם',rc:3,text:`${SYS(`(${ex([1,'x'],[a,''])})(${ex([1,'y'],[b,''])}) = ${N(c)}`,'xy = '+N(p))}פותחים סוגריים ומציבים את xy. כתבו את המשוואה הקווית:`,tpl:'[] x + [] y = []',
+ return {kind:'ה־xy נעלם',rc:3,text:`${SYS(`(${ex([1,'x'],[a,''])})(${ex([1,'y'],[b,''])}) = ${N(c)}`,'xy = '+N(p))}איזו משוואה קווית מתקבלת מהמערכת?`,tpl:'[] x + [] y = []',
   ans:[{label:'המקדם של x',col:BL,val:b,neg:true},{label:'המקדם של y',col:GR,val:a,neg:true},{label:'המספר',col:OR,val:k,neg:true}],
-  crack:[trickCK(1),CK('מה יקרה ל־xy?',[['מציבים במקומו '+N(p)+' והוא נעלם',1],['מחלקים בו',0],['מעלים בריבוע',0]],'יש xy בשתי המשוואות ← מחליפים אותו במספר.')],
+  crack:[{lab:'👆 הצביעו על הרמז',point:[[[M(`(${ex([1,'x'],[a,''])})(${ex([1,'y'],[b,''])})`),0,'כמעט! אחרי שנפתח את הסוגריים יופיע משהו… מה מחכה לו במשוואה השנייה?'],[M('= '+N(c)),0,'זה רק המספר.']],[[M('xy'),1],[M('= '+N(p)),0,'זה רק המספר. מה עוד כתוב במשוואה?']]],okMsg:`${M('xy')} נתון! אחרי פתיחת הסוגריים יופיע xy ← מחליפים אותו ב־${M(N(p))}.`},trickCK(1),CK('מה יקרה ל־xy?',[['מציבים במקומו '+N(p)+' והוא נעלם',1],['מחלקים בו',0],['מעלים בריבוע',0]],'יש xy בשתי המשוואות ← מחליפים אותו במספר.')],
   work:[{t:`פותחים: ${M('xy + (?)x + ...')} מה המקדם של x?`,ans:[{label:'',val:b}],why:`x כפול ${M(N(b))} ← המקדם של x הוא המספר שבסוגריים <b>של y</b>.`},{t:'מה המקדם של y?',ans:[{label:'',val:a}],why:`y כפול ${M(N(a))} (מהסוגריים של x).`},{t:`המספר: ${M(N(a)+' · '+(b<0?'('+N(b)+')':b)+' = ?')}`,ans:[{label:'',val:a*b}],why:'מינוס כפול מינוס = פלוס.'},{t:`מציבים ${M('xy = '+N(p))} ומעבירים את המספרים: ${M(N(c)+' − '+(p<0?'('+N(p)+')':p)+' − '+(a*b<0?'('+N(a*b)+')':a*b)+' = ?')}`,ans:[{label:'',val:k}],why:'מעבירים אגף ← הסימן מתהפך.'}],
   lines:[M('xy'+tm(b,'x')+tm(a,'y')+tm(a*b,'')+' = '+N(c)),`${M('xy = '+N(p))} ← ${M(N(p)+tm(b,'x')+tm(a,'y')+tm(a*b,'')+' = '+N(c))}`,M(ex([b,'x'],[a,'y'])+' = '+N(k))+' ← קווית! ממשיכים בטריק 1.'],rule:`${M('(x + a)(y + b)')} עם ${M('xy')} נתון ← פותחים, מציבים ${M('xy')}, ונשארת משוואה קווית.`,
   diag:({vals:[u,v]})=>u===a&&v===b&&a!==b?'💣 החלפתם: x נכפל במספר שבסוגריים <b>של y</b>.':null};}
 function gHidden(){let x0,y0;do{x0=nz(-4,7);y0=nz(-4,7);}while(x0+y0<3);const s=x0+y0,a=R(2,5);let b;do b=R(1,5);while(b===a);
  return {kind:'ריבוע מוסתר',rc:4,text:`${SYS('x² + 2xy + y² = '+s*s,ex([a,'x'],[b,'y'])+' = '+N(a*x0+b*y0))}מה אפשר לדעת על ${M('x + y')}?`,...CH([{t:M('x + y = '+s+' או x + y = −'+s),ok:1},{t:M('x + y = '+s),msg:`💣 גם ${M('(−'+s+')² = '+s*s)}. שני מקרים!`},{t:M('x + y = '+s*s),msg:'זה (x + y)². צריך להוציא שורש.'},{t:M('x + y = '+(s*s/2)),msg:'שורש, לא חצי.'}]),
-  crack:[trickCK(2)],
+  crack:[{lab:'👆 הצביעו על הרמז',point:[[[M('x² + 2xy + y²'),1],[M('= '+s*s),0,'זה המספר. מה מיוחד בצד השמאלי?']],[[M(ex([a,'x'],[b,'y'])+' = '+N(a*x0+b*y0)),0,'אפשר לבודד ממנה, אבל יש רמז חזק יותר במשוואה הראשונה.']]],okMsg:`${M('x² + 2xy + y² = (x + y)²')}!`},trickCK(2)],
   work:[{t:`${M('x² + 2xy + y²')} זה בעצם:`,choice:[M('(x + y)²'),M('(x − y)²'),M('x² + y²')],correct:0,why:'נוסחת הכפל המקוצר: (x + y)² = x² + 2xy + y².'},{t:`${M('(x + y)² = '+s*s)} ← ${M('x + y')} יכול להיות:`,choice:[M('±'+s),M(''+s)],correct:0,why:'💣 שורש ← שני מקרים: חיובי ושלילי.'}],
   lines:[M('(x + y)² = '+s*s),`${M('x + y = '+s)} או ${M('x + y = −'+s)}`,'כל מקרה + הקווית ← מערכת קווית קטנה.'],rule:`${M('x² + 2xy + y² = (x + y)²')} ← שורש ← שני מקרים (±).`};}
 /* ===== ★★★ trick 4, 5 ===== */
@@ -226,7 +231,7 @@ function gSquares(){const x0=R(1,5),y0=R(1,5),X=x0*x0,Y=y0*y0;let a,b,c,d;do{a=R
  const e1=a*X+b*Y,e2=c*X+d*Y;
  return {kind:'x² הוא נעלם חדש',rc:6,text:`${SYS(ex([a,'x²'],[b,'y²'])+' = '+N(e1),ex([c,'x²'],[d,'y²'])+' = '+N(e2))}מצאו את ${M('x²')} ואת ${M('y²')}.`,tpl:'x² = [] , y² = []',
   ans:[{label:'x² =',col:PU,val:X},{label:'y² =',col:GR,val:Y}],
-  crack:[trickCK(3),CK('כמה פתרונות יכולים להיות בסוף?',[['עד 4',1],['תמיד 1',0],['תמיד 2',0]],'x = ±… ו־y = ±… ← 2 · 2 = 4.')],
+  crack:[{lab:'👆 הצביעו על הרמז',point:[[[M(tm(a,'x²',true)),1],[M(tm(b,'y²')),1],[M('= '+N(e1)),0,'זה רק מספר. מה מיוחד בנעלמים?']],[[M(tm(c,'x²',true)),1],[M(tm(d,'y²')),1],[M('= '+N(e2)),0,'זה רק מספר.']]],okMsg:`יש רק ${M('x²')} ו־${M('y²')}, בלי x או y לבד ← ${M('X = x² , Y = y²')}`},trickCK(3),CK('כמה פתרונות יכולים להיות בסוף?',[['עד 4',1],['תמיד 1',0],['תמיד 2',0]],'x = ±… ו־y = ±… ← 2 · 2 = 4.')],
   work:[{t:`מסמנים ${M('X = x² , Y = y²')}: ${M(ex([a,'X'],[b,'Y'])+' = '+N(e1))}. זו מערכת:`,choice:['קווית רגילה','ריבועית'],correct:0,why:'X ו־Y בחזקה 1 ← מערכת קווית.'},{t:`${M('X = ?')}`,ans:[{label:'X =',val:X}],why:'מבטלים את Y: כופלים את המשוואות ומחסירים.'},{t:`אז ${M('x = ±?')}`,ans:[{label:'',val:x0}],why:'💣 x² = '+X+' ← x = ±'+x0+'.'},{t:`ו־${M('Y = ?')}`,ans:[{label:'Y =',val:Y}],why:'מציבים את X באחת המשוואות.'}],
   lines:[`${M('X = x² , Y = y²')} ← מערכת קווית`,M('X = '+X+' , Y = '+Y),`${M('x = ±'+x0+' , y = ±'+y0)} ← 4 פתרונות`],rule:`רק ${M('x²')} ו־${M('y²')} ← ${M('X = x² , Y = y²')} ← קווית ← בסוף ± ← עד 4 פתרונות.`,
   diag:({vals:[u,v]})=>u===x0&&v===y0?'💣 זה x ו־y. שאלנו על x² ו־y² (X ו־Y).':null};}
@@ -235,7 +240,7 @@ function fracSys(){const X=[1,2,4,5,-1,-2,-4,-5,10],x0=pick(X);let y0;do y0=pick
 function gFrac(){const o=fracSys(),{x0,y0,p,q,r,s,c1,c2}=o;
  return {kind:'שבר הופך לנעלם',rc:7,text:`${SYS(fx(p,'x',1)+fx(q,'y')+' = '+N(c1),fx(r,'x',1)+fx(s,'y')+' = '+N(c2))}מצאו את x ואת y.`,tpl:'x = [] , y = []',
   ans:[{label:'x =',col:BL,val:x0,neg:true},{label:'y =',col:GR,val:y0,neg:true}],
-  crack:[trickCK(4),CK('מה מסמנים?',[[M(FR(1,'x')+' = a , '+FR(1,'y')+' = b'),1],[M('a = x , b = y'),0],[M('a = x²'),0]],'השבר עצמו הופך לנעלם חדש.')],
+  crack:[{lab:'👆 הצביעו על הרמז',point:[[[M(fx(p,'x',1)),1],[M(fx(q,'y')),1],[M('= '+N(c1)),0,'זה רק מספר. איפה הנעלמים?']],[[M(fx(r,'x',1)),1],[M(fx(s,'y')),1],[M('= '+N(c2)),0,'זה רק מספר.']]],okMsg:`הנעלם במכנה ← השבר הופך לנעלם: ${M(FR(1,'x')+' = a')}`},trickCK(4),CK('מה מסמנים?',[[M(FR(1,'x')+' = a , '+FR(1,'y')+' = b'),1],[M('a = x , b = y'),0],[M('a = x²'),0]],'השבר עצמו הופך לנעלם חדש.')],
   work:[{t:`${M(FR(1,'x')+' = a , '+FR(1,'y')+' = b')}: ${M(ex([p,'a'],[q,'b'])+' = '+N(c1))}. מה a? <small>(אפשר עשרוני, למשל 0.25)</small>`,ans:[{label:'a =',val:1/x0,dec:true}],why:'פותרים מערכת קווית רגילה ב־a ו־b.'},{t:'מה b?',ans:[{label:'b =',val:1/y0,dec:true}],why:'מציבים את a באחת המשוואות.'},{t:`💣 חוזרים ל־x: ${M('x = 1 : a = ?')}`,ans:[{label:'x =',val:x0}],why:'a הוא לא x! x = 1 : a.'},{t:`${M('y = 1 : b = ?')}`,ans:[{label:'y =',val:y0}],why:'y = 1 : b.'}],
   lines:[M(ex([p,'a'],[q,'b'])+' = '+N(c1)+' , '+ex([r,'a'],[s,'b'])+' = '+N(c2)),M('a = '+N(+(1/x0).toFixed(4))+' , b = '+N(+(1/y0).toFixed(4))),M('x = '+N(x0)+' , y = '+N(y0))],rule:`נעלם במכנה ← ${M(FR(1,'x')+' = a')} ← מערכת קווית ← בסוף חוזרים: ${M('x = 1 : a')}.`,
   diag:({vals:[u,v]})=>Math.abs(u-1/x0)<1e-9?'💣 זה a. חוזרים: x = 1 : a.':null};}
@@ -251,7 +256,7 @@ function gTrapDen(){const k=R(2,9);
 function gSubtr(){let x0,y0,p;do{x0=nz(-5,5);y0=nz(-5,5);p=nz(-8,8);}while(Math.abs(x0)===Math.abs(y0));const r=x0*x0+y0*y0,c1=r+p*x0;
  return {kind:'מחסירים משוואות',rc:9,text:`${SYS(ex([1,'x²'],[1,'y²'],[p,'x'])+' = '+N(c1),'x² + y² = '+r)}מצאו את x ואת y (חיובי).`,tpl:'x = [] , y = ± []',
   ans:[{label:'x =',col:BL,val:x0,neg:true},{label:'y = ±',col:GR,val:Math.abs(y0)}],
-  crack:[trickCK(5),CK('מה נעלם כשמחסירים?',[[M('x² + y²'),1],[M('x'),0],['שום דבר',0]],'x² + y² מופיע בשתי המשוואות ← מחסירים והוא נעלם.')],
+  crack:[{lab:'👆 הצביעו על הרמז',point:[[[M('x² + y²'),1],[M(tm(p,'x')),0,'x לבד הוא לא הרמז. מה חוזר בשתי המשוואות?'],[M('= '+N(c1)),0,'זה רק מספר.']],[[M('x² + y²'),1],[M('= '+r),0,'זה רק מספר.']]],okMsg:`${M('x² + y²')} בשתי המשוואות ← מחסירים, והוא נעלם!`},trickCK(5),CK('מה נעלם כשמחסירים?',[[M('x² + y²'),1],[M('x'),0],['שום דבר',0]],'x² + y² מופיע בשתי המשוואות ← מחסירים והוא נעלם.')],
   work:[{t:`מחסירים (עליונה פחות תחתונה): ${M(tm(p,'x',true)+' = ?')}`,ans:[{label:'',val:c1-r}],why:`${M(N(c1)+' − '+r)}. x² + y² נמחק.`},{t:`${M('x = ?')}`,ans:[{label:'x =',val:x0}],why:'מחלקים ב־'+N(p)+'.'},{t:`מציבים: ${M('y² = '+r+' − '+(x0<0?'('+N(x0)+')':x0)+'² = ?')}`,ans:[{label:'y² =',val:y0*y0}],why:'💣 (מינוס)² = פלוס.'},{t:`${M('y = ±?')}`,ans:[{label:'',val:Math.abs(y0)}],why:'שורש ← ±.'}],
   lines:[M(tm(p,'x',true)+' = '+N(c1)+' − '+r+' = '+N(c1-r)),M('x = '+N(x0)),M('y² = '+r+' − '+x0*x0+' = '+y0*y0),`${M('y = ±'+Math.abs(y0))} ← ${M(P(x0,Math.abs(y0))+' , '+P(x0,-Math.abs(y0)))}`],rule:`אותו ${M('x² + y²')} בשתי המשוואות ← מחסירים ← נשארת משוואה קווית.`,
   diag:({vals:[u,v]})=>u===-x0?'בדקו את הסימן בחילוק.':v===y0*y0?'זה y². צריך שורש.':null};}
@@ -386,6 +391,9 @@ CHAPTERS[0].scene={skip:2,states:[
  {lines:[[['y','y','or'],['q','='],['7','7','hl'],['p','−','hl'],['x','x','hl']],[['a','x²'],['b','+'],['y2','y²','hl'],['c','='],['d','25']]],lbl:['y2','כאן מציבים!'],cap:`y הוא <b>אותו מספר</b> בשתי המשוואות ← מותר להחליף אותו ב־${M('(7 − x)')}`,dur:4},
  {lines:[[['y','y'],['q','='],['7','7'],['p','−'],['x','x']],[['a','x²'],['b','+'],['o','(','or'],['s7','7','or','7'],['sm','−','or','p'],['sx','x','or','x'],['cl',')²','or'],['c','='],['d','25']]],dim:[0],cap:`<b>מציבים:</b> ${M('(7 − x)')} עף ונוחת במקום y. נשאר נעלם אחד! 🎉`,dur:4.5}]};
 
+/* תרגול בכל פרק: רק הטריק של הפרק, תרגילים דומים עם רמז הולך ונעלם (המעורב – רק אחרי כל הפרקים) */
+[gSub,gXY,gHidden,gSquares,gFrac,gSubtr].forEach((g,i)=>CHAPTERS[i].gens=[{g,n:4,h:2},{g,n:3,h:1},{g,n:3,h:0}]);
+
 const TL=['★ ידע','★★ יישום','★★★ הבנה ונימוק','★★★★ חשיבה ואוריינות'],TCOL=[GR,BL,OR,PU];
 const TOTAL=20;let S={};
 const rcOf=q=>{if(q.rc!=null)return q.rc;if(APP.rcFn){const v=APP.rcFn(q);if(v!=null)return v;}return APP.rc?APP.rc[q.kind]:null;};
@@ -410,22 +418,25 @@ function choicesHtml(c){return c.choice?`<div class="choices">${c.choiceLab?`<sp
 function bindChoices(T){S.sel=-1;V.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{if(S.done&&T)return;V.querySelectorAll('[data-c]').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');S.sel=+b.dataset.c;});}
 function drawAsk(){const q=S.q;$('#sc').textContent=`נקודות: ${S.score}`;
  V.innerHTML=`<div class="meta"><span>${lab()} · שאלה ${S.i+1} מתוך ${S.n}</span><span></span></div><div class="prog"><i style="width:${S.i/S.n*100}%"></i></div>
- <div class="card pop"><span class="kind">${q.kind}</span>${(()=>{const d=qDia(q,false);return d?`<div class="dia">${d}</div>`:''})()}<div class="qtext">${q.text}</div>
+ <div class="card pop${((q.crack||[])[S.ai]||{}).point?' pointing':''}"><span class="kind">${q.kind}</span>${(()=>{const d=qDia(q,false);return d?`<div class="dia">${d}</div>`:''})()}<div class="qtext">${q.text}</div>
  ${(()=>{const L=q.crack||[q.ask],A=L[S.ai];return `<div class="askbox"><div class="ah">🔓 פיצוח השאלה${L.length>1?` · שלב ${S.ai+1} מתוך ${L.length}: ${A.lab||''}`:': מה השאלה שואלת?'}</div>
- ${L.slice(0,S.ai).map((a,k)=>`<div class="stepdone"><b>${S.crk[k]?'✓':'👀'} ${a.lab||''}</b> ${a.choice[a.correct]}</div>`).join('')}${A.text?`<div>${A.text}</div>`:''}${choicesHtml(A)}</div>`;})()}
+ ${L.slice(0,S.ai).map((a,k)=>`<div class="stepdone"><b>${S.crk[k]?'✓':'👀'} ${a.lab||''}</b> ${a.point?a.okMsg||'':a.choice[a.correct]}</div>`).join('')}${A.text?`<div>${A.text}</div>`:''}${A.point?`<div class="ptb">${A.point.map((r,ri)=>`<div class="ptr">${r.map(([h],j)=>`<button type="button" class="pt" data-pt="${ri}-${j}">${h}</button>`).join('')}</div>`).join('')}</div>`:choicesHtml(A)}</div>`;})()}
  <div class="btns"><button class="btn main" id="chk" type="button">בדיקה</button><button class="btn sec" id="show" type="button">הראו לי</button></div><div class="fb" id="fb" role="status" aria-live="polite"></div></div>`;
  bindChoices(false);
+ {const A=(q.crack||[])[S.ai];if(A&&A.point){$('#chk').style.display='none';V.querySelectorAll('.pt').forEach(b=>b.onclick=()=>{const [ri,j]=b.dataset.pt.split('-').map(Number),ok=A.point[ri][j][1],fb=$('#fb');
+  if(ok){b.classList.add('ok');fb.className='fb ok pop';fb.innerHTML=`<b>בדיוק! 🎯</b> ${A.okMsg||''}`;S.crk[S.ai]=S.askTries===0;setTimeout(()=>{S.ai++;S.askTries=0;if(S.ai>=q.crack.length){S.askDone=true;S.askOk=S.crk.every(Boolean);}draw();},1300);}
+  else{b.classList.add('no');setTimeout(()=>b.classList.remove('no'),600);S.askTries++;fb.className='fb no pop';fb.innerHTML=`<b>לא זה.</b> ${A.point[ri][j][2]||A.why||''}`;}});}}
  $('#chk').onclick=()=>{const fb=$('#fb');if(S.sel<0){fb.className='fb no';fb.innerHTML='בחרו תשובה.';return;}
   const L=q.crack||[q.ask],A=L[S.ai];
   if(S.sel===A.correct){S.crk[S.ai]=S.askTries===0;S.ai++;S.askTries=0;if(S.ai>=L.length){S.askDone=true;S.askOk=S.crk.every(Boolean);}draw();return;}
   S.askTries++;const m=A.diag?A.diag({sel:S.sel}):null;fb.className='fb no pop';fb.innerHTML=`<b>לא בדיוק.</b> ${m||A.why||''} ${S.askTries>=2?'<br>לחצו על <b>"הראו לי"</b>.':'נסו שוב.'}`;};
- $('#show').onclick=()=>{const L=q.crack||[q.ask];S.crk[S.ai]=false;S.ai++;S.askTries=0;if(S.ai>=L.length){S.askDone=true;S.askOk=false;}draw();};}
+ $('#show').onclick=()=>{const L=q.crack||[q.ask],A=L[S.ai];if(A.point&&!V.querySelector('.pt.ok')){A.point.forEach((r,ri)=>r.forEach((x,j)=>{if(x[1])V.querySelector(`[data-pt="${ri}-${j}"]`).classList.add('ok');}));const fb=$('#fb');fb.className='fb no pop';fb.innerHTML=`👀 ${A.okMsg||A.why||''}`;S.askTries=9;$('#show').textContent='הבנתי, הלאה';return;}S.crk[S.ai]=false;S.ai++;S.askTries=0;if(S.ai>=L.length){S.askDone=true;S.askOk=false;}draw();};}
 function lab(){return S.mode==='guide'?'✍️ עכשיו אתה · פרק '+(S.ci+1):S.mode==='chp'?'🎯 פרק '+(S.ci+1)+': '+CHAPTERS[S.ci].t:S.mode==='chk'?'🧠 בדיקת הבנה · '+RECAP[S.card].h.replace(/<[^>]+>/g,''):S.mode==='warm'?'חימום':S.mode==='test'?'מבחן מדורג · '+TL[S.lv[S.i]]:'★'.repeat(LEVELS[S.l].n)+' '+LEVELS[S.l].t;}
 function qDia(q,hl){return typeof QDIA==='function'?QDIA(q,hl):(q.dia?q.dia(hl):(hl&&S.q&&q!==S.q&&S.q.dia?S.q.dia(true):''));}
 function draw(){if(!S.askDone)return drawAsk();const q=S.q,c=curQ(),T=S.mode==='test',ST=q.steps;$('#sc').textContent=T?'':`נקודות: ${S.score}`;
  V.innerHTML=`<div class="meta"><span>${lab()} · שאלה ${S.i+1} מתוך ${S.n}</span><span>${!T&&S.streak>=3?'🔥 '+S.streak+' ברצף':''}</span></div><div class="prog"><i style="width:${S.i/S.n*100}%"></i></div>
  <div class="card pop"><span class="kind">${q.kind}</span>${(()=>{const d=qDia(q,false);return d?`<div class="dia">${d}</div>`:''})()}<div class="qtext">${q.text}</div>
- ${q.crack&&S.mode!=='test'&&S.mode!=='chk'?`<div class="asknote"><b>🔓 פיצחנו:</b> ${q.crack.map(a=>`${a.lab||''} <b>${a.choice[a.correct]}</b>`).join(' · ')}</div>`:q.ask&&S.mode!=='test'&&S.mode!=='chk'?`<div class="asknote">${S.askOk?'✓ נכון!':'👀'} השאלה שואלת: <b>${q.ask.choice[q.ask.correct]}</b></div>`:''}
+ ${q.crack&&S.mode!=='test'&&S.mode!=='chk'?`<div class="asknote"><b>🔓 פיצחנו:</b> ${q.crack.map(a=>a.point?`🎯 ${a.okMsg||''}`:`${a.lab||''} <b>${a.choice[a.correct]}</b>`).join(' · ')}</div>`:q.ask&&S.mode!=='test'&&S.mode!=='chk'?`<div class="asknote">${S.askOk?'✓ נכון!':'👀'} השאלה שואלת: <b>${q.ask.choice[q.ask.correct]}</b></div>`:''}
  ${ST?ST.slice(0,S.si).map((st,k)=>`<div class="stepdone"><b>✓ צעד ${k+1}:</b> ${st.short||st.text} ← ${ansText(st)}</div>`).join('')+`<div class="stephead">צעד ${S.si+1} מתוך ${ST.length}</div><div class="qtext">${c.text}</div>`:''}
  ${hintHtml(c)}
  ${(q=>`${q.ans&&q.tpl?`<div class="inputs tpl">${q.tpl.split('[]').map((p,i,arr)=>`<span class="tp">${p}</span>`+(i<arr.length-1?`<input class="tin" inputmode="${q.ans[i].neg?'text':'decimal'}" data-i="${i}" aria-label="${q.ans[i].label}" style="border-color:${q.ans[i].col}">`:'')).join('')}</div>`:''}
