@@ -9,7 +9,7 @@ def fly(t): return f'<span class="fly">{t}</span>'      # lands in place
 def st(t): return f'<span class="st">{t}</span>'        # struck out
 def fr(a,b): return f'<span class="fr"><span>{a}</span><span>{b}</span></span>'
 import re
-def mm(t): return re.sub(r'([A-Za-z0-9²(][A-Za-z0-9²()=+−:.,; ]*[A-Za-z0-9²)])',lambda g:m(g.group(1)),t)
+def mm(t): return re.sub(r'([A-Za-z0-9²(±−][A-Za-z0-9²()=+−:.,; ·±/]*[A-Za-z0-9²)])',lambda g:m(g.group(1)),t)
 def sys(a,b): return f'<div class="sy">{a}<br>{b}</div>'
 # each exercise: (number, system html, clue text, [(line html, note)], answer)
 T=[
@@ -80,13 +80,27 @@ T=[
   (m('(y + 5)² − (y + 2)² = 15 ← 6y + 21 = 15'),'פותחים: y² מתבטל גם הוא!'),
   (m('y = −1 ← (x − 1)² + 1 = 17'),'מציבים'),
   (m('x − 1 = ±4 ← x = 5 , x = −3'),'שורש ← ±')],'(5 ; −1) , (−3 ; −1)')])]
-out=[]
+
+WHY=[
+ ('מכל משוואה קווית אפשר לבודד נעלם בצעד אחד. מהריבועית – לא (יוצא שורש).',['x + y = 7 ← y הוא 7 פחות x. מעבירים x לצד השני ← הסימן מתהפך.','y הוא אותו מספר בשתי המשוואות, אז מותר לכתוב במקומו את הביטוי ששווה לו.','(7 − x)² = (7 − x)(7 − x) = 49 − 7x − 7x + x²','מעבירים 25 ומכנסים: 2x² − 14x + 24 = 0. מחלקים כל איבר ב־2 – המשוואה לא משתנה.','x² − 7x + 12 = (x − 3)(x − 4). מכפלה היא 0 רק כשאחד הגורמים 0.','מציבים בקווית y = 7 − x, כי שם לכל x יוצא y אחד בלבד.']),
+ ('במשוואה y − x = 1 אין ריבועים ← מבודדים ממנה.',['מעבירים −x לצד השני ← +x.','y שווה ל־x + 1, אז כותבים x + 1 במקום y.','(x + 1)² = x² + 2x + 1 ← 2x² + 2x + 1 = 13 ← מעבירים 13 ומחלקים ב־2.','x² + x − 6 = (x − 2)(x + 3)','מציבים כל x ב־y = x + 1.']),
+ ('כשפותחים את הסוגריים מקבלים xy, ובמשוואה השנייה כתוב כמה xy שווה. זה הרמז!',['x · y = xy , x · (−1) = −x , 2 · y = 2y , 2 · (−1) = −2','לפי המשוואה השנייה xy = 60, אז מחליפים.','יש 60 בשני הצדדים ← מורידים 60 משני הצדדים. נשארת משוואה בלי ריבועים.','−x + 2y = 2 ← −x = 2 − 2y ← כופלים ב־(−1).','x = 2y − 2, ומציבים במשוואה הפשוטה xy = 60.','y² − y − 30 = (y − 6)(y + 5). כל y מציבים ב־x = 2y − 2.']),
+ ('אחרי פתיחת הסוגריים יופיע xy, והוא נתון: 24.',['x · y + 2 · x + 1 · y + 1 · 2','xy = 24 ← 24 + 2x + y + 2 = 40 ← 2x + y = 14','מעבירים 2x ← y = 14 − 2x','מציבים ב־xy = 24 ← 14x − 2x² = 24 ← מחלקים ב־(−2).','x² − 7x + 12 = (x − 3)(x − 4) ← מציבים ב־y = 14 − 2x.']),
+ ('x² + 2xy + y² הוא בדיוק (x + y)². כך משוואה ריבועית קשה הופכת לקלה.',['(x + y)(x + y) = x² + xy + xy + y² = x² + 2xy + y²','מספר בריבוע = 64 ← המספר הוא 8 או −8.','כופלים x + y = 8 ב־2: 2x + 2y = 16. מחסירים מ־2x + 3y = 19 ← y = 3.','2x + 2y = −16 ← מחסירים ← y = 35 ← x = −8 − 35']),
+ ('x מופיע רק כ־x² (ו־y רק כ־y²) ← אפשר לחשוב על x² כעל נעלם אחד.',['מסמנים X = x² , Y = y². אין חזקות ← מערכת קווית.','מחברים: +Y ו־−Y מבטלים זה את זה.','x² = 9 ← גם 3² וגם (−3)² שווים 9.']),
+ ('שוב רק x² ו־y² ← X ו־Y.',['3X + 2Y = 11 , 4X − 3Y = −8: מערכת קווית.','רוצים לבטל את Y: 6Y ו־−6Y.','9X + 8X = 17X , 33 − 16 = 17 ← X = 1 ← 3 + 2Y = 11 ← Y = 4','x² = 1 ← x = ±1 , y² = 4 ← y = ±2. כל צירוף עובד.']),
+ ('x ו־y במכנה. 16/x = 16 · 1/x ← 1/x הוא נעלם שחוזר.',['מסמנים 1/x = a , 1/y = b.','16/x = 16a , 12/y = 12b ← משוואות בלי שברים.','כופלים כך שיהיה 24b בשתיהן, ואז b יתבטל.','32a − 30a = 2a , 10 − 9 = 1 ← a = 0.5 ← 5 − 8b = 3 ← b = 0.25','a = 1/x ← x = 1 : a = 2. אותו דבר ל־y.']),
+ ('אותם מכנים (x + y) ו־(x − y) חוזרים ← כל שבר כזה הוא נעלם.',['1/(x + y) = a , 1/(x − y) = b','20/(x + y) = 20a , 10/(x − y) = 10b','40b בשתיהן ← מחסירים: 170a = 17','a = 1/(x + y) ← x + y = 1 : a = 10. וכך x − y = 2.','מחברים: (x + y) + (x − y) = 2x']),
+ ('x² + y² כתוב בשתי המשוואות. מחסירים ← הוא נעלם ונשארת משוואה פשוטה.',['מחסירים צד שמאל מצד שמאל וצד ימין מצד ימין – כמו מאזניים.','−20y = −72 ← מחלקים ב־(−20).','y = 3.6 ← y² = 12.96 ← x² = 36 − 12.96']),
+ ('(x − 1)² מופיע בשתיהן בדיוק אותו דבר ← מחסירים.',['(x − 1)² − (x − 1)² = 0 , 32 − 17 = 15','(y + 5)² = y² + 10y + 25 , (y + 2)² = y² + 4y + 4 ← y² מתבטל: 6y + 21','6y = −6 ← y = −1 ← (−1 + 2)² = 1','(x − 1)² = 16 ← x − 1 = 4 או −4'])]
+out=[];EI=0
 for ti,(name,how,exs) in enumerate(T):
     out.append(f'<section><h2>{name}</h2><p class="how">{how}</p>')
     for (num,sy,clue,lines,ans) in exs:
         C=['#5ec8ff','#4fd18b','#c084fc','#ffb020','#2dd4bf','#f472b6','#a3e635']
-        ls=''.join(f'<div class="ln" style="--c:{C[i%len(C)]}"><div class="eq">{l}</div><div class="nt">← {mm(n)}</div></div>' for i,(l,n) in enumerate(lines))
-        out.append(f'<div class="ex"><div class="num">{num}</div>{sy}<div class="clue ln">{mm(clue)}</div>{ls}<div class="ln ans">✅ {m(ans)}</div><button type="button" class="nx">🔍 מה הטריק? ←</button></div>')
+        cw,ws=WHY[EI];EI+=1;assert len(ws)==len(lines),(num,len(ws),len(lines))
+        ls=''.join(f'<div class="ln" style="--c:{C[i%len(C)]}"><div class="eq">{l}</div><div class="nt">← {mm(n)}</div><div class="wy">💡 למה? {mm(ws[i])}</div></div>' for i,(l,n) in enumerate(lines))
+        out.append(f'<div class="ex"><div class="num">{num}</div>{sy}<div class="clue ln">{mm(clue)}<div class="cw">למה דווקא הטריק הזה? {mm(cw)}</div></div>{ls}<div class="ln ans">✅ {m(ans)}</div><button type="button" class="nx">🔍 מה הטריק? ←</button></div>')
     out.append('</section>')
 html=f'''<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>6 הטריקים – תרגילים פתורים · ערכה: רוני מודן</title><style>{fonts}
@@ -107,7 +121,7 @@ h2{{font:800 22px Heebo;margin:26px 0 4px;color:var(--acc)}}.how{{margin:0 0 10p
 @keyframes gl{{to{{box-shadow:0 0 14px 4px #ff5c6c}}}}
 .fly{{display:inline-block}}.on .fly{{animation:fly 1s ease-in-out both .3s}}@keyframes fly{{from{{transform:translateY(-36px) scale(1.3);opacity:0}}}}
 .st{{position:relative;display:inline-block}}.st::after{{content:'';position:absolute;left:-2px;right:-2px;top:52%;height:3px;background:var(--red);transform:scaleX(0);transform-origin:left}}.on .st::after{{animation:stk .5s ease-out .5s forwards}}@keyframes stk{{to{{transform:scaleX(1)}}}}
-.nx{{display:block;width:100%;margin-top:12px;border:0;border-radius:14px;padding:14px;font:800 20px Heebo,sans-serif;background:var(--acc);color:#14213a;cursor:pointer}}.nx.again{{background:#1c3352;color:var(--ink)}}.tap{{text-align:center;color:var(--muted);font-size:13px;margin-top:6px}}footer{{text-align:center;color:var(--muted);font-size:14px;margin-top:24px}}
+.wy{{font-size:15px;color:var(--ink);text-align:center;margin:2px 0 4px;line-height:1.5}}.cw{{font-size:15px;color:var(--ink);font-weight:400;margin-top:4px}}.nx{{display:block;width:100%;margin-top:12px;border:0;border-radius:14px;padding:14px;font:800 20px Heebo,sans-serif;background:var(--acc);color:#14213a;cursor:pointer}}.nx.again{{background:#1c3352;color:var(--ink)}}.tap{{text-align:center;color:var(--muted);font-size:13px;margin-top:6px}}footer{{text-align:center;color:var(--muted);font-size:14px;margin-top:24px}}
 </style></head><body><main><h1>6 הטריקים של המערכות</h1><p class="sub">לוחצים על הכפתור ← מופיע הצעד הבא, כל צעד בצבע אחר. <b style="color:#ff5c6c">באדום: הטריק המתחבא.</b></p>
 {''.join(out)}<footer><b>ערכה: רוני מודן · שחקים</b> · © כל הזכויות שמורות</footer></main>
 <script>
