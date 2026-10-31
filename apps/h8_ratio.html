@@ -98,6 +98,8 @@ p{font-size:19px;line-height:1.55;margin:0}
 .wkc{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.wkc button{background:#0b1626;color:var(--ink);border:2px solid var(--line);border-radius:10px;padding:8px 12px;font:600 17px Heebo,sans-serif;cursor:pointer}.wkc button.sel{border-color:var(--acc)}
 .wkdone{margin-top:8px;font-weight:800;color:var(--ok)}
 .top .chaps{display:flex;flex-direction:column;gap:10px;margin-top:10px}.chaps button{all:unset;box-sizing:border-box;width:100%;cursor:pointer;background:var(--chip);border:2px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:2px}.chaps button.rec{border-color:var(--acc)}.chaps .t{font-weight:800;font-size:19px}.chaps .d{font-size:15px;color:var(--muted)}
+.chr{border-radius:12px;padding:4px 6px;margin:6px 0;cursor:pointer}.chr .chl{font:700 19px Rubik;direction:ltr;text-align:center;overflow-wrap:anywhere}.chr .chl .m{white-space:normal}.chr .chn{font-size:16px;color:var(--acc);text-align:center;font-weight:700}.chr.red .chn{color:var(--red)}.chr .chw{font-size:16px;background:#c084fc14;border-right:4px solid var(--pu);border-radius:8px;padding:6px 10px;margin-top:4px}
+.chm{margin-top:14px;font-weight:800;color:var(--red);font-size:19px}.paused .rv,.paused .fly,.paused .bx,.paused .st::after{animation-play-state:paused!important}
 .chsys{margin:6px 0}.chl{font:700 20px Rubik;direction:ltr;text-align:center;padding:6px 8px;border-radius:10px;margin:4px 0}.chl.old{opacity:.5;font-size:17px}.chl.cur{background:#ffb02018;border:2px solid var(--acc)}
 .why{border-right-color:var(--pu)!important;background:#c084fc14!important}
 .spbtn{background:var(--acc);color:#14213a;border:0;font-weight:800}
@@ -371,7 +373,7 @@ function menu(){$('#sc').textContent='';const tl=store.get('test');
  ${INST?`<div class="inst">📲 <b>לעבוד גם בלי אינטרנט:</b> לחצו על כפתור השיתוף ⬆️ בתחתית ספארי, ואז על <b>"הוספה למסך הבית"</b>. פותחים מהאייקון פעם אחת כשיש אינטרנט, ומאז זה עובד גם בלי.</div>`:''}
  ${typeof CHAPTERS!=='undefined'?`<h2 style="margin-top:18px">📚 לומדים פרק אחרי פרק</h2><p style="font-size:16px;color:var(--muted)">בכל פרק: תרגיל פתור מונפש ← המוקש ← עכשיו אתה ← 10 תרגילים</p><div class="chaps">${CHAPTERS.map((c,i)=>{const b=store.get('ch'+i),rec=CHAPTERS.findIndex((_,j)=>(store.get('ch'+j)||0)<8);return `<button type="button" data-ch="${i}" class="${i===rec?'rec':''}"><span class="t">${i===rec?'👈 ':''}פרק ${i+1}: ${c.t}</span><span class="d">${c.d||''}${b!=null?` · השיא שלי: ${b} מתוך ${chList(i).length}${b>=8?' ✅':''}`:''}</span></button>`}).join('')}</div><h2 style="margin-top:18px">תרגול מעורב בשלבים</h2>`:'<h2 style="margin-top:18px">תרגול בשלבים: מתקדמים מרמה לרמה</h2>'}<p style="font-size:16px;color:var(--muted)">עוברים שלב עם 16 נכונות מתוך 20 ✅</p>
  <div class="levels">${LEVELS.map((l,i)=>{const b=store.get('best'+i),rec=LEVELS.findIndex((_,j)=>(store.get('best'+j)||0)<16);return `<button type="button" data-l="${i}" class="${i===rec?'rec':''}">${b>=16?'<span class="badge ok">✅ עברתי</span>':i===rec?'<span class="badge">👈 מומלץ עכשיו</span>':''}<span class="st">${'★'.repeat(l.n)}</span><span class="t">${l.t}</span><span class="d">${l.d}</span>${b!=null?`<span class="best">השיא שלי: ${b} מתוך ${TOTAL}</span>`:''}</button>`}).join('')}</div></div>`;
- $('#go-recap').onclick=()=>recap(0);$('#go-test').onclick=testIntro;V.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>start(+b.dataset.l));V.querySelectorAll('[data-ch]').forEach(b=>b.onclick=()=>chap(+b.dataset.ch,'ex',0));}
+ $('#go-recap').onclick=()=>recap(0);$('#go-test').onclick=testIntro;V.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>start(+b.dataset.l));V.querySelectorAll('[data-ch]').forEach(b=>b.onclick=()=>chap(+b.dataset.ch));}
 function start(l){const L=LEVELS[l];S={mode:'lv',l,i:0,score:0,n:TOTAL,streak:0};
  if(L.ladder){const list=[],meta=[];L.ladder.forEach(e=>{for(let k=0;k<e.n;k++){list.push(e.g);meta.push(e);}});S.list=list;S.meta=meta;S.n=list.length;}next();}
 function next(){if(S.q)S.i++;if(S.i>=S.n)return S.mode==='test'?endTest():S.mode==='warm'?endWarm():S.mode==='chk'?endChk():S.mode==='guide'?endGuide():S.mode==='chp'?endChp():end();S.q=S.list?S.list[S.i]():LEVELS[S.l].g();S.tries=0;S.done=false;S.si=0;S.wkOpen=false;S.stepNext=false;S.chainBad=false;S.askTries=0;
@@ -437,10 +439,10 @@ function workDraw(){const W=S.wk,q=W.q,box=$('#wk');if(!box)return;const val=st=
    ${st.choice?`<div class="wkc">${st.choice.map((c,i)=>`<button type="button" data-wc="${i}">${c}</button>`).join('')}</div>`:''}
    ${W.bad?`<div class="wkwhy">💡 ${st.why||q.rule}</div>`:''}${W.show?`<div class="wkwhy">התשובה בשלב הזה: <b>${val(st)}</b></div>`:''}
    <div class="btns"><button class="btn main mini" id="wkc" type="button">${W.show?'הבנתי, הלאה ←':'בדיקת השלב'}</button></div></div>`;}).join('')+
-  (W.i>=q.work.length?`<div class="wkdone">✓ עברנו על כל השלבים! עכשיו תקנו את התשובה למעלה ולחצו "בדיקה".</div>`:'');
+  (W.i>=q.work.length?(S.mode==='chex'?`<div class="wkdone">🎉 פתרת לבד את כל הצעדים!</div><div class="btns"><button class="btn main" type="button" id="cgo">🎯 ל־10 תרגילים</button><button class="btn sec" type="button" id="cyo">✍️ עוד תרגיל כזה</button></div>`:`<div class="wkdone">✓ עברנו על כל השלבים! עכשיו תקנו את התשובה למעלה ולחצו "בדיקה".</div>`):'');
  box.querySelectorAll('[data-wc]').forEach(b=>b.onclick=()=>{box.querySelectorAll('[data-wc]').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');W.sel=+b.dataset.wc;});
  box.querySelectorAll('.wkin').forEach(x=>x.onkeydown=e=>{if(e.key==='Enter')$('#wkc').click();});
- if($('#wkc'))$('#wkc').onclick=workCheck;}
+ if($('#wkc'))$('#wkc').onclick=workCheck;if($('#cgo'))$('#cgo').onclick=()=>chPrac(S.ci);if($('#cyo'))$('#cyo').onclick=()=>{const ch=CHAPTERS[S.ci];let b;for(let k=0;k<50;k++){b=ch.you();if(b.work)break;}S.q=b;S.wk={i:0,t:0,q:b};const Y=$('#chyou');Y.innerHTML=`<div class="qtext">${b.text}</div><div id="wk" class="wk"></div>`;workDraw();};}
 function workCheck(){const W=S.wk,st=W.q.work[W.i];
  if(W.show){W.i++;W.t=0;W.bad=false;W.show=false;W.sel=-1;return workDraw();}
  const ins=[...$('#wk').querySelectorAll('.wkin')],vals=ins.map(x=>numv(x.value));
@@ -488,16 +490,20 @@ function endChk(){$('#sc').textContent='';const n=S.card,N=RECAP.length,c=RECAP[
  $('#cn').onclick=()=>n<N-1?recap(n+1):warm();$('#cr').onclick=()=>recap(n);if($('#cm'))$('#cm').onclick=()=>chkStart(n);window.scrollTo(0,0);}
 /* ===== פרקים מונפשים: תרגיל פתור צעד־צעד (מה עשינו + למה זה נכון) ← מוקש ← עכשיו אתה ← 10 תרגילים ===== */
 const chList=ci=>{const L=[],M2=[];(CHAPTERS[ci].gens||[]).forEach(e=>{for(let k=0;k<e.n;k++){L.push(e.g);M2.push(e);}});return L.length?{length:L.length,L,M2}:{length:0,L,M2};};
-function chap(ci,ph,si){$('#sc').textContent='';const ch=CHAPTERS[ci],P=ch[ph],seq=P.steps,st=seq[si],last=si===seq.length-1;
- const nextLab=!last?'הצעד הבא ←':ph==='ex'&&ch.mine?'💣 למוקש ←':'✍️ עכשיו אתה ←';
- V.innerHTML=`<div class="card pop"><span class="kind">פרק ${ci+1} · ${ph==='ex'?'🎬 תרגיל פתור':'💣 המוקש'} · צעד ${si+1} מתוך ${seq.length}</span><h2>${ch.t}</h2>
- ${P.sys?`<div class="chsys">${P.sys}</div>`:''}${P.q&&si===0?`<p>${P.q}</p>`:''}
- ${seq.slice(0,si).map(x=>`<div class="chl old">${x.l}</div>`).join('')}<div class="chl cur rv" style="--d:.15s">${st.l}</div>
- <div class="what rv" style="--d:.7s"><b>מה עשינו?</b> ${st.what}</div>${st.why?`<div class="what why rv" style="--d:1.3s"><b>💡 למה זה נכון?</b> ${st.why}</div>`:''}
- <div class="btns"><button class="btn main" id="cnx" type="button">${nextLab}</button><button class="btn sec" id="crp" type="button">שוב ↻</button>${si||ph!=='ex'?'<button class="btn sec" id="cpv" type="button">הקודם</button>':''}</div>
- <div class="dots">${seq.map((_,j)=>`<i class="${j===si?'on':''}"></i>`).join('')}</div></div>`;
- $('#cnx').onclick=()=>!last?chap(ci,ph,si+1):ph==='ex'&&ch.mine?chap(ci,'mine',0):guide(ci);$('#crp').onclick=()=>chap(ci,ph,si);
- if($('#cpv'))$('#cpv').onclick=()=>si?chap(ci,ph,si-1):chap(ci,'ex',ch.ex.steps.length-1);window.scrollTo(0,0);}
+function chap(ci){$('#sc').textContent='';const ch=CHAPTERS[ci],GAP=2.8;let t=.3;
+ const shift=(h,d)=>String(h).replace(/--d:\s*([\d.]+)s/g,(_,x)=>`--d:${(+x+d).toFixed(2)}s`);
+ const row=(st,red)=>{const d=t;t+=GAP;return `<div class="chr rv${red?' red':''}" style="--d:${d}s"><div class="chl">${shift(st.l,d)}</div><div class="chn">← ${st.n||st.what}</div>${st.why?`<div class="chw" hidden>💡 ${st.why}</div>`:''}</div>`;};
+ const ex=ch.ex.steps.map(x=>row(x)).join('');const mh=t;const mine=ch.mine?`<div class="chm rv" style="--d:${mh}s">💣 המוקש</div>`+ch.mine.steps.map(x=>row(x,1)).join(''):'';
+ V.innerHTML=`<div class="card pop" id="chc"><span class="kind">פרק ${ci+1} מתוך ${CHAPTERS.length} · 🎬 צפו, ואז פתרו לבד</span><h2>${ch.t}</h2>
+ <div class="btns" style="margin:4px 0"><button class="btn sec mini" id="cps" type="button">⏸ עצירה</button><button class="btn sec mini" id="crp" type="button">↻ שוב</button><span style="font-size:14px;color:var(--muted);align-self:center">לחיצה על שורה ← הסבר מלא</span></div>
+ ${ch.ex.sys?`<div class="chsys">${ch.ex.sys}</div>`:''}${ex}${mine}
+ <div class="rv" style="--d:${t}s"><h2 style="margin-top:18px">✍️ עכשיו אתה</h2><div id="chyou"></div></div></div>`;
+ V.querySelectorAll('.chr').forEach(r=>r.onclick=()=>{const w=r.querySelector('.chw');if(w)w.hidden=!w.hidden;});
+ $('#crp').onclick=()=>chap(ci);$('#cps').onclick=()=>{const c=$('#chc'),p=c.classList.toggle('paused');$('#cps').textContent=p?'▶ המשך':'⏸ עצירה';};
+ let base=null;if(ch.you)for(let k=0;k<50;k++){base=ch.you();if(base.work)break;}
+ const Y=$('#chyou');if(base&&base.work){S={mode:'chex',ci,q:base};Y.innerHTML=`<div class="qtext">${base.text}</div>${(()=>{const d=base.dia?base.dia(false):'';return d?`<div class="dia">${d}</div>`:''})()}<div id="wk" class="wk"></div>`;S.wk={i:0,t:0,q:base};workDraw();}
+ else Y.innerHTML=`<button class="btn main" type="button" id="cgo">🎯 ל־10 תרגילים</button>`,$('#cgo').onclick=()=>chPrac(ci);
+ window.scrollTo(0,0);}
 function guide(ci){const ch=CHAPTERS[ci];if(!ch.you)return chPrac(ci);let base;for(let k=0;k<50;k++){base=ch.you();if(base.work)break;}if(!base.work)return chPrac(ci);
  const W=base.work,n=W.length,val=w=>w.ans?w.ans.map(a=>M(N0(a.val))).join(' , '):w.choice[w.correct];
  const list=W.map((w,k)=>()=>({kind:`✍️ עכשיו אתה · צעד ${k+1} מתוך ${n}`,dia:base.dia,
@@ -508,12 +514,12 @@ function guide(ci){const ch=CHAPTERS[ci];if(!ch.you)return chPrac(ci);let base;f
 function endGuide(){const ci=S.ci;$('#sc').textContent='';
  V.innerHTML=`<div class="card pop" style="text-align:center"><h2>פתרת תרגיל שלם! 🎉</h2><div class="big">${S.score} / ${S.n}</div><p>${S.score===S.n?'כל הצעדים נכונים בניסיון הראשון.':'תיקנת בדרך, וזה מה שחשוב.'}</p>
  <div class="btns" style="justify-content:center"><button class="btn main" id="g1" type="button">🎯 ל־10 תרגילים</button><button class="btn sec" id="g2" type="button">עוד תרגיל מודרך</button><button class="btn sec" id="g3" type="button">🎬 שוב התרגיל הפתור</button></div></div>`;
- $('#g1').onclick=()=>chPrac(ci);$('#g2').onclick=()=>guide(ci);$('#g3').onclick=()=>chap(ci,'ex',0);}
+ $('#g1').onclick=()=>chPrac(ci);$('#g2').onclick=()=>guide(ci);$('#g3').onclick=()=>chap(ci);}
 function chPrac(ci){const c=chList(ci);if(!c.length)return menu();S={mode:'chp',ci,i:0,score:0,n:c.length,list:c.L,meta:c.M2,streak:0};next();}
 function endChp(){const ci=S.ci,N2=CHAPTERS.length;$('#sc').textContent=`נקודות: ${S.score}`;const b=store.get('ch'+ci);if(b==null||S.score>b)store.set('ch'+ci,S.score);const ok=S.score>=Math.ceil(S.n*.8);
  V.innerHTML=`<div class="card pop" style="text-align:center"><h2>סיימת את פרק ${ci+1}</h2><div class="big">${S.score} / ${S.n}</div><p>${ok?'הטריק יושב! 🎉':'עוד סבב אחד, והטריק ייתפס.'}</p>
  <div class="btns" style="justify-content:center">${ok&&ci<N2-1?'<button class="btn main" id="p1" type="button">לפרק הבא ←</button>':''}${ok&&ci===N2-1?'<button class="btn main" id="p4" type="button">📝 למבחן המעורב</button>':''}<button class="btn ${ok?'sec':'main'}" id="p2" type="button">עוד סבב</button><button class="btn sec" id="p3" type="button">🎬 התרגיל הפתור</button><button class="btn sec" id="p5" type="button">תפריט</button></div></div>`;
- if($('#p1'))$('#p1').onclick=()=>chap(ci+1,'ex',0);if($('#p4'))$('#p4').onclick=testIntro;$('#p2').onclick=()=>chPrac(ci);$('#p3').onclick=()=>chap(ci,'ex',0);$('#p5').onclick=menu;}
+ if($('#p1'))$('#p1').onclick=()=>chap(ci+1);if($('#p4'))$('#p4').onclick=testIntro;$('#p2').onclick=()=>chPrac(ci);$('#p3').onclick=()=>chap(ci);$('#p5').onclick=menu;}
 function warm(){S={mode:'warm',i:0,score:0,n:WARM.length,list:WARM};next();}
 function endWarm(){$('#sc').textContent='';
  V.innerHTML=`<div class="card pop" style="text-align:center"><h2>החימום הסתיים!</h2><div class="big">${S.score} / ${S.n}</div>
