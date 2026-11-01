@@ -79,7 +79,7 @@ function gSqRoot(){const n=R(2,15),sq=Math.random()<.5;
   diag:({vals:[v]})=>v===n*n/2?'חילקתם ב־2. שורש: איזה מספר כפול <b>עצמו</b> נותן את המספר?':null};}
 function gSqSum(){const [a,b,c]=trip(1);
  return {kind:'כמה משבצות?',rc:3,text:`על הניצבים בנו ריבועים: ריבוע ${C('ורוד',PK)} שצלעו ${M(a)} וריבוע ${C('ירוק',GR)} שצלעו ${M(b)}. כמה משבצות יש ב${C('ריבוע הכחול',BL)} שעל היתר?`,
-  dia:h=>TRI({a,b,la:a,lb:b,lc:h?c:'?'}),ans:[{label:'משבצות',col:BL,val:c*c}],work:[wSq(a,PK),wSq(b,GR),{t:`${M(a*a+' + '+b*b+' = ?')}`,ans:[{label:'',val:c*c}],why:'הריבועים הקטנים ממלאים יחד את הגדול ← <b>מחברים</b>.'}],
+  dia:h=>TRI({a,b,la:a,lb:b,lc:h?c:'?'}),ans:[{label:'משבצות',col:BL,val:c*c}],work:[{...wSq(a,PK),ans:[{label:'',dec:1,val:r2(a*a)}]},{...wSq(b,GR),ans:[{label:'',dec:1,val:r2(b*b)}]},{t:`${M(a*a+' + '+b*b+' = ?')}`,ans:[{label:'',val:c*c}],why:'הריבועים הקטנים ממלאים יחד את הגדול ← <b>מחברים</b>.'}],
   lines:[M(C(a+'² = '+a*a,PK)+' , '+C(b+'² = '+b*b,GR)),M(a*a+' + '+b*b+' = '+C(c*c,BL))],rule:'ניצב² + ניצב² = יתר²: הריבועים הקטנים ממלאים את הגדול.',
   diag:({vals:[v]})=>v===c?`${M(c)} זו הצלע. השאלה שואלת כמה <b>משבצות</b>: ${M(c+'²')}.`:v===a+b?'חיברו את <b>הריבועים</b>, לא את הצלעות.':null};}
 /* ===== ★★ יישום ===== */
@@ -126,7 +126,7 @@ function gErr(){const k=R(0,2),nm=pick(['נועה','דניאל','איתי','מא
 /* ===== ★★★★ חשיבה ואוריינות ===== */
 function gIsRight(){const [a,b,c]=trip(1),ok=Math.random()<.5,cc=ok?c:c+1,s=shuf([a,b,cc]);
  return {kind:'האם ישר זווית?',rc:3,text:`צלעות משולש: ${M(s.join(', '))}. חשבו ${M(a+'² + '+b+'²')} והחליטו: האם המשולש ישר זווית?`,ans:[{label:'',col:BL,val:a*a+b*b}],choice:['כן, ישר זווית','לא'],correct:ok?0:1,choiceLab:'האם ישר זווית?',
-  work:[wSq(a,PK),wSq(b,GR),{t:`${M(a*a+' + '+b*b+' = ?')}`,ans:[{label:'',val:a*a+b*b}],why:'מחברים את ריבועי שתי הצלעות הקצרות.'},{t:`ו־${M(cc+'² = '+cc*cc)}. שווים?`,choice:['שווים ← ישר זווית','לא שווים ← לא ישר זווית'],correct:ok?0:1,why:'ישר זווית <b>רק</b> אם יוצא בדיוק הריבוע של הצלע הארוכה.'}],
+  work:[{...wSq(a,PK),ans:[{label:'',dec:1,val:r2(a*a)}]},{...wSq(b,GR),ans:[{label:'',dec:1,val:r2(b*b)}]},{t:`${M(a*a+' + '+b*b+' = ?')}`,ans:[{label:'',val:a*a+b*b}],why:'מחברים את ריבועי שתי הצלעות הקצרות.'},{t:`ו־${M(cc+'² = '+cc*cc)}. שווים?`,choice:['שווים ← ישר זווית','לא שווים ← לא ישר זווית'],correct:ok?0:1,why:'ישר זווית <b>רק</b> אם יוצא בדיוק הריבוע של הצלע הארוכה.'}],
   lines:[M(a+'² + '+b+'² = '+(a*a+b*b)),M(cc+'² = '+cc*cc),ok?'שווים ← ישר זווית ✓':'לא שווים ← לא ישר זווית.'],rule:'שתי הקצרות בריבוע, מחברים, ומשווים לריבוע של הארוכה.',
   diag:({vals:[v]})=>v===a+b?'מחברים את <b>הריבועים</b>.':null};}
 function gRect2(){const [a,b,c]=pick([[6,8,10],[5,12,13],[9,12,15],[8,15,17]]);
@@ -197,3 +197,25 @@ RECAP[2].chk=[gHyp,gHyp];
 RECAP[4].chk=[gOnlyRight,gOnlyRight];
 RECAP[6].chk=[()=>{let q;for(let i=0;i<30;i++){q=gSqRoot();if(q.rc===6)break;}return q;}];
 (function(){const add=()=>{const h=document.getElementById('home');if(!h||document.getElementById('wsb'))return;const b=document.createElement('button');b.id='wsb';b.type='button';b.textContent='📄 דף עבודה';b.setAttribute('aria-label','פתיחת דף עבודה להדפסה');b.onclick=()=>window.open('https://htmlpreview.github.io/?https://github.com/ronimodan73-design/aplik/blob/main/share/h8/ws_pythag.html','_blank');h.parentNode.insertBefore(b,h);};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',add);else add();})();
+/* ===== כמו במשימת ההערכה (נוסף 1.11.2026): סולם עם יחס ומספרים עשרוניים, מחשבון. הסבר פשוט, צעד אחרי צעד ===== */
+const r2=x=>Math.round(x*100)/100;
+function gLadderRatio(){const [h,k]=pick([[3.2,4],[2.4,4],[2.8,4],[3.6,4],[2.4,3],[3.6,3],[4.5,3],[3,3]]),d=r2(h/k),L=r2(Math.sqrt(d*d+h*h));
+ return {kind:'סולם ויחס',rc:RC_LAD,text:`רועי מעמיד סולם ליד קיר. לפי התקן, היחס בין ${C('המרחק מהקיר',GR)} ל${C('הגובה',PK)} הוא ${M('1 : '+k)}. קצה הסולם נמצא בגובה ${M(h)} מ׳. מה אורך ${C('הסולם',BL)}? (עד 2 ספרות אחרי הנקודה)`,
+  dia:()=>TRI({a:4,b:1.6,la:h+' מ׳',lb:'?',lc:'סולם'}),ans:[{label:'סולם ≈',col:BL,dec:1,val:L}],
+  work:[{t:`${C('המרחק',GR)}: הגובה הוא ${k} חלקים. ${M(h+' : '+k+' = ?')}`,ans:[{label:'',dec:1,val:d}],why:`יחס ${M('1 : '+k)}: הגובה = ${k} חלקים, המרחק = חלק <b>אחד</b>.`},
+   {t:M(C(d+'²',GR)+' = '+d+' · '+d+' = ?'),ans:[{label:'',dec:1,val:r2(d*d)}],why:'ריבוע = המספר כפול <b>עצמו</b>.'},
+   {t:M(C(h+'²',PK)+' = '+h+' · '+h+' = ?'),ans:[{label:'',dec:1,val:r2(h*h)}],why:'ריבוע = המספר כפול <b>עצמו</b>.'},
+   {t:`הסולם = יתר ← מחברים: ${M(r2(d*d)+' + '+r2(h*h)+' = ?')}`,ans:[{label:'',dec:1,val:r2(d*d+h*h)}],why:'הסולם מול הזווית הישרה ← <b>יתר</b> ← מחברים.'},
+   {t:`שורש במחשבון: ${M('√'+r2(d*d+h*h)+' ≈ ?')}`,ans:[{label:'',dec:1,val:L}],why:'לוחצים √ במחשבון, ומעגלים ל־2 ספרות אחרי הנקודה.'}],
+  lines:[`מרחק: ${M(h+' : '+k+' = '+d)} מ׳`,M(d+'² + '+h+'² = '+r2(d*d+h*h)),`סולם: ${M('√'+r2(d*d+h*h)+' ≈ '+L)} מ׳`],rule:'קודם היחס (חלק אחד), אחר כך פיתגורס, ובסוף שורש במחשבון.',
+  diag:({vals:[x]})=>Math.abs(x-r2(d*d+h*h))<.01?'עוד צעד: <b>שורש</b> במחשבון!':Math.abs(x-r2(h+d))<.01?'חיברתם צלעות. מחברים <b>ריבועים</b>, ואז שורש.':Math.abs(x-h)<.01?'זה הגובה. הסולם הוא היתר, הוא <b>ארוך</b> יותר.':null};}
+function gCalcHyp(){const [a,b]=pick([[2,3],[4,5],[1.5,2.5],[3,5],[2,7],[6,7],[1.2,3]]),c=r2(Math.sqrt(a*a+b*b));
+ return {kind:'מספר לא עגול? מחשבון',rc:RC_CALC,text:`במשולש ישר זווית הניצבים הם ${M(C(a,PK))} ס״מ ו־${M(C(b,GR))} ס״מ. מה אורך ${C('היתר',BL)}? (עד 2 ספרות אחרי הנקודה)`,
+  dia:()=>TRI({a:b,b:a,la:b,lb:a,lc:'?'}),ans:[{label:'היתר ≈',col:BL,dec:1,val:c}],
+  work:[{...wSq(a,PK),ans:[{label:'',dec:1,val:r2(a*a)}]},{...wSq(b,GR),ans:[{label:'',dec:1,val:r2(b*b)}]},{t:`מחברים: ${M(r2(a*a)+' + '+r2(b*b)+' = ?')}`,ans:[{label:'',dec:1,val:r2(a*a+b*b)}],why:'מחפשים יתר ← מחברים את הריבועים.'},{t:`במחשבון: ${M('√'+r2(a*a+b*b)+' ≈ ?')}`,ans:[{label:'',dec:1,val:c}],why:'השורש לא יוצא עגול ← מחשבון, ו־2 ספרות אחרי הנקודה.'}],
+  lines:[M(a+'² + '+b+'² = '+r2(a*a+b*b)),M('c = √'+r2(a*a+b*b)+' ≈ '+c)],rule:'שורש לא עגול ← מחשבון ← 2 ספרות אחרי הנקודה.',
+  diag:({vals:[x]})=>Math.abs(x-r2(a*a+b*b))<.01?'עוד צעד: <b>שורש</b>!':Math.abs(x-(a+b))<.01?'מחברים <b>ריבועים</b>, לא צלעות.':null};}
+let RC_LAD=RECAP.push({h:'סולם עם יחס',d:1.2,svg:()=>TRI({a:4,b:1,la:'3.2',lb:'?',lc:'סולם',anim:1}),says:[`יחס ${C('מרחק',GR)} ל${C('גובה',PK)}: ${M('1 : 4')}`,`${M('3.2 : 4 = 0.8')} ← ${C('המרחק',GR)} ${M('0.8')} מ׳`],def:'1. מרחק (חלק אחד) 2. פיתגורס 3. שורש',what:'קודם יחס, אחר כך פיתגורס.'})-1;
+let RC_CALC=RECAP.push({h:'שורש לא עגול? מחשבון!',d:.6,says:[`${M('√10.88')} ← לוחצים √ במחשבון ← ${M('3.2984…')}`,`2 ספרות אחרי הנקודה ← ${M('≈ 3.30')}`],what:'שורש לא עגול ← מחשבון ← 2 ספרות.'})-1;
+RECAP[RC_LAD].chk=[gLadderRatio];RECAP[RC_CALC].chk=[gCalcHyp];
+LAD[2].push({g:gLadderRatio,n:4,h:2},{g:gCalcHyp,n:3,h:2});

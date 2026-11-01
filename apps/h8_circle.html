@@ -333,6 +333,28 @@ const RECAP=[
   says:['הפרוסות מסתדרות כמעט כמו <b>מלבן</b>.',`שטח = ${M('<span class="m">π · r · r</span>')}`],what:'שטח = <span class="m">π · r · r</span> (רדיוס כפול רדיוס).'},
  {h:'המוקש: רדיוס או קוטר?',d:.4,says:[`קוטר ${M(10)} ← שטח = ${M('10 · 10 · π')} <span class="x">✗</span>`,`קודם רדיוס ${M(5)} ← ${M('5 · 5 · π = 25π')} <span class="v">✓</span>`],what:'בודקים תמיד: נתון רדיוס או קוטר?'}];
 RECAP[0].chk=[genCvsD];RECAP[1].chk=[genRtoD,genDtoR];RECAP[2].chk=[genPerimD];RECAP[3].chk=[genPerimR,genPerimD];RECAP[4].chk=[genAreaR];RECAP[5].chk=[genAreaD];
+/* ===== כמו במשימת ההערכה (נוסף 1.11.2026): חישוב במחשבון ובחירת יחידה. הסבר פשוט, צעד אחרי צעד ===== */
+const c2=x=>Math.round(x*100)/100;
+function gCalcPerim(){const D=pick([10,6,8,12,14,4,20]);const v=c2(Math.PI*D);
+ return {kind:'היקף במחשבון',rc:RC_CALC,dia:()=>CD({m:'d',lab:D}),text:`קוטר המעגל ${M(D)} ס״מ. חשבו את ההיקף במחשבון (כפתור <span class="m">π</span>), עד 2 ספרות אחרי הנקודה.`,
+  ans:[{label:'היקף ≈',dec:1,val:v}],
+  work:[{t:`היקף = <span class="m">π</span> · קוטר = <span class="m">?π</span>`,ans:[{label:'π',val:D}],why:'הקוטר נתון ← כופלים אותו ב־π.'},{t:`במחשבון: ${M(D)} · <span class="m">π</span> ≈ ?`,ans:[{label:'',dec:1,val:v}],why:'לוחצים '+D+' × π במחשבון, ומעגלים ל־2 ספרות אחרי הנקודה.'}],
+  lines:[`היקף = ${M(D+'π')}`,`במחשבון: ${M(D+'π ≈ '+v)} ס״מ`],rule:'קודם עם π, אחר כך במחשבון: 2 ספרות אחרי הנקודה.',
+  diag:({vals:[x]})=>Math.abs(x-c2(Math.PI*D*D/4))<.01?'זה <b>השטח</b>. מבקשים <b>היקף</b> = π · קוטר.':Math.abs(x-c2(2*Math.PI*D))<.01?'כפלתם ב־2 עוד פעם. '+M(D)+' הוא כבר <b>הקוטר</b>.':Math.abs(x-D*3)<.01?'π הוא בערך 3.14, לא 3. משתמשים בכפתור π.':null};}
+function gCalcArea(){const D=pick([10,6,8,12,4,20]),r=D/2,v=c2(Math.PI*r*r);
+ return {kind:'שטח במחשבון',rc:RC_CALC,dia:()=>CD({fill:1,m:'d',lab:D}),text:`קוטר העיגול ${M(D)} ס״מ. חשבו את השטח במחשבון, עד 2 ספרות אחרי הנקודה.`,
+  ans:[{label:'שטח ≈',dec:1,val:v}],
+  work:[{t:`רדיוס = קוטר : 2 = ?`,ans:[{label:'',val:r}],why:'בשטח צריך <b>רדיוס</b>. מחלקים את הקוטר ב־2.'},{t:`שטח = <span class="m">π</span> · ${M(r+' · '+r)} = <span class="m">?π</span>`,ans:[{label:'π',val:r*r}],why:'רדיוס כפול רדיוס.'},{t:`במחשבון: ${M(r*r)} · <span class="m">π</span> ≈ ?`,ans:[{label:'',dec:1,val:v}],why:'כופלים ב־π במחשבון ומעגלים ל־2 ספרות.'}],
+  lines:[`רדיוס ${M(r)}`,`שטח = ${M(r*r+'π ≈ '+v)} סמ״ר`],rule:'שטח: קודם רדיוס, אחר כך π · r · r, ובסוף מחשבון.',
+  diag:({vals:[x]})=>Math.abs(x-c2(Math.PI*D*D))<.01?'השתמשתם בקוטר. בשטח צריך <b>רדיוס</b>: '+M(D+' : 2 = '+r)+'.':Math.abs(x-c2(Math.PI*D))<.01?'זה <b>ההיקף</b>. מבקשים <b>שטח</b>.':null};}
+function gUnit(){const isA=Math.random()<.5,o=['ס״מ','סמ״ר','מ׳','מ״ר'],ok=isA?'סמ״ר':'ס״מ';
+ return {kind:'איזו יחידה?',rc:RC_UNIT,dia:()=>CD({fill:isA,m:'none'}),text:`רדיוס המעגל נמדד בס״מ. באיזו יחידה כותבים את ${isA?'<b>השטח</b>':'<b>ההיקף</b>'}?`,choice:o,correct:o.indexOf(ok),
+  diag:({sel})=>o[sel]==='מ׳'||o[sel]==='מ״ר'?'הרדיוס נמדד ב<b>ס״מ</b>, אז גם התשובה בס״מ.':isA?'שטח = כמה <b>משבצות</b> ← יחידה "מרובעת": סמ״ר.':'היקף = <b>קו</b> מסביב ← יחידת אורך: ס״מ.',
+  lines:[isA?'שטח = משבצות ← סמ״ר':'היקף = קו ← ס״מ'],rule:'היקף (קו) ← ס״מ · שטח (משבצות) ← סמ״ר.'};}
+let RC_CALC=RECAP.push({h:'מחשבון: π',d:.6,says:[`${M('10π')} ← לוחצים ${M('10')} × π`,`${M('31.4159…')} ← 2 ספרות ← ${M('≈ 31.42')}`],what:'עם π במחשבון, 2 ספרות אחרי הנקודה.'})-1;
+let RC_UNIT=RECAP.push({h:'איזו יחידה?',d:.6,svg:()=>CD({fill:1,m:'none'}),says:[`היקף = <b>קו</b> מסביב ← ${M('ס״מ')}`,`שטח = <b>משבצות</b> בפנים ← ${M('סמ״ר')}`],what:'קו ← ס״מ · משבצות ← סמ״ר.'})-1;
+RECAP[RC_CALC].chk=[gCalcPerim,gCalcArea];RECAP[RC_UNIT].chk=[gUnit];
+LAD[2].push({g:gCalcPerim,n:3,h:2},{g:gCalcArea,n:3,h:2},{g:gUnit,n:2,h:2});
 
 const TL=['★ ידע','★★ יישום','★★★ הבנה ונימוק','★★★★ חשיבה ואוריינות'],TCOL=[GR,BL,OR,PU];
 const TOTAL=(APP&&APP.total)||20,PASS=Math.round(TOTAL*.8);let S={};
