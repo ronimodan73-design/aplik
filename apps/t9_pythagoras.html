@@ -241,27 +241,27 @@ function gEqFor(){const t=letTri(),good=`${t.l1}² + ${t.l2}² = ${t.hyp}²`,o=s
   choice:o.map(M),correct:o.indexOf(good),lines:[`היתר: ${M(C(t.hyp,BL))} (מול הזווית הישרה).`,M(good)],rule:'ניצב² + ניצב² = יתר². היתר לבד בצד אחד.',
   diag:({sel})=>/²/.test(o[sel])?'בצד הלבד צריך להיות <b>היתר</b>: הצלע מול הזווית הישרה.':'שכחתם את הריבועים: '+M('²')+' על כל צלע.'};}
 function gSqRoot(){const n=R(2,15),sq=Math.random()<.5;
- if(sq)return {kind:'ריבוע',rc:3,text:`חשבו: ${M(n+'² = ?')}`,ans:[{label:'',col:BL,val:n*n}],work:[{t:M(n+' · '+n+' = ?'),ans:[{label:'',val:n*n}],why:'ריבוע = המספר כפול <b>עצמו</b>.'}],lines:[M(n+'² = '+n+' · '+n+' = '+n*n)],rule:RULE.sq,
+ if(sq)return {kind:'ריבוע',rc:5,text:`חשבו: ${M(n+'² = ?')}`,ans:[{label:'',col:BL,val:n*n}],work:[{t:M(n+' · '+n+' = ?'),ans:[{label:'',val:n*n}],why:'ריבוע = המספר כפול <b>עצמו</b>.'}],lines:[M(n+'² = '+n+' · '+n+' = '+n*n)],rule:RULE.sq,
   diag:({vals:[v]})=>v===2*n?`כפלתם ב־2. ריבוע = ${M(n)} כפול <b>עצמו</b>: ${M(n+' · '+n)}.`:null};
- return {kind:'שורש',rc:3,text:`חשבו: ${M('√'+n*n+' = ?')}`,ans:[{label:'',col:BL,val:n}],work:[{t:`איזה מספר כפול עצמו נותן ${M(n*n)}?`,ans:[{label:'',val:n}],why:`נסו מספרים: ${M(n+' · '+n+' = '+n*n)}.`}],lines:[M(n+' · '+n+' = '+n*n),M('√'+n*n+' = '+n)],rule:RULE.sq,
+ return {kind:'שורש',rc:6,text:`חשבו: ${M('√'+n*n+' = ?')}`,ans:[{label:'',col:BL,val:n}],work:[{t:`איזה מספר כפול עצמו נותן ${M(n*n)}?`,ans:[{label:'',val:n}],why:`נסו מספרים: ${M(n+' · '+n+' = '+n*n)}.`}],lines:[M(n+' · '+n+' = '+n*n),M('√'+n*n+' = '+n)],rule:RULE.sq,
   diag:({vals:[v]})=>v===n*n/2?'חילקתם ב־2. שורש: איזה מספר כפול <b>עצמו</b> נותן את המספר?':null};}
 function gSqSum(){const [a,b,c]=trip(1);
- return {kind:'כמה משבצות?',rc:2,text:`על הניצבים בנו ריבועים: ריבוע ${C('ורוד',PK)} שצלעו ${M(a)} וריבוע ${C('ירוק',GR)} שצלעו ${M(b)}. כמה משבצות יש ב${C('ריבוע הכחול',BL)} שעל היתר?`,
+ return {kind:'כמה משבצות?',rc:3,text:`על הניצבים בנו ריבועים: ריבוע ${C('ורוד',PK)} שצלעו ${M(a)} וריבוע ${C('ירוק',GR)} שצלעו ${M(b)}. כמה משבצות יש ב${C('ריבוע הכחול',BL)} שעל היתר?`,
   dia:h=>TRI({a,b,la:a,lb:b,lc:h?c:'?'}),ans:[{label:'משבצות',col:BL,val:c*c}],work:[wSq(a,PK),wSq(b,GR),{t:`${M(a*a+' + '+b*b+' = ?')}`,ans:[{label:'',val:c*c}],why:'הריבועים הקטנים ממלאים יחד את הגדול ← <b>מחברים</b>.'}],
   lines:[M(C(a+'² = '+a*a,PK)+' , '+C(b+'² = '+b*b,GR)),M(a*a+' + '+b*b+' = '+C(c*c,BL))],rule:'ניצב² + ניצב² = יתר²: הריבועים הקטנים ממלאים את הגדול.',
   diag:({vals:[v]})=>v===c?`${M(c)} זו הצלע. השאלה שואלת כמה <b>משבצות</b>: ${M(c+'²')}.`:v===a+b?'חיברו את <b>הריבועים</b>, לא את הצלעות.':null};}
 /* ===== ★★ יישום ===== */
 function gFindHyp(e){const [a,b,c]=trip(e),r=e?{}:rnd();
- return {kind:'מוצאים יתר',rc:4,crack:shufCr(CR_HYP),text:`הניצבים: ${M(C(a,PK))} ו־${M(C(b,GR))} ${CM}. מה אורך ${C('היתר',BL)}?`,dia:h=>TRI({a,b,la:a,lb:b,lc:h?c:'?',...r,anim:h}),ans:[{label:'היתר =',col:BL,val:c,unit:CM}],work:wHyp(a,b,c),
+ return {kind:'מוצאים יתר',rc:7,crack:shufCr(CR_HYP),text:`הניצבים: ${M(C(a,PK))} ו־${M(C(b,GR))} ${CM}. מה אורך ${C('היתר',BL)}?`,dia:h=>TRI({a,b,la:a,lb:b,lc:h?c:'?',...r,anim:h}),ans:[{label:'היתר =',col:BL,val:c,unit:CM}],work:wHyp(a,b,c),
   lines:[M(C(a+'²',PK)+' + '+C(b+'²',GR)+' = '+a*a+' + '+b*b+' = '+c*c),M('c = √'+c*c+' = '+c)],rule:RULE.hyp,
   diag:({vals:[v]})=>v===c*c?`זה ${M('c²')}. עוד צעד: ${M('√'+c*c)}.`:v===a+b?'חיברתם צלעות. מחברים <b>ריבועים</b>: '+M(a+'² + '+b+'²')+'.':v===2*a+2*b?'ריבוע זה מספר כפול <b>עצמו</b>, לא כפול 2.':v<Math.max(a,b)?'היתר הוא הצלע <b>הארוכה</b>. התשובה צריכה להיות גדולה מ־'+M(Math.max(a,b))+'.':null};}
 function gFindLeg(e){const [a,b,c]=trip(e),r=e?{}:rnd();
- return {kind:'מוצאים ניצב',rc:5,crack:shufCr(CR_LEG),text:`${C('היתר',BL)}: ${M(C(c,BL))} ${CM}, ניצב אחד: ${M(C(a,PK))} ${CM}. מה אורך ${C('הניצב השני',GR)}?`,dia:h=>TRI({a,b,la:a,lb:h?b:'?',lc:c,...r,anim:h}),ans:[{label:'הניצב =',col:GR,val:b,unit:CM}],work:wLeg(c,a,b),
+ return {kind:'מוצאים ניצב',rc:8,crack:shufCr(CR_LEG),text:`${C('היתר',BL)}: ${M(C(c,BL))} ${CM}, ניצב אחד: ${M(C(a,PK))} ${CM}. מה אורך ${C('הניצב השני',GR)}?`,dia:h=>TRI({a,b,la:a,lb:h?b:'?',lc:c,...r,anim:h}),ans:[{label:'הניצב =',col:GR,val:b,unit:CM}],work:wLeg(c,a,b),
   lines:[M(C(c+'²',BL)+' − '+C(a+'²',PK)+' = '+c*c+' − '+a*a+' = '+b*b),M('b = √'+b*b+' = '+b)],rule:RULE.leg,
   diag:({vals:[v]})=>v===b*b?`זה ${M('b²')}. עוד צעד: ${M('√'+b*b)}.`:v===c-a?'חיסרתם צלעות. מחסירים <b>ריבועים</b>: '+M(c+'² − '+a+'²')+'.':v===c*c+a*a||Math.abs(v-Math.sqrt(c*c+a*a))<.6?'חיברתם! מחפשים <b>ניצב</b> ← <b>מחסירים</b>.':v>=c?'ניצב תמיד <b>קצר</b> מהיתר.':null};}
 /* ===== ★★★ הבנה ===== */
 function gWhichOp(){const leg=Math.random()<.5,[a,b,c]=trip(1);
- return {kind:'מחברים או מחסירים?',rc:5,text:leg?`נתון היתר ${M(c)} וניצב ${M(a)}. מחפשים את הניצב השני. מה עושים עם הריבועים?`:`נתונים הניצבים ${M(a)} ו־${M(b)}. מחפשים את היתר. מה עושים עם הריבועים?`,
+ return {kind:'מחברים או מחסירים?',rc:8,text:leg?`נתון היתר ${M(c)} וניצב ${M(a)}. מחפשים את הניצב השני. מה עושים עם הריבועים?`:`נתונים הניצבים ${M(a)} ו־${M(b)}. מחפשים את היתר. מה עושים עם הריבועים?`,
   dia:()=>TRI({a,b,la:a,lb:leg?'?':b,lc:leg?c:'?'}),...CH([{t:'מחברים',ok:!leg,msg:'מחפשים ניצב (קצר) ← <b>מחסירים</b> מהיתר.'},{t:'מחסירים: הגדול פחות הקטן',ok:leg,msg:'מחפשים יתר (ארוך) ← <b>מחברים</b>.'},{t:'כופלים',msg:'בפיתגורס מחברים או מחסירים ריבועים.'}]),
   lines:[leg?`ניצב ← ${M(c+'² − '+a+'²')}`:`יתר ← ${M(a+'² + '+b+'²')}`],rule:'יתר ← מחברים. ניצב ← מחסירים.'};}
 const WORDS=[
@@ -272,12 +272,12 @@ const WORDS=[
  ()=>{const [a,b,c]=pick([[5,12,13],[9,12,15],[8,15,17]]);return {nm:'אלכסון',text:`אלכסון של מלבן ${M(c)} ס״מ, ורוחבו ${M(a)} ס״מ. מה אורך המלבן?`,a,b,c,ask:'b',unit:CM,lab:['רוחב','אורך','אלכסון']};}];
 function gWord(){const w=pick(WORDS)(),{a,b,c}=w,hy=w.ask==='c',val=w[w.ask];
  const cr=shufCr([{lab:'מה היתר כאן?',choice:[`ה${w.lab[2]}`,`ה${w.lab[0]}`],correct:0,why:`ה${w.lab[2]} נמצא מול הזווית הישרה ← יתר.`},{lab:'מה מבקשים?',choice:hy?['את היתר','ניצב']:['ניצב','את היתר'],correct:0,why:hy?'מבקשים את הצלע מול הזווית הישרה.':'מבקשים צלע שיוצאת מהזווית הישרה ← ניצב.'},{lab:'מה עושים?',choice:hy?['מחברים ריבועים','מחסירים ריבועים']:['מחסירים ריבועים','מחברים ריבועים'],correct:0,why:hy?'יתר ← מחברים.':'ניצב ← מחסירים.'}]);
- return {kind:'בעיה מילולית · '+w.nm,rc:6,crack:cr,text:w.text+' (משרטטים משולש ישר זווית!)',dia:h=>TRI({a,b,la:w.ask==='a'&&!h?'?':a,lb:w.ask==='b'&&!h?'?':b,lc:hy&&!h?'?':c,anim:h,ex:''}),
+ return {kind:'בעיה מילולית · '+w.nm,rc:9,crack:cr,text:w.text+' (משרטטים משולש ישר זווית!)',dia:h=>TRI({a,b,la:w.ask==='a'&&!h?'?':a,lb:w.ask==='b'&&!h?'?':b,lc:hy&&!h?'?':c,anim:h,ex:''}),
   ans:[{label:'התשובה =',col:hy?BL:w.ask==='a'?PK:GR,val,unit:w.unit}],work:hy?wHyp(a,b,c):w.ask==='a'?wLeg(c,b,a):wLeg(c,a,b),
   lines:[`ה${w.lab[2]} מול הזווית הישרה ← יתר.`,hy?M(a+'² + '+b+'² = '+c*c+' ← √'+c*c+' = '+c):M(c+'² − '+(w.ask==='a'?b:a)+'² = '+val*val+' ← √'+val*val+' = '+val)],rule:hy?RULE.hyp:RULE.leg,
   diag:({vals:[v]})=>v===val*val?`זה הריבוע. עוד צעד: ${M('√'+val*val)}.`:!hy&&Math.abs(v-Math.sqrt(c*c+(w.ask==='a'?b:a)**2))<.6?`ה${w.lab[2]} הוא היתר, ומחפשים ניצב ← <b>מחסירים</b>.`:null};}
 function gCoord(){const [dx,dy,d]=pick([[3,4,5],[4,3,5],[6,8,10],[8,6,10]]);const x1=R(0,10-dx),y1=R(0,10-dy),A={x:x1,y:y1},B={x:x1+dx,y:y1+dy};
- return {kind:'מרחק בין נקודות',rc:7,crack:shufCr([{lab:'מה הניצבים?',choice:['כמה זזים ימינה וכמה למעלה','השיעורים של A'],correct:0,why:'הניצבים הם הקווים המקווקווים: ימינה ולמעלה.'},{lab:'מה מבקשים?',choice:['את היתר: הקו הישר AB','ניצב'],correct:0,why:'AB הוא הקו הישר מול הזווית הישרה ← יתר.'}]),
+ return {kind:'מרחק בין נקודות',rc:10,crack:shufCr([{lab:'מה הניצבים?',choice:['כמה זזים ימינה וכמה למעלה','השיעורים של A'],correct:0,why:'הניצבים הם הקווים המקווקווים: ימינה ולמעלה.'},{lab:'מה מבקשים?',choice:['את היתר: הקו הישר AB','ניצב'],correct:0,why:'AB הוא הקו הישר מול הזווית הישרה ← יתר.'}]),
   text:`מה המרחק בין ${M('A('+x1+', '+y1+')')} ל־${M('B('+B.x+', '+B.y+')')}?`,dia:h=>GRID(A,B,h),ans:[{label:'AB =',col:BL,val:d}],
   work:[{t:`כמה זזים ימינה? ${M(B.x+' − '+x1+' = ?')}`,ans:[{label:'',val:dx}],why:'ימינה = ההפרש בין ה־x.'},{t:`כמה עולים למעלה? ${M(B.y+' − '+y1+' = ?')}`,ans:[{label:'',val:dy}],why:'למעלה = ההפרש בין ה־y.'},{t:`${M(dx+'² + '+dy+'² = ?')}`,ans:[{label:'',val:d*d}],why:'מחפשים יתר ← מחברים ריבועים.'},wRoot(d*d,d,'AB')],
   lines:[`ימינה ${M(C(dx,PK))}, למעלה ${M(C(dy,GR))}.`,M(dx+'² + '+dy+'² = '+d*d+' ← √'+d*d+' = '+d)],rule:'מרחק: ימינה ולמעלה הם ניצבים, AB הוא היתר.',
@@ -293,32 +293,43 @@ function gErr(){const k=R(0,2),nm=pick(['נועה','דניאל','איתי','מא
   lines:[`הטעות בשורה ${bad+1}: ${why}`,`התשובה: ${M(val)}`],rule:k===0?RULE.leg:k===1?'בסוף תמיד מוציאים שורש.':RULE.sq,diag:()=>why};}
 /* ===== ★★★★ חשיבה ואוריינות ===== */
 function gIsRight(){const [a,b,c]=trip(1),ok=Math.random()<.5,cc=ok?c:c+1,s=shuf([a,b,cc]);
- return {kind:'האם ישר זווית?',rc:2,text:`צלעות משולש: ${M(s.join(', '))}. חשבו ${M(a+'² + '+b+'²')} והחליטו: האם המשולש ישר זווית?`,ans:[{label:'',col:BL,val:a*a+b*b}],choice:['כן, ישר זווית','לא'],correct:ok?0:1,choiceLab:'האם ישר זווית?',
+ return {kind:'האם ישר זווית?',rc:3,text:`צלעות משולש: ${M(s.join(', '))}. חשבו ${M(a+'² + '+b+'²')} והחליטו: האם המשולש ישר זווית?`,ans:[{label:'',col:BL,val:a*a+b*b}],choice:['כן, ישר זווית','לא'],correct:ok?0:1,choiceLab:'האם ישר זווית?',
   work:[wSq(a,PK),wSq(b,GR),{t:`${M(a*a+' + '+b*b+' = ?')}`,ans:[{label:'',val:a*a+b*b}],why:'מחברים את ריבועי שתי הצלעות הקצרות.'},{t:`ו־${M(cc+'² = '+cc*cc)}. שווים?`,choice:['שווים ← ישר זווית','לא שווים ← לא ישר זווית'],correct:ok?0:1,why:'ישר זווית <b>רק</b> אם יוצא בדיוק הריבוע של הצלע הארוכה.'}],
   lines:[M(a+'² + '+b+'² = '+(a*a+b*b)),M(cc+'² = '+cc*cc),ok?'שווים ← ישר זווית ✓':'לא שווים ← לא ישר זווית.'],rule:'שתי הקצרות בריבוע, מחברים, ומשווים לריבוע של הארוכה.',
   diag:({vals:[v]})=>v===a+b?'מחברים את <b>הריבועים</b>.':null};}
 function gRect2(){const [a,b,c]=pick([[6,8,10],[5,12,13],[9,12,15],[8,15,17]]);
- return {kind:'מלבן: מאלכסון לשטח',rc:6,crack:shufCr([{lab:'מה חסר כדי לחשב שטח?',choice:['האורך','האלכסון'],correct:0,why:'שטח = אורך · רוחב. האורך חסר.'},{lab:'איך מוצאים אותו?',choice:['פיתגורס: מחסירים ריבועים','מחברים ריבועים'],correct:0,why:'האורך הוא ניצב ← מחסירים.'}]),
+ return {kind:'מלבן: מאלכסון לשטח',rc:9,crack:shufCr([{lab:'מה חסר כדי לחשב שטח?',choice:['האורך','האלכסון'],correct:0,why:'שטח = אורך · רוחב. האורך חסר.'},{lab:'איך מוצאים אותו?',choice:['פיתגורס: מחסירים ריבועים','מחברים ריבועים'],correct:0,why:'האורך הוא ניצב ← מחסירים.'}]),
   text:`אלכסון מלבן ${M(c)} ס״מ, ורוחבו ${M(a)} ס״מ. מה שטח המלבן?`,dia:h=>TRI({a,b,la:a,lb:h?b:'?',lc:c,anim:h}),ans:[{label:'שטח =',col:BL,val:a*b,unit:'סמ״ר'}],
   work:[...wLeg(c,a,b),{t:`שטח = ${M(a+' · '+b+' = ?')}`,ans:[{label:'',val:a*b}],why:'שטח מלבן = אורך · רוחב.'}],
   lines:[`אורך: ${M(c+'² − '+a+'² = '+b*b+' ← '+b)}`,`שטח: ${M(a+' · '+b+' = '+a*b)}`],rule:'קודם פיתגורס למצוא צלע, אחר כך שטח.',
   diag:({vals:[v]})=>v===b?'זה האורך. עכשיו שטח: אורך · רוחב.':v===a*c?'האלכסון הוא לא צלע. קודם מוצאים את האורך.':null};}
 function gSave(){const [a,b,c]=pick([[30,40,50],[60,80,100],[9,12,15],[12,16,20],[15,20,25]]);
- return {kind:'כמה חוסכים?',rc:6,crack:shufCr([{lab:'הדרך בפינה היא...',choice:['שני הניצבים','היתר'],correct:0,why:'הולכים לאורך שתי הצלעות שליד הזווית הישרה.'},{lab:'הדרך באלכסון היא...',choice:['היתר','ניצב'],correct:0,why:'האלכסון מול הזווית הישרה.'}]),
+ return {kind:'כמה חוסכים?',rc:9,crack:shufCr([{lab:'הדרך בפינה היא...',choice:['שני הניצבים','היתר'],correct:0,why:'הולכים לאורך שתי הצלעות שליד הזווית הישרה.'},{lab:'הדרך באלכסון היא...',choice:['היתר','ניצב'],correct:0,why:'האלכסון מול הזווית הישרה.'}]),
   text:`מגרש מלבני ${M(a)} מ׳ על ${M(b)} מ׳. דנה חוצה את המגרש באלכסון, במקום ללכת מסביב לפינה. כמה מטרים היא חוסכת?`,dia:h=>TRI({a,b,la:a,lb:b,lc:h?c:'?',anim:h}),ans:[{label:'חוסכת',col:OR,val:a+b-c,unit:'מ׳'}],
   work:[...wHyp(a,b,c),{t:`בפינה: ${M(a+' + '+b+' = ?')}`,ans:[{label:'',val:a+b}],why:'מסביב = שתי הצלעות.'},{t:`חוסכת: ${M((a+b)+' − '+c+' = ?')}`,ans:[{label:'',val:a+b-c}],why:'ההפרש בין שתי הדרכים.'}],
   lines:[`באלכסון: ${M('√('+a+'² + '+b+'²) = '+c)}`,`בפינה: ${M(a+' + '+b+' = '+(a+b))}`,`חוסכת: ${M((a+b)+' − '+c+' = '+(a+b-c))}`],rule:'מחשבים את שתי הדרכים ומחסירים.',
   diag:({vals:[v]})=>v===c?'זה אורך האלכסון. השאלה: כמה <b>חוסכים</b>?':v===a+b?'זו הדרך בפינה. מחסירים ממנה את האלכסון.':null};}
 function gIso(){const [h,hb,s]=pick([[4,3,5],[8,6,10],[12,5,13],[12,9,15],[15,8,17]]);
  const dia=hl=>TRI({a:h,b:hb,la:hl?h:'?',lb:hb,lc:s,anim:hl,ex:''});
- return {kind:'גובה במשולש שווה שוקיים',rc:6,crack:shufCr([{lab:'הגובה חוצה את הבסיס. חצי בסיס =',choice:[String(hb),String(2*hb)],correct:0,why:`הגובה חוצה את הבסיס: ${M(2*hb+' : 2 = '+hb)}.`},{lab:'מה מבקשים?',choice:['ניצב (הגובה)','יתר'],correct:0,why:'השוק היא היתר. הגובה הוא ניצב ← מחסירים.'}]),
+ return {kind:'גובה במשולש שווה שוקיים',rc:9,crack:shufCr([{lab:'הגובה חוצה את הבסיס. חצי בסיס =',choice:[String(hb),String(2*hb)],correct:0,why:`הגובה חוצה את הבסיס: ${M(2*hb+' : 2 = '+hb)}.`},{lab:'מה מבקשים?',choice:['ניצב (הגובה)','יתר'],correct:0,why:'השוק היא היתר. הגובה הוא ניצב ← מחסירים.'}]),
   text:`במשולש שווה שוקיים השוק ${M(s)} ס״מ והבסיס ${M(2*hb)} ס״מ. מה אורך הגובה לבסיס? (בציור: חצי מהמשולש)`,dia,ans:[{label:'גובה =',col:PK,val:h,unit:CM}],
   work:[{t:`חצי בסיס: ${M(2*hb+' : 2 = ?')}`,ans:[{label:'',val:hb}],why:'הגובה לבסיס חוצה אותו לשניים.'},...wLeg(s,hb,h)],
   lines:[`חצי בסיס ${M(hb)}.`,M(s+'² − '+hb+'² = '+h*h+' ← √'+h*h+' = '+h)],rule:'גובה בשווה שוקיים: חצי בסיס, ואז פיתגורס (מחסירים).',
   diag:({vals:[v]})=>Math.abs(v-Math.sqrt(s*s-4*hb*hb))<.6&&s>2*hb?'שכחתם לחצות את הבסיס.':v===h*h?'עוד צעד: שורש.':null};}
+
+/* triangle WITHOUT a right angle (angles in degrees at the base) */
+function NTRI(a1,a2){const W=360,H=230,b=250,r1=a1*Math.PI/180,r2=a2*Math.PI/180,t=b*Math.sin(r2)/Math.sin(r1+r2);
+ const P=[{x:55,y:195},{x:55+b,y:195},{x:55+t*Math.cos(r1),y:195-t*Math.sin(r1)}];
+ return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="משולש בלי זווית ישרה"><polygon points="${P.map(p=>f(p.x)+','+f(p.y)).join(' ')}" fill="#ffffff08" stroke="#dfe8f5" stroke-width="5" stroke-linejoin="round"/>`+
+  TX(P[0].x+34,P[0].y-10,a1+'°','#ffb020',{fs:16})+TX(P[1].x-34,P[1].y-10,a2+'°','#ffb020',{fs:16})+TX(P[2].x,P[2].y+38,(180-a1-a2)+'°','#ffb020',{fs:16})+'</svg>';}
+function gOnlyRight(){const ok=Math.random()<.5,an=pick([[50,60],[70,40],[45,65],[35,75],[60,60]]);
+ const t=trip(1);
+ return {kind:'מותר פיתגורס?',rc:4,text:'האם מותר להשתמש במשפט פיתגורס במשולש הזה?',dia:()=>ok?TRI({a:t[0],b:t[1],...rnd()}):NTRI(an[0],an[1]),
+  ...CH([{t:'כן, יש בו זווית ישרה',ok:ok,msg:'אין כאן זווית של 90°! פיתגורס עובד <b>רק</b> במשולש ישר זווית.'},{t:'לא, אין בו זווית ישרה',ok:!ok,msg:'יש כאן סימן ⊾ של זווית ישרה (90°) ← מותר פיתגורס.'}]),
+  lines:[ok?'יש סימן ⊾ ← זווית ישרה ← מותר פיתגורס.':`הזוויות: ${an[0]}°, ${an[1]}°, ${180-an[0]-an[1]}°. אין 90° ← אסור פיתגורס.`],rule:'פיתגורס רק במשולש ישר זווית.'};}
 /* ===== levels ===== */
 const LAD=[
- [{g:gHyp,n:4,h:2},{g:gSqRoot,n:5,h:2},{g:gEqFor,n:4,h:1},{g:gSqSum,n:3,h:1},{g:()=>gFindHyp(1),n:4,h:1}],
+ [{g:gHyp,n:4,h:2},{g:gOnlyRight,n:3,h:2},{g:gSqRoot,n:5,h:2},{g:gEqFor,n:4,h:1},{g:gSqSum,n:3,h:1},{g:()=>gFindHyp(1),n:4,h:1}],
  [{g:()=>gFindHyp(1),n:4,h:2},{g:()=>gFindLeg(1),n:4,h:2},{g:()=>gFindHyp(),n:6,h:1},{g:()=>gFindLeg(),n:6,h:0}],
  [{g:gWhichOp,n:4,h:1},{g:gWord,n:6,h:1},{g:gCoord,n:5,h:1},{g:gErr,n:5,h:0}],
  [{g:gRect2,n:5,h:1},{g:gSave,n:5,h:1},{g:gIsRight,n:5,h:0},{g:gIso,n:5,h:0}]];
@@ -328,25 +339,32 @@ const LEVELS=[
  {n:3,t:'בעיות ומרחק',d:'משרטטים ← מחליטים ← פותרים',ladder:LAD[2]},
  {n:4,t:'חשיבה ואוריינות',d:'שטח, חיסכון בדרך, גובה, ישר זווית?',ladder:LAD[3]}];
 LEVELS.forEach(l=>l.g=()=>pick(l.ladder).g());
-const TEST=[[gHyp,gSqRoot,gEqFor,gSqSum],[()=>gFindHyp(),()=>gFindLeg(),()=>gFindHyp(),()=>gFindLeg()],[gWhichOp,gWord,gCoord,gErr],[gRect2,gSave,gIsRight,gIso]];
-const WARM=[gSqRoot,gHyp,gSqRoot,gHyp,gSqSum,gEqFor,gSqRoot,()=>gFindHyp(1)];
+const TEST=[[gHyp,gSqRoot,gEqFor,gOnlyRight],[()=>gFindHyp(),()=>gFindLeg(),()=>gFindHyp(),()=>gFindLeg()],[gWhichOp,gWord,gCoord,gErr],[gRect2,gSave,gIsRight,gIso]];
+const WARM=[gSqRoot,gHyp,gOnlyRight,gSqRoot,gHyp,gSqSum,gEqFor,gSqRoot,()=>gFindHyp(1)];
 /* ===== explanation cards: short and visual ===== */
 const RECAP=[
  {h:'למה צריך את זה?',d:1.2,svg:()=>TRI({a:12,b:5,la:'?',lb:5,lc:13,anim:1}),says:['כמה גבוה מגיע סולם של 13 מ׳?','פיתגורס עונה בלי למדוד!'],what:'מוצאים צלע שלישית בלי סרגל.'},
  {h:'ניצבים ויתר',d:1.4,svg:()=>TRI({a:3,b:4,la:'ניצב',lb:'ניצב',lc:'יתר',anim:1}),says:[`${C('ניצבים',PK)}: יוצאים מהזווית הישרה.`,`${C('יתר',BL)}: מול הזווית הישרה. הכי ארוך!`],what:'יתר = מול הזווית הישרה.'},
+ {h:'איפה היתר? בכל ציור!',d:1.4,svg:()=>TRI({a:4,b:7,rot:150,la:'ניצב',lb:'ניצב',lc:'יתר',anim:1}),says:['1. מחפשים את הסימן ⊾ = זווית ישרה.',`2. ה${C('יתר',BL)} = הצלע <b>מולו</b>.`],what:'⊾ ← הצלע שמולו = יתר.'},
  {h:'הסוד של פיתגורס',d:4.6,svg:SQA,says:[`${M(C('9',PK)+' + '+C('16',GR)+' = '+C('25',BL))} משבצות!`],def:M(C('a²',PK)+' + '+C('b²',GR)+' = '+C('c²',BL)),what:'ניצב² + ניצב² = יתר².'},
- {h:'ריבוע ושורש',d:.6,says:[`ריבוע: ${M('5² = 5 · 5 = 25')}`,`שורש: ההפך! ${M('√25 = 5')}`],what:'שורש מבטל ריבוע.'},
+ {h:'רק במשולש ישר זווית!',d:.8,svg:()=>{const a=TRI({a:3,b:4}).replace('viewBox="0 0 360 250"','viewBox="0 0 360 250" x="0" y="0" width="175" height="122"'),b=NTRI(60,70).replace('viewBox="0 0 360 230"','viewBox="0 0 360 230" x="185" y="4" width="175" height="112"');return `<svg viewBox="0 0 360 160" role="img" aria-label="מותר ואסור">${a}${b}`+TX(88,150,'✓ פיתגורס',GR,{fs:17,rtl:1})+TX(272,150,'✗ אסור',PK,{fs:17,rtl:1})+'</svg>';},says:[`יש ⊾ (90°)? ${C('מותר',GR)} פיתגורס.`,`אין זווית ישרה? ${C('אסור',PK)}!`],what:'פיתגורס רק כשיש זווית ישרה.'},
+ {h:'מה זה ריבוע?',d:.6,says:[`ריבוע = המספר כפול <b>עצמו</b>: ${M('5² = 5 · 5 = 25')}`,`לא ${M('5 · 2')}! ${M('5²')} = 25 משבצות.`],what:'ריבוע = מספר כפול עצמו.'},
+ {h:'מה זה שורש?',d:.6,svg:()=>{let g=`<svg viewBox="0 0 360 150" role="img" aria-label="טבלת ריבועים">`;for(let n=1;n<=12;n++){const x=12+((n-1)%6)*58,y=18+Math.floor((n-1)/6)*66;g+=`<rect x="${x}" y="${y}" width="52" height="56" rx="9" fill="${n===7?BL:'#13233a'}" fill-opacity="${n===7?.25:1}" stroke="${n===7?BL:'#2b4466'}" stroke-width="2"/>`+TX(x+26,y+22,n+'²',PK,{fs:15})+TX(x+26,y+46,n*n,GR,{fs:16});}return g+'</svg>';},says:[`${M('√49')} = איזה מספר כפול <b>עצמו</b> נותן 49?`,`מנסים: ${M('6 · 6 = 36')} קטן. ${M('7 · 7 = 49')} ✓`],def:M('√49 = 7'),what:'שורש: מחפשים מספר שכפול עצמו נותן.'},
  {h:'מוצאים יתר: מחברים',d:1.4,svg:()=>TRI({a:6,b:8,la:6,lb:8,lc:'?',anim:1}),says:[M(C('6²',PK)+' + '+C('8²',GR)+' = 36 + 64 = 100'),M('√100 = '+C('10',BL))],what:'יתר ← מחברים, ואז שורש.'},
  {h:'מוצאים ניצב: מחסירים',d:1.4,svg:()=>TRI({a:5,b:12,la:5,lb:'?',lc:13,anim:1}),says:[M(C('13²',BL)+' − '+C('5²',PK)+' = 169 − 25 = 144'),M('√144 = '+C('12',GR))],what:'ניצב ← מחסירים, ואז שורש.'},
  {h:'בעיה מילולית? משרטטים!',d:1.4,svg:()=>TRI({a:8,b:6,la:'קיר',lb:'רצפה',lc:'סולם',anim:1}),says:['מציירים משולש ישר זווית.','מסמנים: מה ידוע? מה חסר?'],what:'קודם ציור, אחר כך חשבון.'},
  {h:'מרחק בין שתי נקודות',d:1.4,svg:()=>GRID({x:1,y:2},{x:7,y:10},1),says:[`${C('ימינה',PK)} ו${C('למעלה',GR)} = ניצבים.`,`הקו הישר ${C('AB',BL)} = יתר.`],what:'מרחק ← משולש ← פיתגורס.'},
  {h:'טעות נפוצה: ניצב',d:.5,says:[`ניצב? ${M('13² + 5²')} <span class="x">✗</span>`,`מחסירים! ${M('13² − 5²')} <span class="v">✓</span>`],what:'ניצב ← תמיד מחסירים.'},
  {h:'טעות נפוצה: שורש',d:.5,says:[`${M('c² = 100')} ← עוד לא סיימנו!`,`${M('c = √100 = 10')} <span class="v">✓</span>`],what:'בסוף תמיד שורש.'}];
-RECAP[3].svg=()=>{const u=18;let g=`<svg viewBox="0 0 300 120" role="img" aria-label="ריבוע 5 על 5">`;for(let i=0;i<5;i++)for(let j=0;j<5;j++)g+=`<rect class="rv" style="--d:${f(.1+(i*5+j)*.03)}s" x="${20+j*u}" y="${10+i*u}" width="${u-2}" height="${u-2}" rx="2" fill="${BL}" fill-opacity=".75"/>`;
+RECAP[5].svg=()=>{const u=18;let g=`<svg viewBox="0 0 300 120" role="img" aria-label="ריבוע 5 על 5">`;for(let i=0;i<5;i++)for(let j=0;j<5;j++)g+=`<rect class="rv" style="--d:${f(.1+(i*5+j)*.03)}s" x="${20+j*u}" y="${10+i*u}" width="${u-2}" height="${u-2}" rx="2" fill="${BL}" fill-opacity=".75"/>`;
  return g+TX(64,112,'5',PK,{fs:15})+TX(205,50,'5² = 25',BL,{fs:22})+TX(205,88,'√25 = 5',PK,{fs:22})+'</svg>';};
-RECAP[8].chk=[()=>{let q;for(let i=0;i<30;i++){q=gErr();if(q.rc===8)break;}return q;},()=>gFindLeg(1)];
-RECAP[9].chk=[()=>{let q;for(let i=0;i<30;i++){q=gErr();if(q.rc===9)break;}return q;},()=>gFindHyp(1)];
+RECAP[11].chk=[()=>{let q;for(let i=0;i<30;i++){q=gErr();if(q.rc===11)break;}return q;},()=>gFindLeg(1)];
+RECAP[12].chk=[()=>{let q;for(let i=0;i<30;i++){q=gErr();if(q.rc===12)break;}return q;},()=>gFindHyp(1)];
 RECAP[0].chk=[gWhy];
+RECAP[2].chk=[gHyp,gHyp];
+RECAP[4].chk=[gOnlyRight,gOnlyRight];
+RECAP[6].chk=[()=>{let q;for(let i=0;i<30;i++){q=gSqRoot();if(q.rc===6)break;}return q;}];
+(function(){const add=()=>{const h=document.getElementById('home');if(!h||document.getElementById('wsb'))return;const b=document.createElement('button');b.id='wsb';b.type='button';b.textContent='📄 דף עבודה';b.setAttribute('aria-label','פתיחת דף עבודה להדפסה');b.onclick=()=>window.open('https://drive.google.com/drive/folders/1kR54bTJVkmjA_dG0E2d-Qti6abC3alHr','_blank');h.parentNode.insertBefore(b,h);};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',add);else add();})();
 
 const TL=['★ ידע','★★ יישום','★★★ הבנה ונימוק','★★★★ חשיבה ואוריינות'],TCOL=[GR,BL,OR,PU];
 const TOTAL=(APP&&APP.total)||20,PASS=Math.round(TOTAL*.8);let S={};

@@ -15,7 +15,7 @@ const {chromium}=require('playwright');
  const p=await b.newPage({viewport:{width:1100,height:900}});p.on('pageerror',e=>errs.push(String(e)));
  await p.goto(page_url);await p.evaluate(()=>localStorage.clear());await p.reload();
  const res={};
- const cases=[['exam_all',{g:'ח',k:'exam',n:8,two:true,lv:'mix'}],['exam_one',{g:'ח',k:'exam',n:16,two:true,t:['h8_ratio'],lv:'mix'}],['ws_all',{g:'ח',k:'ws',n:8,lv:'mid'}],['z7_exam',{g:'ז',k:'exam',n:10,two:true,lv:'mix'}],['z7_weak',{g:'ז',k:'exam',n:8,two:true,lv:'weak',t:['z7_signs','z7_order']}],['z7_strong',{g:'ז',k:'exam',n:8,two:true,lv:'strong',t:['z7_coord','z7_angles']}],['z7_ws',{g:'ז',k:'ws',n:6,lv:'weak'}]];
+ const cases=[['exam_all',{g:'ח',k:'exam',n:8,two:true,lv:'mix'}],['exam_one',{g:'ח',k:'exam',n:16,two:true,t:['h8_ratio'],lv:'mix'}],['ws_all',{g:'ח',k:'ws',n:8,lv:'mid'}],['z7_exam',{g:'ז',k:'exam',n:10,two:true,lv:'mix'}],['z7_weak',{g:'ז',k:'exam',n:8,two:true,lv:'weak',t:['z7_signs','z7_order']}],['z7_strong',{g:'ז',k:'exam',n:8,two:true,lv:'strong',t:['z7_coord','z7_angles']}],['z7_ws',{g:'ז',k:'ws',n:6,lv:'weak'}],['t9_exam',{g:'ט',k:'exam',n:10,two:true,lv:'mix'}],['t9_ws',{g:'ט',k:'ws',n:8,lv:'mix'}]];
  for(const [name,set] of cases){
   await p.evaluate(s=>{Object.assign(S,s);if(!s.t)S.t=banksOf(S.g).map(b=>b.id);ui();render()},set);
   res[name]=await p.evaluate(()=>{
