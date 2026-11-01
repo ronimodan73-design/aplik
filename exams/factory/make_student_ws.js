@@ -1,7 +1,7 @@
 const {chromium}=require('playwright');
 (async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1100,height:900}});
 await p.goto('file://'+process.cwd()+'/exams/generator.html');await p.evaluate(()=>localStorage.clear());await p.reload();
-await p.evaluate(()=>{Object.assign(S,{g:'ח',k:'ws',t:['h8_pythag'],n:10,lv:'mix',key:true,cls:'',yr:'תשפ״ז'});ui();render();});
+await p.evaluate(()=>{Object.assign(S,{g:'ח',k:'ws',t:['h8_pythag'],n:10,lv:'mix',key:true,cls:'ט׳ א1, א2',yr:'תשפ״ז'});ui();render();});
 const html=await p.evaluate(()=>{
  document.querySelectorAll('.panel').forEach(e=>e.remove());
  document.querySelectorAll('script').forEach(e=>e.remove());
