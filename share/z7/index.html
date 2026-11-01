@@ -20,11 +20,26 @@ header h1{margin:0 0 4px;font-size:1.5rem}header p{margin:0;font-size:.98rem}
 a.d,button.d{background:var(--d)}a.l,button.l{background:var(--l)}
 .btns span{background:var(--soon);color:var(--mut);font-weight:600}
 .note{border:1px dashed var(--line);border-radius:12px;padding:10px 14px;margin-top:16px;font-size:.93rem;color:var(--mut);background:var(--card)}
+
+.rbtn{display:block;width:100%;margin-top:12px;padding:16px;border:0;border-radius:14px;background:#f5b83d;color:#111;font:800 1.25rem system-ui,Arial,sans-serif;cursor:pointer;box-shadow:0 4px 0 #c98a14}
+.rbtn:active{transform:translateY(2px);box-shadow:0 2px 0 #c98a14}
+#remote{display:none}#remote.open{display:block}
+.rl{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-top:10px}
+.rl h3{margin:0 0 8px;font-size:1.05rem}.rl.g h3{color:#0f8a5f}
+.row{border-top:1px solid var(--line);padding:8px 0}.row:first-of-type{border-top:0}
+.row .k{font-weight:800;font-size:.95rem;margin-bottom:4px}
+.row .q{font-size:.92rem;color:var(--ink);margin:4px 0 0}
+.row .n{font-size:.88rem;color:var(--mut);margin:4px 0 0}
+.row .x{font-size:.92rem;color:var(--mut);background:var(--soon);border-radius:10px;padding:8px 10px}
+a.m{background:#7a2e8f}a.o{background:#1f6fd1}
+.warn{border:2px solid #f5b83d;border-radius:12px;padding:10px 14px;margin-top:12px;background:var(--card);font-size:.92rem}
 footer{text-align:center;font-weight:700;padding:20px 0 30px}
 </style>
 </head>
 <body><div class="wrap">
 <header><h1>📚 שיעורים במתמטיקה · כיתה ז׳</h1><p style="font-weight:700">ערכה: רוני מודן · שחקים</p><p>לכל שיעור: מצגת + יישומון ללוח שהמורה שולטת בו. נפתח ישר מהקישור, בלי התחברות.</p></header>
+<button type="button" class="rbtn" id="rbtn" aria-expanded="false" aria-controls="remote">🏠 למידה מרחוק</button>
+<div id="remote"></div>
 <div id="app"></div>
 <div class="note">💡 <b>במצגת:</b> לוחצים על כפתור המסך המלא להקרנה על הלוח. <b>ביישומון ללוח:</b> גוררים את העיגולים, והציור מתעדכן מול הכיתה.</div>
 <footer>ערכה: רוני מודן · שחקים</footer>
@@ -42,5 +57,38 @@ const NL=[[1, "ערך מוחלט – המרחק מ־0"], [2, "חיבור מספ�
 const NOV=`<div class="card" style="border:3px solid #f5b83d"><h2>⭐ נובמבר · כל 15 השיעורים במקום אחד</h2><p>מספרים מכוונים (שיעורים 1–7) וגאומטריה (שיעורים 8–15). בכל שיעור: מצגת, משימות לכיתה ולבית עם משימות חובה כמו המודל, והבוחן במודל.</p><div class="nl">${NL.map(([n,t])=>`<div class="nr${n>=8?' g':''}"><b>שיעור ${n} · ${t}</b><div class="btns"><a class="d" href="${B}decks/z7nov/L${n}.html" target="_blank" rel="noopener">🎞️ מצגת</a><button type="button" class="dlx" onclick="dl('decks/z7nov/L${n}.html','מצגת שיעור ${n} – ${t.replace(/['"]/g,'')}.html',this)">⬇️ הורדת מצגת</button><a class="l" href="${B}share/z7/nov/L${n}.html" target="_blank" rel="noopener">🖨️ דף משימות</a><button type="button" class="dlx" onclick="dl('decks/files/z7nov/L${n}.docx','משימות שיעור ${n} – ${t.replace(/['"]/g,'')}.docx',this)">⬇️ הורדת דף (Word)</button>${n===8?`<a class="l" href="${B}labs/protractor_lab.html" target="_blank" rel="noopener">🖥️ מד זווית ללוח</a>`:''}</div></div>`).join('')}</div><p style="margin-top:12px;font-size:.9rem;border-top:1px solid #e3e6ee;padding-top:10px">📘 <a href="${B}share/z7/nov_teacher.html" target="_blank" rel="noopener">נספח למורה</a> · <a href="#" onclick="dl('decks/files/z7_nov_teacher.docx','נספח למורה – ז נובמבר.docx',this);return false">⬇️ הורדת הנספח (Word)</a></p></div>`;
 async function dl(path,name,btn){const t=btn.textContent;btn.textContent='⏳ מוריד…';try{const r=await fetch(R+path,{cache:'no-store'});if(!r.ok)throw 0;const b=new Blob([await r.arrayBuffer()],{type:name.endsWith('.html')?'text/html':'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();a.remove();btn.textContent='✅ הורד';}catch(e){btn.textContent='נסו שוב';}setTimeout(()=>btn.textContent=t,4000);}
 document.getElementById('app').innerHTML=NOV+L.map(([n,t,w,d,l,a])=>`<div class="card"><h2>שיעור ${n} · ${t}</h2><p>${w}</p><div class="btns">${d?`<a class="d" href="${B+d}" target="_blank" rel="noopener">🎞️ מצגת</a>`:'<span>🎞️ מצגת · בקרוב</span>'}${l?`<a class="l" href="${B+l}" target="_blank" rel="noopener">🖥️ יישומון ללוח</a>`:'<span>🖥️ יישומון ללוח · בקרוב</span>'}${a?`<a class="d" href="${B+a}" target="_blank" rel="noopener">📱 תרגול לתלמידים</a>`:''}</div></div>`).join('');
+
+/* ===== למידה מרחוק · נובמבר ז׳ (לפי "בדיקת פעילויות מתוקשבות – 1.11.2026" בעמוד הצוות) ===== */
+const MO='https://moodlemoe.lms.education.gov.il/mod/quiz/view.php?id=',OF='https://myofek.cet.ac.il/he/catalog/item/';
+const RL={
+1:{m:[['ערך מוחלט ומספר נגדי','1921112']],mq:'שאלות 1–6. שאלה 7 – להרחבה בלבד.',o:[['מספרים על ציר','xNMJJ3kU']],oq:'שאלה 3, סעיפים א–ו.',x:'אופק כאן הוא השוואת מספרים בלבד, ואינו תחליף לערך מוחלט. את הערך המוחלט מתרגלים בדף המשימות.'},
+2:{m:[['חיבור על הציר','1921124']],mq:'שאלות 1–5.',o:[['4 פעולות – בסיסי','04936D8F']],oq:'שאלה 1 סעיפים א, ג, ד · שאלה 2 סעיפים א, ב, ה, ו.',x:'אופק הוא תרגול חישובי חלקי, בלי תנועה על הציר. התנועה על הציר – במצגת ובדף.'},
+3:{m:[['חיבור מכוונים','1921144']],mq:'שאלות 1–10.',o:[['4 פעולות – בסיסי','04936D8F']],oq:'שאלה 2 סעיפים א, ב, ה, ו בלבד. מי שכבר עשה אותם בשיעור 2 – לא חוזר עליהם.',x:'הסבר הכלל והשלמת מחובר חסר – בדף המשימות.'},
+4:{m:[['חיבור מספרים בשרשרת','1921123']],mq:'שאלות 1–6.',ox:'אין פעילות אופק מאומתת לשיעור זה.'},
+5:{m:[['חישוב השינוי','1921120'],['תרגילים שקולים','1921126']],mq:'חישוב השינוי: שאלות 1–6 · תרגילים שקולים: שאלות 1–3.',o:[['4 פעולות – בסיסי','04936D8F']],oq:'שאלה 1 סעיף ב · שאלה 2 סעיפים ג–ד בלבד.',x:'ההסבר "חיסור = חיבור הנגדי" – במצגת.'},
+6:{m:[['חיבור מספר נגדי – התאמה','1921126']],mq:'שאלות 1–5. מי שעשה את 1–3 בשיעור 5 – עושה כאן רק 4–5. תרגול משלים, לא משימת חובה חדשה.',ox:'אין פעילות אופק מאומתת לשיעור זה.'},
+7:{m:[['חיבור וחיסור בשרשרת','1921127']],mq:'שאלות 1–7. תרגול משלים.',ox:'אין פעילות אופק מאומתת לשיעור זה.',x:'הנמקה וניתוח טעות – בדף המשימות.'},
+8:{m:[['סוגי זוויות','1921207']],mq:'שאלה 2 סעיפים א–ב בלבד.',o:[['השוואה, מיון ומדידה','1A420435']],oq:'שאלה 3 סעיפים א–ד. שאלה 1 – להשוואה, לפי הצורך.',x:'כיסוי חלקי: הזווית כסיבוב והכיוון – במצגת ובדף המשימות.'},
+9:{m:[['תכונות זוויות צמודות','1921217']],mq:'שאלות 1–3 ו־5–8.',o:[['צמודות וקודקודיות – בסיסי','716FAB98']],oq:'שאלה 1 סעיפים א–ה · שאלה 2 סעיפים א–ה (זיהוי בלבד).',x:'אופק כאן הוא זיהוי בלבד, ואינו תחליף לחישוב זווית צמודה (במוּדל ובדף).'},
+10:{m:[['שווה שוקיים – מושגים','1921224']],mq:'שאלות 1–2. שאלה 5 – אחרי הכנה למשוואה.',o:[['מיון משולשים – בסיסי','537BEB93']],oq:'שאלה 1 סעיפים א–ג. שאלה 2 לא נדרשת.'},
+11:{m:[['חישוב זוויות – בסיסי','1921225']],mq:'שאלה 1 בלבד.',o:[['סכום זוויות במשולש ובמרובע','109C31C9']],oq:'שאלה 4 סעיפים א–ב.',x:'כיסוי חלקי: את שאר התרגול (גם במשולש שווה שוקיים) משלימים בדף המשימות.'},
+12:{mx:'אין פעילות מוּדל מאומתת לשיעור זה.',o:[['סכום זוויות במשולש ובמרובע','109C31C9']],oq:'שאלה 3 סעיפים א–ב – רק אחרי הכנה למשוואה.',x:'בלי הכנה למשוואה – עושים את השאלות המספריות בדף המשימות.'},
+13:{none:1},14:{none:1},15:{none:1}};
+function remoteHTML(){
+ const lk=(c,base,[t,id])=>`<a class="${c}" href="${base}${id}" target="_blank" rel="noopener">${c==='m'?'🎓 מוּדל':'🔵 אופק'}: ${t}</a>`;
+ return `<div class="warn">📌 <b>איך עובדים:</b> בכל שיעור – מצגת, דף משימות, ותרגול מתוקשב. <b>אין חובה לעשות גם מוּדל וגם אופק.</b> משימות החובה במוּדל – עד יום חמישי בשבוע הרלוונטי, לפי הנחיות הצוות.<br>🔵 <b>אופק:</b> אלה קישורים לפעילויות בלבד. הפעילויות <b>לא שויכו</b> לתלמידים, ועדיין לא נבדק שכל תלמיד יכול לפתוח אותן.</div>`+
+ NL.map(([n,t])=>{const r=RL[n]||{none:1};
+  let h=`<div class="rl${n>=8?' g':''}"><h3>שיעור ${n} · ${t}</h3>`;
+  h+=`<div class="row"><div class="k">📖 חומרי השיעור</div><div class="btns"><a class="d" href="${B}decks/z7nov/L${n}.html" target="_blank" rel="noopener">🎞️ מצגת מלווה</a><a class="l" href="${B}share/z7/nov/L${n}.html" target="_blank" rel="noopener">🖨️ משימות לכיתה ולבית</a></div></div>`;
+  if(r.none){h+=`<div class="row"><div class="x">אין בשיעור זה פעילות מתוקשבת מאומתת (מוּדל או אופק). עובדים עם המצגת ודף המשימות.</div></div>`;}
+  else{
+   h+=`<div class="row"><div class="k">🎓 משימה במוּדל</div>`+(r.m?`<div class="btns">${r.m.map(x=>lk('m',MO,x)).join('')}</div><p class="q">✏️ ${r.mq}</p>`:`<div class="x">${r.mx}</div>`)+`</div>`;
+   h+=`<div class="row"><div class="k">🔵 תרגול באופק</div>`+(r.o?`<div class="btns">${r.o.map(x=>lk('o',OF,x)).join('')}</div><p class="q">✏️ ${r.oq}</p>`:`<div class="x">${r.ox}</div>`)+`</div>`;
+   if(r.x)h+=`<p class="n">📝 משלימים: ${r.x}</p>`;}
+  return h+'</div>';}).join('');}
+(function(){const b=document.getElementById('rbtn'),box=document.getElementById('remote');box.innerHTML=remoteHTML();
+ const set=o=>{box.classList.toggle('open',o);b.setAttribute('aria-expanded',o);b.textContent=o?'✖ סגירת למידה מרחוק':'🏠 למידה מרחוק';};
+ b.onclick=()=>{const o=!box.classList.contains('open');set(o);if(o)box.scrollIntoView({behavior:'smooth',block:'start'});};
+ if(location.hash==='#remote')set(true);})();
 </script>
 </body></html>
