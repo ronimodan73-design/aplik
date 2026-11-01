@@ -12,7 +12,7 @@ function proSVG(){let s=`<g id="pro" transform="translate(${P.x},${P.y}) rotate(
  s+=`<path id="proB" d="M${-RP-12},0A${RP+12},${RP+12} 0 0 1 ${RP+12},0Z" fill="#fefce8" fill-opacity=".38" stroke="#475569" stroke-width="2.5" style="cursor:grab"/>`;
  s+='<g style="pointer-events:none">';
  for(let d=0;d<=180;d++){const L=d%10===0?20:d%5===0?13:7,c=Math.cos(rad(d)),n=-Math.sin(rad(d));s+=`<line x1="${c*(RP+12)}" y1="${n*(RP+12)}" x2="${c*(RP+12-L)}" y2="${n*(RP+12-L)}" stroke="#334155" stroke-width="${d%10?1:1.8}"/>`;}
- const num=(id,r,col,val)=>{let t=`<g id="${id}">`;for(let d=0;d<=180;d+=10){const p={x:Math.cos(rad(d))*r,y:-Math.sin(rad(d))*r};t+=`<text x="${p.x}" y="${p.y+5}" text-anchor="middle" font-size="${d%90===0?15:13}" font-weight="800" fill="${col}" transform="rotate(${90-d} ${p.x} ${p.y})">${val(d)}</text>`;}return t+'</g>';};
+ const num=(id,r,col,val)=>{let t=`<g id="${id}">`;for(let d=0;d<=180;d+=10){const p={x:Math.cos(rad(d))*r,y:-Math.sin(rad(d))*r};t+=`<text x="${p.x}" y="${p.y+5}" text-anchor="middle" font-size="${d%90===0?15:(id==='sIn'&&d>90?11:13)}" font-weight="800" fill="${col}" transform="rotate(${90-d} ${p.x} ${p.y})">${val(d)}</text>`;}return t+'</g>';};
  s+=num('sOut',RP-20,COL.blue,d=>180-d)+num('sIn',RP-44,COL.red,d=>d);
  s+=`<path d="M${-RP+70},0A${RP-70},${RP-70} 0 0 1 ${RP-70},0" fill="none" stroke="#94a3b8" stroke-width="1.5"/><line x1="${-RP-12}" y1="0" x2="${RP+12}" y2="0" stroke="#334155" stroke-width="2.5"/>`;
  s+=`<line x1="0" y1="-14" x2="0" y2="0" stroke="#dc2626" stroke-width="2"/><circle r="5" fill="none" stroke="#dc2626" stroke-width="2.5"/></g>`;
