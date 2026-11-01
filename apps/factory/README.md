@@ -8,7 +8,7 @@
 קישור:   https://htmlpreview.github.io/?https://github.com/ronimodan73-design/aplik/blob/main/apps/<id>.html
          (אחרי הפעלת GitHub Pages: https://ronimodan73-design.github.io/aplik/apps/<id>.html)
 
-קבצי תוכן קיימים: t9_iso, dist, gcf, eq, h8_parallel, h8_lines (הישר והגרף), z7_q1 (הרביע הראשון), h8_percent (אחוזים · טבלת 100% ← 1% ← החלק)
+קבצי תוכן קיימים: t9_iso, dist, gcf, eq, h8_parallel, h8_lines (הישר והגרף), z7_q1 (הרביע הראשון), h8_percent (אחוזים · טבלת 100% ← 1% ← החלק), h8_circle (מעגל ועיגול · כרטיס רדיוס | קוטר | היקף | שטח, תשובות עם π)
 
 ## בנייה הדרגתית (נוסף באוקטובר 2026)
 - סולם קבוע בכל שלב: ב־LEVELS כותבים ladder:[{g, n, h, a}] – g מחולל, n כמה שאלות, h רמז (2 גלוי, 1 בלחיצה, 0 בלי), a:0 מבטל את שלב "מה השאלה שואלת".
