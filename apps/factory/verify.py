@@ -57,6 +57,8 @@ async def main():
         print('after explanations →', await pg.evaluate('S.mode'))
         for L in range(4):
             await pg.evaluate(f"start({L})"); await pg.wait_for_timeout(200)
+            if await pg.locator('#try').count():
+                await pg.wait_for_timeout(3500); await pg.screenshot(path=f'{OUT}/L{L+1}_demo.png', full_page=True); await pg.click('#try'); await pg.wait_for_timeout(200)
             if await pg.locator('.askbox').count():
                 await pg.screenshot(path=f'{OUT}/L{L+1}_ask.png', full_page=True)
             while await pg.locator('.askbox').count():
