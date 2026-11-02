@@ -37,6 +37,25 @@ function plane(d){
     for(let j=Math.ceil(y0);j<=y1;j++)if(j&&j%step===0)s+=ln(X(0)-2.5,Y(j),X(0)+2.5,Y(j),{w:1})+tx(X(0)-4,Y(j),fmtN(j),{fs,a:'end'});
     s+=tx(X(0)-4,Y(0)+fs*.95,'0',{fs,a:'end'})}
   const P={};(d.pts||[]).forEach(p=>P[p[0]]=[p[1],p[2]]);
+  /* ישרים שלמים בקנה מידה: lines:[{m,b,n}] או {v:c} לישר אנכי x=c. נחתכים בגבולות המערכת.
+     n = שם הישר; התווית מחפשת מקום פנוי לאורך הישר (רחוק מהצירים ומתוויות אחרות), עם רקע לבן */
+  const used=[],segOf=L=>{const c=[],e9=1e-9,add=(x,y)=>{if(x>=x0-e9&&x<=x1+e9&&y>=y0-e9&&y<=y1+e9&&!c.some(p=>Math.abs(p[0]-x)<1e-6&&Math.abs(p[1]-y)<1e-6))c.push([x,y])};
+      if(L.v!==undefined){add(L.v,y0);add(L.v,y1)}else{[x0,x1].forEach(x=>add(x,L.m*x+L.b));if(L.m)[y0,y1].forEach(y=>add((y-L.b)/L.m,y))}
+      if(c.length<2)return null;c.sort((p,q)=>p[0]-q[0]||p[1]-q[1]);return[X(c[0][0]),Y(c[0][1]),X(c[c.length-1][0]),Y(c[c.length-1][1])]},
+    SEG=(d.lines||[]).map(segOf),dSeg=(px,py,g)=>{const[ax,ay,bx,by]=g,vx=bx-ax,vy=by-ay,t=Math.max(0,Math.min(1,((px-ax)*vx+(py-ay)*vy)/(vx*vx+vy*vy||1)));return Math.hypot(px-ax-vx*t,py-ay-vy*t)};
+  (d.lines||[]).forEach((L,li)=>{const c=[],e9=1e-9,add=(x,y)=>{if(x>=x0-e9&&x<=x1+e9&&y>=y0-e9&&y<=y1+e9&&!c.some(p=>Math.abs(p[0]-x)<1e-6&&Math.abs(p[1]-y)<1e-6))c.push([x,y])};
+    if(L.v!==undefined){add(L.v,y0);add(L.v,y1)}else{[x0,x1].forEach(x=>add(x,L.m*x+L.b));if(L.m)[y0,y1].forEach(y=>add((y-L.b)/L.m,y))}
+    if(c.length<2)return;c.sort((p,q)=>p[0]-q[0]||p[1]-q[1]);const a=c[0],z=c[c.length-1];
+    s+=ln(X(a[0]),Y(a[1]),X(z[0]),Y(z[1]),{c:L.c||ACC,w:2,d:L.dash});
+    if(L.n){const ax=X(a[0]),ay=Y(a[1]),zx=X(z[0]),zy=Y(z[1]),dx=zx-ax,dy=zy-ay,k=Math.hypot(dx,dy)||1,nx=-dy/k,ny=dx/k;
+      let best=null;
+      for(const t of [.88,.12,.75,.25,.62,.38,.94,.06])for(const sd of [1,-1]){const px=ax+dx*t+nx*10*sd,py=ay+dy*t+ny*10*sd;
+        let sc=Math.min(Math.abs(px-X(0)),Math.abs(py-Y(0)),...used.map(q=>Math.hypot(q[0]-px,q[1]-py)/1.4));
+        if(px<X(x0)+6||px>X(x1)-6||py<Y(y1)+6||py>Y(y0)-6)sc-=100;
+        SEG.forEach((g,gi)=>{if(g&&gi!==li)sc=Math.min(sc,(dSeg(px,py,g)-12)*1.5)});
+        if(!best||sc>best[2]+2)best=[px,py,sc]}
+      used.push(best);
+      s+='<text x="'+best[0].toFixed(1)+'" y="'+best[1].toFixed(1)+'" font-family="Rubik,Arial" font-size="12" font-weight="700" fill="'+INK+'" text-anchor="middle" dominant-baseline="central" stroke="#fff" stroke-width="3.5" paint-order="stroke" style="direction:ltr;unicode-bidi:isolate">'+L.n+'</text>'}});
   (d.poly||[]).forEach(ns=>{s+='<polygon points="'+ns.map(n=>X(P[n][0])+','+Y(P[n][1])).join(' ')+'" fill="rgba(26,77,69,.08)" stroke="'+ACC+'" stroke-width="1.8"/>'});
   (d.segs||[]).forEach(([a,b])=>{s+=ln(X(P[a][0]),Y(P[a][1]),X(P[b][0]),Y(P[b][1]),{c:ACC,w:2})});
   (d.pts||[]).forEach(([n,x,y,show])=>{const qx=(show?x>(x0+x1)/2:x>=0)?1:-1,qy=y>=0?-1:1;s+='<circle cx="'+X(x)+'" cy="'+Y(y)+'" r="3.2" fill="'+ACC+'"/>';

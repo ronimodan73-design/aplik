@@ -16,8 +16,8 @@ const G3 = {
     o = o || {};
     const xs = pts.map(p => p[1]).concat(0), ys = pts.map(p => p[2]).concat(0);
     const rg = v => { let a = Math.min(...v) - 1, b = Math.max(...v) + 1; while (b - a < 6) { a--; if (b - a < 6) b++; } return [a, b]; }; // לפחות 6 יחידות בכל ציר
-    return Object.assign({t: 'pl', x: rg(xs), y: rg(ys),
-      pts: pts.map(p => [p[0], p[1], p[2], o.show ? 1 : 0]), w: o.w || 50, hmax: 150}, o.segs ? {segs: o.segs} : {}, o.poly ? {poly: o.poly} : {});
+    return Object.assign({t: 'pl', x: o.x || rg(xs), y: o.y || rg(ys),
+      pts: pts.map(p => [p[0], p[1], p[2], o.show ? 1 : 0]), w: o.w || 50, hmax: 150}, o.segs ? {segs: o.segs} : {}, o.poly ? {poly: o.poly} : {}, o.lines ? {lines: o.lines} : {});
   },
   // ערבוב בלי חזרה על אותה תבנית
   sh: (r, a) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; },
@@ -41,3 +41,19 @@ const G3 = {
   // מריץ את התבניות של כל רמה (כל תבנית פעם אחת) ומחזיר רשימת שאלות
   build: (r, T) => [1, 2, 3, 4].flatMap(L => T[L].map(f => Object.assign({lv: L}, f(r)))),
 };
+
+/* כלי עזר לשיפוע ולמשוואת הישר. שיפוע נשמר כשבר [מונה, מכנה] ומוצג מצומצם: [3/4], −[1/2], 2 */
+Object.assign(G3, {
+  gcd: (a, b) => { a = Math.abs(a); b = Math.abs(b); while (b) [a, b] = [b, a % b]; return a || 1; },
+  fr: (n, d) => { d = d || 1; if (d < 0) { n = -n; d = -d; } const g = G3.gcd(n, d); n /= g; d /= g; return d === 1 ? String(n) : (n < 0 ? '-' : '') + '[' + Math.abs(n) + '/' + d + ']'; },
+  // האיבר mx במשוואה (1x ← x, −1x ← −x, 0 ← ריק)
+  mx: (n, d) => { d = d || 1; if (d < 0) { n = -n; d = -d; } const g = G3.gcd(n, d); n /= g; d /= g; if (!n) return '';
+    return d === 1 ? (n === 1 ? '' : n === -1 ? '-' : String(n)) + 'x' : (n < 0 ? '-' : '') + '[' + Math.abs(n) + '/' + d + ']x'; },
+  // משוואת ישר y = mx + b (b מספר שלם)
+  eq: (n, d, b) => { const t = G3.mx(n, d); return 'y = ' + (t ? t + (b > 0 ? ' + ' + b : b < 0 ? ' − ' + (-b) : '') : G3.N(b)); },
+  // חישוב שיפוע מלא בין שתי נקודות
+  slope: (x1, y1, x2, y2) => '{m = [y₂ − y₁/x₂ − x₁] = [' + G3.N(y2) + ' − ' + G3.par(y1) + '/' + G3.N(x2) + ' − ' + G3.par(x1) + '] = [' + G3.N(y2 - y1) + '/' + G3.N(x2 - x1) + ']' + (G3.fr(y2 - y1, x2 - x1) === '[' + (y2 - y1) + '/' + (x2 - x1) + ']' ? '' : ' = ' + G3.fr(y2 - y1, x2 - x1)) + '}',
+  // משוואת ישר דרך נקודה ושיפוע (m = n/d), בשיטת y − y₁ = m(x − x₁). מחזיר טקסט פתרון; b חייב לצאת שלם
+  thru: (n, d, x1, y1) => { d = d || 1; const c = n * x1 / d, b = y1 - c;   // c = m·x₁ (שלם בבנייה)
+    return '{y − ' + G3.par(y1) + ' = ' + G3.fr(n, d) + '(x − ' + G3.par(x1) + ')} ← {y − ' + G3.par(y1) + ' = ' + G3.mx(n, d) + (c > 0 ? ' − ' + c : c < 0 ? ' + ' + (-c) : '') + '} ← {' + G3.eq(n, d, b) + '}'; },
+});

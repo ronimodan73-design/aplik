@@ -318,7 +318,11 @@ function render(){
   regen();
   if(S.k==='exam'){const E=buildExam();msg=E.note;$('#out').innerHTML=examHTML(E)}else $('#out').innerHTML=wsHTML();
   $('#msg').innerHTML=msg?'<div class="warn">'+msg+'</div>':'';$('#done').hidden=false;fit()}
-function fit(){const z=Math.min(1,(window.innerWidth-16)/800);document.querySelectorAll('.sheet').forEach(s=>s.style.zoom=z)}
+/* מתאים את הדף לרוחב המסך. בטלפון innerWidth "מתנפח" אחרי שהדף נוצר, ולכן מודדים לפי רוחב המסך האמיתי */
+function fit(){const sh=document.querySelectorAll('.sheet');if(!sh.length)return;
+  const W=Math.min(document.documentElement.clientWidth,window.innerWidth,(screen&&screen.width)||1e9);
+  sh.forEach(s=>s.style.zoom=1);const full=sh[0].offsetWidth||800;
+  const z=Math.min(1,(W-16)/full);sh.forEach(s=>s.style.zoom=z)}
 addEventListener('resize',fit);
 document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled)return;
   if(b.dataset.g){S.g=b.dataset.g;S.t=[];ui()}
