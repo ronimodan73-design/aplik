@@ -146,7 +146,7 @@ button,input,select{font:inherit}
   <div class="box">
     <div class="row"><span class="lab">1. כיתה</span><div class="seg" id="grades"></div></div>
     <div class="row top-al"><span class="lab">2. נושא</span><div id="topics"></div></div>
-    <div class="row top-al" id="subrow" hidden><span class="lab">מה ייכנס לשאלה המשולבת?</span><div><div class="seg" id="subs"></div><p class="small">סמני תתי־נושאים – ייבחרו רק שאלות שיש בהן לפחות אחד מהם. בלי סימון = כל השאלות.</p></div></div>
+    <div class="row top-al" id="subrow" hidden><span class="lab">מה ייכנס לשאלה המשולבת?</span><div><div class="seg" id="subs"></div><p class="small">סמני את תתי־הנושאים שרוצים בשאלה – המחולל בונה שאלה מורכבת במבנה בגרות שכוללת את כולם, סעיף אחרי סעיף. בלי סימון = כל השאלות.</p></div></div>
     <div class="row"><span class="lab">3. מה מכינים?</span><div class="seg" id="kinds"><button data-k="exam">📝 מבחן</button><button data-k="ws">✏️ דף עבודה</button><button data-k="sub">🧑‍🏫 מילוי מקום</button></div></div>
     <div class="row sub-only"><span class="lab">4. סוג הדף</span><div class="seg" id="sts"><button data-st="base">💪 חיזוק</button><button data-st="all">✏️ תרגול רגיל</button><button data-st="enrich">🚀 העשרה</button></div></div>
     <p class="small sub-only" id="sthint"></p>
@@ -181,9 +181,9 @@ const LOGO='/*LOGO*/';
 /*DIAGRAMS*/
 const BANKS=[];function BANK(b){if(b.gen&&!b.qs)b.qs=b.gen(rng(7));BANKS.push(b)}
 /* מאגר מחולל (gen): בכל יצירה מחדש נוצרים מספרים חדשים לפי seed */
-function regen(){chosen().forEach((b,i)=>{if(b.gen)b.qs=b.gen(rng(seed+i*7919));
-  /* תתי־נושאים בשאלה משולבת: משאירים רק שאלות שיש בהן לפחות אחד מהסימונים */
-  if(b.subs&&(S.sb||[]).length){const f=b.qs.filter(q=>!q.tg||q.tg.some(x=>S.sb.includes(x)));if(f.length)b.qs=f}})}
+function regen(){chosen().forEach((b,i)=>{if(b.gen)b.qs=b.gen(rng(seed+i*7919),b.subs?(S.sb||[]):undefined);
+  /* תתי־נושאים בשאלה משולבת: משאירים רק שאלות שכוללות את כל מה שסומן (כולל השאלות המורכבות שנבנות בדיוק לפי הסימון) */
+  if(b.subs&&(S.sb||[]).length){const f=b.qs.filter(q=>!q.tg||S.sb.every(x=>q.tg.includes(x)));if(f.length)b.qs=f}})}
 /*BANKS*/
 
 const GRADES=[{g:'ז',name:'ז׳'},{g:'ח',name:'ח׳'},{g:'י',name:'י׳ 3 יח״ל'}];
@@ -215,7 +215,7 @@ const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'
 const it=s=>s.replace(/&[a-z]+;|[a-z]/g,c=>c.length>1?c:'<i>'+c+'</i>').replace(/-/g,'−');
 const frac=(n,d)=>'<span class="fr"><span>'+it(n)+'</span><span>'+it(d)+'</span></span>';
 function mathIn(s){return s.replace(/\[([^\/\]]+)\/([^\]]+)\]|([^\[]+)/g,(m,n,d,o)=>o!==undefined?it(o):frac(n,d))}
-function F(t){return esc(t).replace(/\{([^{}]*)\}/g,(m,x)=>'<span class="m">'+mathIn(x)+'</span>').replace(/\[([^\/\]]+)\/([^\]]+)\]/g,(m,n,d)=>'<span class="m">'+frac(n,d)+'</span>')}
+function F(t){return esc(t).replace(/\{([^{}]*)\}/g,(m,x)=>'<span class="m">'+mathIn(x)+'</span>').replace(/\[([^\/\]]+)\/([^\]]+)\]/g,(m,n,d)=>'<span class="m">'+frac(n,d)+'</span>').replace(/\n/g,'<br>')}   /* \n = סעיף בשורה חדשה (שאלה מורכבת) */
 function rng(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 function shuffle(arr,r){const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 const banksOf=g=>BANKS.filter(b=>b.grade===g&&(S.k!=='sub'||taught(b))).sort((x,y)=>STRANDS.indexOf(x.strand)-STRANDS.indexOf(y.strand)||x.order-y.order);
@@ -279,7 +279,7 @@ function examHTML(E){
     E.parts.forEach((p,i)=>{
       body+='<div class="banner"><u>חלק '+HEB[i]+' – '+esc(p.name)+'</u><span class="pts">('+p.idx.reduce((a,j)=>a+E.pts[j],0)+' נקודות)</span></div>';
       p.idx.forEach(j=>{num++;const {q,L,b}=qs[j];
-        body+='<div class="q"><div class="qh"><span class="qn">'+num+'</span>'+MM(b,q)+'<div class="qt">'+F(q.t)+req(q)+'</div>'+D(q.d)+'<span class="qp">'+E.pts[j]+'<small>נק׳</small></span></div>'+lines(EXAM_LINES[L])+'</div>'});
+        body+='<div class="q"><div class="qh"><span class="qn">'+num+'</span>'+MM(b,q)+'<div class="qt">'+F(q.t)+req(q)+'</div>'+D(q.d)+'<span class="qp">'+E.pts[j]+'<small>נק׳</small></span></div>'+lines(q.ln||EXAM_LINES[L])+'</div>'});
     });
     body+='<div class="end">בהצלחה לכל התלמידים!</div>';
     h+=sheet(head(v),body);
@@ -302,7 +302,7 @@ function wsHTML(){
     for(const L of [1,2,3,4]){const qs=shuffle(b.qs.filter(q=>q.lv===L),r).slice(0,cnt[L]);
       if(!qs.length)continue;
       body+='<div class="lvl">'+'★'.repeat(L)+' '+LV[L].n+' <small>· '+LV[L].d+'</small></div>';
-      qs.forEach(q=>{num++;a.push([num,q,L]);body+='<div class="q"><div class="qh"><span class="qn">'+num+'</span>'+MM(b,q)+'<div class="qt">'+F(q.t)+req(q)+'</div>'+D(q.d)+'<span class="st">'+'★'.repeat(L)+'</span></div>'+lines(WS_LINES[L])+'</div>'})}
+      qs.forEach(q=>{num++;a.push([num,q,L]);body+='<div class="q"><div class="qh"><span class="qn">'+num+'</span>'+MM(b,q)+'<div class="qt">'+F(q.t)+req(q)+'</div>'+D(q.d)+'<span class="st">'+'★'.repeat(L)+'</span></div>'+lines(q.ln||WS_LINES[L])+'</div>'})}
     all+=body;ans.push([b,a])});
   h+=sheet('דף עבודה · '+bs.map(b=>esc(b.topic)).join(' · ')+' · כיתה '+esc(S.cls||gname()),all);
   if(S.key){let k='';ans.forEach(([b,a],i)=>{k+='<div class="key"><h2>תשובות למורה · '+esc(b.topic)+'</h2><table class="kt"><tr><th>שאלה</th><th>רמה</th><th>תשובה</th></tr>'+a.map(([n,q,L])=>'<tr><td>'+n+(isM(b,q)?' *':'')+'</td><td>'+LV[L].n+'</td><td>'+F(q.a)+'</td></tr>').join('')+'</table><p class="small">* = שאלה מהמודל של משרד החינוך</p></div>'});
@@ -332,7 +332,7 @@ function subHTML(){
     let body='<div style="break-inside:avoid"><div class="wsh tp"><h2>'+esc(b.topic)+'</h2></div><div class="rule"><b>השיטה</b>'+F(b.rule)+'</div></div>',a=[];
     M.lv.forEach((L,i)=>{if(!cnt[i])return;let qs=shuffle(b.qs.filter(q=>q.lv===L),r);if(L===4)qs=qs.sort((x,y)=>(y.lit||0)-(x.lit||0));qs=qs.slice(0,cnt[i]);
       body+='<div class="lvl">'+'★'.repeat(L)+' '+LV[L].n+' <small>· '+LV[L].d+'</small></div>';
-      qs.forEach(q=>{num++;a.push([num,q,L]);body+='<div class="q"><div class="qh"><span class="qn">'+num+'</span>'+MM(b,q)+'<div class="qt">'+F(q.t)+req(q)+'</div>'+D(q.d)+'<span class="st">'+'★'.repeat(L)+'</span></div>'+lines(WS_LINES[L])+'</div>'})});
+      qs.forEach(q=>{num++;a.push([num,q,L]);body+='<div class="q"><div class="qh"><span class="qn">'+num+'</span>'+MM(b,q)+'<div class="qt">'+F(q.t)+req(q)+'</div>'+D(q.d)+'<span class="st">'+'★'.repeat(L)+'</span></div>'+lines(q.ln||WS_LINES[L])+'</div>'})});
     all+=body;ans.push([b,a])});
   let h=sheet('מילוי מקום · '+M.n+' · כיתה '+esc(S.cls||gname()),all);
   if(S.key){let k='<div class="key"><h2>למורה המחליפה</h2><p>'+(S.len===2?'שיעור כפול':'שיעור אחד')+' · '+M.n+' · '+num+' שאלות. התלמידים עובדים לבד או בזוגות, מהשאלה הראשונה והלאה. בכל נושא יש תיבת "השיטה" – אפשר להתחיל בהקראה שלה. בסוף השיעור אוספים את הדפים, או בודקים יחד לפי התשובות שלמטה.</p></div>';
