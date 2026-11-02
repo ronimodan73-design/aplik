@@ -47,6 +47,9 @@ button,input,select{font:inherit}
 .big{border:0;border-radius:14px;padding:12px 20px;font-weight:700;font-size:18px;cursor:pointer}
 .big.p{background:#ffc928;color:#1f2433}
 .big.s{background:#fff;color:var(--acc);border:2px solid var(--acc)}
+.big.w{background:#25d366;color:#fff;width:100%;margin-top:10px}
+#shareout input{width:100%;box-sizing:border-box;font-size:14px;padding:8px;margin-top:8px;direction:ltr;border:1px solid #c9d6d3;border-radius:8px}
+#shareout p{margin:6px 0 0;font-weight:700;color:var(--acc)}
 .go{display:block;width:100%;margin-top:12px;background:var(--acc);color:#fff;font-size:21px;padding:14px}
 .go:disabled{opacity:.45;cursor:not-allowed}
 .done{border:2px solid var(--acc);background:#eef7f4}
@@ -172,6 +175,8 @@ button,input,select{font:inherit}
   <div class="box done" id="done" hidden>
     <b>✅ מוכן! הדף מופיע למטה.</b>
     <div class="acts"><button class="big p" id="print">🖨️ הדפסה / שמירה כ־PDF</button><button class="big s" id="again">🔀 שאלות אחרות</button></div>
+    <button class="big w" id="share">🔗 שליחת הדף הזה בוואטסאפ</button>
+    <div id="shareout"></div>
     <p class="help">לשמירה כ־PDF: לוחצים "הדפסה" ובוחרים "שמירה כ־PDF". הכי נוח מהמחשב.</p>
   </div>
 </div>
@@ -2064,7 +2069,7 @@ const DEF={sn:10,st:'all',len:1,g:'ז',k:'exam',t:[],n:8,min:45,lv:'mix',cls:'',
 let S=Object.assign({},DEF);
 try{Object.assign(S,JSON.parse(localStorage.getItem('roni_exam_gen2')||'{}'))}catch(e){}
 /* קישור ישיר: ?g=ז&k=ws&t=z7_abs,z7_addsub&lv=weak (למשל לכפתור 'מילוי מקום' בעמוד הצוות) */
-let LOCK='';try{const Q=new URLSearchParams(location.search);if(Q.get('g'))S.g=Q.get('g');if(Q.get('only')&&Q.get('g'))LOCK=Q.get('g');if(Q.get('k'))S.k=Q.get('k');if(Q.get('lv'))S.lv=Q.get('lv');if(Q.get('st'))S.st=Q.get('st');if(Q.get('len')){S.len=+Q.get('len')===2?2:1;S.sn=S.len===2?20:10}if(Q.get('sn'))S.sn=Math.max(4,Math.min(30,+Q.get('sn')||10));if(Q.get('n'))S.n=Math.max(1,+Q.get('n')||S.n);if(Q.get('t'))S.t=Q.get('t').split(',');else if(Q.get('g'))S.t=[];}catch(e){}
+let LOCK='';try{const Q=new URLSearchParams(location.search);if(Q.get('g'))S.g=Q.get('g');if(Q.get('only')&&Q.get('g'))LOCK=Q.get('g');if(Q.get('k'))S.k=Q.get('k');if(Q.get('lv'))S.lv=Q.get('lv');if(Q.get('st'))S.st=Q.get('st');if(Q.get('len')){S.len=+Q.get('len')===2?2:1;S.sn=S.len===2?20:10}['two','calc','key'].forEach(k=>{if(Q.get(k)!==null)S[k]=Q.get(k)==='1'});if(Q.get('min'))S.min=+Q.get('min')||S.min;if(Q.get('cls')!==null)S.cls=Q.get('cls');if(Q.get('yr'))S.yr=Q.get('yr');if(Q.get('sn'))S.sn=Math.max(4,Math.min(30,+Q.get('sn')||10));if(Q.get('n'))S.n=Math.max(1,+Q.get('n')||S.n);if(Q.get('t'))S.t=Q.get('t').split(',');else if(Q.get('g'))S.t=[];}catch(e){}
 let seed=(Date.now()%100000)+1;
 const save=()=>{try{localStorage.setItem('roni_exam_gen2',JSON.stringify(S))}catch(e){}};
 // רמת הכיתה: כמה שאלות מכל רמת חשיבה (w = חלק יחסי, min = מינימום שאלות), ואיזו רמה מקבלת עודף כשחסרות שאלות
@@ -2208,6 +2213,16 @@ function subHTML(){
   SUBNOTE=num<total?'בנושאים שבחרת יש במאגר '+num+' שאלות '+M.n+', ולכן בדף '+num+' שאלות. אפשר להוסיף עוד נושא.':bs.length>total?'בחרת '+bs.length+' נושאים, ולכן בדף '+num+' שאלות (שאלה אחת לפחות מכל נושא). אפשר להוריד נושאים.':'';
   return h}
 
+// ---------- שליחת הדף ----------
+/* קישור שמכיל את כל ההגדרות ואת מספר ההגרלה (s): מי שפותח אותו מקבל בדיוק את אותו דף – אותן שאלות, אותם מספרים, אותו דף תשובות */
+function shareURL(){const P=new URLSearchParams({g:S.g,k:S.k,t:S.t.join(','),lv:S.lv,n:S.n,min:S.min,two:S.two?1:0,calc:S.calc?1:0,key:S.key?1:0,st:S.st,len:S.len,sn:S.sn,yr:S.yr,s:seed,go:1});
+  if(S.cls)P.set('cls',S.cls);if(LOCK)P.set('only',1);return location.origin+location.pathname+'?'+P.toString()}
+function shareLink(){const u=shareURL(),what=S.k==='exam'?'מבחן':S.k==='sub'?'דף למילוי מקום':'דף עבודה',txt=what+' במתמטיקה · כיתה '+(S.cls||gname())+' – לחצו לפתיחה:';
+  $('#shareout').innerHTML='<input readonly value="'+esc(u)+'"><p>✅ הקישור הועתק – הדביקי בוואטסאפ ושלחי. מי שפותח רואה בדיוק את אותו דף.</p>';
+  const inp=$('#shareout input');inp.addEventListener('focus',()=>inp.select());
+  try{navigator.clipboard.writeText(u).catch(()=>{inp.select()})}catch(e){inp.select()}
+  if(navigator.share){navigator.share({title:what,text:txt,url:u}).catch(()=>{})}}
+
 // כל "גיליון" הוא טבלה שהכותרת שלה (לוגו + שורת כותרת) חוזרת בראש כל עמוד מודפס
 function sheet(title,body){return'<div class="sheet"><table class="doc"><thead><tr><td><div class="rh"><img src="'+LOGO+'" alt=""><span>'+title+'</span></div></td></tr></thead><tbody><tr><td><div class="pg">'+body+'</div></td></tr></tbody></table></div>'}
 
@@ -2236,7 +2251,7 @@ function ui(){
   $('#go').textContent=ok?(S.k==='exam'?'✨ צרי מבחן':S.k==='sub'?'✨ צרי דף למילוי מקום':'✨ צרי דף עבודה'):'בחרי נושא אחד או יותר כדי להמשיך';
   clearOut();save()}
 // כל שינוי בבחירות מוחק את התוצאה הקודמת: המחולל פועל רק כשלוחצים "צרי"
-function clearOut(){$('#out').innerHTML='';$('#done').hidden=true;$('#msg').innerHTML=''}
+function clearOut(){$('#out').innerHTML='';$('#done').hidden=true;$('#msg').innerHTML='';$('#shareout').innerHTML=''}
 function render(){
   save();let msg='';
   if(!chosen().length){clearOut();return}
@@ -2257,12 +2272,13 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||
   else if(b.dataset.len){S.len=+b.dataset.len;S.sn=SUB_Q[S.len];ui()}
   else if(b.dataset.t){const id=b.dataset.t;S.t=S.t.includes(id)?S.t.filter(x=>x!==id):S.t.concat(id);ui()}
   else if(b.dataset.f){const f=b.dataset.f,lim={n:[3,20],min:[15,120],sn:[4,30]}[f];S[f]=Math.max(lim[0],Math.min(lim[1],S[f]+ +b.dataset.d));ui()}
-  else if(b.id==='go'||b.id==='again'){seed=Math.floor(Math.random()*1e9);render();if(b.id==='go')$('#done').scrollIntoView({behavior:'smooth'})}
-  else if(b.id==='print'){window.print()}});
+  else if(b.id==='go'||b.id==='again'){seed=Math.floor(Math.random()*1e9);$('#shareout').innerHTML='';render();if(b.id==='go')$('#done').scrollIntoView({behavior:'smooth'})}
+  else if(b.id==='print'){window.print()}
+  else if(b.id==='share'){shareLink()}});
 ['cls','yr'].forEach(id=>$('#'+id).addEventListener('input',e=>{S[id]=e.target.value;clearOut();save()}));
 ['two','calc','key'].forEach(id=>$('#'+id).addEventListener('change',e=>{S[id]=e.target.checked;clearOut();save()}));
 ui();
-try{if(new URLSearchParams(location.search).get('go')&&chosen().length){seed=Math.floor(Math.random()*1e9);render()}}catch(e){}
+try{const Q=new URLSearchParams(location.search);if(Q.get('go')&&chosen().length){seed=Q.get('s')?(+Q.get('s')||1):Math.floor(Math.random()*1e9);render();if(Q.get('s'))setTimeout(()=>$('#done').scrollIntoView(),300)}}catch(e){}
 </script>
 </body>
 </html>
