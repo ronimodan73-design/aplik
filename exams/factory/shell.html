@@ -401,7 +401,9 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||
   else if(b.dataset.st){S.st=b.dataset.st;ui()}
   else if(b.dataset.len){S.len=+b.dataset.len;S.sn=SUB_Q[S.len];ui()}
   else if(b.dataset.sb){const id=b.dataset.sb;const mb=banksOf(S.g).find(x=>x.subs);if(mb&&!S.t.includes(mb.id))S.t=S.t.concat(mb.id);S.sb=(S.sb||[]).includes(id)?S.sb.filter(x=>x!==id):(S.sb||[]).concat(id);ui()}
-  else if(b.dataset.t){const id=b.dataset.t;S.t=S.t.includes(id)?S.t.filter(x=>x!==id):S.t.concat(id);ui()}
+  else if(b.dataset.t){const id=b.dataset.t,on=!S.t.includes(id);S.t=on?S.t.concat(id):S.t.filter(x=>x!==id);ui();
+    /* לחיצה על כפתור עם תתי־נושאים (🎓 שאלת בגרות): מראים מיד את שורת הבחירה מתחתיו */
+    if(on&&banksOf(S.g).some(x=>x.id===id&&x.subs)){const r=$('#subrow');r.scrollIntoView({behavior:'smooth',block:'center'});r.style.outline='3px solid var(--acc)';r.style.borderRadius='12px';setTimeout(()=>r.style.outline='',1800)}}
   else if(b.dataset.f){const f=b.dataset.f,lim={n:[3,20],min:[15,120],sn:[4,30]}[f];S[f]=Math.max(lim[0],Math.min(lim[1],S[f]+ +b.dataset.d));ui()}
   else if(b.id==='go'&&!chosen().length){$('#msg').innerHTML='<div class="warn">סמני לפחות נושא אחד – לוחצים על שם הנושא, והוא נצבע בירוק כהה.</div>';$('#topics').scrollIntoView({behavior:'smooth',block:'center'})}
   else if(b.id==='go'||b.id==='again'){seed=Math.floor(Math.random()*1e9);$('#shareout').innerHTML='';render();if(b.id==='go')$('#done').scrollIntoView({behavior:'smooth'})}
