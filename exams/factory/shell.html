@@ -146,7 +146,7 @@ button,input,select{font:inherit}
   <div class="box">
     <div class="row"><span class="lab">1. כיתה</span><div class="seg" id="grades"></div></div>
     <div class="row top-al"><span class="lab">2. נושא</span><div id="topics"></div></div>
-    <div class="row top-al" id="subrow" hidden><span class="lab">מה ייכנס לשאלה המשולבת?</span><div><div class="seg" id="subs"></div><p class="small">סמני את תתי־הנושאים שרוצים בשאלה – המחולל בונה שאלה מורכבת במבנה בגרות שכוללת את כולם, סעיף אחרי סעיף. בלי סימון = כל השאלות.</p></div></div>
+    <div class="row top-al" id="subrow" hidden><span class="lab">🧩 שאלה מורכבת במבנה בגרות – מה ייכנס?</span><div><div class="seg" id="subs"></div><p class="small">סמני את תתי־הנושאים שרוצים בשאלה – המחולל בונה שאלה מורכבת במבנה בגרות שכוללת את כולם, סעיף אחרי סעיף. בלי סימון = כל השאלות.</p></div></div>
     <div class="row"><span class="lab">3. מה מכינים?</span><div class="seg" id="kinds"><button data-k="exam">📝 מבחן</button><button data-k="ws">✏️ דף עבודה</button><button data-k="sub">🧑‍🏫 מילוי מקום</button></div></div>
     <div class="row sub-only"><span class="lab">4. סוג הדף</span><div class="seg" id="sts"><button data-st="base">💪 חיזוק</button><button data-st="all">✏️ תרגול רגיל</button><button data-st="enrich">🚀 העשרה</button></div></div>
     <p class="small sub-only" id="sthint"></p>
@@ -183,7 +183,7 @@ const BANKS=[];function BANK(b){if(b.gen&&!b.qs)b.qs=b.gen(rng(7));BANKS.push(b)
 /* מאגר מחולל (gen): בכל יצירה מחדש נוצרים מספרים חדשים לפי seed */
 function regen(){chosen().forEach((b,i)=>{if(b.gen)b.qs=b.gen(rng(seed+i*7919),b.subs?(S.sb||[]):undefined);
   /* תתי־נושאים בשאלה משולבת: משאירים רק שאלות שכוללות את כל מה שסומן (כולל השאלות המורכבות שנבנות בדיוק לפי הסימון) */
-  if(b.subs&&(S.sb||[]).length){const f=b.qs.filter(q=>!q.tg||S.sb.every(x=>q.tg.includes(x)));if(f.length)b.qs=f}})}
+  if(b.subs&&(S.sb||[]).length){const c=b.qs.filter(q=>q.cmp),f=c.length?c:b.qs.filter(q=>!q.tg||S.sb.every(x=>q.tg.includes(x)));if(f.length)b.qs=f}})}
 /*BANKS*/
 
 const GRADES=[{g:'ז',name:'ז׳'},{g:'ח',name:'ח׳'},{g:'י',name:'י׳ 3 יח״ל'}];
@@ -370,7 +370,7 @@ function ui(){
   $('#topics').innerHTML=STRANDS.filter(st=>all.some(x=>x.strand===st)).map(st=>'<div class="strand">'+st+'</div><div class="seg">'+
     all.filter(x=>x.strand===st).sort((x,y)=>x.order-y.order).map(x=>x.b?'<button class="chip'+(S.t.includes(x.b.id)?' on':'')+'" data-t="'+x.b.id+'">'+esc(x.b.topic)+'</button>':
       '<button class="chip soon" disabled title="מחכה לשאלות מהמודל">'+esc(x.soon.topic)+' (בקרוב)</button>').join('')+'</div>').join('')||'<span class="small">אין עדיין נושאים לכיתה הזו</span>';
-  {const sb=chosen().filter(b=>b.subs);S.sb=S.sb||[];$('#subrow').hidden=!sb.length;
+  {const sb=banksOf(S.g).filter(b=>b.subs);   /* מוצג תמיד בכיתה שיש בה שאלה משולבת – לחיצה מסמנת גם את הנושא */S.sb=S.sb||[];$('#subrow').hidden=!sb.length;
    $('#subs').innerHTML=sb.length?sb[0].subs.map(x=>'<button class="chip'+(S.sb.includes(x[0])?' on':'')+'" data-sb="'+x[0]+'">'+esc(x[1])+'</button>').join(''):'';}
   $('#nv').textContent=S.n;$('#minv').textContent=S.min;
   $('#nhint').textContent=S.k==='exam'?'במבחן כולו':'בכל נושא';
@@ -400,7 +400,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||
   else if(b.dataset.lv){S.lv=b.dataset.lv;ui()}
   else if(b.dataset.st){S.st=b.dataset.st;ui()}
   else if(b.dataset.len){S.len=+b.dataset.len;S.sn=SUB_Q[S.len];ui()}
-  else if(b.dataset.sb){const id=b.dataset.sb;S.sb=(S.sb||[]).includes(id)?S.sb.filter(x=>x!==id):(S.sb||[]).concat(id);ui()}
+  else if(b.dataset.sb){const id=b.dataset.sb;const mb=banksOf(S.g).find(x=>x.subs);if(mb&&!S.t.includes(mb.id))S.t=S.t.concat(mb.id);S.sb=(S.sb||[]).includes(id)?S.sb.filter(x=>x!==id):(S.sb||[]).concat(id);ui()}
   else if(b.dataset.t){const id=b.dataset.t;S.t=S.t.includes(id)?S.t.filter(x=>x!==id):S.t.concat(id);ui()}
   else if(b.dataset.f){const f=b.dataset.f,lim={n:[3,20],min:[15,120],sn:[4,30]}[f];S[f]=Math.max(lim[0],Math.min(lim[1],S[f]+ +b.dataset.d));ui()}
   else if(b.id==='go'&&!chosen().length){$('#msg').innerHTML='<div class="warn">סמני לפחות נושא אחד – לוחצים על שם הנושא, והוא נצבע בירוק כהה.</div>';$('#topics').scrollIntoView({behavior:'smooth',block:'center'})}

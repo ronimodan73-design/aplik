@@ -11,7 +11,7 @@ Object.assign(G3, {
     const sel = ORD.filter(t => sb.includes(t));
     for (const f of ['mid', 'dist', 'line', 'area', 'sim', 'par']) if (sel.length < 4 && !sel.includes(f)) sel.push(f);
     const T = ORD.filter(t => sel.includes(t)), has = t => T.includes(t), lv = T.length >= 5 ? 4 : 3;
-    const out = (stem, secs, d) => ({lv, tg: T.slice(), r: 'calc',
+    const out = (stem, secs, d) => ({lv, cmp: 1, tg: T.slice(), r: 'calc',
       t: 'שאלה מורכבת במבנה בגרות: ' + stem + secs.map((s, i) => '\n' + HB[i] + '. ' + s[0]).join(''), ln: 2 * secs.length + 2,
       a: secs.map((s, i) => HB[i] + '. ' + s[1]).join('\n'), d});
 
