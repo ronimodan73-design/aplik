@@ -114,7 +114,7 @@ button,input,select{font:inherit}
 .st{color:var(--gold);font-size:12pt;flex:none}
 .req{margin-top:1mm;font-size:12.5pt}
 .req b{font-family:'Rubik',sans-serif}
-.lines{margin-top:2mm;background-image:repeating-linear-gradient(to bottom,transparent 0,transparent 8.6mm,#b9c4c2 8.6mm,#b9c4c2 9mm)}
+.lines{margin-top:2mm;background-image:repeating-linear-gradient(to bottom,transparent 0,transparent 7.6mm,#b9c4c2 7.6mm,#b9c4c2 8mm)}
 .end{text-align:center;font-family:'Rubik',sans-serif;font-weight:700;text-decoration:underline;font-size:15pt;margin-top:6mm}
 .wsh{border-bottom:3px solid var(--acc);padding-bottom:2mm;margin-bottom:4mm}
 .wsh h2{font-family:'Rubik',sans-serif;font-size:22pt;color:var(--acc);margin:0}
@@ -124,6 +124,8 @@ button,input,select{font:inherit}
 .lvl small{font-weight:400;font-size:11.5pt;opacity:.9}
 .key h2{font-family:'Rubik',sans-serif;color:var(--acc);font-size:18pt;margin:0 0 3mm}
 .kt{width:100%;border-collapse:collapse;font-size:12pt;margin-bottom:6mm}
+.key .kt{font-size:10pt;margin-bottom:3mm}.key .kt td,.key .kt th{padding:1mm 2mm}.key h2{margin:2mm 0 1.5mm;font-size:12pt}
+.wsh.tp{margin-top:3mm;border:0;padding:0}.wsh.tp h2{margin-bottom:1.5mm}
 .kt th,.kt td{border:1.3px solid #6b7f7b;padding:1.6mm 2.5mm;vertical-align:top}
 .kt th{background:var(--acc2);font-family:'Rubik',sans-serif}
 .kt td:first-child,.kt td:nth-child(4){text-align:center;white-space:nowrap}
@@ -1111,6 +1113,43 @@ BANK({
   ]
 });
 
+/* מאגר: זוויות – קודקודיות, זוויות סביב נקודה, חוצה זווית, שאלות אתגר ואוריינות · כיתה ז׳
+   נכתב כאן (n: 1). משלים את z7_adj (סוגי זוויות וצמודות) ואת z7_angles (סכום זוויות). כללי כתיבה: ראו h8_ratio.js */
+const X2 = (ang) => ({t: 'g', P: {A: [-4, -1.6], B: [4, 1.6], C: [-2.6, 2.4], D: [2.6, -2.4], O: [0, 0]}, segs: [['A', 'B'], ['C', 'D']], ang: ang});
+BANK({
+  id: 'z7_angles2', grade: 'ז', topic: 'זוויות: קודקודיות, סביב נקודה וחוצה זווית', strand: 'גאומטריה', order: 2,
+  rule: 'זוויות קודקודיות שוות · זוויות צמודות = 180° · סכום הזוויות סביב נקודה = 360° · חוצה זווית מחלק אותה לשתי זוויות שוות',
+  qs: [
+    {lv: 1, n: 1, t: 'שני ישרים נחתכים בנקודה O. {∢AOC = 70°}. מה גודל {∢BOD}? איך נקראות שתי הזוויות האלה?', a: '{70°}. זוויות קודקודיות (שוות)', d: X2([['O', 'A', 'C', '70°'], ['O', 'B', 'D', '?']])},
+    {lv: 1, n: 1, t: 'מה סכום כל הזוויות סביב נקודה?', a: '{360°}'},
+    {lv: 1, n: 1, t: 'הקרן OK חוצה את {∢AOB}, ו־{∢AOB = 80°}. מה גודל {∢AOK}?', a: '{80° : 2 = 40°}'},
+    {lv: 1, n: 1, t: 'שני ישרים נחתכים ויוצרים 4 זוויות. כמה זוגות של זוויות קודקודיות יש?', a: 'שני זוגות'},
+    {lv: 1, n: 1, t: 'סביב נקודה יש שלוש זוויות: {100°}, {120°} ועוד אחת. מה גודל הזווית השלישית?', a: '{360° − 100° − 120° = 140°}'},
+    {lv: 1, n: 1, t: 'הקרן OK חוצה זווית, ונוצרו שתי זוויות של {35°}. מה גודל הזווית כולה?', a: '{70°}'},
+
+    {lv: 2, n: 1, r: 'why', t: 'שני ישרים נחתכים. {∢AOC = 70°}. מצאו את שלוש הזוויות האחרות.', a: '{∢BOD = 70°} (קודקודית). {∢COB = ∢AOD = 110°} (צמודות ל־70°)', d: X2([['O', 'A', 'C', '70°']])},
+    {lv: 2, n: 1, r: 'why', t: 'נועה אמרה: "זוויות קודקודיות הן תמיד צמודות". האם היא צודקת?', a: 'לא. זוויות קודקודיות נמצאות זו מול זו ושוות; זוויות צמודות נמצאות זו ליד זו וסכומן 180°'},
+    {lv: 2, n: 1, r: 'why', t: 'האם ייתכן ששתי זוויות קודקודיות הן קהות?', a: 'כן, למשל שתיהן {110°}. אבל אז שתי הזוויות האחרות חדות ({70°})'},
+    {lv: 2, n: 1, r: 'why', t: 'שני ישרים נחתכים, ואחת הזוויות היא {90°}. מה גודל שלוש האחרות? איך נקראים ישרים כאלה?', a: 'כולן {90°}. ישרים מאונכים'},
+    {lv: 2, n: 1, r: 'why', t: 'יואב אמר: "חוצה זווית של זווית שטוחה יוצר שתי זוויות ישרות". האם הוא צודק?', a: 'כן: {180° : 2 = 90°}'},
+    {lv: 2, n: 1, t: 'סביב נקודה יש ארבע זוויות שוות. מה גודל כל אחת?', a: '{360° : 4 = 90°}'},
+
+    {lv: 3, n: 1, r: 'calc', t: 'שני ישרים נחתכים. {∢AOC = 2x + 10} ו־{∢BOD = 3x − 20}. מצאו את {x} ואת הזווית.', a: 'קודקודיות שוות: {2x + 10 = 3x − 20}, {x = 30}. הזווית {70°}', d: X2([['O', 'A', 'C', '2x+10'], ['O', 'B', 'D', '3x−20']])},
+    {lv: 3, n: 1, r: 'calc', t: 'שני ישרים נחתכים. {∢AOC = x} ו־{∢COB = 4x}. מצאו את כל ארבע הזוויות.', a: 'צמודות: {5x = 180}, {x = 36}. הזוויות {36°, 144°, 36°, 144°}'},
+    {lv: 3, n: 1, r: 'calc', t: 'סביב נקודה יש ארבע זוויות: {x}, {2x}, {3x} ו־{4x}. מצאו את {x} ואת הזווית הגדולה.', a: '{10x = 360}, {x = 36}. הגדולה {4 · 36 = 144°}'},
+    {lv: 3, n: 1, r: 'calc', t: 'הקרן OK חוצה את {∢AOB}. {∢AOK = 3x + 5} ו־{∢KOB = 50°}. מצאו את {x} ואת {∢AOB}.', a: '{3x + 5 = 50}, {x = 15}. {∢AOB = 100°}'},
+    {lv: 3, n: 1, r: 'calc', lit: 1, t: 'פיצה עגולה חולקה ל־8 משולשים שווים מהמרכז. מה הזווית במרכז של כל משולש?', a: '{360° : 8 = 45°}'},
+    {lv: 3, n: 1, r: 'calc', lit: 1, t: 'בשעון, כמה מעלות בין כל שני מספרים סמוכים? מה הזווית בין המחוגים בשעה 4:00?', a: '{360° : 12 = 30°}. בשעה 4:00: {4 · 30° = 120°}'},
+
+    {lv: 4, n: 1, r: 'why', lit: 1, t: 'מחוג השעות מסתובב לאט: בכמה מעלות הוא זז בשעה אחת? ובחצי שעה? מה הזווית בין המחוגים בשעה 3:30?', a: 'שעה: {30°}. חצי שעה: {15°}. ב־3:30 מחוג הדקות על 6 ({180°}) ומחוג השעות ב־{90° + 15° = 105°}: הזווית {75°}'},
+    {lv: 4, n: 1, r: 'why', t: 'שלושה ישרים נחתכים בנקודה אחת ויוצרים 6 זוויות. שתיים מהן {50°} ו־{60°} (סמוכות). מצאו את כל השש.', a: 'השלישית על הישר: {180° − 50° − 60° = 70°}. ומולן קודקודיות: {50°, 60°, 70°, 50°, 60°, 70°}'},
+    {lv: 4, n: 1, r: 'why', t: 'שני ישרים נחתכים. ההפרש בין שתי זוויות צמודות הוא {40°}. מצאו את כל ארבע הזוויות.', a: '{x + x + 40 = 180}, {x = 70}. הזוויות {70°, 110°, 70°, 110°}'},
+    {lv: 4, n: 1, r: 'why', t: 'הקרניים OK ו־OM חוצות שתי זוויות צמודות. מה גודל {∢KOM}? הסבירו – האם התשובה תלויה בגודל הזוויות?', a: 'תמיד {90°}: חצי מכל אחת, ובסך הכול חצי מ־{180°}. לא תלוי בגודל הזוויות'},
+    {lv: 4, n: 1, r: 'why', lit: 1, t: 'מצפן מצביע צפונה. מסתובבים {90°} עם כיוון השעון, ועוד {135°}. לאיזה כיוון מסתכלים? בכמה מעלות צריך להסתובב כדי לחזור צפונה?', a: 'אחרי {90°}: מזרח. אחרי עוד {135°}: דרום־מערב ({225°}). כדי לחזור: עוד {135°} עם כיוון השעון (או {225°} נגדו)'},
+    {lv: 4, n: 1, r: 'why', lit: 1, t: 'גלגל ענק מחולק ל־12 קרונות במרחקים שווים. דנה בקרון 1, ורון בקרון 4. מה הזווית במרכז הגלגל בין שני הקרונות? ואם רון בקרון 7?', a: '{30°} בין קרונות סמוכים. קרון 4: {3 · 30° = 90°}. קרון 7: {6 · 30° = 180°}'}
+  ]
+});
+
 /* מאגר: שטח והיקף של מלבן, ריבוע וצורות מורכבות · כיתה ז׳
    מקור: "כיתה ז שטח והיקף 10 שאלות", "כיתה ז צורות מורכבות 5 שאלות" ו"תשובות למאגר גאומטריה" (Drive, מתוך המודל).
    השרטוטים נבנו לפי המידות שבמפתח התשובות. כל האורכים בס״מ. בצורות המורכבות חלק מהאורכים חסרים, כמו במקור.
@@ -1386,6 +1425,42 @@ BANK({
   ]
 });
 
+/* מאגר: ישרים מאונכים, מרחק מנקודה לישר, גובה, ומרובעים · כיתה ז׳
+   נכתב כאן (n: 1). כללי כתיבה: ראו h8_ratio.js */
+BANK({
+  id: 'z7_quad', grade: 'ז', topic: 'ישרים מאונכים ומרובעים', strand: 'גאומטריה', order: 3,
+  rule: 'ישרים מאונכים נחתכים בזווית של 90° · המרחק מנקודה לישר = אורך האנך (הקטע הקצר ביותר) · סכום הזוויות במרובע = 360° · מלבן: 4 זוויות ישרות · ריבוע: מלבן שכל צלעותיו שוות · מקבילית: שני זוגות צלעות מקבילות · טרפז: זוג אחד של צלעות מקבילות',
+  qs: [
+    {lv: 1, n: 1, t: 'הישר {AB} מאונך לישר {CD}. מה גודל הזווית ביניהם?', a: '{90°}', d: {t: 'g', P: {A: [0, -3], B: [0, 3], C: [-4, 0], D: [4, 0], O: [0, 0]}, segs: [['A', 'B'], ['C', 'D']], rt: [['O', 'B', 'D']]}},
+    {lv: 1, n: 1, t: 'מה סכום הזוויות במרובע?', a: '{360°}'},
+    {lv: 1, n: 1, t: 'במלבן, מה גודל כל זווית? כמה זוגות של צלעות מקבילות יש בו?', a: 'כל זווית {90°}. שני זוגות'},
+    {lv: 1, n: 1, t: 'מה ההבדל בין ריבוע למלבן?', a: 'בריבוע כל 4 הצלעות שוות; במלבן רק צלעות נגדיות שוות'},
+    {lv: 1, n: 1, t: 'כמה זוגות של צלעות מקבילות יש: א. במקבילית ב. בטרפז', a: 'א. שני זוגות ב. זוג אחד'},
+    {lv: 1, n: 1, t: 'במרובע שלוש זוויות הן {90°}, {90°} ו־{100°}. מה גודל הזווית הרביעית?', a: '{360° − 90° − 90° − 100° = 80°}'},
+
+    {lv: 2, n: 1, r: 'why', t: 'נועה אמרה: "כל ריבוע הוא מלבן". רון אמר: "כל מלבן הוא ריבוע". מי צודק? הסבירו.', a: 'נועה. לריבוע יש 4 זוויות ישרות, ולכן הוא מלבן. אבל במלבן הצלעות לא חייבות להיות שוות'},
+    {lv: 2, n: 1, r: 'why', t: 'מנקודה {P} ירדו שלושה קטעים אל הישר {ℓ}: באורך {5}, {3} ו־{4} ס״מ. איזה מהם הוא האנך? מה המרחק מ־{P} לישר?', a: 'האנך הוא הקטע הקצר ביותר: {3} ס״מ. המרחק {3} ס״מ'},
+    {lv: 2, n: 1, r: 'why', t: 'האם ייתכן מרובע שיש בו בדיוק שלוש זוויות ישרות? הסבירו.', a: 'לא: {90° · 3 = 270°}, והרביעית {360° − 270° = 90°} – גם היא ישרה'},
+    {lv: 2, n: 1, r: 'why', t: 'האם ייתכן מרובע שכל ארבע זוויותיו קהות?', a: 'לא: ארבע זוויות קהות גדולות יחד מ־{4 · 90° = 360°}'},
+    {lv: 2, n: 1, r: 'why', t: 'ישר {a} מאונך לישר {b}, וישר {c} מאונך גם הוא לישר {b}. מה אפשר לומר על {a} ו־{c}?', a: 'הם מקבילים (או אותו ישר)'},
+    {lv: 2, n: 1, t: 'במקבילית זווית אחת היא {70°}. מה גודל שלוש הזוויות האחרות?', a: 'נגדית שווה: {70°}. הסמוכות: {110°}, {110°}'},
+
+    {lv: 3, n: 1, r: 'calc', t: 'זוויות המרובע הן {x}, {2x}, {3x} ו־{4x}. מצאו את {x} ואת כל הזוויות.', a: '{10x = 360}, {x = 36}. הזוויות {36°, 72°, 108°, 144°}'},
+    {lv: 3, n: 1, r: 'calc', t: 'בטרפז ישר־זווית (שתי זוויות ישרות), הזווית השלישית גדולה פי 2 מהרביעית. מצאו אותן.', a: '{x + 2x = 360° − 180° = 180°}, {x = 60°}. הזוויות {60°} ו־{120°}'},
+    {lv: 3, n: 1, r: 'calc', t: 'במשולש {ABC}, {CD} הוא הגובה לצלע {AB}, ו־{∢A = 40°}. מה גודל {∢ACD}?', a: 'במשולש {ADC}: {∢ADC = 90°}, ולכן {∢ACD = 180° − 90° − 40° = 50°}', d: {t: 'g', P: {A: [0, 0], B: [8, 0], C: [5, 4.2], D: [5, 0]}, poly: [['A', 'B', 'C']], segs: [['C', 'D']], rt: [['D', 'B', 'C']], ang: [['A', 'B', 'C', '40°']]}},
+    {lv: 3, n: 1, r: 'calc', t: 'היקף מלבן {30} ס״מ, ואורכו גדול ב־{5} ס״מ מרוחבו. מצאו את אורך הצלעות.', a: '{2(x + x + 5) = 30}, {x = 5}. הצלעות {5} ס״מ ו־{10} ס״מ'},
+    {lv: 3, n: 1, r: 'calc', lit: 1, t: 'סולם נשען על קיר. הקיר מאונך לרצפה. הזווית בין הסולם לרצפה {65°}. מה הזווית בין הסולם לקיר?', a: 'במשולש יש זווית ישרה: {180° − 90° − 65° = 25°}'},
+    {lv: 3, n: 1, r: 'calc', lit: 1, t: 'דנה רוצה להגיע מהבית לכביש הקרוב בדרך הקצרה ביותר. באיזו זווית לכביש היא צריכה ללכת? למה?', a: '{90°} – בניצב לכביש. האנך הוא הקטע הקצר ביותר מנקודה לישר'},
+
+    {lv: 4, n: 1, r: 'why', t: 'במרובע {ABCD}: {∢A = ∢C}, {∢B = 2∢A} ו־{∢D = 90°}. מצאו את כל הזוויות.', a: '{x + 2x + x + 90 = 360}, {4x = 270}, {x = 67.5}. הזוויות {67.5°, 135°, 67.5°, 90°}'},
+    {lv: 4, n: 1, r: 'why', t: 'מחלקים מרובע לשני משולשים באמצעות אלכסון. הסבירו בעזרת זה למה סכום הזוויות במרובע הוא {360°}.', a: 'בכל משולש {180°}, ושני המשולשים בונים יחד בדיוק את זוויות המרובע: {2 · 180° = 360°}'},
+    {lv: 4, n: 1, r: 'why', t: 'בריבוע {ABCD} העבירו את האלכסון {AC}. מה גודל {∢BAC}? הסבירו.', a: '{45°}: המשולש {ABC} שווה־שוקיים וישר־זווית, ולכן {(180° − 90°) : 2 = 45°}'},
+    {lv: 4, n: 1, r: 'why', t: 'יואב טוען: "מרובע שכל צלעותיו שוות הוא ריבוע". האם הוא צודק? תנו דוגמה.', a: 'לא. מעוין: כל הצלעות שוות, אבל הזוויות לא חייבות להיות ישרות'},
+    {lv: 4, n: 1, r: 'why', lit: 1, t: 'גינה בצורת מלבן {12} מ׳ על {8} מ׳. רוצים לגדר אותה, ועמוד גדר בכל {2} מ׳ (כולל בפינות). כמה עמודים צריך?', a: 'היקף {2(12 + 8) = 40} מ׳. {40 : 2 = 20} עמודים (במסלול סגור מספר העמודים שווה למספר הרווחים)'},
+    {lv: 4, n: 1, r: 'why', lit: 1, t: 'נגר בונה מסגרת לתמונה. הוא מדד את האלכסונים: {50} ס״מ ו־{52} ס״מ. האם הפינות ישרות? הסבירו.', a: 'לא. במלבן האלכסונים שווים; כאן הם שונים, ולכן המסגרת לא מלבן'}
+  ]
+});
+
 /* מאגר: כפל וחילוק מספרים מכוונים · כיתה ז׳
    מקור: "מאגר שאלות המודל – נובמבר ז", פרק 2 שלב ב (כללי הסימן). כל הבחנים, לפי הסדר; הרמה לפי הקובץ.
    כללי כתיבה: ראו h8_ratio.js */
@@ -1576,7 +1651,7 @@ BANK({
 
 const GRADES=[{g:'ז',name:'ז׳'},{g:'ח',name:'ח׳'},{g:'י',name:'י׳ 3 יח״ל'}];
 const LV={1:{n:'זיהוי וידע',d:'זוכרים ומזהים',w:8},2:{n:'הבנה',d:'מסבירים במילים ומבינים מושג',w:12},3:{n:'יישום',d:'פותרים לפי השיטה',w:13},4:{n:'חשיבה מסדר גבוה',d:'מנמקים, מנתחים טעות, יוצרים ופותרים מצבים מהחיים',w:15}};
-const EXAM_LINES={1:4,2:6,3:6,4:7},WS_LINES={1:3,2:5,3:5,4:6};
+const EXAM_LINES={1:4,2:6,3:6,4:7},WS_LINES={1:2,2:4,3:4,4:5};
 const MOT=['אם אתם מאמינים בעצמכם – שאתם יכולים לנצח,<br>אתם יכולים!','כל שאלה היא הזדמנות להראות מה למדתם.<br>קראו לאט, חשבו בשקט – ואתם תצליחו!','טעות היא חלק מהלמידה.<br>נסו, בדקו, ואל תוותרו!','אתם יודעים יותר ממה שנדמה לכם.<br>תאמינו בעצמכם!'];
 const HEB='אבגדהוזחט';
 
@@ -1585,7 +1660,7 @@ const DEF={g:'ז',k:'exam',t:[],n:8,min:45,lv:'mix',cls:'',yr:'תשפ״ז',two:t
 let S=Object.assign({},DEF);
 try{Object.assign(S,JSON.parse(localStorage.getItem('roni_exam_gen2')||'{}'))}catch(e){}
 /* קישור ישיר: ?g=ז&k=ws&t=z7_abs,z7_addsub&lv=weak (למשל לכפתור 'מילוי מקום' בעמוד הצוות) */
-try{const Q=new URLSearchParams(location.search);if(Q.get('g'))S.g=Q.get('g');if(Q.get('k'))S.k=Q.get('k');if(Q.get('lv'))S.lv=Q.get('lv');if(Q.get('t'))S.t=Q.get('t').split(',');else if(Q.get('g'))S.t=[];}catch(e){}
+try{const Q=new URLSearchParams(location.search);if(Q.get('g'))S.g=Q.get('g');if(Q.get('k'))S.k=Q.get('k');if(Q.get('lv'))S.lv=Q.get('lv');if(Q.get('n'))S.n=Math.max(1,+Q.get('n')||S.n);if(Q.get('t'))S.t=Q.get('t').split(',');else if(Q.get('g'))S.t=[];}catch(e){}
 let seed=(Date.now()%100000)+1;
 const save=()=>{try{localStorage.setItem('roni_exam_gen2',JSON.stringify(S))}catch(e){}};
 // רמת הכיתה: כמה שאלות מכל רמת חשיבה (w = חלק יחסי, min = מינימום שאלות), ואיזו רמה מקבלת עודף כשחסרות שאלות
@@ -1612,13 +1687,14 @@ const gname=()=>GRADES.find(x=>x.g===S.g).name;
 // כוכבית = שאלה מהמודל של משרד החינוך (מאגר שמקורו במודל, ולא שאלה שנוספה)
 const isM=(b,q)=>b.src==='מודל'&&!q.n,MM=(b,q)=>isM(b,q)?'<span class="mm" title="שאלה מהמודל">*</span>':'';
 const req=q=>q.r==='calc'?'<div class="req"><b>הציגו את דרך החישוב.</b></div>':q.r==='why'?'<div class="req"><b>נמקו.</b></div>':'';
-const lines=n=>'<div class="lines" style="height:'+(n*9)+'mm"></div>';
+const lines=n=>'<div class="lines" style="height:'+(n*8)+'mm"></div>';
 
 // ---------- תכנון מבחן ----------
 function largest(total,weights){const s=weights.reduce((a,b)=>a+b,0);const raw=weights.map(w=>total*w/s);const fl=raw.map(Math.floor);let left=total-fl.reduce((a,b)=>a+b,0);raw.map((v,i)=>[v-fl[i],i]).sort((a,b)=>b[0]-a[0]).forEach(([,i])=>{if(left>0){fl[i]++;left--}});return fl}
 function capacity(bs,V){const c={};for(const L of [1,2,3,4])c[L]=Math.floor(bs.reduce((a,b)=>a+b.qs.filter(q=>q.lv===L).length,0)/V);return c}
 function planLevels(N,cap){
   const M=MODES[S.lv]||MODES.mix,min=M.min.map(x=>Math.min(x,N));
+  for(let i=3;i>=0&&min.reduce((a,b)=>a+b,0)>N;i--)min[i]=0; // מעט שאלות: מתחילים מהרמות הבסיסיות
   let rest=N-min.reduce((a,b)=>a+b,0);if(rest<0)rest=0;
   const add=largest(rest,M.w),cnt={};[1,2,3,4].forEach((L,i)=>cnt[L]=min[i]+add[i]);
   // אם ברמה מסוימת אין מספיק שאלות במאגר – מעבירים לרמה הקרובה לפי סדר העדיפות של רמת הכיתה
@@ -1681,14 +1757,17 @@ function examHTML(E){
 // ---------- דף עבודה ----------
 function wsHTML(){
   const bs=chosen(),r=rng(seed);let h='',ans=[];
-  bs.forEach(b=>{let body='<div class="wsh"><h2>דף עבודה · '+esc(b.topic)+'</h2><div class="nm"><span>שם: <u></u></span><span>כיתה: <u style="width:28mm"></u></span><span>תאריך: <u style="width:30mm"></u></span></div></div>'+
-      '<div class="rule"><b>השיטה</b>'+F(b.rule)+'</div>';let num=0,a=[];
+  /* חסכוני בהדפסה: כל הנושאים ברצף בגיליון אחד (בלי עמוד חדש לכל נושא), השם פעם אחת בראש הדף */
+  let all='<div class="wsh"><div class="nm"><span>שם: <u></u></span><span>כיתה: <u style="width:28mm"></u></span><span>תאריך: <u style="width:30mm"></u></span></div></div>';
+  bs.forEach((b,bi)=>{let body='<div style="break-inside:avoid"><div class="wsh tp"><h2>דף עבודה · '+esc(b.topic)+'</h2></div>'+
+      '<div class="rule"><b>השיטה</b>'+F(b.rule)+'</div></div>';let num=0,a=[];
     const cnt=planLevels(Math.min(S.n,b.qs.length),capacity([b],1));
     for(const L of [1,2,3,4]){const qs=shuffle(b.qs.filter(q=>q.lv===L),r).slice(0,cnt[L]);
       if(!qs.length)continue;
       body+='<div class="lvl">'+'★'.repeat(L)+' '+LV[L].n+' <small>· '+LV[L].d+'</small></div>';
       qs.forEach(q=>{num++;a.push([num,q,L]);body+='<div class="q"><div class="qh"><span class="qn">'+num+'</span>'+MM(b,q)+'<div class="qt">'+F(q.t)+req(q)+'</div>'+D(q.d)+'<span class="st">'+'★'.repeat(L)+'</span></div>'+lines(WS_LINES[L])+'</div>'})}
-    h+=sheet('דף עבודה · '+esc(b.topic)+' · כיתה '+esc(S.cls||gname()),body);ans.push([b,a])});
+    all+=body;ans.push([b,a])});
+  h+=sheet('דף עבודה · '+bs.map(b=>esc(b.topic)).join(' · ')+' · כיתה '+esc(S.cls||gname()),all);
   if(S.key){let k='';ans.forEach(([b,a],i)=>{k+='<div class="key"><h2>תשובות למורה · '+esc(b.topic)+'</h2><table class="kt"><tr><th>שאלה</th><th>רמה</th><th>תשובה</th></tr>'+a.map(([n,q,L])=>'<tr><td>'+n+(isM(b,q)?' *':'')+'</td><td>'+LV[L].n+'</td><td>'+F(q.a)+'</td></tr>').join('')+'</table><p class="small">* = שאלה מהמודל של משרד החינוך</p></div>'});
     h+=sheet('תשובות למורה · דף עבודה',k)}
   return h}
@@ -1722,11 +1801,7 @@ function render(){
   regen();
   if(S.k==='exam'){const E=buildExam();msg=E.note;$('#out').innerHTML=examHTML(E)}else $('#out').innerHTML=wsHTML();
   $('#msg').innerHTML=msg?'<div class="warn">'+msg+'</div>':'';$('#done').hidden=false;fit()}
-/* מתאים את הדף לרוחב המסך. בטלפון innerWidth "מתנפח" אחרי שהדף נוצר, ולכן מודדים לפי רוחב המסך האמיתי */
-function fit(){const sh=document.querySelectorAll('.sheet');if(!sh.length)return;
-  const W=Math.min(document.documentElement.clientWidth,window.innerWidth,(screen&&screen.width)||1e9);
-  sh.forEach(s=>s.style.zoom=1);const full=sh[0].offsetWidth||800;
-  const z=Math.min(1,(W-16)/full);sh.forEach(s=>s.style.zoom=z)}
+function fit(){const z=Math.min(1,(window.innerWidth-16)/800);document.querySelectorAll('.sheet').forEach(s=>s.style.zoom=z)}
 addEventListener('resize',fit);
 document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled)return;
   if(b.dataset.g){S.g=b.dataset.g;S.t=[];ui()}
@@ -1739,6 +1814,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||
 ['cls','yr'].forEach(id=>$('#'+id).addEventListener('input',e=>{S[id]=e.target.value;clearOut();save()}));
 ['two','calc','key'].forEach(id=>$('#'+id).addEventListener('change',e=>{S[id]=e.target.checked;clearOut();save()}));
 ui();
+try{if(new URLSearchParams(location.search).get('go')&&chosen().length){seed=Math.floor(Math.random()*1e9);render()}}catch(e){}
 </script>
 </body>
 </html>

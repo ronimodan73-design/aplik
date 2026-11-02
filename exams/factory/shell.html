@@ -105,7 +105,7 @@ button,input,select{font:inherit}
 .st{color:var(--gold);font-size:12pt;flex:none}
 .req{margin-top:1mm;font-size:12.5pt}
 .req b{font-family:'Rubik',sans-serif}
-.lines{margin-top:2mm;background-image:repeating-linear-gradient(to bottom,transparent 0,transparent 8.6mm,#b9c4c2 8.6mm,#b9c4c2 9mm)}
+.lines{margin-top:2mm;background-image:repeating-linear-gradient(to bottom,transparent 0,transparent 7.6mm,#b9c4c2 7.6mm,#b9c4c2 8mm)}
 .end{text-align:center;font-family:'Rubik',sans-serif;font-weight:700;text-decoration:underline;font-size:15pt;margin-top:6mm}
 .wsh{border-bottom:3px solid var(--acc);padding-bottom:2mm;margin-bottom:4mm}
 .wsh h2{font-family:'Rubik',sans-serif;font-size:22pt;color:var(--acc);margin:0}
@@ -115,6 +115,8 @@ button,input,select{font:inherit}
 .lvl small{font-weight:400;font-size:11.5pt;opacity:.9}
 .key h2{font-family:'Rubik',sans-serif;color:var(--acc);font-size:18pt;margin:0 0 3mm}
 .kt{width:100%;border-collapse:collapse;font-size:12pt;margin-bottom:6mm}
+.key .kt{font-size:10pt;margin-bottom:3mm}.key .kt td,.key .kt th{padding:1mm 2mm}.key h2{margin:2mm 0 1.5mm;font-size:12pt}
+.wsh.tp{margin-top:3mm;border:0;padding:0}.wsh.tp h2{margin-bottom:1.5mm}
 .kt th,.kt td{border:1.3px solid #6b7f7b;padding:1.6mm 2.5mm;vertical-align:top}
 .kt th{background:var(--acc2);font-family:'Rubik',sans-serif}
 .kt td:first-child,.kt td:nth-child(4){text-align:center;white-space:nowrap}
@@ -172,7 +174,7 @@ function regen(){chosen().forEach((b,i)=>{if(b.gen)b.qs=b.gen(rng(seed+i*7919))}
 
 const GRADES=[{g:'ז',name:'ז׳'},{g:'ח',name:'ח׳'},{g:'י',name:'י׳ 3 יח״ל'}];
 const LV={1:{n:'זיהוי וידע',d:'זוכרים ומזהים',w:8},2:{n:'הבנה',d:'מסבירים במילים ומבינים מושג',w:12},3:{n:'יישום',d:'פותרים לפי השיטה',w:13},4:{n:'חשיבה מסדר גבוה',d:'מנמקים, מנתחים טעות, יוצרים ופותרים מצבים מהחיים',w:15}};
-const EXAM_LINES={1:4,2:6,3:6,4:7},WS_LINES={1:3,2:5,3:5,4:6};
+const EXAM_LINES={1:4,2:6,3:6,4:7},WS_LINES={1:2,2:4,3:4,4:5};
 const MOT=['אם אתם מאמינים בעצמכם – שאתם יכולים לנצח,<br>אתם יכולים!','כל שאלה היא הזדמנות להראות מה למדתם.<br>קראו לאט, חשבו בשקט – ואתם תצליחו!','טעות היא חלק מהלמידה.<br>נסו, בדקו, ואל תוותרו!','אתם יודעים יותר ממה שנדמה לכם.<br>תאמינו בעצמכם!'];
 const HEB='אבגדהוזחט';
 
@@ -181,7 +183,7 @@ const DEF={g:'ז',k:'exam',t:[],n:8,min:45,lv:'mix',cls:'',yr:'תשפ״ז',two:t
 let S=Object.assign({},DEF);
 try{Object.assign(S,JSON.parse(localStorage.getItem('roni_exam_gen2')||'{}'))}catch(e){}
 /* קישור ישיר: ?g=ז&k=ws&t=z7_abs,z7_addsub&lv=weak (למשל לכפתור 'מילוי מקום' בעמוד הצוות) */
-try{const Q=new URLSearchParams(location.search);if(Q.get('g'))S.g=Q.get('g');if(Q.get('k'))S.k=Q.get('k');if(Q.get('lv'))S.lv=Q.get('lv');if(Q.get('t'))S.t=Q.get('t').split(',');else if(Q.get('g'))S.t=[];}catch(e){}
+try{const Q=new URLSearchParams(location.search);if(Q.get('g'))S.g=Q.get('g');if(Q.get('k'))S.k=Q.get('k');if(Q.get('lv'))S.lv=Q.get('lv');if(Q.get('n'))S.n=Math.max(1,+Q.get('n')||S.n);if(Q.get('t'))S.t=Q.get('t').split(',');else if(Q.get('g'))S.t=[];}catch(e){}
 let seed=(Date.now()%100000)+1;
 const save=()=>{try{localStorage.setItem('roni_exam_gen2',JSON.stringify(S))}catch(e){}};
 // רמת הכיתה: כמה שאלות מכל רמת חשיבה (w = חלק יחסי, min = מינימום שאלות), ואיזו רמה מקבלת עודף כשחסרות שאלות
@@ -208,13 +210,14 @@ const gname=()=>GRADES.find(x=>x.g===S.g).name;
 // כוכבית = שאלה מהמודל של משרד החינוך (מאגר שמקורו במודל, ולא שאלה שנוספה)
 const isM=(b,q)=>b.src==='מודל'&&!q.n,MM=(b,q)=>isM(b,q)?'<span class="mm" title="שאלה מהמודל">*</span>':'';
 const req=q=>q.r==='calc'?'<div class="req"><b>הציגו את דרך החישוב.</b></div>':q.r==='why'?'<div class="req"><b>נמקו.</b></div>':'';
-const lines=n=>'<div class="lines" style="height:'+(n*9)+'mm"></div>';
+const lines=n=>'<div class="lines" style="height:'+(n*8)+'mm"></div>';
 
 // ---------- תכנון מבחן ----------
 function largest(total,weights){const s=weights.reduce((a,b)=>a+b,0);const raw=weights.map(w=>total*w/s);const fl=raw.map(Math.floor);let left=total-fl.reduce((a,b)=>a+b,0);raw.map((v,i)=>[v-fl[i],i]).sort((a,b)=>b[0]-a[0]).forEach(([,i])=>{if(left>0){fl[i]++;left--}});return fl}
 function capacity(bs,V){const c={};for(const L of [1,2,3,4])c[L]=Math.floor(bs.reduce((a,b)=>a+b.qs.filter(q=>q.lv===L).length,0)/V);return c}
 function planLevels(N,cap){
   const M=MODES[S.lv]||MODES.mix,min=M.min.map(x=>Math.min(x,N));
+  for(let i=3;i>=0&&min.reduce((a,b)=>a+b,0)>N;i--)min[i]=0; // מעט שאלות: מתחילים מהרמות הבסיסיות
   let rest=N-min.reduce((a,b)=>a+b,0);if(rest<0)rest=0;
   const add=largest(rest,M.w),cnt={};[1,2,3,4].forEach((L,i)=>cnt[L]=min[i]+add[i]);
   // אם ברמה מסוימת אין מספיק שאלות במאגר – מעבירים לרמה הקרובה לפי סדר העדיפות של רמת הכיתה
@@ -277,14 +280,17 @@ function examHTML(E){
 // ---------- דף עבודה ----------
 function wsHTML(){
   const bs=chosen(),r=rng(seed);let h='',ans=[];
-  bs.forEach(b=>{let body='<div class="wsh"><h2>דף עבודה · '+esc(b.topic)+'</h2><div class="nm"><span>שם: <u></u></span><span>כיתה: <u style="width:28mm"></u></span><span>תאריך: <u style="width:30mm"></u></span></div></div>'+
-      '<div class="rule"><b>השיטה</b>'+F(b.rule)+'</div>';let num=0,a=[];
+  /* חסכוני בהדפסה: כל הנושאים ברצף בגיליון אחד (בלי עמוד חדש לכל נושא), השם פעם אחת בראש הדף */
+  let all='<div class="wsh"><div class="nm"><span>שם: <u></u></span><span>כיתה: <u style="width:28mm"></u></span><span>תאריך: <u style="width:30mm"></u></span></div></div>';
+  bs.forEach((b,bi)=>{let body='<div style="break-inside:avoid"><div class="wsh tp"><h2>דף עבודה · '+esc(b.topic)+'</h2></div>'+
+      '<div class="rule"><b>השיטה</b>'+F(b.rule)+'</div></div>';let num=0,a=[];
     const cnt=planLevels(Math.min(S.n,b.qs.length),capacity([b],1));
     for(const L of [1,2,3,4]){const qs=shuffle(b.qs.filter(q=>q.lv===L),r).slice(0,cnt[L]);
       if(!qs.length)continue;
       body+='<div class="lvl">'+'★'.repeat(L)+' '+LV[L].n+' <small>· '+LV[L].d+'</small></div>';
       qs.forEach(q=>{num++;a.push([num,q,L]);body+='<div class="q"><div class="qh"><span class="qn">'+num+'</span>'+MM(b,q)+'<div class="qt">'+F(q.t)+req(q)+'</div>'+D(q.d)+'<span class="st">'+'★'.repeat(L)+'</span></div>'+lines(WS_LINES[L])+'</div>'})}
-    h+=sheet('דף עבודה · '+esc(b.topic)+' · כיתה '+esc(S.cls||gname()),body);ans.push([b,a])});
+    all+=body;ans.push([b,a])});
+  h+=sheet('דף עבודה · '+bs.map(b=>esc(b.topic)).join(' · ')+' · כיתה '+esc(S.cls||gname()),all);
   if(S.key){let k='';ans.forEach(([b,a],i)=>{k+='<div class="key"><h2>תשובות למורה · '+esc(b.topic)+'</h2><table class="kt"><tr><th>שאלה</th><th>רמה</th><th>תשובה</th></tr>'+a.map(([n,q,L])=>'<tr><td>'+n+(isM(b,q)?' *':'')+'</td><td>'+LV[L].n+'</td><td>'+F(q.a)+'</td></tr>').join('')+'</table><p class="small">* = שאלה מהמודל של משרד החינוך</p></div>'});
     h+=sheet('תשובות למורה · דף עבודה',k)}
   return h}
@@ -335,6 +341,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||
 ['cls','yr'].forEach(id=>$('#'+id).addEventListener('input',e=>{S[id]=e.target.value;clearOut();save()}));
 ['two','calc','key'].forEach(id=>$('#'+id).addEventListener('change',e=>{S[id]=e.target.checked;clearOut();save()}));
 ui();
+try{if(new URLSearchParams(location.search).get('go')&&chosen().length){seed=Math.floor(Math.random()*1e9);render()}}catch(e){}
 </script>
 </body>
 </html>
