@@ -155,6 +155,7 @@ button,input,select{font:inherit}
   <div class="box">
     <div class="row"><span class="lab">1. כיתה</span><div class="seg" id="grades"></div></div>
     <div class="row top-al"><span class="lab">2. נושא</span><div id="topics"></div></div>
+    <div class="row top-al" id="subrow" hidden><span class="lab">מה ייכנס לשאלה המשולבת?</span><div><div class="seg" id="subs"></div><p class="small">סמני תתי־נושאים – ייבחרו רק שאלות שיש בהן לפחות אחד מהם. בלי סימון = כל השאלות.</p></div></div>
     <div class="row"><span class="lab">3. מה מכינים?</span><div class="seg" id="kinds"><button data-k="exam">📝 מבחן</button><button data-k="ws">✏️ דף עבודה</button><button data-k="sub">🧑‍🏫 מילוי מקום</button></div></div>
     <div class="row sub-only"><span class="lab">4. סוג הדף</span><div class="seg" id="sts"><button data-st="base">💪 חיזוק</button><button data-st="all">✏️ תרגול רגיל</button><button data-st="enrich">🚀 העשרה</button></div></div>
     <p class="small sub-only" id="sthint"></p>
@@ -306,7 +307,9 @@ function cw(d){return '<table class="cw" dir="ltr">'+d.c.map(r=>'<tr>'+r.map(v=>
 
 const BANKS=[];function BANK(b){if(b.gen&&!b.qs)b.qs=b.gen(rng(7));BANKS.push(b)}
 /* מאגר מחולל (gen): בכל יצירה מחדש נוצרים מספרים חדשים לפי seed */
-function regen(){chosen().forEach((b,i)=>{if(b.gen)b.qs=b.gen(rng(seed+i*7919))})}
+function regen(){chosen().forEach((b,i)=>{if(b.gen)b.qs=b.gen(rng(seed+i*7919));
+  /* תתי־נושאים בשאלה משולבת: משאירים רק שאלות שיש בהן לפחות אחד מהסימונים */
+  if(b.subs&&(S.sb||[]).length){const f=b.qs.filter(q=>!q.tg||q.tg.some(x=>S.sb.includes(x)));if(f.length)b.qs=f}})}
 /* מאגר: מעגל ועיגול · כיתה ח׳ (כללי כתיבה ורמות: ראו h8_ratio.js)
    כמו באפליקציה: רדיוס | קוטר | היקף | שטח. תשובות עם π, ובשאלות מחשבון: עד 2 ספרות אחרי הנקודה. */
 BANK({
@@ -980,7 +983,7 @@ BANK({
 /* מאגר מחולל: שאלה משולבת בסגנון בגרות · כיתה י׳ 3 יח״ל. שאלה רב־שלבית: משוואת ישר, מקבילים, מפגש, מרחק, אמצע, שטח, דמיון.
    רק רמות 3–4 (יישום וחשיבה), כי כל שאלה כאן משלבת כמה נושאים. כלי העזר: y10__lib.js */
 BANK({
-  id: 'y10_mix', grade: 'י', topic: 'שאלה משולבת (בגרות)', strand: 'גאומטריה אנליטית', order: 7,
+  id: 'y10_mix', subs: [['line', 'משוואת ישר'], ['par', 'מקבילים'], ['meet', 'נקודת מפגש'], ['mid', 'אמצע קטע'], ['dist', 'מרחק'], ['area', 'שטח'], ['sim', 'דמיון']], grade: 'י', topic: 'שאלה משולבת (בגרות)', strand: 'גאומטריה אנליטית', order: 7,
   rule: 'קוראים את כל השאלה ומסמנים בשרטוט את מה שנתון · כל סעיף נשען על הקודם – כותבים כל תוצאה ליד הנקודה בשרטוט · שיפוע ← משוואה ← מפגש ← מרחק / אמצע / שטח · ישר מקביל לצלע יוצר משולש דומה: יחס הדמיון {k} ויחס השטחים {k²}',
   gen: r => { const {ri, pick, sg, nz, N, par, P, pl, sh, fr, eq, slope, thru, mx, sgn, rhs, at, xcut, meet, dist, midTxt} = G3;
     return G3.build(r, {
@@ -989,67 +992,79 @@ BANK({
       () => { for (;;) { const px = ri(r, -2, 3), py = ri(r, -2, 3), m1 = nz(r, -2, 2), k = ri(r, 1, 2), j = pick(r, [k, k + 1]); let m2; do { m2 = nz(r, -3, 3); } while (m2 === m1);
           const A = [px - 2 * k, py - 2 * k * m1], B = [px + 2 * j, py + 2 * j * m1], b2 = py - m2 * px;
           if (Math.abs(A[1]) > 9 || Math.abs(B[1]) > 9) continue;
-          return {t: 'ישר {I} עובר דרך {' + P('A', A[0], A[1]) + '} ו־{' + P('B', B[0], B[1]) + '}. ישר {II}: {' + eq(m2, 1, b2) + '}.   א. מצאו את משוואת ישר {I}.   ב. מצאו את נקודת המפגש {P} של הישרים.   ג. האם {P} היא אמצע הקטע {AB}? נמקו.', r: 'calc',
+          return {tg: ['line', 'meet', 'mid'], t: 'ישר {I} עובר דרך {' + P('A', A[0], A[1]) + '} ו־{' + P('B', B[0], B[1]) + '}. ישר {II}: {' + eq(m2, 1, b2) + '}.   א. מצאו את משוואת ישר {I}.   ב. מצאו את נקודת המפגש {P} של הישרים.   ג. האם {P} היא אמצע הקטע {AB}? נמקו.', r: 'calc',
             a: 'א. ' + slope(A[0], A[1], B[0], B[1]) + ' ← ' + thru(m1, 1, A[0], A[1]) + '   ב. ' + meet(m1, py - m1 * px, m2, b2) + '   ג. ' + midTxt('M', A[0], A[1], B[0], B[1]) + ' ← ' + (k === j ? 'כן, {M = P}.' : 'לא, {M ≠ P}.'),
             d: pl([['A', A[0], A[1]], ['B', B[0], B[1]], ['P', px, py]], {lines: [{m: m1, b: py - m1 * px, n: 'I'}, {m: m2, b: b2, n: 'II'}]})}; } },
       () => { const m = nz(r, -3, 3), a = nz(r, -4, 4), t = nz(r, -2, 2), C = [a + t, m * t], b2 = -m * a; let b; do { b = ri(r, -4, 4); } while (b === b2);
-        return {t: 'נתון הישר {' + eq(m, 1, b) + '} והנקודה {' + P('C', C[0], C[1]) + '}.   א. מצאו את משוואת הישר המקביל לישר הנתון ועובר דרך {C}.   ב. מצאו את נקודות החיתוך של הישר שמצאתם עם שני הצירים.', r: 'calc',
+        return {tg: ['line', 'par'], t: 'נתון הישר {' + eq(m, 1, b) + '} והנקודה {' + P('C', C[0], C[1]) + '}.   א. מצאו את משוואת הישר המקביל לישר הנתון ועובר דרך {C}.   ב. מצאו את נקודות החיתוך של הישר שמצאתם עם שני הצירים.', r: 'calc',
           a: 'א. מקביל ← {m = ' + m + '}: ' + thru(m, 1, C[0], C[1]) + '   ב. ציר {y}: {(0, ' + N(b2) + ')}   ציר {x}: ' + xcut(m, b2)}; },
       () => { for (;;) { const ax = ri(r, -4, 0), ay = ri(r, -3, 1), m = nz(r, -2, 2), dx = ri(r, 2, 4), B = [ax + dx, ay + m * dx], C = [ri(r, -3, 3), ri(r, 3, 6)];
           if (C[1] - ay === m * (C[0] - ax)) continue; const b = C[1] - m * C[0];
-          return {t: 'נתון המשולש {ABC}: {' + P('A', ax, ay) + '}, {' + P('B', B[0], B[1]) + '}, {' + P('C', C[0], C[1]) + '}.   א. מצאו את שיפוע הצלע {AB}.   ב. מצאו את משוואת הישר שעובר דרך {C} ומקביל ל־{AB}.   ג. באיזו נקודה הישר שמצאתם חותך את ציר ה־{y}?', r: 'calc',
+          return {tg: ['line', 'par'], t: 'נתון המשולש {ABC}: {' + P('A', ax, ay) + '}, {' + P('B', B[0], B[1]) + '}, {' + P('C', C[0], C[1]) + '}.   א. מצאו את שיפוע הצלע {AB}.   ב. מצאו את משוואת הישר שעובר דרך {C} ומקביל ל־{AB}.   ג. באיזו נקודה הישר שמצאתם חותך את ציר ה־{y}?', r: 'calc',
             a: 'א. ' + slope(ax, ay, B[0], B[1]) + '   ב. ' + thru(m, 1, C[0], C[1]) + '   ג. {(0, ' + N(b) + ')}',
             d: pl([['A', ax, ay], ['B', B[0], B[1]], ['C', C[0], C[1]]], {poly: [['A', 'B', 'C']]})}; } },
       () => { for (;;) { const [p, q] = pick(r, [[3, 4], [4, 3], [6, 8], [8, 6]]), px = p * sg(r), py = q * sg(r); let m1, m2; do { m1 = nz(r, -2, 2); m2 = nz(r, -2, 2); } while (m1 === m2);
           const b1 = py - m1 * px, b2 = py - m2 * px; if (Math.abs(b1) > 12 || Math.abs(b2) > 12) continue;
-          return {t: 'נתונים הישרים {' + eq(m1, 1, b1) + '} ו־{' + eq(m2, 1, b2) + '}.   א. מצאו את נקודת המפגש {P} שלהם.   ב. מצאו את המרחק של {P} מראשית הצירים {O}.', r: 'calc',
+          return {tg: ['meet', 'dist'], t: 'נתונים הישרים {' + eq(m1, 1, b1) + '} ו־{' + eq(m2, 1, b2) + '}.   א. מצאו את נקודת המפגש {P} שלהם.   ב. מצאו את המרחק של {P} מראשית הצירים {O}.', r: 'calc',
             a: 'א. ' + meet(m1, b1, m2, b2) + '   ב. ' + dist('O', 'P', 0, 0, px, py).txt}; } },
+      // ── במבנה בגרות 3 יח״ל (מספרים חדשים) ──
+      () => { const O = []; for (const m of [1, 2, 3]) for (const a of [-1, -2, -3]) for (const [n, d] of [[1, 2], [1, 3], [2, 3]]) { const b = -m * a; if ((-n * a) % d) continue; const bAC = -n * a / d, cx = (b - bAC) * d / n; if (Number.isInteger(cx) && cx > 0 && cx <= 10) O.push([m, a, n, d, b, bAC, cx]); }
+        const [m, a, n, d, b, bAC, cx] = pick(r, O), S = cx * b / 2;
+        return {tg: ['line', 'par', 'meet', 'area'], t: 'במבנה בגרות: הקדקוד {A} של המשולש {ABC} נמצא על ציר ה־{x}, והקדקוד {B} נמצא על ציר ה־{y}. משוואת הצלע {AB} היא {' + eq(m, 1, b) + '}.   א. מצאו את שיעורי הנקודות {A} ו־{B}.   ב. שיפוע הצלע {AC} הוא {' + fr(n, d) + '}. מצאו את משוואת הישר {AC}.   ג. הצלע {BC} מקבילה לציר ה־{x}. (1) מצאו את שיעורי הנקודה {C}. (2) חשבו את שטח המשולש {ABC}.', r: 'calc',
+          a: 'א. ' + xcut(m, b).replace(/\{\(([^)]*)\)\}$/, '{A($1)}') + '   {x = 0} ← {B(0, ' + b + ')}   ב. ' + thru(n, d, a, 0) + '   ג. (1) {BC} מקבילה לציר ה־{x} ← {y = ' + b + '}: {' + b + ' = ' + mx(n, d) + sgn(bAC) + '} ← {x = ' + cx + '} ← {C(' + cx + ', ' + b + ')}   (2) בסיס {BC = ' + cx + '}, הגובה מ־{A} הוא {' + b + '}: {S = [' + cx + ' · ' + b + '/2] = ' + N(S) + '} יח״ר',
+          d: pl([['A', a, 0], ['B', 0, b], ['C', cx, b]], {poly: [['A', 'B', 'C']]})}; },
+      () => { const [v, ax] = pick(r, [[[6, -8], -3], [[-6, -8], 3], [[8, -6], -4], [[-8, -6], 4]]), A = [ax, ri(r, 4, 6)], M = [A[0] + v[0], A[1] + v[1]];
+        let w; do { w = [ri(r, 2, 5), ri(r, -4, 4)]; } while (Math.abs(w[0] * v[1] - w[1] * v[0]) < 36);   // משולש "שמן" – לא דק מדי
+        const B = [M[0] - w[0], M[1] - w[1]], C = [M[0] + w[0], M[1] + w[1]], yb = A[1] - v[1] * A[0] / v[0];
+        return {tg: ['line', 'mid', 'dist'], t: 'במבנה בגרות: נתון המשולש {ABC}: {' + P('A', A[0], A[1]) + '}, {' + P('B', B[0], B[1]) + '}, {' + P('C', C[0], C[1]) + '}. הנקודה {M} היא אמצע הצלע {BC}.   א. מצאו את שיעורי הנקודה {M}.   ב. מצאו את משוואת התיכון {AM}.   ג. חשבו את אורך התיכון {AM}.   ד. באיזו נקודה התיכון חותך את ציר ה־{y}?', r: 'calc',
+          a: 'א. ' + midTxt('M', B[0], B[1], C[0], C[1]) + '   ב. ' + slope(A[0], A[1], M[0], M[1]) + ' ← ' + thru(v[1], v[0], A[0], A[1]) + '   ג. ' + dist('A', 'M', A[0], A[1], M[0], M[1]).txt + '   ד. מציבים {x = 0}: {(0, ' + N(yb) + ')}',
+          d: pl([['A', A[0], A[1]], ['B', B[0], B[1]], ['C', C[0], C[1]], ['M', M[0], M[1]]], {poly: [['A', 'B', 'C']], segs: [['A', 'M']]})}; },
       // ── שאלות משולבות עם דמיון ──
       () => { const p = nz(r, -2, 2), q = nz(r, -2, 2), j = pick(r, [1, 2]), A = [3 * p, 0], B = [0, 3 * q], C = [j * p, 0], D = [0, j * q];
-        return {t: 'נתונות הנקודות {O(0, 0)}, {' + P('A', A[0], A[1]) + '}, {' + P('B', B[0], B[1]) + '}. הנקודה {' + P('C', C[0], C[1]) + '} נמצאת על הקטע {OA}.   א. מצאו את משוואת הישר {AB}.   ב. מצאו את משוואת הישר שעובר דרך {C} ומקביל ל־{AB}.   ג. הישר שמצאתם חותך את ציר ה־{y} בנקודה {D}. מצאו את {D}.   ד. הסבירו למה המשולש {OCD} דומה למשולש {OAB}. מה יחס הדמיון? פי כמה שטח {OAB} גדול משטח {OCD}?', r: 'calc',
+        return {tg: ['line', 'par', 'sim'], t: 'נתונות הנקודות {O(0, 0)}, {' + P('A', A[0], A[1]) + '}, {' + P('B', B[0], B[1]) + '}. הנקודה {' + P('C', C[0], C[1]) + '} נמצאת על הקטע {OA}.   א. מצאו את משוואת הישר {AB}.   ב. מצאו את משוואת הישר שעובר דרך {C} ומקביל ל־{AB}.   ג. הישר שמצאתם חותך את ציר ה־{y} בנקודה {D}. מצאו את {D}.   ד. הסבירו למה המשולש {OCD} דומה למשולש {OAB}. מה יחס הדמיון? פי כמה שטח {OAB} גדול משטח {OCD}?', r: 'calc',
           a: 'א. ' + slope(A[0], A[1], B[0], B[1]) + ' · הישר חותך את ציר ה־{y} ב־{B} ← {' + eq(-q, p, 3 * q) + '}   ב. מקביל ← אותו שיפוע: ' + thru(-q, p, C[0], 0) + '   ג. {' + P('D', 0, j * q) + '}   ד. {∠O} משותפת, {∠OCD = ∠OAB} (זוויות מתאימות, {CD ∥ AB}) ← דומים (ז.ז). {[OA/OC] = [' + Math.abs(3 * p) + '/' + Math.abs(j * p) + '] = ' + fr(3, j) + '} – יחס הדמיון · השטח גדול פי ' + (j === 1 ? '{3² = 9}' : '{([3/2])² = [9/4]}'),
           d: pl([['O', 0, 0], ['A', A[0], A[1]], ['B', B[0], B[1]], ['C', C[0], C[1]], ['D', D[0], D[1]]], {poly: [['O', 'A', 'B']], segs: [['C', 'D']]})}; },
       () => { const [a0, b0] = pick(r, [[3, 4], [4, 3]]), a = a0 * sg(r), b = b0 * sg(r), S1 = 2 * Math.abs(a * b);
-        return {t: 'נתונות הנקודות {' + P('A', 2 * a, 0) + '} ו־{' + P('B', 0, 2 * b) + '}, ו־{O} ראשית הצירים.   א. מצאו את משוואת הישר {AB}.   ב. מצאו את {M} – אמצע הקטע {AB}.   ג. חשבו את {AB} ואת {OM}. מה גיליתם?   ד. דרך {M} עובר ישר המקביל לציר ה־{x}, והוא חותך את ציר ה־{y} בנקודה {N}. כתבו את משוואת הישר ומצאו את {N}.   ה. הסבירו למה המשולש {BNM} דומה למשולש {BOA}, וחשבו את השטח של כל אחד מהם.', r: 'calc',
+        return {tg: ['line', 'mid', 'dist', 'sim', 'area'], t: 'נתונות הנקודות {' + P('A', 2 * a, 0) + '} ו־{' + P('B', 0, 2 * b) + '}, ו־{O} ראשית הצירים.   א. מצאו את משוואת הישר {AB}.   ב. מצאו את {M} – אמצע הקטע {AB}.   ג. חשבו את {AB} ואת {OM}. מה גיליתם?   ד. דרך {M} עובר ישר המקביל לציר ה־{x}, והוא חותך את ציר ה־{y} בנקודה {N}. כתבו את משוואת הישר ומצאו את {N}.   ה. הסבירו למה המשולש {BNM} דומה למשולש {BOA}, וחשבו את השטח של כל אחד מהם.', r: 'calc',
           a: 'א. ' + slope(2 * a, 0, 0, 2 * b) + ' · הישר חותך את ציר ה־{y} ב־{B} ← {' + eq(-b, a, 2 * b) + '}   ב. ' + midTxt('M', 2 * a, 0, 0, 2 * b) + '   ג. ' + dist('A', 'B', 2 * a, 0, 0, 2 * b).txt + '   ' + dist('O', 'M', 0, 0, a, b).txt + ' ← {OM = [1/2]AB} (התיכון ליתר במשולש ישר זווית שווה לחצי היתר)   ד. {y = ' + b + '} ← {' + P('N', 0, b) + '}   ה. {∠B} משותפת, {∠BNM = ∠BOA = 90°} ← דומים (ז.ז), {k = [BO/BN] = [' + Math.abs(2 * b) + '/' + Math.abs(b) + '] = 2} · שטח {BOA}: {S = [' + Math.abs(2 * a) + ' · ' + Math.abs(2 * b) + '/2] = ' + S1 + '} יח״ר · שטח {BNM}: {S = [' + S1 + '/2²] = ' + S1 / 4 + '} יח״ר',
           d: pl([['O', 0, 0], ['A', 2 * a, 0], ['B', 0, 2 * b], ['M', a, b], ['N', 0, b]], {poly: [['O', 'A', 'B']], segs: [['M', 'N'], ['O', 'M']]})}; },
     ],
     4: [
       () => { const m1 = pick(r, [1, 2]), m2 = pick(r, [-m1, -1, -2]), pr = m1 * -m2, py = pr * (pr === 1 ? pick(r, [2, 3, 4]) : pr === 2 ? pick(r, [1, 2]) : 1), px = ri(r, -1, 2), a1 = px - py / m1, a2 = px - py / m2, b1 = py - m1 * px, b2 = py - m2 * px, S = Math.abs(a2 - a1) * py / 2;
         const dA = dist('P', 'A', px, py, a1, 0), dB = dist('P', 'B', px, py, a2, 0);
-        return {t: 'ישר {I}: {' + eq(m1, 1, b1) + '}, ישר {II}: {' + eq(m2, 1, b2) + '}. הישרים נפגשים בנקודה {P}, וחותכים את ציר ה־{x} בנקודות {A} (ישר {I}) ו־{B} (ישר {II}).   א. מצאו את {P}, {A} ו־{B}.   ב. חשבו את שטח המשולש {PAB}.   ג. האם המשולש {PAB} שווה שוקיים? נמקו בעזרת חישוב.', r: 'calc',
+        return {tg: ['meet', 'area', 'dist'], t: 'ישר {I}: {' + eq(m1, 1, b1) + '}, ישר {II}: {' + eq(m2, 1, b2) + '}. הישרים נפגשים בנקודה {P}, וחותכים את ציר ה־{x} בנקודות {A} (ישר {I}) ו־{B} (ישר {II}).   א. מצאו את {P}, {A} ו־{B}.   ב. חשבו את שטח המשולש {PAB}.   ג. האם המשולש {PAB} שווה שוקיים? נמקו בעזרת חישוב.', r: 'calc',
           a: 'א. ' + meet(m1, b1, m2, b2) + '   ' + xcut(m1, b1).replace(/\{\(([^)]*)\)\}$/, '{A($1)}') + '   ' + xcut(m2, b2).replace(/\{\(([^)]*)\)\}$/, '{B($1)}') + '   ב. {S = [' + Math.abs(a2 - a1) + ' · ' + py + '/2] = ' + N(S) + '} יח״ר   ג. ' + dA.txt + '   ' + dB.txt + ' ← ' + (dA.s === dB.s ? 'כן, {PA = PB}.' : 'לא, {PA ≠ PB}.'),
           d: pl([['P', px, py], ['A', a1, 0], ['B', a2, 0]], {lines: [{m: m1, b: b1, n: 'I'}, {m: m2, b: b2, n: 'II'}]})}; },
       () => { for (;;) { const A = [ri(r, -4, -1), ri(r, -4, -1)], m1 = nz(r, -1, 2), m2 = pick(r, [2, 3, -2]), vx = ri(r, 2, 4), wx = ri(r, 1, 2);
           if (m1 === m2) continue; const B = [A[0] + vx, A[1] + m1 * vx], C = [B[0] + wx, B[1] + m2 * wx], D = [A[0] + wx, A[1] + m2 * wx];
           if (Math.abs(C[1]) > 9 || Math.abs(D[1]) > 9) continue; const bC = C[1] - m1 * C[0], bA = A[1] - m2 * A[0];
-          return {t: 'במקבילית {ABCD} נתונים שלושה קדקודים: {' + P('A', A[0], A[1]) + '}, {' + P('B', B[0], B[1]) + '}, {' + P('C', C[0], C[1]) + '}.   א. מצאו את משוואת הישר שעליו נמצאת הצלע {DC} (מקבילה ל־{AB}).   ב. מצאו את משוואת הישר שעליו נמצאת הצלע {AD} (מקבילה ל־{BC}).   ג. מצאו את הקדקוד {D}.', r: 'calc',
+          return {tg: ['line', 'par', 'meet'], t: 'במקבילית {ABCD} נתונים שלושה קדקודים: {' + P('A', A[0], A[1]) + '}, {' + P('B', B[0], B[1]) + '}, {' + P('C', C[0], C[1]) + '}.   א. מצאו את משוואת הישר שעליו נמצאת הצלע {DC} (מקבילה ל־{AB}).   ב. מצאו את משוואת הישר שעליו נמצאת הצלע {AD} (מקבילה ל־{BC}).   ג. מצאו את הקדקוד {D}.', r: 'calc',
             a: 'א. ' + slope(A[0], A[1], B[0], B[1]) + ' ← ' + thru(m1, 1, C[0], C[1]) + '   ב. ' + slope(B[0], B[1], C[0], C[1]) + ' ← ' + thru(m2, 1, A[0], A[1]) + '   ג. {D} = מפגש הישרים: ' + meet(m1, bC, m2, bA, 'D'),
             d: pl([['A', A[0], A[1]], ['B', B[0], B[1]], ['C', C[0], C[1]]], {segs: [['A', 'B'], ['B', 'C']]})}; } },
       () => { const a = pick(r, [4, 6, 8]) * sg(r), b = pick(r, [4, 6, 8]) * sg(r), m = fr(-b, a), M = [a / 2, b / 2];
-        return {t: 'הישר {' + eq(-b, a, b) + '} חותך את ציר ה־{x} בנקודה {A} ואת ציר ה־{y} בנקודה {B}. {O} ראשית הצירים, ו־{M} אמצע הקטע {AB}.   א. מצאו את {A}, {B} ו־{M}.   ב. הראו בחישוב ש־{OM = AM}.   ג. חשבו את שטח המשולש {AOB}.', r: 'why',
+        return {tg: ['mid', 'dist', 'area'], t: 'הישר {' + eq(-b, a, b) + '} חותך את ציר ה־{x} בנקודה {A} ואת ציר ה־{y} בנקודה {B}. {O} ראשית הצירים, ו־{M} אמצע הקטע {AB}.   א. מצאו את {A}, {B} ו־{M}.   ב. הראו בחישוב ש־{OM = AM}.   ג. חשבו את שטח המשולש {AOB}.', r: 'why',
           a: 'א. {A(' + a + ', 0)}, {B(0, ' + b + ')}, ' + midTxt('M', a, 0, 0, b) + '   ב. ' + dist('O', 'M', 0, 0, M[0], M[1]).txt + '   ' + dist('A', 'M', a, 0, M[0], M[1]).txt + ' ← שווים (התיכון ליתר במשולש ישר זווית שווה לחצי היתר).   ג. {S = [' + Math.abs(a) + ' · ' + Math.abs(b) + '/2] = ' + Math.abs(a * b) / 2 + '} יח״ר',
           d: pl([['A', a, 0], ['B', 0, b], ['M', M[0], M[1]], ['O', 0, 0]], {segs: [['A', 'B'], ['O', 'M']]})}; },
       () => { const o = (() => { for (;;) { const px = ri(r, -2, 3), py = ri(r, 1, 5); let m1, m2; do { m1 = nz(r, -2, 2); m2 = nz(r, -2, 2); } while (m1 === m2); return {px, py, m1, m2, b1: py - m1 * px, b2: py - m2 * px}; } })();
         const c = o.py + pick(r, [2, 4]);
-        return {t: 'ישר {I}: {' + eq(o.m1, 1, o.b1) + '}, ישר {II}: {' + eq(o.m2, 1, o.b2) + '}, ישר {III}: {y = ' + c + '}.   א. מצאו את נקודת המפגש {P} של ישרים {I} ו־{II}.   ב. מצאו את נקודות המפגש {Q} ו־{R} של ישר {III} עם ישרים {I} ו־{II}.   ג. חשבו את שטח המשולש {PQR}.', r: 'calc',
+        return {tg: ['meet', 'area'], t: 'ישר {I}: {' + eq(o.m1, 1, o.b1) + '}, ישר {II}: {' + eq(o.m2, 1, o.b2) + '}, ישר {III}: {y = ' + c + '}.   א. מצאו את נקודת המפגש {P} של ישרים {I} ו־{II}.   ב. מצאו את נקודות המפגש {Q} ו־{R} של ישר {III} עם ישרים {I} ו־{II}.   ג. חשבו את שטח המשולש {PQR}.', r: 'calc',
           a: (() => { const qx = (c - o.b1) / o.m1, rx = (c - o.b2) / o.m2, base = Math.abs(qx - rx), h = c - o.py;
             return 'א. ' + meet(o.m1, o.b1, o.m2, o.b2) + '   ב. {' + c + ' = ' + rhs(o.m1, o.b1) + '} ← {' + P('Q', qx, c) + '}   {' + c + ' = ' + rhs(o.m2, o.b2) + '} ← {' + P('R', rx, c) + '}   ג. בסיס {QR = ' + N(base) + '}, גובה {' + h + '}: {S = [' + N(base) + ' · ' + h + '/2] = ' + N(base * h / 2) + '} יח״ר'; })()}; },
       // ── שאלות משולבות עם דמיון ──
       () => { for (;;) { const [q0, p] = pick(r, [[3, 4], [4, 3]]), q = q0 * sg(r), s = -Math.sign(q) * ri(r, 1, 3); if (p === 3 && Math.abs(s - q) % 2) continue;
           const A = [0, 2 * p], B = [2 * q, 0], C = [2 * s, 0], D = [s, p], E = [q + s, 0], BC = Math.abs(2 * s - 2 * q), S = BC * p;
-          return {t: 'נתון המשולש {ABC}: {' + P('A', A[0], A[1]) + '}, {' + P('B', B[0], B[1]) + '}, {' + P('C', C[0], C[1]) + '}.   א. מצאו את {D} – אמצע {AC}, ואת {E} – אמצע {BC}.   ב. הראו בעזרת שיפועים ש־{DE ∥ AB}.   ג. חשבו את {AB} ואת {DE}. מה הקשר ביניהם?   ד. הסבירו למה המשולש {CDE} דומה למשולש {CAB}. מה יחס הדמיון?   ה. חשבו את שטח המשולש {ABC} ואת שטח המשולש {CDE}.', r: 'calc',
+          return {tg: ['mid', 'par', 'dist', 'sim', 'area'], t: 'נתון המשולש {ABC}: {' + P('A', A[0], A[1]) + '}, {' + P('B', B[0], B[1]) + '}, {' + P('C', C[0], C[1]) + '}.   א. מצאו את {D} – אמצע {AC}, ואת {E} – אמצע {BC}.   ב. הראו בעזרת שיפועים ש־{DE ∥ AB}.   ג. חשבו את {AB} ואת {DE}. מה הקשר ביניהם?   ד. הסבירו למה המשולש {CDE} דומה למשולש {CAB}. מה יחס הדמיון?   ה. חשבו את שטח המשולש {ABC} ואת שטח המשולש {CDE}.', r: 'calc',
             a: 'א. ' + midTxt('D', A[0], A[1], C[0], C[1]) + '   ' + midTxt('E', B[0], B[1], C[0], C[1]) + '   ב. {DE}: ' + slope(D[0], D[1], E[0], E[1]) + '   {AB}: ' + slope(A[0], A[1], B[0], B[1]) + ' ← שיפועים שווים ← {DE ∥ AB}   ג. ' + dist('A', 'B', A[0], A[1], B[0], B[1]).txt + '   ' + dist('D', 'E', D[0], D[1], E[0], E[1]).txt + ' ← {DE = [1/2]AB} (קטע אמצעים)   ד. {∠C} משותפת, {∠CDE = ∠CAB} (זוויות מתאימות, {DE ∥ AB}) ← דומים (ז.ז). {k = [CA/CD] = 2}   ה. הבסיס {BC = ' + BC + '} על ציר ה־{x}, הגובה מ־{A} הוא {' + 2 * p + '}: {S = [' + BC + ' · ' + 2 * p + '/2] = ' + S + '} יח״ר · שטח {CDE}: {[' + S + '/2²] = ' + S / 4 + '} יח״ר',
             d: pl([['A', A[0], A[1]], ['B', B[0], B[1]], ['C', C[0], C[1]], ['D', D[0], D[1]], ['E', E[0], E[1]]], {poly: [['A', 'B', 'C']], segs: [['D', 'E']]})}; } },
       () => { for (;;) { const k = 2, v = pick(r, [[3, 4], [4, 3], [3, -4], [-4, 3], [4, -3], [-3, 4]]), a = pick(r, [[3, 0], [-3, 0], [0, 3], [0, -3], [4, 0], [0, -4], [-4, 0], [0, 4]]), b = [a[0] + v[0], a[1] + v[1]];
           if (Math.abs(a[0] * b[1] - a[1] * b[0]) < 9) continue; const E = [ri(r, -1, 1), ri(r, -1, 1)];
           const A = [E[0] + a[0], E[1] + a[1]], B = [E[0] + b[0], E[1] + b[1]], C = [E[0] - k * a[0], E[1] - k * a[1]], D = [E[0] - k * b[0], E[1] - k * b[1]];
           if ([A, B, C, D].some(p => Math.abs(p[0]) > 10 || Math.abs(p[1]) > 10)) continue; const S = pick(r, [3, 4, 5, 6]), aL = Math.hypot(a[0], a[1]);
-          return {t: 'במרובע {ABCD}: {' + P('A', A[0], A[1]) + '}, {' + P('B', B[0], B[1]) + '}, {' + P('C', C[0], C[1]) + '}, {' + P('D', D[0], D[1]) + '}. האלכסונים {AC} ו־{BD} נפגשים בנקודה {' + P('E', E[0], E[1]) + '}.   א. הראו בעזרת שיפועים ש־{AB ∥ DC}.   ב. חשבו את {AB} ואת {DC}. פי כמה {DC} ארוך מ־{AB}?   ג. הסבירו למה המשולש {ABE} דומה למשולש {CDE}.   ד. חשבו את {AE} ואת {EC}, ובדקו שהיחס ביניהם שווה ליחס הדמיון.   ה. שטח המשולש {ABE} הוא {' + S + '} יח״ר. מה שטח המשולש {CDE}?', r: 'calc',
+          return {tg: ['par', 'dist', 'sim', 'area'], t: 'במרובע {ABCD}: {' + P('A', A[0], A[1]) + '}, {' + P('B', B[0], B[1]) + '}, {' + P('C', C[0], C[1]) + '}, {' + P('D', D[0], D[1]) + '}. האלכסונים {AC} ו־{BD} נפגשים בנקודה {' + P('E', E[0], E[1]) + '}.   א. הראו בעזרת שיפועים ש־{AB ∥ DC}.   ב. חשבו את {AB} ואת {DC}. פי כמה {DC} ארוך מ־{AB}?   ג. הסבירו למה המשולש {ABE} דומה למשולש {CDE}.   ד. חשבו את {AE} ואת {EC}, ובדקו שהיחס ביניהם שווה ליחס הדמיון.   ה. שטח המשולש {ABE} הוא {' + S + '} יח״ר. מה שטח המשולש {CDE}?', r: 'calc',
             a: 'א. {AB}: ' + slope(A[0], A[1], B[0], B[1]) + '   {DC}: ' + slope(D[0], D[1], C[0], C[1]) + ' ← שווים ← {AB ∥ DC} (המרובע טרפז)   ב. ' + dist('A', 'B', A[0], A[1], B[0], B[1]).txt + '   ' + dist('D', 'C', D[0], D[1], C[0], C[1]).txt + ' ← פי {2}   ג. {∠AEB = ∠CED} (זוויות קודקודיות), {∠BAE = ∠DCE} (זוויות מתחלפות, {AB ∥ DC}) ← דומים (ז.ז), {k = [DC/AB] = 2}   ד. ' + dist('A', 'E', A[0], A[1], E[0], E[1]).txt + '   ' + dist('E', 'C', E[0], E[1], C[0], C[1]).txt + ' ← {[EC/AE] = [' + 2 * aL + '/' + aL + '] = 2} ✓   ה. יחס השטחים {k² = 4}: {' + S + ' · 4 = ' + 4 * S + '} יח״ר',
             d: pl([['A', A[0], A[1]], ['B', B[0], B[1]], ['C', C[0], C[1]], ['D', D[0], D[1]], ['E', E[0], E[1]]], {poly: [['A', 'B', 'C', 'D']], segs: [['A', 'C'], ['B', 'D']]})}; } },
       () => { const [s, h] = pick(r, [[4, 3], [3, 4]]), k = pick(r, [2, 3]), T = k * s, H = k * h, [nm, v1, v2] = pick(r, [['אביב', 'מודד', 'אמר'], ['נועה', 'מודדת', 'אמרה'], ['עידן', 'מודד', 'אמר'], ['מאיה', 'מודדת', 'אמרה']]);
-        return {t: nm + ' ' + v1 + ' גובה של עץ בעזרת צל. בשרטוט (יחידה = {1} מטר) הקרקע היא ציר ה־{x}. מקל באורך {' + h + '} מטר עומד בנקודה {S(' + s + ', 0)}, והעץ עומד בנקודה {T(' + T + ', 0)}. קצה הצל של שניהם נופל באותה נקודה {O(0, 0)}, ולכן קרן השמש היא ישר שעובר דרך {O}, דרך ראש המקל {M(' + s + ', ' + h + ')} ודרך ראש העץ {R}.   א. מצאו את משוואת קרן השמש (הישר {OM}).   ב. מצאו את {R}. מה גובה העץ?   ג. חשבו את המרחקים {OM} ו־{OR}.   ד. הסבירו למה המשולש {OSM} דומה למשולש {OTR}. מה יחס הדמיון?   ה. ' + nm + ' ' + v2 + ': "הצל של העץ ארוך פי {' + k + '} מהצל של המקל, ולכן גם העץ גבוה פי {' + k + '} מהמקל". האם זה נכון? נמקו.', r: 'why', lit: 1,
+        return {tg: ['line', 'dist', 'sim'], t: nm + ' ' + v1 + ' גובה של עץ בעזרת צל. בשרטוט (יחידה = {1} מטר) הקרקע היא ציר ה־{x}. מקל באורך {' + h + '} מטר עומד בנקודה {S(' + s + ', 0)}, והעץ עומד בנקודה {T(' + T + ', 0)}. קצה הצל של שניהם נופל באותה נקודה {O(0, 0)}, ולכן קרן השמש היא ישר שעובר דרך {O}, דרך ראש המקל {M(' + s + ', ' + h + ')} ודרך ראש העץ {R}.   א. מצאו את משוואת קרן השמש (הישר {OM}).   ב. מצאו את {R}. מה גובה העץ?   ג. חשבו את המרחקים {OM} ו־{OR}.   ד. הסבירו למה המשולש {OSM} דומה למשולש {OTR}. מה יחס הדמיון?   ה. ' + nm + ' ' + v2 + ': "הצל של העץ ארוך פי {' + k + '} מהצל של המקל, ולכן גם העץ גבוה פי {' + k + '} מהמקל". האם זה נכון? נמקו.', r: 'why', lit: 1,
           a: 'א. ' + slope(0, 0, s, h) + ' ← {' + eq(h, s, 0) + '}   ב. {y = ' + fr(h, s) + ' · ' + T + ' = ' + H + '} ← {R(' + T + ', ' + H + ')}, גובה העץ {' + H + '} מטר   ג. ' + dist('O', 'M', 0, 0, s, h).txt + '   ' + dist('O', 'R', 0, 0, T, H).txt + '   ד. {∠O} משותפת, {∠OSM = ∠OTR = 90°} ← דומים (ז.ז), {k = [OT/OS] = [' + T + '/' + s + '] = ' + k + '}   ה. נכון: במשולשים דומים כל הצלעות המתאימות באותו יחס, ולכן {TR = ' + k + ' · ' + h + ' = ' + H + '} מטר.',
           d: pl([['O', 0, 0], ['S', s, 0], ['M', s, h], ['T', T, 0], ['R', T, H]], {segs: [['S', 'M'], ['T', 'R'], ['O', 'R']]})}; },
     ],
@@ -2093,11 +2108,11 @@ const MOT=['אם אתם מאמינים בעצמכם – שאתם יכולים ל
 const HEB='אבגדהוזחט';
 
 // ---------- מצב ----------
-const DEF={sn:10,st:'all',len:1,g:'ז',k:'exam',t:[],n:8,min:45,lv:'mix',cls:'',yr:'תשפ״ז',two:true,calc:true,key:true};
+const DEF={sb:[],sn:10,st:'all',len:1,g:'ז',k:'exam',t:[],n:8,min:45,lv:'mix',cls:'',yr:'תשפ״ז',two:true,calc:true,key:true};
 let S=Object.assign({},DEF);
 try{Object.assign(S,JSON.parse(localStorage.getItem('roni_exam_gen2')||'{}'))}catch(e){}
 /* קישור ישיר: ?g=ז&k=ws&t=z7_abs,z7_addsub&lv=weak (למשל לכפתור 'מילוי מקום' בעמוד הצוות) */
-let LOCK='';try{const Q=new URLSearchParams(location.search);if(Q.get('g'))S.g=Q.get('g');if(Q.get('only')&&Q.get('g'))LOCK=Q.get('g');if(Q.get('k'))S.k=Q.get('k');if(Q.get('lv'))S.lv=Q.get('lv');if(Q.get('st'))S.st=Q.get('st');if(Q.get('len')){S.len=+Q.get('len')===2?2:1;S.sn=S.len===2?20:10}['two','calc','key'].forEach(k=>{if(Q.get(k)!==null)S[k]=Q.get(k)==='1'});if(Q.get('min'))S.min=+Q.get('min')||S.min;if(Q.get('cls')!==null)S.cls=Q.get('cls');if(Q.get('yr'))S.yr=Q.get('yr');if(Q.get('sn'))S.sn=Math.max(4,Math.min(30,+Q.get('sn')||10));if(Q.get('n'))S.n=Math.max(1,+Q.get('n')||S.n);if(Q.get('t'))S.t=Q.get('t').split(',');else if(Q.get('g'))S.t=[];}catch(e){}
+let LOCK='';try{const Q=new URLSearchParams(location.search);if(Q.get('g'))S.g=Q.get('g');if(Q.get('only')&&Q.get('g'))LOCK=Q.get('g');if(Q.get('k'))S.k=Q.get('k');if(Q.get('lv'))S.lv=Q.get('lv');if(Q.get('st'))S.st=Q.get('st');if(Q.get('len')){S.len=+Q.get('len')===2?2:1;S.sn=S.len===2?20:10}['two','calc','key'].forEach(k=>{if(Q.get(k)!==null)S[k]=Q.get(k)==='1'});if(Q.get('min'))S.min=+Q.get('min')||S.min;if(Q.get('cls')!==null)S.cls=Q.get('cls');if(Q.get('yr'))S.yr=Q.get('yr');if(Q.get('sn'))S.sn=Math.max(4,Math.min(30,+Q.get('sn')||10));if(Q.get('n'))S.n=Math.max(1,+Q.get('n')||S.n);if(Q.get('sb')!==null)S.sb=Q.get('sb')?Q.get('sb').split(','):[];if(Q.get('t'))S.t=Q.get('t').split(',');else if(Q.get('g'))S.t=[];}catch(e){}
 let seed=(Date.now()%100000)+1;
 const save=()=>{try{localStorage.setItem('roni_exam_gen2',JSON.stringify(S))}catch(e){}};
 // רמת הכיתה: כמה שאלות מכל רמת חשיבה (w = חלק יחסי, min = מינימום שאלות), ואיזו רמה מקבלת עודף כשחסרות שאלות
@@ -2243,7 +2258,7 @@ function subHTML(){
 
 // ---------- שליחת הדף ----------
 /* קישור שמכיל את כל ההגדרות ואת מספר ההגרלה (s): מי שפותח אותו מקבל בדיוק את אותו דף – אותן שאלות, אותם מספרים, אותו דף תשובות */
-function shareURL(){const P=new URLSearchParams({g:S.g,k:S.k,t:S.t.join(','),lv:S.lv,n:S.n,min:S.min,two:S.two?1:0,calc:S.calc?1:0,key:S.key?1:0,st:S.st,len:S.len,sn:S.sn,yr:S.yr,s:seed,go:1});
+function shareURL(){const P=new URLSearchParams({g:S.g,k:S.k,t:S.t.join(','),sb:(S.sb||[]).join(','),lv:S.lv,n:S.n,min:S.min,two:S.two?1:0,calc:S.calc?1:0,key:S.key?1:0,st:S.st,len:S.len,sn:S.sn,yr:S.yr,s:seed,go:1});
   if(S.cls)P.set('cls',S.cls);if(LOCK)P.set('only',1);return location.origin+location.pathname+'?'+P.toString()}
 function shareLink(){const u=shareURL(),what=S.k==='exam'?'מבחן':S.k==='sub'?'דף למילוי מקום':'דף עבודה',txt=what+' במתמטיקה · כיתה '+(S.cls||gname())+' – לחצו לפתיחה:';
   $('#shareout').innerHTML='<input readonly value="'+esc(u)+'"><p>✅ הקישור הועתק – הדביקי בוואטסאפ ושלחי. מי שפותח רואה בדיוק את אותו דף.</p>';
@@ -2270,6 +2285,8 @@ function ui(){
   $('#topics').innerHTML=STRANDS.filter(st=>all.some(x=>x.strand===st)).map(st=>'<div class="strand">'+st+'</div><div class="seg">'+
     all.filter(x=>x.strand===st).sort((x,y)=>x.order-y.order).map(x=>x.b?'<button class="chip'+(S.t.includes(x.b.id)?' on':'')+'" data-t="'+x.b.id+'">'+esc(x.b.topic)+'</button>':
       '<button class="chip soon" disabled title="מחכה לשאלות מהמודל">'+esc(x.soon.topic)+' (בקרוב)</button>').join('')+'</div>').join('')||'<span class="small">אין עדיין נושאים לכיתה הזו</span>';
+  {const sb=chosen().filter(b=>b.subs);S.sb=S.sb||[];$('#subrow').hidden=!sb.length;
+   $('#subs').innerHTML=sb.length?sb[0].subs.map(x=>'<button class="chip'+(S.sb.includes(x[0])?' on':'')+'" data-sb="'+x[0]+'">'+esc(x[1])+'</button>').join(''):'';}
   $('#nv').textContent=S.n;$('#minv').textContent=S.min;
   $('#nhint').textContent=S.k==='exam'?'במבחן כולו':'בכל נושא';
   $('#lvhint').textContent=(MODES[S.lv]||MODES.mix).n+': '+(MODES[S.lv]||MODES.mix).d;
@@ -2298,6 +2315,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||
   else if(b.dataset.lv){S.lv=b.dataset.lv;ui()}
   else if(b.dataset.st){S.st=b.dataset.st;ui()}
   else if(b.dataset.len){S.len=+b.dataset.len;S.sn=SUB_Q[S.len];ui()}
+  else if(b.dataset.sb){const id=b.dataset.sb;S.sb=(S.sb||[]).includes(id)?S.sb.filter(x=>x!==id):(S.sb||[]).concat(id);ui()}
   else if(b.dataset.t){const id=b.dataset.t;S.t=S.t.includes(id)?S.t.filter(x=>x!==id):S.t.concat(id);ui()}
   else if(b.dataset.f){const f=b.dataset.f,lim={n:[3,20],min:[15,120],sn:[4,30]}[f];S[f]=Math.max(lim[0],Math.min(lim[1],S[f]+ +b.dataset.d));ui()}
   else if(b.id==='go'&&!chosen().length){$('#msg').innerHTML='<div class="warn">סמני לפחות נושא אחד – לוחצים על שם הנושא, והוא נצבע בירוק כהה.</div>';$('#topics').scrollIntoView({behavior:'smooth',block:'center'})}
