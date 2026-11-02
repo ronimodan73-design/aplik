@@ -39,7 +39,7 @@ function plane(d){
   const P={};(d.pts||[]).forEach(p=>P[p[0]]=[p[1],p[2]]);
   /* ישרים שלמים בקנה מידה: lines:[{m,b,n}] או {v:c} לישר אנכי x=c. נחתכים בגבולות המערכת.
      n = שם הישר; התווית מחפשת מקום פנוי לאורך הישר (רחוק מהצירים ומתוויות אחרות), עם רקע לבן */
-  const used=[],segOf=L=>{const c=[],e9=1e-9,add=(x,y)=>{if(x>=x0-e9&&x<=x1+e9&&y>=y0-e9&&y<=y1+e9&&!c.some(p=>Math.abs(p[0]-x)<1e-6&&Math.abs(p[1]-y)<1e-6))c.push([x,y])};
+  const used=(d.pts||[]).map(p=>[X(p[1]),Y(p[2])]),segOf=L=>{const c=[],e9=1e-9,add=(x,y)=>{if(x>=x0-e9&&x<=x1+e9&&y>=y0-e9&&y<=y1+e9&&!c.some(p=>Math.abs(p[0]-x)<1e-6&&Math.abs(p[1]-y)<1e-6))c.push([x,y])};
       if(L.v!==undefined){add(L.v,y0);add(L.v,y1)}else{[x0,x1].forEach(x=>add(x,L.m*x+L.b));if(L.m)[y0,y1].forEach(y=>add((y-L.b)/L.m,y))}
       if(c.length<2)return null;c.sort((p,q)=>p[0]-q[0]||p[1]-q[1]);return[X(c[0][0]),Y(c[0][1]),X(c[c.length-1][0]),Y(c[c.length-1][1])]},
     SEG=(d.lines||[]).map(segOf),dSeg=(px,py,g)=>{const[ax,ay,bx,by]=g,vx=bx-ax,vy=by-ay,t=Math.max(0,Math.min(1,((px-ax)*vx+(py-ay)*vy)/(vx*vx+vy*vy||1)));return Math.hypot(px-ax-vx*t,py-ay-vy*t)};
