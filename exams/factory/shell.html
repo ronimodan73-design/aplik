@@ -176,6 +176,8 @@ const HEB='אבגדהוזחט';
 const DEF={g:'ז',k:'exam',t:[],n:8,min:45,lv:'mix',cls:'',yr:'תשפ״ז',two:true,calc:true,key:true};
 let S=Object.assign({},DEF);
 try{Object.assign(S,JSON.parse(localStorage.getItem('roni_exam_gen2')||'{}'))}catch(e){}
+/* קישור ישיר: ?g=ז&k=ws&t=z7_abs,z7_addsub&lv=weak (למשל לכפתור 'מילוי מקום' בעמוד הצוות) */
+try{const Q=new URLSearchParams(location.search);if(Q.get('g'))S.g=Q.get('g');if(Q.get('k'))S.k=Q.get('k');if(Q.get('lv'))S.lv=Q.get('lv');if(Q.get('t'))S.t=Q.get('t').split(',');else if(Q.get('g'))S.t=[];}catch(e){}
 let seed=(Date.now()%100000)+1;
 const save=()=>{try{localStorage.setItem('roni_exam_gen2',JSON.stringify(S))}catch(e){}};
 // רמת הכיתה: כמה שאלות מכל רמת חשיבה (w = חלק יחסי, min = מינימום שאלות), ואיזו רמה מקבלת עודף כשחסרות שאלות
@@ -184,13 +186,13 @@ const MODES={weak:{n:'חלשים',w:[.35,.35,.3,0],min:[1,1,1,0],pref:[1,2,3,4],
   strong:{n:'חזקים',w:[.05,.2,.4,.35],min:[0,1,1,1],pref:[4,3,2,1],d:'בעיקר יישום וחשיבה מסדר גבוה'},
   mix:{n:'משולב',w:[.2,.25,.35,.2],min:[1,1,1,1],pref:[3,2,4,1],d:'כל רמות החשיבה, מהקל לקשה (כמו במשרד החינוך)'}};
 // נושאים שעוד אין להם מאגר (יופיעו כ"בקרוב" במקום שלהם ברשימה)
-const SOON=[{grade:'ז',strand:'מספרים ואלגברה',order:1,topic:'מספרים מכוונים, השוואה וערך מוחלט'},{grade:'ז',strand:'מספרים ואלגברה',order:2,topic:'חיבור וחיסור מספרים מכוונים'},{grade:'ז',strand:'מספרים ואלגברה',order:7,topic:'חזקות ושורש'}];
+const SOON=[{grade:'ז',strand:'מספרים ואלגברה',order:7,topic:'חזקות ושורש'}];
 const STRANDS=['מספרים ואלגברה','יחס ופרופורציה','גאומטריה'];
 
 // ---------- עזרים ----------
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-const it=s=>s.replace(/[a-z]/g,c=>'<i>'+c+'</i>').replace(/-/g,'−');
+const it=s=>s.replace(/&[a-z]+;|[a-z]/g,c=>c.length>1?c:'<i>'+c+'</i>').replace(/-/g,'−');
 const frac=(n,d)=>'<span class="fr"><span>'+it(n)+'</span><span>'+it(d)+'</span></span>';
 function mathIn(s){return s.replace(/\[([^\/\]]+)\/([^\]]+)\]|([^\[]+)/g,(m,n,d,o)=>o!==undefined?it(o):frac(n,d))}
 function F(t){return esc(t).replace(/\{([^{}]*)\}/g,(m,x)=>'<span class="m">'+mathIn(x)+'</span>').replace(/\[([^\/\]]+)\/([^\]]+)\]/g,(m,n,d)=>'<span class="m">'+frac(n,d)+'</span>')}
