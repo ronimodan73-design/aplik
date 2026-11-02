@@ -141,11 +141,14 @@ button,input,select{font:inherit}
   <div class="box">
     <div class="row"><span class="lab">1. כיתה</span><div class="seg" id="grades"></div></div>
     <div class="row top-al"><span class="lab">2. נושא</span><div id="topics"></div></div>
-    <div class="row"><span class="lab">3. מה מכינים?</span><div class="seg" id="kinds"><button data-k="exam">📝 מבחן</button><button data-k="ws">✏️ דף עבודה</button></div></div>
-    <div class="row"><span class="lab">4. מספר שאלות</span><div class="step"><button data-d="-1" data-f="n">−</button><b id="nv"></b><button data-d="1" data-f="n">+</button></div><span class="small" id="nhint"></span></div>
-    <div class="row"><span class="lab">5. רמת הכיתה</span><div class="seg" id="lvls">
+    <div class="row"><span class="lab">3. מה מכינים?</span><div class="seg" id="kinds"><button data-k="exam">📝 מבחן</button><button data-k="ws">✏️ דף עבודה</button><button data-k="sub">🧑‍🏫 מילוי מקום</button></div></div>
+    <div class="row sub-only"><span class="lab">4. סוג הדף</span><div class="seg" id="sts"><button data-st="base">💪 חיזוק</button><button data-st="all">✏️ תרגול רגיל</button><button data-st="enrich">🚀 העשרה</button></div></div>
+    <p class="small sub-only" id="sthint"></p>
+    <div class="row sub-only"><span class="lab">5. אורך</span><div class="seg" id="lens"><button data-len="1">שיעור אחד</button><button data-len="2">שיעור כפול (שעתיים)</button></div></div>
+    <div class="row nosub"><span class="lab">4. מספר שאלות</span><div class="step"><button data-d="-1" data-f="n">−</button><b id="nv"></b><button data-d="1" data-f="n">+</button></div><span class="small" id="nhint"></span></div>
+    <div class="row nosub"><span class="lab">5. רמת הכיתה</span><div class="seg" id="lvls">
       <button data-lv="weak">חלשים</button><button data-lv="mid">בינוניים</button><button data-lv="strong">חזקים</button><button data-lv="mix">משולב</button></div></div>
-    <p class="small" id="lvhint"></p>
+    <p class="small nosub" id="lvhint"></p>
     <details class="more"><summary>עוד אפשרויות (לא חובה)</summary>
       <div class="row"><span class="lab">שם הכיתה</span><input class="txt" id="cls" placeholder="למשל ז׳ 2"><input class="txt" id="yr" placeholder="שנה"></div>
       <div class="row exam-only"><span class="lab">זמן</span><div class="step"><button data-d="-5" data-f="min">−</button><b id="minv"></b><button data-d="5" data-f="min">+</button></div><span class="small">דקות</span></div>
@@ -179,11 +182,11 @@ const MOT=['אם אתם מאמינים בעצמכם – שאתם יכולים ל
 const HEB='אבגדהוזחט';
 
 // ---------- מצב ----------
-const DEF={g:'ז',k:'exam',t:[],n:8,min:45,lv:'mix',cls:'',yr:'תשפ״ז',two:true,calc:true,key:true};
+const DEF={st:'all',len:1,g:'ז',k:'exam',t:[],n:8,min:45,lv:'mix',cls:'',yr:'תשפ״ז',two:true,calc:true,key:true};
 let S=Object.assign({},DEF);
 try{Object.assign(S,JSON.parse(localStorage.getItem('roni_exam_gen2')||'{}'))}catch(e){}
 /* קישור ישיר: ?g=ז&k=ws&t=z7_abs,z7_addsub&lv=weak (למשל לכפתור 'מילוי מקום' בעמוד הצוות) */
-try{const Q=new URLSearchParams(location.search);if(Q.get('g'))S.g=Q.get('g');if(Q.get('k'))S.k=Q.get('k');if(Q.get('lv'))S.lv=Q.get('lv');if(Q.get('n'))S.n=Math.max(1,+Q.get('n')||S.n);if(Q.get('t'))S.t=Q.get('t').split(',');else if(Q.get('g'))S.t=[];}catch(e){}
+try{const Q=new URLSearchParams(location.search);if(Q.get('g'))S.g=Q.get('g');if(Q.get('k'))S.k=Q.get('k');if(Q.get('lv'))S.lv=Q.get('lv');if(Q.get('st'))S.st=Q.get('st');if(Q.get('len'))S.len=+Q.get('len')===2?2:1;if(Q.get('n'))S.n=Math.max(1,+Q.get('n')||S.n);if(Q.get('t'))S.t=Q.get('t').split(',');else if(Q.get('g'))S.t=[];}catch(e){}
 let seed=(Date.now()%100000)+1;
 const save=()=>{try{localStorage.setItem('roni_exam_gen2',JSON.stringify(S))}catch(e){}};
 // רמת הכיתה: כמה שאלות מכל רמת חשיבה (w = חלק יחסי, min = מינימום שאלות), ואיזו רמה מקבלת עודף כשחסרות שאלות
@@ -295,6 +298,34 @@ function wsHTML(){
     h+=sheet('תשובות למורה · דף עבודה',k)}
   return h}
 
+// ---------- מילוי מקום ----------
+/* דף אחד מוכן להדפסה למורה מחליפה: נושאים משולבים, סוג (חיזוק / רגיל / העשרה) ואורך (שיעור / שיעור כפול).
+   השאלות מתחלקות שווה בין הנושאים; בכל נושא – תיבת "השיטה" ושאלות מהקל לקשה. בסוף – דף תשובות. */
+const SUB={base:{n:'חיזוק',lv:[1,2],w:[.5,.5],d:'זיהוי והבנה (רמות 1–2): ביסוס וחזרה, לתלמידים שצריכים חיזוק'},
+  all:{n:'תרגול רגיל',lv:[1,2,3,4],w:[.2,.25,.35,.2],d:'כל 4 רמות החשיבה, מהקל לקשה'},
+  enrich:{n:'העשרה',lv:[3,4],w:[.45,.55],d:'יישום וחשיבה מסדר גבוה (רמות 3–4), כולל שאלות אוריינות מהחיים'}};
+const SUB_Q={1:10,2:20};let SUBNOTE='';
+function subHTML(){
+  const bs=chosen(),r=rng(seed),M=SUB[S.st]||SUB.all,total=SUB_Q[S.len===2?2:1];
+  // חלוקה שווה בין הנושאים, בלי לעבור את מה שיש במאגר; מה שחסר בנושא אחד עובר לנושאים האחרים. לכל נושא לפחות שאלה אחת
+  const cap=bs.map(b=>b.qs.filter(q=>M.lv.includes(q.lv)).length),per=bs.map(()=>0);let left=Math.max(total,bs.length);
+  while(left>0){let moved=false;for(let i=0;i<bs.length&&left>0;i++)if(per[i]<cap[i]){per[i]++;left--;moved=true}if(!moved)break}
+  let all='<div class="wsh"><h2>מילוי מקום · '+M.n+'</h2><div class="nm"><span>שם: <u></u></span><span>כיתה: <u style="width:28mm"></u></span><span>תאריך: <u style="width:30mm"></u></span></div></div>',ans=[],num=0;
+  bs.forEach((b,bi)=>{const avail=M.lv.map(L=>b.qs.filter(q=>q.lv===L).length);
+    // כמה מכל רמה: לפי המשקל, ואם ברמה אין מספיק – עוברים לרמה הסמוכה
+    let cnt=largest(per[bi],M.w);for(let i=0;i<cnt.length;i++)while(cnt[i]>avail[i]){cnt[i]--;const j=cnt.findIndex((c,k)=>c<avail[k]);if(j<0)break;cnt[j]++}
+    let body='<div style="break-inside:avoid"><div class="wsh tp"><h2>'+esc(b.topic)+'</h2></div><div class="rule"><b>השיטה</b>'+F(b.rule)+'</div></div>',a=[];
+    M.lv.forEach((L,i)=>{if(!cnt[i])return;let qs=shuffle(b.qs.filter(q=>q.lv===L),r);if(L===4)qs=qs.sort((x,y)=>(y.lit||0)-(x.lit||0));qs=qs.slice(0,cnt[i]);
+      body+='<div class="lvl">'+'★'.repeat(L)+' '+LV[L].n+' <small>· '+LV[L].d+'</small></div>';
+      qs.forEach(q=>{num++;a.push([num,q,L]);body+='<div class="q"><div class="qh"><span class="qn">'+num+'</span>'+MM(b,q)+'<div class="qt">'+F(q.t)+req(q)+'</div>'+D(q.d)+'<span class="st">'+'★'.repeat(L)+'</span></div>'+lines(WS_LINES[L])+'</div>'})});
+    all+=body;ans.push([b,a])});
+  let h=sheet('מילוי מקום · '+M.n+' · כיתה '+esc(S.cls||gname()),all);
+  if(S.key){let k='<div class="key"><h2>למורה המחליפה</h2><p>'+(S.len===2?'שיעור כפול':'שיעור אחד')+' · '+M.n+' · '+num+' שאלות. התלמידים עובדים לבד או בזוגות, מהשאלה הראשונה והלאה. בכל נושא יש תיבת "השיטה" – אפשר להתחיל בהקראה שלה. בסוף השיעור אוספים את הדפים, או בודקים יחד לפי התשובות שלמטה.</p></div>';
+    ans.forEach(([b,a])=>{k+='<div class="key"><h2>תשובות · '+esc(b.topic)+'</h2><table class="kt"><tr><th>שאלה</th><th>רמה</th><th>תשובה</th></tr>'+a.map(([n,q,L])=>'<tr><td>'+n+(isM(b,q)?' *':'')+'</td><td>'+LV[L].n+'</td><td>'+F(q.a)+'</td></tr>').join('')+'</table></div>'});
+    h+=sheet('תשובות · מילוי מקום',k)}
+  SUBNOTE=num<total?'בנושאים שבחרת יש במאגר '+num+' שאלות '+M.n+', ולכן בדף '+num+' שאלות. אפשר להוסיף עוד נושא.':bs.length>total?'בחרת '+bs.length+' נושאים, ולכן בדף '+num+' שאלות (שאלה מכל נושא) – יותר מהרגיל ל'+(S.len===2?'שיעור כפול':'שיעור אחד')+'. אפשר להוריד נושאים.':'';
+  return h}
+
 // כל "גיליון" הוא טבלה שהכותרת שלה (לוגו + שורת כותרת) חוזרת בראש כל עמוד מודפס
 function sheet(title,body){return'<div class="sheet"><table class="doc"><thead><tr><td><div class="rh"><img src="'+LOGO+'" alt=""><span>'+title+'</span></div></td></tr></thead><tbody><tr><td><div class="pg">'+body+'</div></td></tr></tbody></table></div>'}
 
@@ -303,6 +334,10 @@ function ui(){
   $('#grades').innerHTML=GRADES.map(x=>'<button data-g="'+x.g+'" class="'+(S.g===x.g?'on':'')+'">כיתה '+x.name+'</button>').join('');
   [...document.querySelectorAll('#kinds button')].forEach(b=>b.classList.toggle('on',b.dataset.k===S.k));
   [...document.querySelectorAll('#lvls button')].forEach(b=>b.classList.toggle('on',b.dataset.lv===S.lv));
+  [...document.querySelectorAll('#sts button')].forEach(b=>b.classList.toggle('on',b.dataset.st===S.st));
+  [...document.querySelectorAll('#lens button')].forEach(b=>b.classList.toggle('on',+b.dataset.len===S.len));
+  const sub=S.k==='sub';document.querySelectorAll('.sub-only').forEach(e=>e.style.display=sub?'':'none');document.querySelectorAll('.nosub').forEach(e=>e.style.display=sub?'none':'');
+  $('#sthint').textContent=(SUB[S.st]||SUB.all).d+' · '+(S.len===2?SUB_Q[2]:SUB_Q[1])+' שאלות בסך הכול, מחולקות בין הנושאים שבחרת.';
   const bs=banksOf(S.g);S.t=S.t.filter(id=>bs.some(b=>b.id===id));
   const all=bs.map(b=>({b,strand:b.strand,order:b.order})).concat(SOON.filter(x=>x.grade===S.g).map(x=>({soon:x,strand:x.strand,order:x.order})));
   $('#topics').innerHTML=STRANDS.filter(st=>all.some(x=>x.strand===st)).map(st=>'<div class="strand">'+st+'</div><div class="seg">'+
@@ -314,7 +349,7 @@ function ui(){
   document.querySelectorAll('.exam-only').forEach(e=>e.style.display=S.k==='exam'?'':'none');
   $('#cls').value=S.cls;$('#yr').value=S.yr;$('#two').checked=S.two;$('#calc').checked=S.calc;$('#key').checked=S.key;
   const ok=chosen().length>0;$('#go').disabled=!ok;
-  $('#go').textContent=ok?(S.k==='exam'?'✨ צרי מבחן':'✨ צרי דף עבודה'):'בחרי נושא כדי להמשיך';
+  $('#go').textContent=ok?(S.k==='exam'?'✨ צרי מבחן':S.k==='sub'?'✨ צרי דף למילוי מקום':'✨ צרי דף עבודה'):'בחרי נושא אחד או יותר כדי להמשיך';
   clearOut();save()}
 // כל שינוי בבחירות מוחק את התוצאה הקודמת: המחולל פועל רק כשלוחצים "צרי"
 function clearOut(){$('#out').innerHTML='';$('#done').hidden=true;$('#msg').innerHTML=''}
@@ -322,7 +357,7 @@ function render(){
   save();let msg='';
   if(!chosen().length){clearOut();return}
   regen();
-  if(S.k==='exam'){const E=buildExam();msg=E.note;$('#out').innerHTML=examHTML(E)}else $('#out').innerHTML=wsHTML();
+  if(S.k==='exam'){const E=buildExam();msg=E.note;$('#out').innerHTML=examHTML(E)}else if(S.k==='sub'){$('#out').innerHTML=subHTML();msg=SUBNOTE}else $('#out').innerHTML=wsHTML();
   $('#msg').innerHTML=msg?'<div class="warn">'+msg+'</div>':'';$('#done').hidden=false;fit()}
 /* מתאים את הדף לרוחב המסך. בטלפון innerWidth "מתנפח" אחרי שהדף נוצר, ולכן מודדים לפי רוחב המסך האמיתי */
 function fit(){const sh=document.querySelectorAll('.sheet');if(!sh.length)return;
@@ -334,6 +369,8 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||
   if(b.dataset.g){S.g=b.dataset.g;S.t=[];ui()}
   else if(b.dataset.k){S.k=b.dataset.k;ui()}
   else if(b.dataset.lv){S.lv=b.dataset.lv;ui()}
+  else if(b.dataset.st){S.st=b.dataset.st;ui()}
+  else if(b.dataset.len){S.len=+b.dataset.len;ui()}
   else if(b.dataset.t){const id=b.dataset.t;S.t=S.t.includes(id)?S.t.filter(x=>x!==id):S.t.concat(id);ui()}
   else if(b.dataset.f){const f=b.dataset.f,lim={n:[3,20],min:[15,120]}[f];S[f]=Math.max(lim[0],Math.min(lim[1],S[f]+ +b.dataset.d));ui()}
   else if(b.id==='go'||b.id==='again'){seed=Math.floor(Math.random()*1e9);render();if(b.id==='go')$('#done').scrollIntoView({behavior:'smooth'})}
