@@ -154,6 +154,7 @@ button,input,select{font:inherit}
     <div class="row sub-only"><span class="lab">4. סוג הדף</span><div class="seg" id="sts"><button data-st="base">💪 חיזוק</button><button data-st="all">✏️ תרגול רגיל</button><button data-st="enrich">🚀 העשרה</button></div></div>
     <p class="small sub-only" id="sthint"></p>
     <div class="row sub-only"><span class="lab">5. אורך</span><div class="seg" id="lens"><button data-len="1">שיעור אחד</button><button data-len="2">שיעור כפול (שעתיים)</button></div></div>
+    <div class="row sub-only"><span class="lab">6. מספר שאלות</span><div class="step"><button data-d="-1" data-f="sn">−</button><b id="snv"></b><button data-d="1" data-f="sn">+</button></div><span class="small">בדף כולו</span></div>
     <div class="row nosub"><span class="lab">4. מספר שאלות</span><div class="step"><button data-d="-1" data-f="n">−</button><b id="nv"></b><button data-d="1" data-f="n">+</button></div><span class="small" id="nhint"></span></div>
     <div class="row nosub"><span class="lab">5. רמת הכיתה</span><div class="seg" id="lvls">
       <button data-lv="weak">חלשים</button><button data-lv="mid">בינוניים</button><button data-lv="strong">חזקים</button><button data-lv="mix">משולב</button></div></div>
@@ -2047,11 +2048,11 @@ const MOT=['אם אתם מאמינים בעצמכם – שאתם יכולים ל
 const HEB='אבגדהוזחט';
 
 // ---------- מצב ----------
-const DEF={st:'all',len:1,g:'ז',k:'exam',t:[],n:8,min:45,lv:'mix',cls:'',yr:'תשפ״ז',two:true,calc:true,key:true};
+const DEF={sn:10,st:'all',len:1,g:'ז',k:'exam',t:[],n:8,min:45,lv:'mix',cls:'',yr:'תשפ״ז',two:true,calc:true,key:true};
 let S=Object.assign({},DEF);
 try{Object.assign(S,JSON.parse(localStorage.getItem('roni_exam_gen2')||'{}'))}catch(e){}
 /* קישור ישיר: ?g=ז&k=ws&t=z7_abs,z7_addsub&lv=weak (למשל לכפתור 'מילוי מקום' בעמוד הצוות) */
-try{const Q=new URLSearchParams(location.search);if(Q.get('g'))S.g=Q.get('g');if(Q.get('k'))S.k=Q.get('k');if(Q.get('lv'))S.lv=Q.get('lv');if(Q.get('st'))S.st=Q.get('st');if(Q.get('len'))S.len=+Q.get('len')===2?2:1;if(Q.get('n'))S.n=Math.max(1,+Q.get('n')||S.n);if(Q.get('t'))S.t=Q.get('t').split(',');else if(Q.get('g'))S.t=[];}catch(e){}
+try{const Q=new URLSearchParams(location.search);if(Q.get('g'))S.g=Q.get('g');if(Q.get('k'))S.k=Q.get('k');if(Q.get('lv'))S.lv=Q.get('lv');if(Q.get('st'))S.st=Q.get('st');if(Q.get('len')){S.len=+Q.get('len')===2?2:1;S.sn=S.len===2?20:10}if(Q.get('sn'))S.sn=Math.max(4,Math.min(30,+Q.get('sn')||10));if(Q.get('n'))S.n=Math.max(1,+Q.get('n')||S.n);if(Q.get('t'))S.t=Q.get('t').split(',');else if(Q.get('g'))S.t=[];}catch(e){}
 let seed=(Date.now()%100000)+1;
 const save=()=>{try{localStorage.setItem('roni_exam_gen2',JSON.stringify(S))}catch(e){}};
 // רמת הכיתה: כמה שאלות מכל רמת חשיבה (w = חלק יחסי, min = מינימום שאלות), ואיזו רמה מקבלת עודף כשחסרות שאלות
@@ -2171,7 +2172,7 @@ const SUB={base:{n:'חיזוק',lv:[1,2],w:[.5,.5],d:'זיהוי והבנה (ר�
   enrich:{n:'העשרה',lv:[3,4],w:[.45,.55],d:'יישום וחשיבה מסדר גבוה (רמות 3–4), כולל שאלות אוריינות מהחיים'}};
 const SUB_Q={1:10,2:20};let SUBNOTE='';
 function subHTML(){
-  const bs=chosen(),r=rng(seed),M=SUB[S.st]||SUB.all,total=SUB_Q[S.len===2?2:1];
+  const bs=chosen(),r=rng(seed),M=SUB[S.st]||SUB.all,total=S.sn||SUB_Q[S.len===2?2:1];
   // חלוקה שווה בין הנושאים, בלי לעבור את מה שיש במאגר; מה שחסר בנושא אחד עובר לנושאים האחרים. לכל נושא לפחות שאלה אחת
   const cap=bs.map(b=>b.qs.filter(q=>M.lv.includes(q.lv)).length),per=bs.map(()=>0);let left=Math.max(total,bs.length);
   while(left>0){let moved=false;for(let i=0;i<bs.length&&left>0;i++)if(per[i]<cap[i]){per[i]++;left--;moved=true}if(!moved)break}
@@ -2188,7 +2189,7 @@ function subHTML(){
   if(S.key){let k='<div class="key"><h2>למורה המחליפה</h2><p>'+(S.len===2?'שיעור כפול':'שיעור אחד')+' · '+M.n+' · '+num+' שאלות. התלמידים עובדים לבד או בזוגות, מהשאלה הראשונה והלאה. בכל נושא יש תיבת "השיטה" – אפשר להתחיל בהקראה שלה. בסוף השיעור אוספים את הדפים, או בודקים יחד לפי התשובות שלמטה.</p></div>';
     ans.forEach(([b,a])=>{k+='<div class="key"><h2>תשובות · '+esc(b.topic)+'</h2><table class="kt"><tr><th>שאלה</th><th>רמה</th><th>תשובה</th></tr>'+a.map(([n,q,L])=>'<tr><td>'+n+(isM(b,q)?' *':'')+'</td><td>'+LV[L].n+'</td><td>'+F(q.a)+'</td></tr>').join('')+'</table></div>'});
     h+=sheet('תשובות · מילוי מקום',k)}
-  SUBNOTE=num<total?'בנושאים שבחרת יש במאגר '+num+' שאלות '+M.n+', ולכן בדף '+num+' שאלות. אפשר להוסיף עוד נושא.':bs.length>total?'בחרת '+bs.length+' נושאים, ולכן בדף '+num+' שאלות (שאלה מכל נושא) – יותר מהרגיל ל'+(S.len===2?'שיעור כפול':'שיעור אחד')+'. אפשר להוריד נושאים.':'';
+  SUBNOTE=num<total?'בנושאים שבחרת יש במאגר '+num+' שאלות '+M.n+', ולכן בדף '+num+' שאלות. אפשר להוסיף עוד נושא.':bs.length>total?'בחרת '+bs.length+' נושאים, ולכן בדף '+num+' שאלות (שאלה אחת לפחות מכל נושא). אפשר להוריד נושאים.':'';
   return h}
 
 // כל "גיליון" הוא טבלה שהכותרת שלה (לוגו + שורת כותרת) חוזרת בראש כל עמוד מודפס
@@ -2202,7 +2203,7 @@ function ui(){
   [...document.querySelectorAll('#sts button')].forEach(b=>b.classList.toggle('on',b.dataset.st===S.st));
   [...document.querySelectorAll('#lens button')].forEach(b=>b.classList.toggle('on',+b.dataset.len===S.len));
   const sub=S.k==='sub';document.querySelectorAll('.sub-only').forEach(e=>e.style.display=sub?'':'none');document.querySelectorAll('.nosub').forEach(e=>e.style.display=sub?'none':'');
-  $('#sthint').textContent=(SUB[S.st]||SUB.all).d+' · '+(S.len===2?SUB_Q[2]:SUB_Q[1])+' שאלות בסך הכול, מחולקות בין הנושאים שבחרת.';
+  $('#sthint').textContent=(SUB[S.st]||SUB.all).d+' · השאלות מתחלקות בין הנושאים שבחרת.';$('#snv').textContent=S.sn;
   const bs=banksOf(S.g);S.t=S.t.filter(id=>bs.some(b=>b.id===id));
   const all=bs.map(b=>({b,strand:b.strand,order:b.order})).concat(SOON.filter(x=>x.grade===S.g).map(x=>({soon:x,strand:x.strand,order:x.order})));
   $('#topics').innerHTML=STRANDS.filter(st=>all.some(x=>x.strand===st)).map(st=>'<div class="strand">'+st+'</div><div class="seg">'+
@@ -2235,9 +2236,9 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||
   else if(b.dataset.k){S.k=b.dataset.k;ui()}
   else if(b.dataset.lv){S.lv=b.dataset.lv;ui()}
   else if(b.dataset.st){S.st=b.dataset.st;ui()}
-  else if(b.dataset.len){S.len=+b.dataset.len;ui()}
+  else if(b.dataset.len){S.len=+b.dataset.len;S.sn=SUB_Q[S.len];ui()}
   else if(b.dataset.t){const id=b.dataset.t;S.t=S.t.includes(id)?S.t.filter(x=>x!==id):S.t.concat(id);ui()}
-  else if(b.dataset.f){const f=b.dataset.f,lim={n:[3,20],min:[15,120]}[f];S[f]=Math.max(lim[0],Math.min(lim[1],S[f]+ +b.dataset.d));ui()}
+  else if(b.dataset.f){const f=b.dataset.f,lim={n:[3,20],min:[15,120],sn:[4,30]}[f];S[f]=Math.max(lim[0],Math.min(lim[1],S[f]+ +b.dataset.d));ui()}
   else if(b.id==='go'||b.id==='again'){seed=Math.floor(Math.random()*1e9);render();if(b.id==='go')$('#done').scrollIntoView({behavior:'smooth'})}
   else if(b.id==='print'){window.print()}});
 ['cls','yr'].forEach(id=>$('#'+id).addEventListener('input',e=>{S[id]=e.target.value;clearOut();save()}));
