@@ -145,11 +145,11 @@ select.ulsel{width:100%;box-sizing:border-box;font:inherit;font-size:15px;paddin
 </head>
 <body>
 <div class="panel noprint">
-  <div class="top"><img src="/*LOGO*/" alt="שחקים"><div><h1>מחולל מבחנים ודפי עבודה</h1><p>ערכה: רוני מודן · שחקים · לפי רמות החשיבה של משרד החינוך</p><p class="ver">עודכן: 3.11 · 07:40</p></div></div>
+  <div class="top"><img src="/*LOGO*/" alt="שחקים"><div><h1>מחולל מבחנים ודפי עבודה</h1><p>ערכה: רוני מודן · שחקים · לפי רמות החשיבה של משרד החינוך</p><p class="ver">עודכן: 3.11 · 07:30</p></div></div>
   <div class="box">
     <div class="row"><span class="lab">1. כיתה</span><div class="seg" id="grades"></div></div>
     <div class="row top-al nosub"><span class="lab">2. נושא</span><div id="topics"></div></div>
-    <div class="row top-al sub-only"><span class="lab">2. עד איזה נושא למדתם?</span><div style="flex:1 1 100%;min-width:0"><div class="small" style="margin:2px 0">🔢 במספרים למדנו עד:</div><select id="un" class="ulsel"></select><div class="small" style="margin:8px 0 2px">📐 בגאומטריה למדנו עד:</div><select id="ug" class="ulsel"></select><p class="small" id="ulhint"></p></div></div>
+    <div class="row top-al sub-only"><span class="lab">2. אילו נושאים? (אפשר כמה)</span><div style="flex:1 1 100%;min-width:0"><div id="subtopics"></div><p class="small" id="ulhint"></p></div></div>
     <div class="row top-al" id="subrow" hidden><span class="lab">🎓 שאלת בגרות – אילו נושאים ייכנסו לשאלה?</span><div><div class="seg" id="subs"></div><p class="small">לוחצים על "🎓 שאלת בגרות" למעלה, או ישר על הנושאים כאן. המחולל בונה שאלה אחת במבנה בגרות עם סעיף לכל נושא שסימנת. בלי סימון = שאלה מלאה עם כל הנושאים.</p></div></div>
     <div class="row"><span class="lab">3. מה מכינים?</span><div class="seg" id="kinds"><button data-k="exam">📝 מבחן</button><button data-k="ws">✏️ דף עבודה</button><button data-k="sub">🧑‍🏫 מילוי מקום</button></div></div>
     <div class="row sub-only"><span class="lab">4. סוג הדף</span><div class="seg" id="sts"><button data-st="base">💪 חיזוק</button><button data-st="all">✏️ תרגול רגיל</button><button data-st="enrich">🚀 העשרה</button></div></div>
@@ -201,7 +201,7 @@ const DEF={sb:[],sn:10,st:'all',len:1,g:'ז',k:'exam',t:[],n:8,min:45,lv:'mix',c
 let S=Object.assign({},DEF);
 try{Object.assign(S,JSON.parse(localStorage.getItem('roni_exam_gen2')||'{}'))}catch(e){}
 /* קישור ישיר: ?g=ז&k=ws&t=z7_abs,z7_addsub&lv=weak (למשל לכפתור 'מילוי מקום' בעמוד הצוות) */
-let LOCK='';try{const Q=new URLSearchParams(location.search);if(Q.get('g'))S.g=Q.get('g');if(Q.get('only')&&Q.get('g'))LOCK=Q.get('g');if(Q.get('k'))S.k=Q.get('k');if(Q.get('un')!==null)S.un=Q.get('un');if(Q.get('ug')!==null)S.ug=Q.get('ug');if(Q.get('lv'))S.lv=Q.get('lv');if(Q.get('st'))S.st=Q.get('st');if(Q.get('len')){S.len=+Q.get('len')===2?2:1;S.sn=S.len===2?20:10}['two','calc','key'].forEach(k=>{if(Q.get(k)!==null)S[k]=Q.get(k)==='1'});if(Q.get('min'))S.min=+Q.get('min')||S.min;if(Q.get('cls')!==null)S.cls=Q.get('cls');if(Q.get('yr'))S.yr=Q.get('yr');if(Q.get('sn'))S.sn=Math.max(4,Math.min(30,+Q.get('sn')||10));if(Q.get('n'))S.n=Math.max(1,+Q.get('n')||S.n);if(Q.get('sb')!==null)S.sb=Q.get('sb')?Q.get('sb').split(','):[];if(Q.get('t'))S.t=Q.get('t').split(',');else if(Q.get('g'))S.t=[];}catch(e){}
+let LOCK='';try{const Q=new URLSearchParams(location.search);if(Q.get('g'))S.g=Q.get('g');if(Q.get('only')&&Q.get('g'))LOCK=Q.get('g');if(Q.get('k'))S.k=Q.get('k');if(Q.get('tp')!==null)S.tp=Q.get('tp').split(',').filter(Boolean);if(Q.get('lv'))S.lv=Q.get('lv');if(Q.get('st'))S.st=Q.get('st');if(Q.get('len')){S.len=+Q.get('len')===2?2:1;S.sn=S.len===2?20:10}['two','calc','key'].forEach(k=>{if(Q.get(k)!==null)S[k]=Q.get(k)==='1'});if(Q.get('min'))S.min=+Q.get('min')||S.min;if(Q.get('cls')!==null)S.cls=Q.get('cls');if(Q.get('yr'))S.yr=Q.get('yr');if(Q.get('sn'))S.sn=Math.max(4,Math.min(30,+Q.get('sn')||10));if(Q.get('n'))S.n=Math.max(1,+Q.get('n')||S.n);if(Q.get('sb')!==null)S.sb=Q.get('sb')?Q.get('sb').split(','):[];if(Q.get('t'))S.t=Q.get('t').split(',');else if(Q.get('g'))S.t=[];}catch(e){}
 let seed=(Date.now()%100000)+1;
 const save=()=>{try{localStorage.setItem('roni_exam_gen2',JSON.stringify(S))}catch(e){}};
 // רמת הכיתה: כמה שאלות מכל רמת חשיבה (w = חלק יחסי, min = מינימום שאלות), ואיזו רמה מקבלת עודף כשחסרות שאלות
@@ -227,14 +227,12 @@ const chosen=()=>S.k==='sub'?subBanks():banksOf(S.g).filter(b=>S.t.includes(b.id
 /* ---------- מילוי מקום לפי "עד איזה שיעור למדתם" (רצף השיעורים: exams/bank/z7__lessons.js) ---------- */
 const TOPICS=()=>typeof Z7_TOPICS!=='undefined'?Z7_TOPICS:{num:[],geo:[]};
 const inLessons=b=>['num','geo'].some(k=>TOPICS()[k].some(t=>(t.use||[]).some(u=>u[0]===b.id)));
-/* מה נלמד: בכל רשימה – כל הנושאים עד הנושא שנבחר. rec = שני הנושאים האחרונים בכל רשימה (הדגש), old = מה שלפניהם (חזרה) */
-function subPlan(){const items=[],last=[];
-  [['num',S.un],['geo',S.ug]].forEach(([k,id])=>{const L=TOPICS()[k],i=L.findIndex(t=>t.id===id);if(i<0)return;last.push(L[i]);
-    L.slice(0,i+1).forEach((t,ti)=>(t.use||[]).forEach(([b,ks])=>ks.forEach(kk=>items.push({b,k:kk,rec:ti>i-2}))))});
-  if(!items.length)return null;
-  return {last,items,rec:items.filter(x=>x.rec),old:items.filter(x=>!x.rec)}}
-/* שם הנושא לפי החלקים שכבר נלמדו (titles במאגר) */
-function subTitle(b,P){if(!b.titles)return b.topic;const ks=P.items.filter(i=>i.b===b.id).map(i=>i.k);let t=b.topic;Object.keys(b.titles).forEach(k=>{if(ks.includes(k))t=b.titles[k]});return t}
+/* מילוי מקום: המורה מסמנת נושא אחד או כמה (S.tp). כל נושא מביא את סוגי השאלות שלו (use) */
+function subPlan(){const sel=S.tp||[],items=[],last=[];
+  ['num','geo'].forEach(k=>TOPICS()[k].forEach(t=>{if(!sel.includes(t.id))return;last.push(t);(t.use||[]).forEach(([b,ks])=>ks.forEach(kk=>items.push({b,k:kk,rec:true})))}));
+  if(!items.length)return null;return {last,items,rec:items,old:[]}}
+/* שם הנושא לפי החלקים שנבחרו (titles במאגר) */
+function subTitle(b,P){if(!b.titles)return b.topic;const ks=P.items.filter(i=>i.b===b.id).map(i=>i.k);const t=[...new Set(Object.keys(b.titles).filter(k=>ks.includes(k)).map(k=>b.titles[k]))];return t.length?t.join(' · '):b.topic}
 function subBanks(){const P=subPlan();if(!P)return[];const ids=[...new Set(P.items.map(x=>x.b))];return BANKS.filter(b=>ids.includes(b.id))}
 const gname=()=>GRADES.find(x=>x.g===S.g).name;
 // כוכבית = שאלה מהמודל של משרד החינוך (מאגר שמקורו במודל, ולא שאלה שנוספה)
@@ -361,21 +359,21 @@ function subHTML(){
   const rule=x=>{const b=x.b;if(!b.rules)return b.rule;const ks=[...new Set(P.items.filter(i=>i.b===b.id).map(i=>i.k))];return ks.map(k=>b.rules[k]).filter(Boolean).join(' · ')};
   let all='<div class="wsh"><h2>מילוי מקום · '+M.n+'</h2><div class="nm"><span>שם: <u></u></span><span>כיתה: <u style="width:28mm"></u></span><span>תאריך: <u style="width:30mm"></u></span></div></div>',ans=[],num=0;
   order.forEach(x=>{const b=x.b,a=[];
-    let body='<div style="break-inside:avoid"><div class="wsh tp"><h2>'+esc(subTitle(b,P))+'<span class="tag">'+(x.rec?'מה שלמדנו לאחרונה':'חזרה')+'</span></h2></div><div class="rule"><b>השיטה</b>'+F(rule(x))+'</div></div>',lastL=0;
+    let body='<div style="break-inside:avoid"><div class="wsh tp"><h2>'+esc(subTitle(b,P))+''+(P.old.length?'<span class="tag">'+(x.rec?'מה שלמדנו לאחרונה':'חזרה')+'</span>':'')+'</h2></div><div class="rule"><b>השיטה</b>'+F(rule(x))+'</div></div>',lastL=0;
     x.qs.forEach(q=>{const L=q.lv;if(L!==lastL){body+='<div class="lvl">'+'★'.repeat(L)+' '+LV[L].n+' <small>· '+LV[L].d+'</small></div>';lastL=L}
       num++;a.push([num,q,L]);body+='<div class="q"><div class="qh"><span class="qn">'+num+'</span>'+MM(b,q)+'<div class="qt">'+F(q.t)+req(q)+'</div>'+D(q.d)+'<span class="st">'+'★'.repeat(L)+'</span></div>'+lines(q.ln||WS_LINES[L])+'</div>'});
     all+=body;ans.push([b,a])});
   let h=sheet('מילוי מקום · '+M.n+' · כיתה '+esc(S.cls||gname()),all);
   const recT=order.filter(x=>x.rec).map(x=>subTitle(x.b,P)),oldT=order.filter(x=>!x.rec).map(x=>subTitle(x.b,P));
-  if(S.key){let k='<div class="key"><h2>למורה המחליפה</h2><p>'+(S.len===2?'שיעור כפול':'שיעור אחד')+' · '+M.n+' · '+num+' שאלות. הכיתה למדה עד: <b>'+esc(P.last.map(t=>t.n).join(' · '))+'</b>. בדף רק חומר שכבר נלמד: '+(oldT.length?'קודם חזרה ('+esc(oldT.join(', '))+'), ואחר כך ':'')+(recT.length?'דגש על מה שנלמד בשיעורים האחרונים ('+esc(recT.join(', '))+')':'')+'. התלמידים עובדים לבד או בזוגות, מהשאלה הראשונה והלאה. בכל נושא יש תיבת "השיטה" – אפשר להתחיל בהקראה שלה. בשאלות "הסבירו" חשוב לבקש מהתלמידים לכתוב במילים, לא רק תשובה. בסוף השיעור אוספים את הדפים, או בודקים יחד לפי התשובות שלמטה.</p></div>';
+  if(S.key){let k='<div class="key"><h2>למורה המחליפה</h2><p>'+(S.len===2?'שיעור כפול':'שיעור אחד')+' · '+M.n+' · '+num+' שאלות. נושאי הדף: <b>'+esc(P.last.map(t=>t.n).join(' · '))+'</b>. התלמידים עובדים לבד או בזוגות, מהשאלה הראשונה והלאה. בכל נושא יש תיבת "השיטה" – אפשר להתחיל בהקראה שלה. בשאלות "הסבירו" חשוב לבקש מהתלמידים לכתוב במילים, לא רק תשובה. בסוף השיעור אוספים את הדפים, או בודקים יחד לפי התשובות שלמטה.</p></div>';
     ans.forEach(([b,a])=>{k+='<div class="key"><h2>תשובות · '+esc(S.k==='sub'?subTitle(b,P):b.topic)+'</h2><table class="kt"><tr><th>שאלה</th><th>רמה</th><th>תשובה</th></tr>'+a.map(([n,q,L])=>'<tr><td>'+n+(isM(b,q)?' *':'')+'</td><td>'+LV[L].n+'</td><td>'+F(q.a)+'</td></tr>').join('')+'</table></div>'});
     h+=sheet('תשובות · מילוי מקום',k)}
-  SUBNOTE=num<total?'בחומר שנלמד עד הנושאים האלה יש במאגר '+num+' שאלות '+M.n+', ולכן בדף '+num+' שאלות. אפשר לבחור "תרגול רגיל" כדי לקבל יותר שאלות.':'';
+  SUBNOTE=num<total?'בנושאים שנבחרו יש במאגר '+num+' שאלות '+M.n+', ולכן בדף '+num+' שאלות. אפשר לבחור "תרגול רגיל" כדי לקבל יותר שאלות.':'';
   return h}
 
 // ---------- שליחת הדף ----------
 /* קישור שמכיל את כל ההגדרות ואת מספר ההגרלה (s): מי שפותח אותו מקבל בדיוק את אותו דף – אותן שאלות, אותם מספרים, אותו דף תשובות */
-function shareURL(){const P=new URLSearchParams({g:S.g,k:S.k,t:S.t.join(','),sb:(S.sb||[]).join(','),lv:S.lv,n:S.n,min:S.min,two:S.two?1:0,calc:S.calc?1:0,key:S.key?1:0,st:S.st,len:S.len,sn:S.sn,un:S.un||'',ug:S.ug||'',yr:S.yr,s:seed,go:1});
+function shareURL(){const P=new URLSearchParams({g:S.g,k:S.k,t:S.t.join(','),sb:(S.sb||[]).join(','),lv:S.lv,n:S.n,min:S.min,two:S.two?1:0,calc:S.calc?1:0,key:S.key?1:0,st:S.st,len:S.len,sn:S.sn,tp:(S.tp||[]).join(','),yr:S.yr,s:seed,go:1});
   if(S.cls)P.set('cls',S.cls);if(LOCK)P.set('only',1);return location.origin+location.pathname+'?'+P.toString()}
 function shareLink(){const u=shareURL(),what=S.k==='exam'?'מבחן':S.k==='sub'?'דף למילוי מקום':'דף עבודה',txt=what+' במתמטיקה · כיתה '+(S.cls||gname())+' – לחצו לפתיחה:';
   $('#shareout').innerHTML='<input readonly value="'+esc(u)+'"><p>✅ הקישור הועתק – הדביקי בוואטסאפ ושלחי. מי שפותח רואה בדיוק את אותו דף.</p>';
@@ -397,9 +395,9 @@ function ui(){
   [...document.querySelectorAll('#lens button')].forEach(b=>b.classList.toggle('on',+b.dataset.len===S.len));
   const sub=S.k==='sub';document.querySelectorAll('.sub-only').forEach(e=>e.style.display=sub?'':'none');document.querySelectorAll('.nosub').forEach(e=>e.style.display=sub?'none':'');
   $('#sthint').textContent=(SUB[S.st]||SUB.all).d+'.';
-  if(sub){const opt=(k,v)=>'<option value="">'+(k==='num'?'— לא בחרתי —':'— לא בחרתי —')+'</option>'+TOPICS()[k].map(t=>'<option value="'+t.id+'"'+(v===t.id?' selected':'')+'>'+esc(t.n)+' ('+esc(t.w)+')</option>').join('');
-    $('#un').innerHTML=opt('num',S.un);$('#ug').innerHTML=opt('geo',S.ug);const P=subPlan();
-    $('#ulhint').innerHTML=P?'הדף ייבנה רק מחומר שכבר נלמד: <b>חזרה</b> על נושאים קודמים, ו<b>דגש</b> על הנושאים האחרונים ('+esc([...new Set(P.rec.map(x=>subTitle(BANKS.find(b=>b.id===x.b),P)))].join(', '))+'). בכל נושא – שאלות הבנה ו"הסבירו", לא רק חישוב.':'בוחרים את הנושא האחרון שהכיתה למדה – במספרים, בגאומטריה או בשניהם. המחולל ייקח לבד את כל מה שנלמד עד אליו.'}$('#snv').textContent=S.sn;
+  if(sub){S.tp=S.tp||[];const grp=(k,lab)=>'<div class="strand">'+lab+'</div><div class="seg">'+TOPICS()[k].map(t=>'<button class="chip'+(S.tp.includes(t.id)?' on':'')+'" data-tp="'+t.id+'">'+esc(t.n)+' <small>('+esc(t.w)+')</small></button>').join('')+'</div>';
+    $('#subtopics').innerHTML=grp('num','🔢 מספרים')+grp('geo','📐 גאומטריה');
+    $('#ulhint').innerHTML=S.tp.length?'נבחרו '+S.tp.length+' נושאים. השאלות מתחלקות ביניהם, בכל רמות החשיבה – עם שאלות הבנה ו"הסבירו", לא רק חישוב.':'לוחצים על נושא אחד או כמה – הנושא נצבע בירוק. מופיעים רק נושאים שכבר נלמדו לפי התוכנית השנתית.'}$('#snv').textContent=S.sn;
   const bs=banksOf(S.g);S.t=S.t.filter(id=>bs.some(b=>b.id===id));
   const all=bs.map(b=>({b,strand:b.strand,order:b.order})).concat(SOON.filter(x=>x.grade===S.g&&S.k!=='sub').map(x=>({soon:x,strand:x.strand,order:x.order})));
   $('#topics').innerHTML=STRANDS.filter(st=>all.some(x=>x.strand===st)).map(st=>'<div class="strand">'+st+'</div><div class="seg">'+
@@ -413,7 +411,7 @@ function ui(){
   document.querySelectorAll('.exam-only').forEach(e=>e.style.display=S.k==='exam'?'':'none');
   $('#cls').value=S.cls;$('#yr').value=S.yr;$('#two').checked=S.two;$('#calc').checked=S.calc;$('#key').checked=S.key;
   const ok=chosen().length>0;$('#go').disabled=false;$('#go').classList.toggle('off',!ok);
-  $('#go').textContent=ok?(S.k==='exam'?'✨ צרי מבחן':S.k==='sub'?'✨ צרי דף למילוי מקום':'✨ צרי דף עבודה'):(sub?'👆 קודם בוחרים עד איזה נושא למדתם':'👆 קודם מסמנים נושא למעלה');
+  $('#go').textContent=ok?(S.k==='exam'?'✨ צרי מבחן':S.k==='sub'?'✨ צרי דף למילוי מקום':'✨ צרי דף עבודה'):(sub?'👆 קודם מסמנים נושא אחד או כמה':'👆 קודם מסמנים נושא למעלה');
   clearOut();save()}
 // כל שינוי בבחירות מוחק את התוצאה הקודמת: המחולל פועל רק כשלוחצים "צרי"
 function clearOut(){$('#out').innerHTML='';$('#done').hidden=true;$('#msg').innerHTML='';$('#shareout').innerHTML=''}
@@ -435,17 +433,18 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||
   else if(b.dataset.lv){S.lv=b.dataset.lv;ui()}
   else if(b.dataset.st){S.st=b.dataset.st;ui()}
   else if(b.dataset.len){S.len=+b.dataset.len;S.sn=SUB_Q[S.len];ui()}
+  else if(b.dataset.tp){const id=b.dataset.tp;S.tp=(S.tp||[]).includes(id)?S.tp.filter(x=>x!==id):(S.tp||[]).concat(id);ui()}
   else if(b.dataset.sb){const id=b.dataset.sb;const mb=banksOf(S.g).find(x=>x.subs);if(mb&&!S.t.includes(mb.id))S.t=S.t.concat(mb.id);S.sb=(S.sb||[]).includes(id)?S.sb.filter(x=>x!==id):(S.sb||[]).concat(id);ui()}
   else if(b.dataset.t){const id=b.dataset.t,on=!S.t.includes(id);S.t=on?S.t.concat(id):S.t.filter(x=>x!==id);ui();
     /* לחיצה על כפתור עם תתי־נושאים (🎓 שאלת בגרות): מראים מיד את שורת הבחירה מתחתיו */
     if(on&&banksOf(S.g).some(x=>x.id===id&&x.subs)){const r=$('#subrow');r.scrollIntoView({behavior:'smooth',block:'center'});r.style.outline='3px solid var(--acc)';r.style.borderRadius='12px';setTimeout(()=>r.style.outline='',1800)}}
   else if(b.dataset.f){const f=b.dataset.f,lim={n:[3,20],min:[15,120],sn:[4,30]}[f];S[f]=Math.max(lim[0],Math.min(lim[1],S[f]+ +b.dataset.d));ui()}
-  else if(b.id==='go'&&!chosen().length&&S.k==='sub'){$('#msg').innerHTML='<div class="warn">בחרי את הנושא האחרון שהכיתה למדה – במספרים או בגאומטריה.</div>';$('#un').scrollIntoView({behavior:'smooth',block:'center'})}
+  else if(b.id==='go'&&!chosen().length&&S.k==='sub'){$('#msg').innerHTML='<div class="warn">סמני נושא אחד או כמה – לוחצים על שם הנושא, והוא נצבע בירוק.</div>';$('#subtopics').scrollIntoView({behavior:'smooth',block:'center'})}
   else if(b.id==='go'&&!chosen().length){$('#msg').innerHTML='<div class="warn">סמני לפחות נושא אחד – לוחצים על שם הנושא, והוא נצבע בירוק כהה.</div>';$('#topics').scrollIntoView({behavior:'smooth',block:'center'})}
   else if(b.id==='go'||b.id==='again'){seed=Math.floor(Math.random()*1e9);$('#shareout').innerHTML='';render();if(b.id==='go')$('#done').scrollIntoView({behavior:'smooth'})}
   else if(b.id==='print'){window.print()}
   else if(b.id==='share'){shareLink()}});
-$('#un').addEventListener('change',e=>{S.un=e.target.value;ui()});$('#ug').addEventListener('change',e=>{S.ug=e.target.value;ui()});
+
 ['cls','yr'].forEach(id=>$('#'+id).addEventListener('input',e=>{S[id]=e.target.value;clearOut();save()}));
 ['two','calc','key'].forEach(id=>$('#'+id).addEventListener('change',e=>{S[id]=e.target.checked;clearOut();save()}));
 // כניסה מקישור של כיתה (only=1) בלי נושאים מסומנים – מסמנים את כל הנושאים, כדי שאפשר יהיה ללחוץ "צרי" מיד
