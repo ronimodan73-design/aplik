@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>חזרה למבחן: לו יהי + משאלות</title>
+
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="שירים למבחן"><meta name="theme-color" content="#14122b">
+<style>
+:root{--bg:#14122b;--card:#211e42;--card2:#2b2755;--txt:#f4f2ff;--muted:#b7b2dc;--a:#ffb74d;--b:#4fc3f7;--ok:#5be39a;--bad:#ff6b81;--yel:#ffe066}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 80% -10%,#3b2f80 0,var(--bg) 55%);color:var(--txt);font-family:"Rubik","Assistant",Arial,sans-serif;font-size:18px;line-height:1.55;min-height:100vh}
+#app{max-width:640px;margin:0 auto;padding:14px 14px 90px}
+h1{font-size:1.5em;margin:.2em 0}h2{font-size:1.25em;margin:.3em 0 .5em}
+.card{background:var(--card);border-radius:18px;padding:16px;margin:12px 0;box-shadow:0 6px 20px #0005;animation:pop .35s ease}
+@keyframes pop{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}
+.btn{display:block;width:100%;border:0;border-radius:14px;padding:14px;font:inherit;font-weight:700;margin:8px 0;cursor:pointer;color:#14122b;text-align:right}
+.btn:active{transform:scale(.98)}
+.a{background:var(--a)}.b{background:var(--b)}.g{background:var(--ok)}.s{background:var(--card2);color:var(--txt)}
+.row{display:flex;gap:8px}.row .btn{text-align:center}
+.tag{display:inline-block;border-radius:99px;padding:2px 10px;font-size:.8em;font-weight:700;color:#14122b}
+.muted{color:var(--muted);font-size:.9em}
+textarea{width:100%;min-height:120px;border-radius:12px;border:2px solid var(--card2);background:#151331;color:var(--txt);font:inherit;padding:10px}
+.pt{padding:8px 10px;border-radius:10px;margin:6px 0;background:#151331}
+.pt.ok{border-right:5px solid var(--ok)}.pt.no{border-right:5px solid var(--bad)}
+.model{background:#1b3a2c;border-radius:12px;padding:12px;margin-top:10px}
+.opt{display:block;width:100%;text-align:right;background:var(--card2);color:var(--txt);border:2px solid transparent;border-radius:12px;padding:12px;margin:7px 0;font:inherit;cursor:pointer}
+.opt.right{border-color:var(--ok);background:#1d4532}.opt.wrong{border-color:var(--bad);background:#4a1f2b}
+.bar{height:10px;background:var(--card2);border-radius:9px;overflow:hidden;margin:8px 0}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--b),var(--ok));transition:width .4s}
+.big{font-size:2.4em;font-weight:800;text-align:center}
+.hl{color:var(--yel);font-weight:700}
+.foot{position:fixed;bottom:0;left:0;right:0;text-align:center;font-size:.8em;color:var(--muted);background:#14122bee;padding:6px}
+.formula{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-start}
+.formula span{border-radius:10px;padding:6px 10px;font-weight:700;color:#14122b}
+.vs{display:flex;gap:8px;align-items:stretch}.vs div{flex:1;border-radius:12px;padding:10px;text-align:center;font-weight:700}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="foot">ערכה: רוני מודן</div>
+<script>
+const P={
+ lu:{name:'לו יהי',color:'var(--a)',facts:[
+  ['📅 שנה','1973 — מלחמת יום הכיפורים'],
+  ['💡 מסר מרכזי','תקווה ואמונה שגם בזמן קשה ומאיים יבוא טוב — שלום ושובם של החיילים הביתה. השיר הוא כמו תפילה.'],
+  ['🙏 המשאלה','כללית-לאומית: מדברים בגוף רבים ("נבקש") — בקשה בשם כל העם.'],
+  ['⚫⚪ ניגוד','המפרש הלבן (תקווה) מול הענן השחור הכבד (מלחמה, סכנה, פחד).'],
+  ['📜 רמז מקראי','"קול ענות" — מספר שמות (חטא העגל): משה ויהושע שומעים קול מהמחנה ולא יודעים אם זה קול ניצחון או קול תבוסה. בשיר: קול לא ברור → אי־ודאות ודאגה בזמן המלחמה.'],
+  ['🔁 חזרה','שורת הפזמון עם המילים "לו יהי" חוזרת שוב ושוב — מדגישה את התפילה, כמו לחזור על בקשה כדי שתתקבל, ונותנת כוח ואמונה.']]},
+ mi:{name:'משאלות',color:'var(--b)',facts:[
+  ['📅 שנה','1967 — מלחמת ששת הימים'],
+  ['💡 מסר מרכזי','הרצון האמיתי של הדוברת לחיות בשלום, באחווה ובשלווה — חיים טובים בלי מלחמות.'],
+  ['🙏 המשאלה','גם אישית וגם כללית: מדברת בגוף יחיד ("אני רוצה") — אישית; אבל מבקשת שלום ואחווה לכולם — כללית.'],
+  ['🌼 מטאפורה','תמרון (תרגיל צבאי) של פרחים לבנים: במקום שורות של חיילים — שורות של פרחים. הלבן = שלום וטוהר.'],
+  ['📝 שיר מודרני','שורות קצרות, אין חריזה, משקל חופשי, שפה יומיומית, מבנה של רשימה. הרשימה = הרבה משאלות; המבנה החופשי = רצונות שזורמים בספונטניות, באותנטיות.'],
+  ['📜 רמז מקראי','"כתונת פסים" — מסיפור יוסף (בראשית): יעקב נתן ליוסף כאות אהבה, והיא עוררה קנאה ושנאה אצל האחים. בשיר: סמל לאהבה, חום וילדות — בניגוד למלחמה, ומחדד את המשאלה לאחווה בלי קנאה ושנאה.']]}
+};
+/* key points: each = [label, [alternative keywords], hint] */
+const Q=[
+ {p:'lu',t:'בשיר "לו יהי" מופיעה משאלה. מהי המשאלה המרכזית? האם היא אישית או כללית? הוכח מן הכתוב.',
+  k:[['המשאלה: שלום / שהחיילים ישובו',['שלומ','חייל','ישוב','יחזר','הביתה','תיגמר','תגמר','שקט'],'כתוב מה מבקשים: שלום, שהחיילים יחזרו הביתה.'],
+     ['קבעת: כללית / לאומית',['כללי','לאומי','כל העמ','כולנו','כולמ'],'אמור במפורש: "המשאלה כללית".'],
+     ['הוכחה מהשיר (גוף רבים)',['רבימ','נבקש','אנחנו','מבקשימ','שנבקש'],'הוכחה = מילה מהשיר: גוף רבים "נבקש".']],
+  m:'המשאלה המרכזית היא שכל מה שמבקשים יתגשם — שתיגמר המלחמה, שיבוא שלום ושהחיילים ישובו הביתה בשלום. זו משאלה <span class="hl">כללית</span>: המשוררת מדברת בגוף רבים ("נבקש"), כלומר מבקשת בשם כל העם ולא רק בשם עצמה.'},
+ {p:'lu',t:'א. באיזו שנה נכתב השיר "לו יהי"? ב. איזו מלחמה פרצה באותה שנה? ג. כתוב מסר מרכזי שהשיר מעביר.',
+  k:[['שנה: 1973',['1973','תשלד','73'],'השיר נכתב ב־1973.'],
+     ['מלחמת יום הכיפורים',['כיפור','כפור'],'המלחמה: יום הכיפורים.'],
+     ['מסר: תקווה / אמונה / שלום',['תקוו','אמונ','שלומ','יהיה טוב','טוב'],'המסר: תקווה ואמונה שיבוא טוב.']],
+  m:'א. 1973. ב. מלחמת יום הכיפורים. ג. המסר: גם בזמן קשה ומאיים צריך להמשיך <span class="hl">לקוות ולהאמין</span> שיבואו ימים טובים של שלום.'},
+ {p:'lu',t:'בשיר "לו יהי" נעשה שימוש בניגוד. א. תן דוגמה אחת לניגוד מתוך השיר. ב. הסבר מדוע בחרה המשוררת בניגוד זה.',
+  k:[['דוגמה: מפרש לבן',['מפרש','לבנ'],'צד אחד של הניגוד: המפרש הלבן.'],
+     ['מול ענן שחור',['ענן','שחור'],'הצד השני: הענן השחור הכבד.'],
+     ['הסבר: תקווה מול מלחמה/פחד',['תקוו','מלחמ','סכנ','פחד','חושכ','שלומ'],'הסבר מה כל צד מסמל: לבן = תקווה, שחור = מלחמה.']],
+  m:'א. הניגוד בין <span class="hl">המפרש הלבן</span> באופק לבין <span class="hl">הענן השחור הכבד</span>. ב. הענן השחור מסמל את המלחמה, הפחד והסכנה; המפרש הלבן מסמל תקווה, שלום וביטחון. הניגוד מדגיש את המאבק בין הייאוש לתקווה — ושגם מול הענן השחור עוד יש תקווה.'},
+ {p:'lu',t:'בבית השני המשוררת משתמשת ברמז מקראי "קול ענות". א. מהי משמעות הביטוי? ב. כיצד הרמז עוזר להבין את המסר של השיר?',
+  k:[['המקור: ספר שמות / משה / חטא העגל',['שמות','משה','עגל','יהושע','תנכ','מקרא'],'ציין מאיפה: ספר שמות, משה ויהושע ליד המחנה.'],
+     ['משמעות: קול לא ברור',['לא ברור','לא יודע','לא ידוע','מעורפל','מבלבל','לא ניתנ'],'העיקר: לא יודעים אם זה קול ניצחון או תבוסה.'],
+     ['קשר לשיר: אי־ודאות / דאגה / תפילה',['ודאות','דאג','פחד','חשש','תפיל','מתח','ממתינ','מחכ'],'קשר למלחמה: מחכים לחדשות ולא יודעים מה יקרה.']],
+  m:'א. "קול ענות" לקוח מספר שמות (חטא העגל): משה ויהושע שומעים קול מהמחנה ו<span class="hl">לא יודעים אם זה קול ניצחון או קול תבוסה</span> — קול לא ברור. ב. בשיר הרמז מבטא את <span class="hl">אי־הוודאות והדאגה</span> של המלחמה: שומעים קולות ולא יודעים מה קורה בחזית. מתוך הרעש הזה המשוררת מבקשת שיישמע קול של תפילה ותקווה לשלום.'},
+ {p:'lu',t:'הבא דוגמה למשפט שחוזר על עצמו פעמים רבות בשיר "לו יהי". מדוע בחרה המשוררת לחזור על מילים אלו?',
+  k:[['הדוגמה: שורת "לו יהי" / הפזמון',['לו יהי','פזמונ','נבקש'],'הדוגמה: שורת הפזמון עם "לו יהי".'],
+     ['למה: הדגשה',['הדגש','מדגיש','חיזוק','מחזק','חשיבות'],'חזרה = הדגשה.'],
+     ['למה: כמו תפילה / תקווה',['תפיל','תקוו','אמונ','כוח','כח','משאל'],'החזרה הופכת את השיר לתפילה ונותנת כוח.']],
+  m:'המשפט שחוזר הוא <span class="hl">שורת הפזמון עם המילים "לו יהי"</span> — הבקשה שכל מה שנבקש יתגשם. החזרה <span class="hl">מדגישה</span> את המשאלה והופכת את השיר ל<span class="hl">תפילה</span>: כמו שחוזרים על בקשה שוב ושוב כדי שתתקבל. היא נותנת כוח ומבטאת את האמונה שהמשאלה חייבת להתגשם.'},
+ {p:'mi',t:'בשיר "משאלות" מופיעה משאלה. הסבר מהי המשאלה המרכזית. האם היא אישית או כללית? הוכח מן הכתוב.',
+  k:[['המשאלה: שלום / אחווה / שלווה',['שלומ','אחוו','שלוו','בלי מלחמ','ללא מלחמ'],'מה מבקשים: שלום, אחווה ושלווה.'],
+     ['אישית — גוף יחיד',['אישי','יחיד','אני'],'אישית: היא כותבת "אני רוצה".'],
+     ['וגם כללית — לכולם',['כללי','לכל','כולמ','בינלאומ','עולמ'],'כללית: מבקשת שלום לכולם.']],
+  m:'המשאלה המרכזית היא <span class="hl">שלום, אחווה ושלווה</span> — שלא תהיה עוד מלחמה. המשאלה <span class="hl">גם אישית וגם כללית</span>: היא אישית כי הדוברת מדברת בגוף יחיד ("אני רוצה") ומבקשת דברים לעצמה ולאהוביה; והיא כללית כי היא מבקשת שלום ואחווה לכולם.'},
+ {p:'mi',t:'א. באיזו שנה נכתב השיר "משאלות" ואיזו מלחמה פרצה באותה שנה? ב. כתוב מסר מרכזי אחד שהשיר מעביר לקוראים.',
+  k:[['שנה: 1967',['1967','תשכז','67'],'השיר נכתב ב־1967.'],
+     ['מלחמת ששת הימים',['ששת','6 הימימ','שש הימימ'],'המלחמה: ששת הימים.'],
+     ['מסר: לחיות בשלום / חיים טובים',['שלומ','חיימ טובימ','בלי מלחמ','ללא מלחמ','אחוו'],'המסר: הרצון לחיות בשלום.']],
+  m:'א. 1967 — השנה שבה פרצה <span class="hl">מלחמת ששת הימים</span>. ב. המסר: הרצון האמיתי של הדוברת <span class="hl">לחיות בשלום</span> — חיים טובים, פשוטים ושלווים, בלי מלחמות.'},
+ {p:'mi',t:'בשיר "משאלות" נעשה שימוש באמצעי האומנותי מטאפורה. מצא דוגמה למטאפורה מתוך השיר. הדגם והסבר מה כוונת המשוררת בשימוש זה.',
+  k:[['הדוגמה: התמרון של הפרחים',['תמרונ','תרגיל'],'הדוגמה: "תמרון" של פרחים.'],
+     ['פרחים לבנים',['פרח','חרצי','לבנ'],'מי מבצע את ה"תמרון"? פרחים לבנים.'],
+     ['הסבר: להחליף צבא/מלחמה בפריחה/שלום',['חייל','צבא','מלחמ','שלומ','במקומ','להחליפ'],'הסבר: במקום חיילים — פרחים; במקום מלחמה — שלום.']],
+  m:'המטאפורה: <span class="hl">תמרון של פרחים לבנים</span>. תמרון הוא תרגיל צבאי — והמשוררת "מעבירה" אותו לפרחים. כוונתה: היא רוצה <span class="hl">להחליף את שורות החיילים בשורות של פרחים</span>, את המלחמה בפריחה. הצבע הלבן מסמל שלום וטוהר.'},
+ {p:'mi',t:'א. ציין 2 מאפיינים של מבנה השיר המעידים שזהו שיר מודרני. ב. איך המבנה מתאים לתוכן השיר ולרצונות של המשוררת?',
+  k:[['מאפיין: שורות קצרות / אורך שונה',['קצר','אורכ'],'מאפיין 1: שורות קצרות.'],
+     ['מאפיין: אין חריזה / משקל חופשי',['חריז','חרוז','חופשי','משקל','יומיומ'],'מאפיין 2: אין חריזה, משקל חופשי.'],
+     ['התאמה: רשימה / ספונטני / אותנטי',['רשימ','ספונט','אותנט','זורמ','חופש'],'רשימה ארוכה = הרבה משאלות; חופשי = אותנטי.']],
+  m:'א. <span class="hl">שורות קצרות</span>, <span class="hl">אין חריזה</span> ומשקל חופשי, שפה יומיומית. ב. השיר בנוי כמו <span class="hl">רשימה</span> של משאלות — כמו שמספרים בלב את כל מה שרוצים. המבנה החופשי מאפשר לרצונות לזרום בספונטניות ובאותנטיות, בלי מסגרת נוקשה.'},
+ {p:'mi',t:'בשיר "משאלות" מוזכר הביטוי "כתונת פסים". מה המשמעות בסיפור המקראי של יוסף? למה המשוררת משתמשת דווקא ברמז זה, וכיצד הוא עוזר להבין את מה שהדוברת מרגישה ורוצה?',
+  k:[['הסיפור: יוסף / יעקב',['יוספ','יעקב','בראשית'],'ציין: סיפור יוסף, יעקב נתן לו את הכתונת.'],
+     ['משמעות: אהבה',['אהב','חומ','ילדות'],'הכתונת = אות אהבה.'],
+     ['אבל גם: קנאה ושנאה בין אחים / ניגוד',['קנא','שנא','אחימ','אחוו','ניגוד','מלחמ'],'הכתונת גרמה לקנאה; בשיר — רצון לאחווה בלי שנאה.']],
+  m:'בסיפור המקראי יעקב נתן ליוסף כתונת פסים <span class="hl">כאות אהבה</span>, והיא עוררה <span class="hl">קנאה ושנאה</span> אצל האחים. בשיר הכתונת מסמלת אהבה, חום וילדות — עולם רך ואוהב, <span class="hl">בניגוד</span> למלחמה. הרמז מחדד את מה שהדוברת רוצה: אהבה ו<span class="hl">אחווה</span> בין אחים, בלי קנאה, שנאה ומלחמה.'}
+];
+/* quick quiz: [poem, question, options, correctIndex, explanation] */
+const MC=[
+ ['lu','באיזו שנה נכתב "לו יהי"?',['1967','1973','1948','1982'],1,'"לו יהי" — 1973, מלחמת יום הכיפורים. (1967 זה "משאלות").'],
+ ['mi','באיזו מלחמה קשור השיר "משאלות"?',['יום הכיפורים','ששת הימים','מלחמת העצמאות','לבנון'],1,'"משאלות" — 1967, ששת הימים.'],
+ ['lu','המפרש הלבן מול הענן השחור הוא דוגמה ל...',['חריזה','ניגוד','רמז מקראי','שיר מודרני'],1,'שני דברים הפוכים זה מול זה = ניגוד.'],
+ ['lu','מה מסמל הענן השחור הכבד?',['שמחה','מלחמה, סכנה ופחד','מזג אוויר','ילדות'],1,'שחור וכבד = האיום של המלחמה.'],
+ ['lu','"קול ענות" לקוח מ...',['סיפור יוסף','ספר שמות — משה ויהושע ליד המחנה','תהלים','שיר השירים'],1,'ספר שמות, חטא העגל: שומעים קול ולא יודעים אם זה ניצחון או תבוסה.'],
+ ['lu','מה המשמעות של "קול ענות"?',['קול שמחה בלבד','קול לא ברור — לא יודעים אם זה ניצחון או תבוסה','קול שופר בחג','קול של ילד'],1,'זה בדיוק העניין: הקול לא ברור → אי־ודאות.'],
+ ['lu','למה המשוררת חוזרת שוב ושוב על הפזמון?',['כדי למלא מקום','כדי להדגיש את המשאלה — כמו תפילה','כי שכחה','כדי שיתחרז'],1,'חזרה = הדגשה + תפילה.'],
+ ['lu','המשאלה ב"לו יהי" היא...',['אישית בלבד','כללית — בשם כל העם (גוף רבים)','אין בו משאלה','משאלה לכסף'],1,'גוף רבים: "נבקש" → בשם כולם.'],
+ ['mi','המשאלה ב"משאלות" היא...',['רק אישית','רק כללית','גם אישית וגם כללית','אין משאלה'],2,'"אני רוצה" = אישית; שלום ואחווה לכולם = כללית.'],
+ ['mi','"תמרון" של פרחים לבנים הוא דוגמה ל...',['מטאפורה','חריזה','רמז מקראי','ניגוד בלבד'],0,'מעבירים מושג צבאי (תמרון) לעולם הפרחים = מטאפורה.'],
+ ['mi','מה המשוררת רוצה בעזרת מטאפורת התמרון?',['עוד תרגילים צבאיים','להחליף חיילים בפרחים — מלחמה בשלום','לגדל גינה','לתאר את הסתיו בלבד'],1,'במקום שורות חיילים — שורות פרחים.'],
+ ['mi','מה מאפיין שיר מודרני?',['חריזה קבועה','שורות קצרות, בלי חריזה, משקל חופשי','שפה תנ"כית בלבד','בתים שווים תמיד'],1,'שיר מודרני = חופשי.'],
+ ['mi','איך המבנה של "משאלות" מתאים לתוכן?',['הוא רשימה — כמו רשימת משאלות שזורמת בחופשיות','הוא מחורז כמו שיר ילדים','אין קשר','הוא בנוי כמו מכתב רשמי'],0,'רשימה = הרבה משאלות; חופשי = אותנטי.'],
+ ['mi','"כתונת פסים" רומזת לסיפור של...',['משה','יוסף','דוד','אברהם'],1,'יעקב נתן ליוסף כתונת פסים.'],
+ ['mi','מה מסמלת כתונת הפסים בסיפור המקראי?',['אהבה של אב — שעוררה קנאה ושנאה בין האחים','עושר','מלחמה','חג'],0,'אהבה ← קנאה ← האחים מכרו את יוסף.'],
+ ['x','באיזה שיר הדוברת מדברת בגוף יחיד ("אני רוצה")?',['לו יהי','משאלות'],1,'"משאלות" — גוף יחיד.'],
+ ['x','באיזה שיר מופיע רמז מספר שמות?',['לו יהי','משאלות'],0,'"קול ענות" — ב"לו יהי".'],
+ ['x','באיזה שיר מופיע רמז לסיפור יוסף?',['לו יהי','משאלות'],1,'"כתונת פסים" — ב"משאלות".'],
+ ['x','מה משותף לשני השירים?',['שניהם שירי שמחה','שניהם נכתבו בשנת מלחמה ומבטאים משאלה לשלום','שניהם מחורזים','שניהם על טבע בלבד'],1,'1967 ו־1973 — שתי מלחמות, אותה משאלה: שלום.'],
+ ['x','מהי "תשובה מלאה" בשאלת ספרות?',['רק ציטוט','טענה + הוכחה מהשיר + הסבר','רק כן או לא','שורה אחת'],1,'הנוסחה: טענה → הוכחה → הסבר.']
+];
+const norm=s=>s.replace(/[֑-ׇ"'״׳,.\-–!?()]/g,'').replace(/ם/g,'מ').replace(/ן/g,'נ').replace(/ץ/g,'צ').replace(/ף/g,'פ').replace(/ך/g,'כ').replace(/\s+/g,' ');
+const $=s=>document.querySelector(s),A=$('#app');
+let ST={};try{ST=JSON.parse(localStorage.getItem('lit_st')||'{}')}catch(e){}
+const save=()=>{try{localStorage.setItem('lit_st',JSON.stringify(ST))}catch(e){}};
+const toTop=()=>window.scrollTo(0,0);
+function home(){
+ const done=Q.filter((q,i)=>ST['q'+i]===3).length;
+ A.innerHTML=`<div class="card"><h1>📚 מבחן מחר? בוא נסגור את זה!</h1>
+ <p class="muted">שני שירים: <b style="color:var(--a)">לו יהי</b> ו<b style="color:var(--b)">משאלות</b>. עבור לפי הסדר, מ־1 עד 5.</p>
+ <div class="bar"><i style="width:${done*10}%"></i></div><p class="muted">שאלות חזרה שסגרת במלואן: ${done} / 10</p></div>
+ <button class="btn s" onclick="formula()">1️⃣ איך כותבים תשובה מלאה (30 שניות)</button>
+ <button class="btn a" onclick="facts('lu')">2️⃣ כרטיס סיכום: לו יהי</button>
+ <button class="btn b" onclick="facts('mi')">3️⃣ כרטיס סיכום: משאלות</button>
+ <button class="btn g" onclick="quiz()">4️⃣ שאלון מהיר — 20 שאלות</button>
+ <button class="btn a" onclick="list()">5️⃣ שאלות החזרה — כותבים ומקבלים בדיקה</button>`;toTop();}
+function formula(){A.innerHTML=`<div class="card"><h2>✍️ הנוסחה לתשובה מלאה</h2>
+ <div class="formula"><span style="background:var(--a)">1. טענה</span><span style="background:var(--yel)">2. הוכחה מהשיר</span><span style="background:var(--b)">3. הסבר</span></div>
+ <p><b>טענה</b> — עונים ישר על השאלה ("המשאלה כללית").<br><b>הוכחה</b> — מילה או ביטוי מהשיר ("גוף רבים: נבקש").<br><b>הסבר</b> — מה זה אומר ולמה ("היא מבקשת בשם כל העם").</p>
+ <p class="muted">⚠️ שאלה עם א׳ ב׳ ג׳ — עונים על <b>כל</b> הסעיפים. "הוכח מן הכתוב" = חייבים מילה מהשיר.</p></div>
+ <div class="card"><h2>⚫⚪ ניגוד — בתמונה</h2><div class="vs"><div style="background:#fff;color:#14122b">⛵ מפרש לבן<br><small>תקווה</small></div><div style="align-self:center">מול</div><div style="background:#000;border:1px solid #555">☁️ ענן שחור<br><small>מלחמה</small></div></div></div>
+ <button class="btn a" onclick="home()">חזרה לתפריט</button>`;toTop();}
+function facts(p){const o=P[p];let i=0;
+ const show=()=>{const f=o.facts[i];A.innerHTML=`<div class="card"><span class="tag" style="background:${o.color}">${o.name}</span> <span class="muted">${i+1}/${o.facts.length}</span>
+ <h2 style="margin-top:12px">${f[0]}</h2><p style="font-size:1.1em">${f[1]}</p></div>
+ <div class="row"><button class="btn s" id="pv">→ הקודם</button><button class="btn a" id="nx">${i<o.facts.length-1?'הבא ←':'סיימתי ✓'}</button></div>
+ <button class="btn s" onclick="home()">לתפריט</button>`;
+ $('#pv').onclick=()=>{if(i>0){i--;show()}};$('#nx').onclick=()=>{if(i<o.facts.length-1){i++;show()}else home()};toTop();};show();}
+function quiz(){let order=MC.map((_,i)=>i).sort(()=>Math.random()-.5),n=0,sc=0,miss=[];
+ const show=()=>{if(n>=order.length)return res();const q=MC[order[n]];const nm=q[0]==='x'?'שני השירים':P[q[0]].name,c=q[0]==='x'?'var(--yel)':P[q[0]].color;
+ A.innerHTML=`<div class="card"><span class="tag" style="background:${c}">${nm}</span> <span class="muted">${n+1}/${order.length} · ✅ ${sc}</span><div class="bar"><i style="width:${n/order.length*100}%"></i></div>
+ <h2>${q[1]}</h2>${q[2].map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}<div id="fb"></div></div>`;
+ document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const j=+b.dataset.j;document.querySelectorAll('.opt').forEach(x=>x.disabled=true);
+  document.querySelectorAll('.opt')[q[3]].classList.add('right');
+  if(j===q[3]){sc++;$('#fb').innerHTML=`<p style="color:var(--ok)"><b>נכון! 🎉</b> ${q[4]}</p>`}else{b.classList.add('wrong');miss.push(q);$('#fb').innerHTML=`<p style="color:var(--bad)"><b>לא בדיוק —</b> <span style="color:var(--txt)">${q[4]}</span></p>`}
+  $('#fb').innerHTML+=`<button class="btn a" id="nx">הבא ←</button>`;$('#nx').onclick=()=>{n++;show()};});toTop();};
+ const res=()=>{A.innerHTML=`<div class="card"><h2>התוצאה שלך</h2><div class="big">${sc} / ${order.length}</div>
+ <p>${sc>=18?'מעולה! אתה מוכן 💪 עכשיו תתרגל לכתוב תשובות מלאות (שלב 4).':sc>=13?'טוב מאוד! עבור על מה שפספסת:':'בוא נחזק — קרא שוב את כרטיסי הסיכום ונסה שוב.'}</p>
+ ${miss.map(q=>`<div class="pt no"><b>${q[1]}</b><br>${q[2][q[3]]}</div>`).join('')}</div>
+ <button class="btn g" onclick="quiz()">עוד סיבוב</button><button class="btn s" onclick="home()">לתפריט</button>`;toTop();};show();}
+function list(){A.innerHTML=`<div class="card"><h2>✍️ שאלות החזרה</h2><p class="muted">כתוב תשובה → "בדוק אותי" → האפליקציה בודקת אם יש בה את 3 הדברים שהמורה מחפשת.</p></div>`+
+ Q.map((q,i)=>{const s=ST['q'+i];return`<button class="btn ${q.p==='lu'?'a':'b'}" onclick="ask(${i})">${s===3?'✅':s!=null?'🟡':'⬜'} ${P[q.p].name} — שאלה ${q.p==='lu'?i+1:i-4}</button>`}).join('')+
+ `<button class="btn s" onclick="home()">לתפריט</button>`;toTop();}
+function ask(i){const q=Q[i];A.innerHTML=`<div class="card"><span class="tag" style="background:${P[q.p].color}">${P[q.p].name}</span>
+ <h2 style="margin-top:10px">${q.t}</h2><textarea id="ans" placeholder="כתוב כאן את התשובה שלך...">${ST['a'+i]||''}</textarea>
+ <button class="btn g" id="chk">🔍 בדוק אותי</button><button class="btn s" id="hint">💡 רמז</button><div id="out"></div></div>
+ <div class="row"><button class="btn s" onclick="list()">לרשימה</button>${i<Q.length-1?`<button class="btn a" onclick="ask(${i+1})">לשאלה הבאה ←</button>`:''}</div>`;
+ let h=0;$('#hint').onclick=()=>{$('#out').innerHTML=`<div class="pt">💡 ${q.k[h%3][2]}</div>`;h++;};
+ $('#chk').onclick=()=>{const v=$('#ans').value;ST['a'+i]=v;const t=norm(v);
+  if(t.trim().length<8){$('#out').innerHTML='<div class="pt no">כתוב קודם תשובה — לפחות משפט אחד 🙂</div>';return;}
+  let got=0;const rows=q.k.map(k=>{const ok=k[1].some(w=>t.includes(norm(w)));if(ok)got++;return`<div class="pt ${ok?'ok':'no'}">${ok?'✅':'❌'} ${k[0]}${ok?'':`<br><small class="muted">${k[2]}</small>`}</div>`}).join('');
+  ST['q'+i]=Math.max(ST['q'+i]||0,got);save();
+  $('#out').innerHTML=`<p><b>${got===3?'🏆 תשובה מלאה!':got===2?'כמעט! חסר דבר אחד:':'חסרים כמה דברים — הנה מה לחזק:'}</b> (${got}/3)</p>${rows}
+  <div class="model"><b>📗 תשובה לדוגמה:</b><br>${q.m}</div><p class="muted">שים לב: הבדיקה מחפשת מילות מפתח. תשווה בעצמך לתשובה לדוגמה.</p>`;};toTop();}
+/* offline */
+const ONSITE=/github\.io$/.test(location.hostname)&&location.hostname!=='htmlpreview.github.io';
+if(ONSITE&&'serviceWorker' in navigator){navigator.serviceWorker.register('../sw.js',{scope:'../'}).catch(()=>{});}
+home();
+</script>
+</body>
+</html>
