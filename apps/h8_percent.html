@@ -143,6 +143,7 @@ body.spopen .app{padding-bottom:62vh}
 .trick{background:#ff4d5e1f;border:2px solid var(--red);border-radius:12px;padding:9px 13px;font-size:19px;font-weight:700;color:#ffb3bb;text-align:right!important}
 .trick b{color:var(--red)}.demo .sline{text-align:right;margin:5px 0;font-size:19px}
 .demo .btn.main{font-size:20px;padding:13px 26px}
+.tscore{margin:6px 0;font-size:15px;opacity:.9}
 </style></head>
 <body>
 <div class="app">
@@ -168,7 +169,7 @@ const deg='°';
 const f=n=>(+n).toFixed(1);
 /*META {"id":"h8_percent","title":"אחוזים · ערכה: רוני מודן","short":"אחוזים","topic":"אחוזים","glyph":"%","color":"#4fd18b"} */
 /* אחוזים · משבצת ח׳ פרק 5 (ספר א, עמ׳ 245–269) · יסוד מארגן אחד לכל השאלות: טבלת האחוזים 100% | 1% | החלק */
-const APP={key:'h8pct',topic:'אחוזים',total:25,sub:'טבלה אחת פותרת הכול: 100% ← 1% ← האחוז שמחפשים. צעד אחרי צעד, בצבעים.',
+const APP={key:'h8pct',topic:'אחוזים',total:35,sub:'טבלה אחת פותרת הכול: 100% ← 1% ← האחוז שמחפשים. צעד אחרי צעד, בצבעים.',
  rc:{'אחוז ושבר':1,'כמה אחוז צבוע?':0,'מוצאים 1%':3,'אחוז מכמות':3,'נכון או לא נכון?':3,'מוצאים את השלם':4,'איזה אחוז?':3,'כמה נשאר?':3,
   'התייקרות והוזלה ככפל':5,'המחיר החדש':5,'המחיר לפני השינוי':5,'אחוז השינוי':5,'התייקרות ואז הוזלה':6,'שתי הנחות ברצף':6,'אחוז מהנותר':3,'ריבוע שגדל':6,'איפה משתלם?':5}};
 document.head.insertAdjacentHTML('beforeend',`<style>
@@ -362,6 +363,8 @@ const LEVELS=[
  {n:2,t:'החלק, השלם והאחוז',d:'אחוז מכמות ← מוצאים את השלם ← איזה אחוז? ← כמה נשאר?',ladder:LAD[1]},
  {n:3,t:'התייקרות והוזלה',d:'כפל ב־1.2 ← המחיר החדש ← המחיר לפני ← אחוז השינוי',ladder:LAD[2]},
  {n:4,t:'חשיבה ושאלות מפמ״ר',d:'עלייה וירידה ← שתי הנחות ← אחוז מהנותר ← ריבוע ← איפה משתלם?',ladder:LAD[3]}];
+/* 35 שאלות בכל שלב (בקשת רוני) */
+APP.total=35;LEVELS.forEach(l=>{if(!l.ladder)return;const t=l.ladder.reduce((a,e)=>a+e.n,0);let left=35;l.ladder.forEach((e,i)=>{e.n=i===l.ladder.length-1?left:Math.max(1,Math.round(e.n*35/t));left-=e.n;});});
 LEVELS.forEach(l=>l.g=()=>pick(l.ladder).g());
 const TEST=[[genShade,genRep,genOnePct,()=>genPctOf(1)],[()=>genPctOf(2),genWhole,genWhatPct,genRemain],[genMult,genNewPrice,genBefore,genChangePct],[genUpDown,genTwoDisc,genOfRest,genDeal]];
 /* ===== הסבר מונפש: רעיון אחד בכל כרטיס ===== */
@@ -467,7 +470,13 @@ function check(q){const fb=$('#fb');const ins=[...V.querySelectorAll('input:not(
  if(q.choice&&S.sel<0){fb.className='fb no';fb.innerHTML=q.ans?'בחרו גם נימוק.':'בחרו תשובה.';return;}
  const okIn=!q.ans||vals.every((v,i)=>v===q.ans[i].val),okCh=!q.choice||S.sel===q.correct,ok=okIn&&okCh;
  if(S.mode==='test'){ins.forEach(x=>x.disabled=true);S.res.push({lv:S.lv[S.i],ok,q});S.done=true;fb.className='fb saved pop';
-  fb.innerHTML='<b>התשובה נשמרה ✓</b> '+(S.i+1<S.n?'ממשיכים בנחת.':'זאת הייתה השאלה האחרונה!');$('#chk').textContent=S.i+1<S.n?'לשאלה הבאה':'לדוח שלי';return;}
+  const nOk=S.res.filter(r=>r.ok).length,nAll=S.res.length,nx=S.i+1<S.n?'ממשיכים.':'זאת הייתה השאלה האחרונה!';
+  if(APP.testFb===false){fb.innerHTML='<b>התשובה נשמרה ✓</b> '+nx;}
+  else{if(q.ans)ins.forEach((x,i)=>{if(q.ans[i])x.classList.add(vals[i]===q.ans[i].val?'good':'bad');});
+   const right=q.ans?q.ans.map(a=>(a.label?a.label+' ':'')+M(String(a.val))).join(' · '):(q.choice?q.choice[q.correct]:'');
+   fb.className='fb pop '+(ok?'ok':'no');
+   fb.innerHTML=(ok?'<b>✓ נכון!</b>':'<b>✗ לא נכון.</b> התשובה הנכונה: '+right)+`<div class="tscore">✓ <b>${nOk}</b> נכונות מתוך <b>${nAll}</b> · הציון שלי עד עכשיו: <b>${Math.round(nOk/S.n*100)}</b> מתוך 100</div>`+nx+(q.lines?'<div><button class="btn sec" id="tshow" type="button">👀 הראו לי איך</button></div>':'');
+   const tb=$('#tshow');if(tb)tb.onclick=()=>{tb.remove();solve(q);};}$('#chk').textContent=S.i+1<S.n?'לשאלה הבאה':'לדוח שלי';return;}
  S.tries++;ins.forEach((x,i)=>{x.classList.remove('good','bad');x.classList.add(vals[i]===q.ans[i].val?'good':'bad');});
  const lastStep=!S.q.steps||S.si===S.q.steps.length-1;
  if(ok&&!lastStep){if(S.tries>1)S.chainBad=true;S.stepNext=true;fb.className='fb ok pop';fb.innerHTML=`<b>${pick(['נכון!','בדיוק!','יפה!'])}</b> ממשיכים לצעד הבא.`;$('#chk').textContent='לצעד הבא ←';if($('#show'))$('#show').style.display='none';return;}

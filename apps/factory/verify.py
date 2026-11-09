@@ -75,7 +75,11 @@ async def main():
             if q['v']:
                 for j, v in enumerate(q['v']): await pg.locator('input:not([type=file]):not(.wkin)').nth(j).fill(str(v if right else v + 1))
             if q['c'] is not None: await pg.click(f'[data-c="{q["c"] if right or q["v"] else (q["c"]+1)%q["n"]}"]')
-            await pg.click('#chk'); await pg.wait_for_timeout(100); await pg.click('#chk')
+            await pg.click('#chk'); await pg.wait_for_timeout(100)
+            if i == 5:
+                await pg.screenshot(path=f'{OUT}/test_fb.png', full_page=True)
+                if await pg.locator('#tshow').count(): await pg.click('#tshow'); await pg.wait_for_timeout(4000); await pg.screenshot(path=f'{OUT}/test_show.png', full_page=True)
+            await pg.click('#chk')
         await pg.wait_for_timeout(500); await pg.screenshot(path=f'{OUT}/report.png', full_page=True)
         print('report text has grade:', 'ציון' in await pg.inner_text('#view'))
         print('errors:', errs); await b.close()

@@ -125,6 +125,25 @@ p{font-size:19px;line-height:1.55;margin:0}
 .spwrap canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair}
 body.spopen .app{padding-bottom:62vh}
 @media print{.spbtn,.sp{display:none!important}}
+/* ===== מסך אחד לילדי קשב (נוסף ב־1.11.2026) ===== */
+.card.one{padding:14px 16px}.card.one .kind{margin-bottom:4px}
+.card.one .dia{margin:0 0 4px}.card.one .dia svg{max-height:30vh;width:auto;max-width:100%}
+.card.one .qtext{font-size:20px;line-height:1.45}
+.card.one .choices{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.card.one .choices .lab{grid-column:1/-1}
+.card.one .choices button{padding:9px 12px;font-size:18px}
+.card.one .btns{margin-top:10px}.card.one .fb{margin-top:8px;padding:9px 12px;font-size:18px}
+.card.one .hint{margin:6px 0}
+@media (min-width:760px) and (orientation:landscape){.card.one.hasdia{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);column-gap:22px;row-gap:0;align-items:start}
+ .card.one.hasdia>.kind{grid-column:1/-1;justify-self:start}.card.one.hasdia>.dia{grid-column:2;grid-row:2/span 40;align-self:center}
+ .card.one.hasdia>*:not(.dia):not(.kind){grid-column:1}.card.one.hasdia .dia svg{max-height:56vh}}
+.hint.red{background:#ff4d5e1a;border-right:5px solid var(--red);color:#ffb3bb;font-weight:700}
+.fb.no{color:#ffd0d5}.fb.no b{color:var(--red)}
+.choices button.bad{border-color:var(--red);background:#ff4d5e26;animation:shk .45s}
+.trick{background:#ff4d5e1f;border:2px solid var(--red);border-radius:12px;padding:9px 13px;font-size:19px;font-weight:700;color:#ffb3bb;text-align:right!important}
+.trick b{color:var(--red)}.demo .sline{text-align:right;margin:5px 0;font-size:19px}
+.demo .btn.main{font-size:20px;padding:13px 26px}
+.tscore{margin:6px 0;font-size:15px;opacity:.9}
 </style></head>
 <body>
 <div class="app">
@@ -260,7 +279,7 @@ const RECAP=[
 RECAP[3].chk=[()=>{let q;for(let k=0;k<40;k++){q=gFill();if(q.ans.some(a=>a.val<0))break;}return q;}];
 
 const TL=['★ ידע','★★ יישום','★★★ הבנה ונימוק','★★★★ חשיבה ואוריינות'],TCOL=[GR,BL,OR,PU];
-const TOTAL=20;let S={};
+const TOTAL=(APP&&APP.total)||20,PASS=Math.round(TOTAL*.8);let S={};
 const rcOf=q=>{if(q.rc!=null)return q.rc;if(APP.rcFn){const v=APP.rcFn(q);if(v!=null)return v;}return APP.rc?APP.rc[q.kind]:null;};
 const rcBtn=q=>{const k=rcOf(q);return k!=null&&RECAP[k]?`<button type="button" class="btn sec mini" data-rc="${k}">📖 להסבר: ${RECAP[k].h}</button>`:'';};
 function bindRc(){V.querySelectorAll('[data-rc]').forEach(b=>b.onclick=()=>recap(+b.dataset.rc,true));}
@@ -270,20 +289,21 @@ function menu(){clearTimeout(SCT);$('#sc').textContent='';const tl=store.get('te
  <div class="hero"><button type="button" id="go-recap"><span class="ic">▶</span><span><b>מתחילים כאן</b><small>הסבר מונפש + חימום קל</small></span></button><button type="button" id="go-test"><span class="ic">📝</span><span><b>בחן את עצמך</b><small>מבחן מדורג · 16 שאלות · 4 רמות · ציון ודוח</small></span></button></div>
  ${tl?`<div class="last">המבחן האחרון שלי: ציון ${Math.round(tl.sc/16*100)} · ${tl.d}</div>`:''}
  ${INST?`<div class="inst">📲 <b>לעבוד גם בלי אינטרנט:</b> לחצו על כפתור השיתוף ⬆️ בתחתית ספארי, ואז על <b>"הוספה למסך הבית"</b>. פותחים מהאייקון פעם אחת כשיש אינטרנט, ומאז זה עובד גם בלי.</div>`:''}
- ${typeof CHAPTERS!=='undefined'?`<h2 style="margin-top:18px">📚 לומדים פרק אחרי פרק</h2><p style="font-size:16px;color:var(--muted)">בכל פרק: תרגיל פתור מונפש ← המוקש ← עכשיו אתה ← 10 תרגילים</p><div class="chaps">${CHAPTERS.map((c,i)=>{const b=store.get('ch'+i),rec=CHAPTERS.findIndex((_,j)=>(store.get('ch'+j)||0)<8);return `<button type="button" data-ch="${i}" class="${i===rec?'rec':''}"><span class="t">${i===rec?'👈 ':''}פרק ${i+1}: ${c.t}</span><span class="d">${c.d||''}${b!=null?` · השיא שלי: ${b} מתוך ${chList(i).length}${b>=8?' ✅':''}`:''}</span></button>`}).join('')}</div><h2 style="margin-top:18px">תרגול מעורב בשלבים</h2>`:'<h2 style="margin-top:18px">תרגול בשלבים: מתקדמים מרמה לרמה</h2>'}<p style="font-size:16px;color:var(--muted)">עוברים שלב עם 16 נכונות מתוך 20 ✅</p>
- <div class="levels">${LEVELS.map((l,i)=>{const b=store.get('best'+i),rec=LEVELS.findIndex((_,j)=>(store.get('best'+j)||0)<16);return `<button type="button" data-l="${i}" class="${i===rec?'rec':''}">${b>=16?'<span class="badge ok">✅ עברתי</span>':i===rec?'<span class="badge">👈 מומלץ עכשיו</span>':''}<span class="st">${'★'.repeat(l.n)}</span><span class="t">${l.t}</span><span class="d">${l.d}</span>${b!=null?`<span class="best">השיא שלי: ${b} מתוך ${TOTAL}</span>`:''}</button>`}).join('')}</div></div>`;
+ ${typeof CHAPTERS!=='undefined'?`<h2 style="margin-top:18px">📚 לומדים פרק אחרי פרק</h2><p style="font-size:16px;color:var(--muted)">בכל פרק: תרגיל פתור מונפש ← המוקש ← עכשיו אתה ← 10 תרגילים</p><div class="chaps">${CHAPTERS.map((c,i)=>{const b=store.get('ch'+i),rec=CHAPTERS.findIndex((_,j)=>(store.get('ch'+j)||0)<8);return `<button type="button" data-ch="${i}" class="${i===rec?'rec':''}"><span class="t">${i===rec?'👈 ':''}פרק ${i+1}: ${c.t}</span><span class="d">${c.d||''}${b!=null?` · השיא שלי: ${b} מתוך ${chList(i).length}${b>=8?' ✅':''}`:''}</span></button>`}).join('')}</div><h2 style="margin-top:18px">תרגול מעורב בשלבים</h2>`:'<h2 style="margin-top:18px">תרגול בשלבים: מתקדמים מרמה לרמה</h2>'}<p style="font-size:16px;color:var(--muted)">עוברים שלב עם ${PASS} נכונות מתוך ${TOTAL} ✅</p>
+ <div class="levels">${LEVELS.map((l,i)=>{const b=store.get('best'+i),rec=LEVELS.findIndex((_,j)=>(store.get('best'+j)||0)<PASS);return `<button type="button" data-l="${i}" class="${i===rec?'rec':''}">${b>=PASS?'<span class="badge ok">✅ עברתי</span>':i===rec?'<span class="badge">👈 מומלץ עכשיו</span>':''}<span class="st">${'★'.repeat(l.n)}</span><span class="t">${l.t}</span><span class="d">${l.d}</span>${b!=null?`<span class="best">השיא שלי: ${b} מתוך ${TOTAL}</span>`:''}</button>`}).join('')}</div></div>`;
  $('#go-recap').onclick=()=>recap(0);$('#go-test').onclick=testIntro;V.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>start(+b.dataset.l));V.querySelectorAll('[data-ch]').forEach(b=>b.onclick=()=>chap(+b.dataset.ch));}
 function start(l){const L=LEVELS[l];S={mode:'lv',l,i:0,score:0,n:TOTAL,streak:0};
  if(L.ladder){const list=[],meta=[];L.ladder.forEach(e=>{for(let k=0;k<e.n;k++){list.push(e.g);meta.push(e);}});S.list=list;S.meta=meta;S.n=list.length;}next();}
 function next(){if(S.q)S.i++;if(S.i>=S.n)return S.mode==='test'?endTest():S.mode==='warm'?endWarm():S.mode==='chk'?endChk():S.mode==='guide'?endGuide():S.mode==='chp'?endChp():end();S.q=S.list?S.list[S.i]():LEVELS[S.l].g();S.tries=0;S.done=false;S.si=0;S.wkOpen=false;S.stepNext=false;S.chainBad=false;S.askTries=0;
- const me=S.meta?S.meta[S.i]:null;S.ph=me?(me.h||0):S.mode==='warm'||S.mode==='chk'||S.mode==='guide'?1:0;S.ai=0;S.crk=[];S.askDone=!(S.q.ask||S.q.crack)||S.mode==='test'||S.mode==='chk'||(me&&me.a===0);draw();}
+ const me=S.meta?S.meta[S.i]:null;S.ph=me?(me.h||0):S.mode==='warm'||S.mode==='chk'||S.mode==='guide'?1:0;S.ai=0;S.crk=[];S.askDone=!(S.q.ask||S.q.crack)||S.mode==='test'||S.mode==='chk'||(me&&me.a===0);
+ const gk=S.mode==='lv'?(S.list?S.list[S.i]:LEVELS[S.l].g):null;S.demoOn=false;if(gk&&gk!==S.lastG){S.lastG=gk;const e=demoEx(gk);if(e){S.demoQ=e;S.demoOn=true;}}draw();}
 const curQ=()=>S.q.steps?S.q.steps[S.si]:S.q;
-function hintHtml(c){const H=c.hint||c.rule;if(!H||S.mode==='test'||!S.ph)return '';return S.ph>=2?`<div class="hint">💡 ${H}</div>`:`<button class="btn sec mini" id="hb" type="button">💡 רמז</button><div class="hint" id="hint" hidden>${H}</div>`;}
+function hintHtml(c){const H=c.trick||c.hint||c.rule;if(!H||S.mode==='test'||!S.ph)return '';return S.ph>=2?`<div class="hint red">⚠️ ${H}</div>`:`<button class="btn sec mini" id="hb" type="button">💡 רמז</button><div class="hint red" id="hint" hidden>⚠️ ${H}</div>`;}
 function choicesHtml(c){return c.choice?`<div class="choices">${c.choiceLab?`<span class="lab">${c.choiceLab}</span>`:''}${c.choice.map((x,i)=>`<button type="button" data-c="${i}">${x}</button>`).join('')}</div>`:'';}
 function bindChoices(T){S.sel=-1;V.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{if(S.done&&T)return;V.querySelectorAll('[data-c]').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');S.sel=+b.dataset.c;});}
 function drawAsk(){const q=S.q;$('#sc').textContent=`נקודות: ${S.score}`;
  V.innerHTML=`<div class="meta"><span>${lab()} · שאלה ${S.i+1} מתוך ${S.n}</span><span></span></div><div class="prog"><i style="width:${S.i/S.n*100}%"></i></div>
- <div class="card pop${((q.crack||[])[S.ai]||{}).point?' pointing':''}"><span class="kind">${q.kind}</span>${(()=>{const d=qDia(q,false);return d?`<div class="dia">${d}</div>`:''})()}<div class="qtext">${q.text}</div>
+ <div class="card pop one${qDia(q,false)?' hasdia':''}${((q.crack||[])[S.ai]||{}).point?' pointing':''}"><span class="kind">${q.kind}</span>${(()=>{const d=qDia(q,false);return d?`<div class="dia">${d}</div>`:''})()}<div class="qtext">${q.text}</div>
  ${(()=>{const L=q.crack||[q.ask],A=L[S.ai];return `<div class="askbox"><div class="ah">🔓 פיצוח השאלה${L.length>1?` · שלב ${S.ai+1} מתוך ${L.length}: ${A.lab||''}`:': מה השאלה שואלת?'}</div>
  ${L.slice(0,S.ai).map((a,k)=>`<div class="stepdone"><b>${S.crk[k]?'✓':'👀'} ${a.lab||''}</b> ${a.point?a.okMsg||'':a.choice[a.correct]}</div>`).join('')}${A.text?`<div>${A.text}</div>`:''}${A.point?`<div class="ptb">${A.point.map((r,ri)=>`<div class="ptr">${r.map(([h],j)=>`<button type="button" class="pt" data-pt="${ri}-${j}">${h}</button>`).join('')}</div>`).join('')}</div>`:choicesHtml(A)}</div>`;})()}
  <div class="btns"><button class="btn main" id="chk" type="button">בדיקה</button><button class="btn sec" id="show" type="button">הראו לי</button></div><div class="fb" id="fb" role="status" aria-live="polite"></div></div>`;
@@ -294,13 +314,23 @@ function drawAsk(){const q=S.q;$('#sc').textContent=`נקודות: ${S.score}`;
  $('#chk').onclick=()=>{const fb=$('#fb');if(S.sel<0){fb.className='fb no';fb.innerHTML='בחרו תשובה.';return;}
   const L=q.crack||[q.ask],A=L[S.ai];
   if(S.sel===A.correct){S.crk[S.ai]=S.askTries===0;S.ai++;S.askTries=0;if(S.ai>=L.length){S.askDone=true;S.askOk=S.crk.every(Boolean);}draw();return;}
-  S.askTries++;const m=A.diag?A.diag({sel:S.sel}):null;fb.className='fb no pop';fb.innerHTML=`<b>לא בדיוק.</b> ${m||A.why||''} ${S.askTries>=2?'<br>לחצו על <b>"הראו לי"</b>.':'נסו שוב.'}`;};
+  S.askTries++;{const wb=V.querySelector(`[data-c="${S.sel}"]`);if(wb){wb.classList.remove('bad');void wb.offsetWidth;wb.classList.add('bad');}}const m=A.diag?A.diag({sel:S.sel}):null;fb.className='fb no pop';fb.innerHTML=`<b>לא בדיוק.</b> ${m||A.why||''} ${S.askTries>=2?'<br>לחצו על <b>"הראו לי"</b>.':'נסו שוב.'}`;};
  $('#show').onclick=()=>{const L=q.crack||[q.ask],A=L[S.ai];if(A.point&&!V.querySelector('.pt.ok')){A.point.forEach((r,ri)=>r.forEach((x,j)=>{if(x[1])V.querySelector(`[data-pt="${ri}-${j}"]`).classList.add('ok');}));const fb=$('#fb');fb.className='fb no pop';fb.innerHTML=`👀 ${A.okMsg||A.why||''}`;S.askTries=9;$('#show').textContent='הבנתי, הלאה';return;}S.crk[S.ai]=false;S.ai++;S.askTries=0;if(S.ai>=L.length){S.askDone=true;S.askOk=false;}draw();};}
 function lab(){return S.mode==='guide'?'✍️ עכשיו אתה · פרק '+(S.ci+1):S.mode==='chp'?'🎯 פרק '+(S.ci+1)+': '+CHAPTERS[S.ci].t:S.mode==='chk'?'🧠 בדיקת הבנה · '+RECAP[S.card].h.replace(/<[^>]+>/g,''):S.mode==='warm'?'חימום':S.mode==='test'?'מבחן מדורג · '+TL[S.lv[S.i]]:'★'.repeat(LEVELS[S.l].n)+' '+LEVELS[S.l].t;}
 function qDia(q,hl){return typeof QDIA==='function'?QDIA(q,hl):(q.dia?q.dia(hl):(hl&&S.q&&q!==S.q&&S.q.dia?S.q.dia(true):''));}
-function draw(){if(!S.askDone)return drawAsk();const q=S.q,c=curQ(),T=S.mode==='test',ST=q.steps;$('#sc').textContent=T?'':`נקודות: ${S.score}`;
+/* ===== 👀 הראה לי: דוגמה פתורה, המוקש באדום, כפתור אחד ===== */
+const demoLines=e=>e.lines||(e.steps||[]).flatMap(s=>s.lines||[]);
+function demoEx(g){let e=null;for(let k=0;k<25;k++){const x=g();if(!demoLines(x).length)continue;e=x;if(x.text!==S.q.text)break;}return e;}
+function drawDemo(){const e=S.demoQ,L=demoLines(e),R=e.trick||e.rule||(e.steps?e.steps[e.steps.length-1].rule:'')||'',d=qDia(e,true);$('#sc').textContent=`נקודות: ${S.score}`;
+ V.innerHTML=`<div class="meta"><span>${lab()} · 👀 הראה לי</span><span></span></div><div class="prog"><i style="width:${S.i/S.n*100}%"></i></div>
+ <div class="card pop one demo${d?' hasdia':''}"><span class="kind">👀 הראה לי · ${e.kind}</span>${d?`<div class="dia">${d}</div>`:''}<div class="qtext">${e.text}</div>
+ ${L.map(l=>`<div class="sline">${l}</div>`).join('')}${R?`<div class="sline trick">⚠️ שימו לב: ${R}</div>`:''}
+ <div class="btns"><button class="btn main" id="try" type="button">✍️ אני מנסה לבד</button></div></div>`;
+ [...V.querySelectorAll('.sline')].forEach((el,i)=>setTimeout(()=>el.classList.add('show'),300+i*800));
+ $('#try').onclick=()=>{S.demoOn=false;draw();};}
+function draw(){if(S.demoOn)return drawDemo();if(!S.askDone)return drawAsk();const q=S.q,c=curQ(),T=S.mode==='test',ST=q.steps;$('#sc').textContent=T?'':`נקודות: ${S.score}`;
  V.innerHTML=`<div class="meta"><span>${lab()} · שאלה ${S.i+1} מתוך ${S.n}</span><span>${!T&&S.streak>=3?'🔥 '+S.streak+' ברצף':''}</span></div><div class="prog"><i style="width:${S.i/S.n*100}%"></i></div>
- <div class="card pop"><span class="kind">${q.kind}</span>${(()=>{const d=qDia(q,false);return d?`<div class="dia">${d}</div>`:''})()}<div class="qtext">${q.text}</div>
+ <div class="card pop one${qDia(q,false)?' hasdia':''}"><span class="kind">${q.kind}</span>${(()=>{const d=qDia(q,false);return d?`<div class="dia">${d}</div>`:''})()}<div class="qtext">${q.text}</div>
  ${q.crack&&S.mode!=='test'&&S.mode!=='chk'?`<div class="asknote"><b>🔓 פיצחנו:</b> ${q.crack.map(a=>a.point?`🎯 ${a.okMsg||''}`:`${a.lab||''} <b>${a.choice[a.correct]}</b>`).join(' · ')}</div>`:q.ask&&S.mode!=='test'&&S.mode!=='chk'?`<div class="asknote">${S.askOk?'✓ נכון!':'👀'} השאלה שואלת: <b>${q.ask.choice[q.ask.correct]}</b></div>`:''}
  ${ST?ST.slice(0,S.si).map((st,k)=>`<div class="stepdone"><b>✓ צעד ${k+1}:</b> ${st.short||st.text} ← ${ansText(st)}</div>`).join('')+`<div class="stephead">צעד ${S.si+1} מתוך ${ST.length}</div><div class="qtext">${c.text}</div>`:''}
  ${hintHtml(c)}
@@ -318,12 +348,18 @@ function check(q){const fb=$('#fb');const ins=[...V.querySelectorAll('input:not(
  if(q.choice&&S.sel<0){fb.className='fb no';fb.innerHTML=q.ans?'בחרו גם נימוק.':'בחרו תשובה.';return;}
  const okIn=!q.ans||vals.every((v,i)=>v===q.ans[i].val),okCh=!q.choice||S.sel===q.correct,ok=okIn&&okCh;
  if(S.mode==='test'){ins.forEach(x=>x.disabled=true);S.res.push({lv:S.lv[S.i],ok,q});S.done=true;fb.className='fb saved pop';
-  fb.innerHTML='<b>התשובה נשמרה ✓</b> '+(S.i+1<S.n?'ממשיכים בנחת.':'זאת הייתה השאלה האחרונה!');$('#chk').textContent=S.i+1<S.n?'לשאלה הבאה':'לדוח שלי';return;}
+  const nOk=S.res.filter(r=>r.ok).length,nAll=S.res.length,nx=S.i+1<S.n?'ממשיכים.':'זאת הייתה השאלה האחרונה!';
+  if(APP.testFb===false){fb.innerHTML='<b>התשובה נשמרה ✓</b> '+nx;}
+  else{if(q.ans)ins.forEach((x,i)=>{if(q.ans[i])x.classList.add(vals[i]===q.ans[i].val?'good':'bad');});
+   const right=q.ans?q.ans.map(a=>(a.label?a.label+' ':'')+M(String(a.val))).join(' · '):(q.choice?q.choice[q.correct]:'');
+   fb.className='fb pop '+(ok?'ok':'no');
+   fb.innerHTML=(ok?'<b>✓ נכון!</b>':'<b>✗ לא נכון.</b> התשובה הנכונה: '+right)+`<div class="tscore">✓ <b>${nOk}</b> נכונות מתוך <b>${nAll}</b> · הציון שלי עד עכשיו: <b>${Math.round(nOk/S.n*100)}</b> מתוך 100</div>`+nx+(q.lines?'<div><button class="btn sec" id="tshow" type="button">👀 הראו לי איך</button></div>':'');
+   const tb=$('#tshow');if(tb)tb.onclick=()=>{tb.remove();solve(q);};}$('#chk').textContent=S.i+1<S.n?'לשאלה הבאה':'לדוח שלי';return;}
  S.tries++;ins.forEach((x,i)=>{x.classList.remove('good','bad');x.classList.add(vals[i]===q.ans[i].val?'good':'bad');});
  const lastStep=!S.q.steps||S.si===S.q.steps.length-1;
  if(ok&&!lastStep){if(S.tries>1)S.chainBad=true;S.stepNext=true;fb.className='fb ok pop';fb.innerHTML=`<b>${pick(['נכון!','בדיוק!','יפה!'])}</b> ממשיכים לצעד הבא.`;$('#chk').textContent='לצעד הבא ←';if($('#show'))$('#show').style.display='none';return;}
  if(ok){if(S.tries===1&&!S.chainBad){S.score++;S.streak=(S.streak||0)+1;}S.done=true;fb.className='fb ok pop';fb.innerHTML=`<b>${pick(['מעולה!','בדיוק!','יפה מאוד!','נכון!'])}</b> ${S.tries===1?'הצלחתם בניסיון הראשון.':'תיקנתם, וזה מה שחשוב.'}`;$('#chk').textContent='לשאלה הבאה';if($('#show'))$('#show').style.display='none';return;}
- S.streak=0;let msg=q.diag?q.diag({vals,sel:S.sel}):null;
+ S.streak=0;if(q.choice&&!okCh){const wb=V.querySelector(`[data-c="${S.sel}"]`);if(wb){wb.classList.remove('bad');void wb.offsetWidth;wb.classList.add('bad');}}let msg=q.diag?q.diag({vals,sel:S.sel}):null;
  if(okIn&&!okCh&&q.ans)msg='החישוב נכון! אבל <b>הנימוק</b> לא מתאים. רמז: '+q.rule;
  if(!msg)msg=S.mode==='warm'?'רמז: '+q.rule:'רמז: '+q.rule;
  if(S.mode==='chk'){if(S.tries===1&&S.extra<2&&!S.q.fx){S.q.fx=1;S.extra++;S.list.push(S.gen);S.n++;}msg+=`<div class="what" style="margin-top:8px"><b>זוכרים מההסבר:</b> ${RECAP[S.card].what}</div>`;}
@@ -359,9 +395,9 @@ function solve(q){const sol=$('#sol');sol.className='sol on';
  [...sol.querySelectorAll('.sline')].forEach((el,i)=>setTimeout(()=>el.classList.add('show'),500+i*650));
  S.tries=Math.max(S.tries,2);S.streak=0;if(S.q.steps&&S.si<S.q.steps.length-1){S.chainBad=true;S.stepNext=true;$('#chk').textContent='לצעד הבא ←';$('#show').style.display='none';return;}if(!S.done){S.done=true;$('#chk').textContent='לשאלה הבאה';$('#show').style.display='none';}}
 function end(){$('#sc').textContent=`נקודות: ${S.score}`;const best=store.get('best'+S.l);if(best==null||S.score>best)store.set('best'+S.l,S.score);
- const st=S.score>=18?3:S.score>=14?2:S.score>=10?1:0;
+ const st=S.score>=TOTAL*.9?3:S.score>=TOTAL*.7?2:S.score>=TOTAL*.5?1:0;
  V.innerHTML=`<div class="card pop" style="text-align:center"><h2>סיימתם: ${'★'.repeat(LEVELS[S.l].n)} ${LEVELS[S.l].t}</h2><div class="big">${S.score} / ${TOTAL}</div>
- <p>${S.score>=16?(S.l<3?'עברתם את השלב! 🎉 ממשיכים לשלב הבא.':'עברתם את כל השלבים! 🎉 עכשיו: בחן את עצמך.'):['ממשיכים להתאמן: חוזרים להסבר ב"מתחילים כאן".','התחלה טובה! עוד סבב אחד ותהיו שם.','כמעט! צריך 16 כדי לעבור שלב. עוד סבב!'][Math.min(st,2)]}</p>
+ <p>${S.score>=PASS?(S.l<3?'עברתם את השלב! 🎉 ממשיכים לשלב הבא.':'עברתם את כל השלבים! 🎉 עכשיו: בחן את עצמך.'):['ממשיכים להתאמן: חוזרים להסבר ב"מתחילים כאן".','התחלה טובה! עוד סבב אחד ותהיו שם.','כמעט! צריך '+PASS+' כדי לעבור שלב. עוד סבב!'][Math.min(st,2)]}</p>
  <div class="btns" style="justify-content:center"><button class="btn main" id="again" type="button">עוד סבב</button>${S.l<3?'<button class="btn sec" id="up" type="button">לשלב הבא</button>':''}<button class="btn sec" id="m" type="button">תפריט</button></div></div>`;
  $('#again').onclick=()=>start(S.l);if($('#up'))$('#up').onclick=()=>start(S.l+1);$('#m').onclick=menu;}
 function recap(n,one){$('#sc').textContent='';const N=RECAP.length,c=RECAP[n],d0=c.d!=null?c.d:1.4;
@@ -457,7 +493,7 @@ function endTest(){const per=[0,0,0,0];S.res.forEach(r=>{if(r.ok)per[r.lv]++;});
  const v=up?{c:'var(--ok)',t:'מוכן/ה לעלות הקבצה! 🎉 שלטת בכל ארבע הרמות.'}:sc>=10?{c:'var(--acc)',t:weak<0?'קרוב מאוד! יש הצלחה בכל הרמות. עוד קצת דיוק, ומנסים שוב.':`קרוב מאוד! כדי לעלות הקבצה צריך לחזק את רמה ${TL[weak]}.`}:{c:'var(--red)',t:'בונים יסודות: עוברים על ההסבר, מתרגלים ★ ו־★★, ואז מנסים שוב. כל ניסיון מקרב!'};
  const u1={},u2={},miss=S.res.filter(r=>!r.ok&&!u1[r.q.kind]&&(u1[r.q.kind]=1)),good=S.res.filter(r=>r.ok&&!u2[r.q.kind]&&(u2[r.q.kind]=1));
  const todo=[];if(per[0]<3)todo.push('לעבור שוב על <b>ההסבר המונפש והחימום</b> (כפתור "מתחילים כאן").');
- per.forEach((x,i)=>{if(x<3)todo.push(`לתרגל את שלב <b>${TL[i]}</b> (20 שאלות). טעיתם? לוחצים על "הראו לי".`);});
+ per.forEach((x,i)=>{if(x<3)todo.push(`לתרגל את שלב <b>${TL[i]}</b> (${TOTAL} שאלות). טעיתם? לוחצים על "הראו לי".`);});
  if(!up&&weak<0)todo.push('לעבור על <b>מה עוד חסר לי</b> למעלה (כפתור 📖), ולתרגל את שלב <b>'+TL[per.indexOf(Math.min(...per))]+'</b>.');
  todo.push(up?'לנסות שוב את שלב ★★★★, כדי להישאר חזקים.':'אחרי התרגול: <b>מבחן חוזר</b>, ולבדוק אם הציון עלה.');
  V.innerHTML=`<div class="card pop"><h2>הדוח של ${S.name.replace(/[<>&"]/g,'')}</h2><div class="meta"><span>מבחן מדורג · ${APP.topic}</span><span>${d}</span></div>

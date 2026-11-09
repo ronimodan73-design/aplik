@@ -1,5 +1,5 @@
 /*META {"id":"h8_ratio_type","title":"הרחבה או חלוקה ביחס? · ערכה: רוני מודן","short":"הרחבה/חלוקה","topic":"יחס: הרחבה או חלוקה ביחס","glyph":"a:b","color":"#5ec8ff"} */
-const APP={key:'h8rtype',topic:'יחס: הרחבה או חלוקה ביחס',sub:'יחס ואחוזים, אותו רעיון: שלם · שבר. קודם מזהים: נתון צד אחד (הרחבה) או נתון הסה״כ (חלוקה)? אחר כך טבלה אחת קבועה: יחס ← באמת ← פי כמה.'};
+const APP={key:'h8rtype',total:35,topic:'יחס: הרחבה או חלוקה ביחס',sub:'יחס ואחוזים, אותו רעיון: שלם · שבר. קודם מזהים: נתון צד אחד (הרחבה) או נתון הסה״כ (חלוקה)? אחר כך טבלה אחת קבועה: יחס ← באמת ← פי כמה.'};
 document.head.insertAdjacentHTML('beforeend',`<style>
 table.at{border-collapse:separate;border-spacing:0;font-family:Rubik;font-weight:700;margin:6px auto;direction:rtl}
 .at th,.at td{border:2px solid var(--line);padding:6px 12px;text-align:center;font-size:22px;min-width:70px;height:48px}
@@ -285,6 +285,8 @@ const LEVELS=[
  {n:2,t:'משולשים, זווית ומשוואה',d:'משולשים (x) ← זווית מחולקת ← x = חלק אחד',ladder:[{g:eTri,n:5,h:1},{g:dAngle,n:4,h:1},{g:dPrice,n:4,h:1},{g:()=>eSimple(true),n:2,h:1},{g:eWhole,n:3,h:0},{g:pRemain,n:2,h:1}]},
  {n:3,t:'הסה״כ מוסתר',d:'היקף מלבן ← 3 חלקים ← זוויות במשולש ← נימוק',ladder:[{g:dRect,n:5,h:1},{g:dThree,n:4,h:1},{g:dTriAng,n:4,h:1},{g:dFloor,n:3,h:0},{g:eCoef,n:1,h:0},{g:eBig,n:1,h:0},{g:pWhole,n:2,h:0}]},
  {n:4,t:'חשיבה ואוריינות',d:'מרובע ← נכון או לא? ← חלק מול כולל ← קנייה',ladder:[{g:dQuad,n:4,h:1},{g:dClaim,n:4,h:0},{g:dTF,n:4,h:0},{g:dPW,n:3,h:0},{g:dSalad,n:2,h:0},{g:pLink,n:3,h:0}]}];
+/* 35 שאלות בכל שלב (בקשת רוני) */
+APP.total=35;LEVELS.forEach(l=>{if(!l.ladder)return;const t=l.ladder.reduce((a,e)=>a+e.n,0);let left=35;l.ladder.forEach((e,i)=>{e.n=i===l.ladder.length-1?left:Math.max(1,Math.round(e.n*35/t));left-=e.n;});});
 LEVELS.forEach(l=>l.g=()=>pick(l.ladder).g());
 const TEST=[[gType,()=>eSimple(false),dTwo,pPart],[eTri,dAngle,eWhole,pRemain],[dRect,dThree,dTriAng,pWhole],[dQuad,dClaim,dSalad,pLink]];
 const WARM=['c','a','b','c','a','b','a','b'].map(t=>()=>genWarm(t));

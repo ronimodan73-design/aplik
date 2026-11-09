@@ -1,6 +1,6 @@
 /*META {"id":"h8_percent","title":"אחוזים · ערכה: רוני מודן","short":"אחוזים","topic":"אחוזים","glyph":"%","color":"#4fd18b"} */
 /* אחוזים · משבצת ח׳ פרק 5 (ספר א, עמ׳ 245–269) · יסוד מארגן אחד לכל השאלות: טבלת האחוזים 100% | 1% | החלק */
-const APP={key:'h8pct',topic:'אחוזים',total:25,sub:'טבלה אחת פותרת הכול: 100% ← 1% ← האחוז שמחפשים. צעד אחרי צעד, בצבעים.',
+const APP={key:'h8pct',topic:'אחוזים',total:35,sub:'טבלה אחת פותרת הכול: 100% ← 1% ← האחוז שמחפשים. צעד אחרי צעד, בצבעים.',
  rc:{'אחוז ושבר':1,'כמה אחוז צבוע?':0,'מוצאים 1%':3,'אחוז מכמות':3,'נכון או לא נכון?':3,'מוצאים את השלם':4,'איזה אחוז?':3,'כמה נשאר?':3,
   'התייקרות והוזלה ככפל':5,'המחיר החדש':5,'המחיר לפני השינוי':5,'אחוז השינוי':5,'התייקרות ואז הוזלה':6,'שתי הנחות ברצף':6,'אחוז מהנותר':3,'ריבוע שגדל':6,'איפה משתלם?':5}};
 document.head.insertAdjacentHTML('beforeend',`<style>
@@ -194,6 +194,8 @@ const LEVELS=[
  {n:2,t:'החלק, השלם והאחוז',d:'אחוז מכמות ← מוצאים את השלם ← איזה אחוז? ← כמה נשאר?',ladder:LAD[1]},
  {n:3,t:'התייקרות והוזלה',d:'כפל ב־1.2 ← המחיר החדש ← המחיר לפני ← אחוז השינוי',ladder:LAD[2]},
  {n:4,t:'חשיבה ושאלות מפמ״ר',d:'עלייה וירידה ← שתי הנחות ← אחוז מהנותר ← ריבוע ← איפה משתלם?',ladder:LAD[3]}];
+/* 35 שאלות בכל שלב (בקשת רוני) */
+APP.total=35;LEVELS.forEach(l=>{if(!l.ladder)return;const t=l.ladder.reduce((a,e)=>a+e.n,0);let left=35;l.ladder.forEach((e,i)=>{e.n=i===l.ladder.length-1?left:Math.max(1,Math.round(e.n*35/t));left-=e.n;});});
 LEVELS.forEach(l=>l.g=()=>pick(l.ladder).g());
 const TEST=[[genShade,genRep,genOnePct,()=>genPctOf(1)],[()=>genPctOf(2),genWhole,genWhatPct,genRemain],[genMult,genNewPrice,genBefore,genChangePct],[genUpDown,genTwoDisc,genOfRest,genDeal]];
 /* ===== הסבר מונפש: רעיון אחד בכל כרטיס ===== */
