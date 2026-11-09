@@ -8,6 +8,13 @@ table.at{border-collapse:separate;border-spacing:0;font-family:Rubik;font-weight
 .at .vv{direction:ltr;unicode-bidi:isolate;display:inline-block;white-space:nowrap}
 .tbw{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:260px}.tbw .say{text-align:center;max-width:340px}
 .fac{margin-top:6px;font:900 18px Rubik;color:#ff6b6b;border:2px solid #ff6b6b;border-radius:999px;padding:2px 14px}
+.vz{display:flex;flex-direction:column;align-items:center;gap:8px;margin:4px 0 10px;padding:10px;border-radius:14px;background:#ffffff08;max-width:520px}
+.vz-t{font-weight:700;text-align:center;font-size:17px}.vz-r{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;align-items:flex-end}
+.vz-g{display:flex;flex-direction:column;align-items:center;gap:4px}.vz-n{font-weight:800;font-size:15px}.vz-s{font-weight:800}
+.vz-b{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;max-width:240px}
+.bxo{width:40px;height:40px;border:3px solid;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;font:900 18px Rubik;background:#ffffff10}
+.dot{width:16px;height:16px;border-radius:50%;display:inline-block}
+.pg{display:grid;grid-template-columns:repeat(10,16px);gap:2px;direction:ltr}.pc{width:16px;height:16px;border-radius:3px;border:1px solid var(--line)}
 mark.sig{background:#ffd27a33;color:inherit;border-bottom:3px solid #ffd27a;border-radius:4px;padding:0 3px}
 .sq{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;align-items:flex-end}
 .sq .c{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font:900 20px Rubik;color:#13233a}
@@ -15,7 +22,7 @@ mark.sig{background:#ffd27a33;color:inherit;border-bottom:3px solid #ffd27a;bord
 .grp{display:flex;flex-direction:column;align-items:center;gap:6px;font-weight:700}
 .row{display:flex;gap:16px;align-items:flex-end;justify-content:center;flex-wrap:wrap}
 .tag{display:inline-block;border-radius:10px;padding:4px 10px;font-weight:800;margin:3px}
-.tE{background:#5ec8ff26;color:#5ec8ff;border:2px solid #5ec8ff}.tD{background:#ffb02026;color:#ffb020;border:2px solid #ffb020}
+.tag.dim{opacity:.25}.tag.big{font-size:20px;padding:10px 16px;box-shadow:0 0 0 4px #ffffff22}.tE{background:#5ec8ff26;color:#5ec8ff;border:2px solid #5ec8ff}.tD{background:#ffb02026;color:#ffb020;border:2px solid #ffb020}
 @media (max-width:560px){.at th,.at td{padding:4px 4px;min-width:0;font-size:15px;height:40px}.at th{font-size:13px}.at td.lab{font-size:12px}.sq .c{width:30px;height:30px;font-size:15px}}
 </style>`);
 const gcd=(a,b)=>b?gcd(b,a%b):a;
@@ -40,32 +47,54 @@ function TB(cols,rows,anc,fac,hl){const hd=cols.map((c,i)=>`<th class="${i===anc
 const FX=(a,b)=>FRr(a,b);
 function FT(o,hl){const S=sum(o.r),k=o.k,real=o.r.map(x=>x*k),T=S*k,cell=(v,k0,q)=>[v,k0,q];
  if(!o.isE){const ids=o.ask.filter(i=>i!=='T');const rows=ids.map(i=>({l:`<b style="color:${COL[i]}">${o.names[i]}</b>`,c:[cell(T,0),cell(FX(o.r[i],S),1),cell(`${T} · ${FX(o.r[i],S)} = ${real[i]}`,2,true)]}));
-  return TB([{h:o.tName&&o.tName!=='סה״כ'?'השלם ('+o.tName+')':'השלם',c:PU},{h:'החלק היחסי (שבר)',c:'#f3f6fb'},{h:'החלק המבוקש',c:GR}],rows,0,0,hl)+(hl?`<div class="say">${M(T)} ← השלם ידוע ← <b>כופלים</b>: שלם · שבר</div>`:'');}
+  return TB([{h:o.tName&&o.tName!=='סה״כ'?'השלם ('+o.tName+')':'השלם',c:PU},{h:'החלק היחסי (שבר)',c:'#f3f6fb'},{h:'החלק המבוקש',c:GR}],rows,0,0,hl);}
  const kn=o.known,rows=[];
  o.ask.forEach(i=>{if(i==='T')rows.push({l:'<b>השלם</b>',c:[cell(`${real[kn]} : ${FX(o.r[kn],S)} = ${T}`,2,true),cell(FX(o.r[kn],S),1),cell(real[kn],0)]});});
  const ex=o.ask.filter(i=>i!=='T'&&i!==kn);
- let out=rows.length?TB([{h:'השלם',c:PU},{h:'החלק היחסי (שבר)',c:'#f3f6fb'},{h:'החלק הנתון',c:COL[kn]}],rows,2,0,hl)+(hl?'<div class="say">השלם חסר ← <b>מחלקים</b>: חלק : שבר</div>':''):'';
+ let out=rows.length?TB([{h:'השלם',c:PU},{h:'החלק היחסי (שבר)',c:'#f3f6fb'},{h:'החלק הנתון',c:COL[kn]}],rows,2,0,hl):'';
  if(ex.length){const i=ex[0],top=kn<i,num=top?real[kn]:(hl?real[i]:'?'),den=top?(hl?real[i]:'?'):real[kn],a=top?o.r[kn]:o.r[i],b=top?o.r[i]:o.r[kn];
-  out+=TB([{h:'היחס כשבר',c:'#f3f6fb'},{h:'גורם ההרחבה',c:'#ff6b6b'},{h:'אחרי ההרחבה',c:GR}],[{l:`${o.names[top?kn:i]}<br>────<br>${o.names[top?i:kn]}`,c:[cell(FX(a,b),0),cell(`· ${k}`,1),cell(FX(num,den),0)]}],-1,0,hl)+(hl?`<div class="say">${M(real[kn]+' : '+o.r[kn]+' = '+k)} ← גורם ההרחבה. כופלים <b>גם</b> מונה <b>וגם</b> מכנה.</div>`:'');}
+  out+=EXP(a,b,num,den,k,hl,COL[top?kn:i],COL[top?i:kn],o.names[top?kn:i],o.names[top?i:kn]);}
  return out;}
+/* ===== מוחשי: קופסאות וקבוצות שרואים בעיניים (לפני הטבלה) ===== */
+const BOXc=(col,txt,d)=>`<span class="bxo rv" style="--d:${d}s;border-color:${col};color:${col}">${txt}</span>`;
+function VIZ(o,hl){const S=sum(o.r),k=o.k,real=o.r.map(x=>x*k),T=S*k,u=o.unit||'';let d=.2,h='';
+ if(!o.isE||o.ask.includes('T')){
+  const top=o.isE?`<div class="vz-t">${M(real[o.known])} ← ${M(o.r[o.known])} קופסאות</div>`:`<div class="vz-t">${M(T)} ← ${M(o.r.join(' + ')+' = '+S)} קופסאות</div>`;
+  h=top+`<div class="vz-r">`+o.r.map((n,i)=>{const g=Array.from({length:n},()=>{d+=.25;const show=hl||(o.isE&&i===o.known);return BOXc(COL[i],show?k:'',d);}).join('');
+   return `<div class="vz-g"><div class="vz-n" style="color:${COL[i]}">${o.names[i]}</div><div class="vz-b">${g}</div>${hl?`<div class="vz-s rv" style="--d:${d+.3}s;color:${COL[i]}">${M(n+' · '+k+' = '+real[i])}</div>`:''}</div>`;}).join('')+`</div>`;
+  if(hl)h+=`<div class="vz-t rv" style="--d:${d+.6}s">${o.isE?`${M(S+' · '+k+' = '+T)}`:`${M(T+' : '+S+' = '+k)}`}</div>`;}
+ else{const show=Math.min(k,6);
+  h=`<div class="vz-r">`+
+   Array.from({length:hl?show:1},(_,j)=>{d+=.45;return `<div class="vz-g rv" style="--d:${d}s"><div class="vz-n">${j+1}</div><div class="vz-b">${o.r.map((n,i)=>Array.from({length:Math.min(n,8)},()=>`<span class="dot" style="background:${COL[i]}"></span>`).join('')+(n>8?'…':'')).join('<span style="width:6px"></span>')}</div></div>`;}).join('')+(hl&&k>6?`<div class="vz-g rv" style="--d:${d+.4}s;font:900 26px Rubik">… ${M(k)}</div>`:'')+`</div>`;
+  h+=hl?`<div class="vz-t rv" style="--d:${d+.5}s;color:#ff6b6b">${M(k)} קבוצות</div>`:`<div class="vz-t" style="color:#ff6b6b">כמה קבוצות?</div>`;}
+ return `<div class="vz">${h}</div>`;}
+function PVIZ(W,p,hl,col){let c='';for(let i=0;i<100;i++)c+=`<span class="pc ${i<p&&hl?'rv':''}" style="${i<p?`background:${col||GR};--d:${.2+i*.02}s`:''}"></span>`;
+ return `<div class="vz"><div class="vz-t">${M(W)} = ${M('100')} משבצות ← משבצת = ${M(W/100)}</div><div class="pg">${c}</div>${hl?`<div class="vz-t rv" style="--d:2.4s">${M(p+' · '+W/100+' = '+W/100*p)}</div>`:''}</div>`;}
+/* שבר מורחב עם חיצים אדומים של גורם ההרחבה (למעלה ולמטה) */
+function EXP(a,b,n2,d2,k,hl,c1,c2,l1,l2){const f=hl?k:'?',T=(x,y,t,c,sz)=>`<text x="${x}" y="${y}" fill="${c}" font-size="${sz||34}" font-weight="900" text-anchor="middle" font-family="Rubik">${t}</text>`,
+ arr=(y0,y1,yc)=>`<path d="M215,${y0} Q140,${yc} 70,${y1}" fill="none" stroke="#ff6b6b" stroke-width="4" marker-end="url(#ah)"/>`;
+ return `<svg viewBox="0 0 290 190" style="width:290px;max-width:100%" role="img" aria-label="הרחבת שבר"><defs><marker id="ah" markerUnits="userSpaceOnUse" markerWidth="16" markerHeight="16" refX="9" refY="8" orient="auto"><path d="M0,0 L16,8 L0,16 z" fill="#ff6b6b"/></marker><marker id="ah0" markerWidth="1" markerHeight="1"><path d="M0,0 L10,5 L0,10 z" fill="#ff6b6b"/></marker></defs>
+ ${T(240,72,a,c1)}<line x1="215" y1="86" x2="265" y2="86" stroke="currentColor" stroke-width="4"/>${T(240,122,b,c2)}
+ ${T(45,72,n2,c1)}<line x1="15" y1="86" x2="75" y2="86" stroke="currentColor" stroke-width="4"/>${T(45,122,d2,c2)}
+ ${arr(50,50,2)}${arr(112,112,175)}${T(143,24,'· '+f,'#ff6b6b',26)}${T(143,180,'· '+f,'#ff6b6b',26)}</svg>`;}
 /* שאלת יחס כללית.
  o: kind, rc, isE (הרחבה), sig, text, names[], r[] (חלקי היחס), k (פי כמה), known (בהרחבה: איזה צד נתון),
  ask[] (אינדקסים; 'T' = הסה״כ), tName, pre[] (שלבים לפני, למשל חצי היקף), preLine, extra {label,val,step,line} */
 function RQ(o){const n=o.r.length,S=sum(o.r),k=o.k,real=o.r.map(x=>x*k),T=S*k,isE=o.isE,showT=!isE||o.ask.includes('T');
- o.dia=hl=>`<div class="tbw">${FT(o,hl)}</div>`;
+ o.dia=hl=>`<div class="tbw">${VIZ(o,hl)}${FT(o,hl)}</div>`;
  const ans=o.ask.map(i=>i==='T'?{label:o.tName||'סה״כ',col:PU,val:T,unit:o.unit}:{label:o.names[i],col:COL[i],val:real[i],unit:o.unit});
  const W=[...(o.pre||[])],L=[];if(o.preLine)L.push(o.preLine);
  if(isE){const kn=o.known;
   W.push({t:`גורם ההרחבה: ${M(real[kn]+' : '+o.r[kn]+' = ?')}`,ans:[{label:'',val:k}],why:`בעמודת ${o.names[kn]} ידועים גם החלקים (${M(o.r[kn])}) וגם מה שיש באמת (${M(real[kn])}). מחלקים ← פי כמה הגדילו.`});
-  L.push(`🟦 נתון ${o.names[kn]} ← גורם ההרחבה ${M(real[kn]+' : '+o.r[kn]+' = '+k)} ← כופלים מונה ומכנה ב־<b style="color:#ff6b6b">${k}</b>`);}
+  L.push(`גורם ההרחבה: <b style="color:#ff6b6b">${M(real[kn]+' : '+o.r[kn]+' = '+k)}</b>`);}
  else{if(n>1){W.push({t:`המכנה של השבר = כל החלקים: ${M(o.r.join(' + ')+' = ?')}`,ans:[{label:'חלקים',val:S}],why:'את החלקים של היחס <b>מחברים</b>. זה המכנה (השלם). לא כופלים, ולא סופרים אנשים.'});}
   W.push({t:`${M(T)} · ${FRr('?',S)}: קודם ${M(T+' : '+S+' = ?')}`,ans:[{label:'',val:k}],why:`כופלים בשבר = מחלקים במכנה (${M(S)} חלקים), ואז כופלים במונה. לא מחלקים במספר האנשים!`});
-  L.push(`🟧 חלוקה: ${M(o.r.join(' + ')+' = '+S)} חלקים (המכנה). השלם ידוע ← <b>כפל</b>: שלם · שבר`);}
+  L.push(`${M(o.r.join(' + ')+' = '+S)} חלקים`);}
  o.ask.forEach(i=>{if(i==='T'){W.push({t:`השלם: ${M(S+' · '+k+' = ?')}`,ans:[{label:'',val:T}],why:`השלם חסר ← <b>חילוק</b>: ${M(real[o.known])} : ${FRr(o.r[o.known],S)}. כלומר חלק אחד (${M(k)}) · כל החלקים (${M(S)}).`});return;}
   if(isE&&i===o.known)return;W.push({t:isE?`${o.names[i]}: ${M(o.r[i]+' · '+k+' = ?')}`:`${o.names[i]}: ${M(T)} · ${FRr(o.r[i],S)} ← ${M(o.r[i]+' · '+k+' = ?')}`,ans:[{label:'',val:real[i]}],why:isE?`גורם ההרחבה ${M(k)}: כופלים גם את ${o.names[i]}.`:`שלם · שבר: ${M(T+' : '+S+' = '+k)}, ואז ${M(k+' · '+o.r[i])}.`});});
  L.push(o.ask.filter(i=>i!=='T'&&!(isE&&i===o.known)).map(i=>isE?`${o.names[i]}: ${M(o.r[i]+' · '+k+' = '+real[i])}`:`${o.names[i]}: ${M(T)} · ${FRr(o.r[i],S)} = ${M(real[i])}`).join(' · ')+(o.ask.includes('T')?` · השלם (חסר ← חילוק): ${M(real[o.known])} : ${FRr(o.r[o.known],S)} = ${M(T)}`:''));
  if(o.extra){ans.push({label:o.extra.label,col:GR,val:o.extra.val,unit:o.extra.unit});W.push(o.extra.step);L.push(o.extra.line);}
- if(!isE)L.push(`בדיקה: ${M(real.join(' + ')+' = '+T)} ✓`);
+ if(!isE)L.push(`${M(real.join(' + ')+' = '+T)} ✓`);
  const q={kind:o.kind,rc:o.rc,text:o.text,dia:o.dia,ans,work:W,lines:L,crack:[TYPECK(isE,o.sig),...(o.crack||[])],
   rule:isE?(o.ask.includes('T')?'השלם חסר ← חילוק: חלק : שבר.':'הרחבה: גורם ההרחבה ← כופלים מונה וגם מכנה.'):'השלם ידוע ← כפל: שלם · שבר (המכנה = כל החלקים).',
   trick:isE?'בהרחבה לא מוסיפים! כופלים פי אותו מספר.':'מחלקים במספר החלקים, לא במספר האנשים!'};
@@ -100,10 +129,10 @@ function triSVG(L1,S1,S2,hl,x){const s=Math.min(9,150/L1),w1=S1*s,h1=L1*s,w2=S2*
  const tri=(xr,w,h,lv,sv,lc)=>`<polygon points="${xr},${by} ${xr-w},${by} ${xr},${by-h}" fill="none" stroke="${GR}" stroke-width="3"/><rect x="${xr-12}" y="${by-12}" width="12" height="12" fill="none" stroke="${GR}" stroke-width="2"/>
   <text x="${xr+8}" y="${by-h/2}" fill="${COL[0]}" font-size="17" font-weight="800" font-family="Rubik">${lv}</text><text x="${xr-w/2}" y="${by+20}" fill="${COL[1]}" font-size="17" font-weight="800" text-anchor="middle" font-family="Rubik">${sv}</text>`;
  return `<svg viewBox="0 0 330 200" style="width:300px;max-width:100%" role="img" aria-label="שני משולשים ישרי זווית">${tri(130,w1,h1,L1,S1)}${tri(300,w2,h2,hl?x:'x',S2)}</svg>`;}
-function eTri(){let c=pick([2,3]),w=R(3,8),s2=R(2,7);if(book()){c=2;w=8;s2=6;}if(s2===w)s2++;const L1=c*w,x=c*s2;
+function eTri(){let c=pick([2,3]),w=R(5,9),s2=R(2,w-1);if(book()){c=2;w=8;s2=6;}const L1=c*w,x=c*s2;
  const q=RQ({kind:'🟦 הרחבה · משולשים',rc:1,isE:true,sig:'ניצב אחד במשולש הקטן',names:['ניצב ארוך','ניצב קצר'],r:[c,1],k:s2,known:1,ask:[0],unit:'ס״מ',
   pre:[{t:`היחס במשולש הגדול: ${M(L1+' : '+w+' = ? : 1')}`,ans:[{label:'',val:c}],why:`מצמצמים: מחלקים את שני הניצבים ב־${M(w)}. זה גם <b>מקדם הפרופורציה</b>.`}],
-  preLine:`במשולש הגדול ${M(L1+' : '+w+' = '+c+' : 1')} ← מקדם הפרופורציה ${M(c)}`,
+  preLine:`${M(L1+' : '+w+' = '+c+' : 1')}`,
   text:`לפניכם שני משולשים ישרי זווית. היחס בין ${C2('הניצב הארוך',0)} ל${C2('ניצב הקצר',1)} זהה בשני המשולשים. במשולש הגדול הניצבים ${M(L1)} ס״מ ו־${M(w)} ס״מ. במשולש הקטן ${HL('הניצב הקצר '+M(s2)+' ס״מ')}. מצאו את x.`,
   diag:([v])=>v===L1-w+s2?`<b>הוספתם</b> את ההפרש (${M(L1-w)}). ביחס לא מוסיפים: הארוך גדול <b>פי ${c}</b> מהקצר.`:v===L1/w*s2&&false?null:null});
  const d=q.dia;q.dia=hl=>`<div class="tbw"><div class="row">${triSVG(L1,w,s2,hl,x)}</div>${d(hl)}</div>`;return q;}
@@ -205,9 +234,9 @@ const SCN=[[1,()=>`בעוגייה קטנה ${M('1')} כפית סוכר ו־${M('
  [1,()=>`לימונדה: ${M('2')} כוסות מים על כל כוס סירופ. ${HL('שמנו '+M(R(3,8))+' כוסות סירופ')}. כמה מים?`],
  [0,()=>`מחלקים ${HL(M('120')+' סופגניות')} בין 3 כיתות ביחס ${M('3 : 4 : 5')}. כמה מקבלת כל כיתה?`]];
 function gType(){const [e,f]=pick(SCN),isE=!!e;
- return {kind:'🟦 הרחבה או 🟧 חלוקה?',rc:3,text:`איזה סוג שאלה זו? (לא פותרים, רק מזהים)<br>${f()}`,choice:[TE,TD],correct:isE?0:1,
+ return {kind:'🟦 הרחבה או 🟧 חלוקה?',rc:3,dia:hl=>`<div class="row"><div class="tag tE ${hl&&!isE?'dim':''} ${hl&&isE?'rv big':''}">🟦 צד אחד ← הרחבה</div><div class="tag tD ${hl&&isE?'dim':''} ${hl&&!isE?'rv big':''}">🟧 הכול ← חלוקה</div></div>`,text:`איזה סוג שאלה זו? (לא פותרים, רק מזהים)<br>${f()}`,choice:[TE,TD],correct:isE?0:1,
   work:[{t:'מה המספר המסומן? צד אחד, או הסה״כ?',choice:['צד אחד','הסה״כ (כל הכמות)'],correct:isE?0:1,why:isE?'המספר שייך לצד <b>אחד</b> בלבד ← הרחבה.':'המספר הוא <b>כל</b> הכמות (גם "היקף", "ביחד", "משולש" = סה״כ) ← חלוקה.'},{t:'ולכן הסוג:',choice:[TE,TD],correct:isE?0:1,why:'נתון צד אחד ← הרחבה. נתון הסה״כ ← חלוקה.'}],
-  lines:[isE?'נתון רק <b>צד אחד</b> ← 🟦 הרחבה: פי כמה? וכופלים.':'נתון <b>הסה״כ</b> ← 🟧 חלוקה: מחברים חלקים ומחלקים.'],rule:'צד אחד ← הרחבה. סה״כ ← חלוקה.',
+  lines:[isE?'המספר הצהוב = <b>צד אחד</b> ← 🟦':'המספר הצהוב = <b>הכול</b> ← 🟧'],rule:'צד אחד ← הרחבה. סה״כ ← חלוקה.',
   diag:()=>isE?'המספר המסומן שייך ל<b>צד אחד</b> בלבד, ואין סה״כ ← הרחבה.':'המספר המסומן הוא <b>הכול</b> (ביחד / היקף / סכום הזוויות) ← חלוקה ביחס.'};}
 /* ===== חימום ===== */
 function genWarm(t){
@@ -225,21 +254,21 @@ const PW=[[400,20],[300,10],[500,20],[200,25],[800,25],[600,30],[1000,40],[120,2
 const pTB=(rows,hl,note)=>`<div class="tbw">${TB([{h:'השלם',c:PU},{h:'החלק היחסי (שבר)',c:'#f3f6fb'},{h:'החלק המבוקש',c:GR}],rows,0,0,hl)}${hl&&note?`<div class="say">${note}</div>`:''}</div>`;
 function pPart(){const [W,p]=pick(PW),v=W*p/100,it=pick(['תלמידים','ש״ח','עמודים','עציצים']);
  return {kind:'💯 אחוזים · השלם ידוע',rc:7,text:`${HL('בסך הכול '+M(W)+' '+it)}. כמה הם ${M(p+'%')} מהם?`,ans:[{label:it,col:GR,val:v}],
-  dia:hl=>pTB([{l:M(p+'%'),c:[[W,0],[FRr(p,100),1],[`${W} · ${FRr(p,100)} = ${v}`,2,true]]}],hl,'השלם ידוע ← <b>כפל</b>: שלם · שבר. בדיוק כמו ביחס!'),
+  dia:hl=>PVIZ(W,p,hl)+pTB([{l:M(p+'%'),c:[[W,0],[FRr(p,100),1],[`${W} · ${FRr(p,100)} = ${v}`,2,true]]}],hl,'השלם ידוע ← <b>כפל</b>: שלם · שבר. בדיוק כמו ביחס!'),
   crack:[CK('🟦 הרחבה או 🟧 חלוקה?',[TE,TD],TD,`נתון <b>השלם</b> (${M(W)}) ← כמו חלוקה ביחס: שלם · שבר.`),CK(`איך כותבים ${M(p+'%')} כשבר?`,[FRr(p,100),FRr(p,10),FRr(1,p)],FRr(p,100),'אחוז = חלק מתוך <b>100</b> ← המכנה תמיד 100.')],
   work:[{t:`${M(p+'%')} כשבר: המכנה = ?`,ans:[{label:'',val:100}],why:'אחוז = מתוך <b>100</b>. ביחס המכנה = כל החלקים, באחוזים = 100.'},{t:`${M(W+' : 100 = ?')} (אחוז אחד)`,ans:[{label:'',val:W/100}],why:'כופלים בשבר = מחלקים במכנה, ואז כופלים במונה.'},{t:M(W/100+' · '+p+' = ?'),ans:[{label:'',val:v}],why:`אחוז אחד · ${p}.`}],
   lines:[`${M(p+'%')} = ${FRr(p,100)} ← השלם ידוע ← כפל`,`${M(W)} · ${FRr(p,100)} = ${M(v)}`],rule:'אחוז = שבר מתוך 100. השלם ידוע ← שלם · שבר.',trick:'אחוז זה שבר שהמכנה שלו 100.',
   diag:({vals:[x]})=>x===W-p?'<b>חיסרתם</b>. אחוז הוא שבר ← כופלים: '+M(W)+' · '+FRr(p,100)+'.':x===W*p?'שכחתם לחלק ב־100 (המכנה).':x===W/100?'זה אחוז <b>אחד</b>. עכשיו · '+M(p)+'.':null};}
 function pRemain(){const [W,p]=pick(PW),q=100-p,v=W*q/100;
  return {kind:'💯 אחוזים · מה נשאר?',rc:7,text:`מחיר מעיל ${HL(M(W)+' ש״ח')}. יש הנחה של ${M(p+'%')}. כמה משלמים?`,ans:[{label:'ש״ח',col:GR,val:v}],
-  dia:hl=>pTB([{l:'משלמים',c:[[W,0],[FRr(`100 − ${p} = ${q}`,100),1],[`${W} · ${FRr(q,100)} = ${v}`,2,true]]}],hl,`הנחה ${p}% ← משלמים מה שנשאר: ${q}%`),
+  dia:hl=>PVIZ(W,q,hl)+pTB([{l:'משלמים',c:[[W,0],[FRr(`100 − ${p} = ${q}`,100),1],[`${W} · ${FRr(q,100)} = ${v}`,2,true]]}],hl,`הנחה ${p}% ← משלמים מה שנשאר: ${q}%`),
   crack:[CK('כמה אחוזים משלמים?',[M(q+'%'),M(p+'%'),M('100%')],M(q+'%'),`ההנחה ${M(p+'%')} יורדת ← נשאר ${M('100 − '+p+' = '+q)}%.`)],
   work:[{t:`נשאר: ${M('100 − '+p+' = ?')} %`,ans:[{label:'%',val:q}],why:'השלם = 100%. מורידים את ההנחה.'},{t:M(W+' : 100 = ?'),ans:[{label:'',val:W/100}],why:'אחוז אחד = השלם : 100.'},{t:M(W/100+' · '+q+' = ?'),ans:[{label:'',val:v}],why:`אחוז אחד · ${q}.`}],
   lines:[`משלמים ${M('100% − '+p+'% = '+q+'%')}`,`${M(W)} · ${FRr(q,100)} = ${M(v)} ש״ח`],rule:'מה נשאר? 100% פחות ההנחה ← שלם · שבר.',trick:'ההנחה היא לא מה שמשלמים!',
   diag:({vals:[x]})=>x===W*p/100?`זו <b>ההנחה</b> (${M(p+'%')}). משלמים את מה שנשאר: ${M(q+'%')}.`:x===W-p?`הורדתם ${M(p)} ש״ח. ההנחה היא ${M(p)} <b>אחוז</b>, לא שקלים.`:null};}
 function pWhole(){const [W,p]=pick(PW),v=W*p/100;
  return {kind:'💯 אחוזים · השלם חסר',rc:7,text:`${HL(M(v)+' תלמידים')} הם ${M(p+'%')} מכל תלמידי השכבה. כמה תלמידים בשכבה (השלם)?`,ans:[{label:'תלמידים',col:PU,val:W}],
-  dia:hl=>pTB([{l:'שכבה',c:[[`${v} : ${FRr(p,100)} = ${W}`,2,true],[FRr(p,100),1],[v,0]]}],hl,'השלם חסר ← <b>חילוק</b>: חלק : שבר. כמו ביחס!'),
+  dia:hl=>PVIZ(W,p,hl,COL[1])+pTB([{l:'שכבה',c:[[`${v} : ${FRr(p,100)} = ${W}`,2,true],[FRr(p,100),1],[v,0]]}],hl,'השלם חסר ← <b>חילוק</b>: חלק : שבר. כמו ביחס!'),
   work:[{t:`אחוז אחד: ${M(v+' : '+p+' = ?')}`,ans:[{label:'',val:W/100}],why:`${M(v)} הם ${M(p)} אחוזים ← מחלקים ב־${M(p)} ← אחוז אחד.`},{t:`השלם = 100%: ${M(W/100+' · 100 = ?')}`,ans:[{label:'',val:W}],why:'השלם הוא 100 אחוזים.'}],
   lines:[`השלם חסר ← חילוק: ${M(v)} : ${FRr(p,100)}`,`${M(v+' : '+p+' = '+W/100)} (אחוז אחד) ← ${M(W/100+' · 100 = '+W)}`],rule:'השלם חסר ← חלק : שבר.',trick:'כאן לא כופלים! השלם חסר ← מחלקים.',
   diag:({vals:[x]})=>x===v*p/100?'כפלתם. אבל כאן <b>השלם חסר</b> ← מחלקים: '+M(v)+' : '+FRr(p,100)+'.':x===v/100*p?'הפוך! השלם חסר ← חלק : שבר.':null};}
