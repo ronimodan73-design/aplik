@@ -167,7 +167,7 @@ const store={get:k=>{try{return JSON.parse(localStorage.getItem(APP.key+'_'+k))}
 const deg='°';
 const f=n=>(+n).toFixed(1);
 /*META {"id":"h8_ratio_type","title":"הרחבה או חלוקה ביחס? · ערכה: רוני מודן","short":"הרחבה/חלוקה","topic":"יחס: הרחבה או חלוקה ביחס","glyph":"a:b","color":"#5ec8ff"} */
-const APP={key:'h8rtype',topic:'יחס: הרחבה או חלוקה ביחס',sub:'קודם מזהים: נתון צד אחד (הרחבה) או נתון הסה״כ (חלוקה)? אחר כך טבלה אחת קבועה: יחס ← באמת ← פי כמה.'};
+const APP={key:'h8rtype',topic:'יחס: הרחבה או חלוקה ביחס',sub:'יחס ואחוזים, אותו רעיון: שלם · שבר. קודם מזהים: נתון צד אחד (הרחבה) או נתון הסה״כ (חלוקה)? אחר כך טבלה אחת קבועה: יחס ← באמת ← פי כמה.'};
 document.head.insertAdjacentHTML('beforeend',`<style>
 table.at{border-collapse:separate;border-spacing:0;font-family:Rubik;font-weight:700;margin:6px auto;direction:rtl}
 .at th,.at td{border:2px solid var(--line);padding:6px 12px;text-align:center;font-size:22px;min-width:70px;height:48px}
@@ -388,15 +388,44 @@ function genWarm(t){
  const a=R(1,4),k=R(2,8);
  return {kind:'חימום · פי כמה?',rc:1,text:`ביחס כתוב ${M(a)} חלקים, ובאמת יש ${M(a*k)}. פי כמה זה גדל?`,ans:[{label:'פי',col:'#ff6b6b',val:k}],lines:[M(a*k+' : '+a+' = '+k)],rule:'פי כמה = באמת : חלקים.',
   work:[{t:M(a*k+' : '+a+' = ?'),ans:[{label:'פי',val:k}],why:'"פי כמה" ← מחלקים.'}],diag:({vals:[x]})=>x===a*k-a?'<b>חיסרתם</b>. "פי כמה" ← מחלקים.':null};}
+/* ===== אחוזים: אותו רעיון! שבר מתוך 100 ===== */
+const PW=[[400,20],[300,10],[500,20],[200,25],[800,25],[600,30],[1000,40],[120,25],[80,25],[250,20],[60,50],[150,20],[900,10],[700,30],[400,75]];
+const pTB=(rows,hl,note)=>`<div class="tbw">${TB([{h:'השלם',c:PU},{h:'החלק היחסי (שבר)',c:'#f3f6fb'},{h:'החלק המבוקש',c:GR}],rows,0,0,hl)}${hl&&note?`<div class="say">${note}</div>`:''}</div>`;
+function pPart(){const [W,p]=pick(PW),v=W*p/100,it=pick(['תלמידים','ש״ח','עמודים','עציצים']);
+ return {kind:'💯 אחוזים · השלם ידוע',rc:7,text:`${HL('בסך הכול '+M(W)+' '+it)}. כמה הם ${M(p+'%')} מהם?`,ans:[{label:it,col:GR,val:v}],
+  dia:hl=>pTB([{l:M(p+'%'),c:[[W,0],[FRr(p,100),1],[`${W} · ${FRr(p,100)} = ${v}`,2,true]]}],hl,'השלם ידוע ← <b>כפל</b>: שלם · שבר. בדיוק כמו ביחס!'),
+  crack:[CK('🟦 הרחבה או 🟧 חלוקה?',[TE,TD],TD,`נתון <b>השלם</b> (${M(W)}) ← כמו חלוקה ביחס: שלם · שבר.`),CK(`איך כותבים ${M(p+'%')} כשבר?`,[FRr(p,100),FRr(p,10),FRr(1,p)],FRr(p,100),'אחוז = חלק מתוך <b>100</b> ← המכנה תמיד 100.')],
+  work:[{t:`${M(p+'%')} כשבר: המכנה = ?`,ans:[{label:'',val:100}],why:'אחוז = מתוך <b>100</b>. ביחס המכנה = כל החלקים, באחוזים = 100.'},{t:`${M(W+' : 100 = ?')} (אחוז אחד)`,ans:[{label:'',val:W/100}],why:'כופלים בשבר = מחלקים במכנה, ואז כופלים במונה.'},{t:M(W/100+' · '+p+' = ?'),ans:[{label:'',val:v}],why:`אחוז אחד · ${p}.`}],
+  lines:[`${M(p+'%')} = ${FRr(p,100)} ← השלם ידוע ← כפל`,`${M(W)} · ${FRr(p,100)} = ${M(v)}`],rule:'אחוז = שבר מתוך 100. השלם ידוע ← שלם · שבר.',trick:'אחוז זה שבר שהמכנה שלו 100.',
+  diag:({vals:[x]})=>x===W-p?'<b>חיסרתם</b>. אחוז הוא שבר ← כופלים: '+M(W)+' · '+FRr(p,100)+'.':x===W*p?'שכחתם לחלק ב־100 (המכנה).':x===W/100?'זה אחוז <b>אחד</b>. עכשיו · '+M(p)+'.':null};}
+function pRemain(){const [W,p]=pick(PW),q=100-p,v=W*q/100;
+ return {kind:'💯 אחוזים · מה נשאר?',rc:7,text:`מחיר מעיל ${HL(M(W)+' ש״ח')}. יש הנחה של ${M(p+'%')}. כמה משלמים?`,ans:[{label:'ש״ח',col:GR,val:v}],
+  dia:hl=>pTB([{l:'משלמים',c:[[W,0],[FRr(`100 − ${p} = ${q}`,100),1],[`${W} · ${FRr(q,100)} = ${v}`,2,true]]}],hl,`הנחה ${p}% ← משלמים מה שנשאר: ${q}%`),
+  crack:[CK('כמה אחוזים משלמים?',[M(q+'%'),M(p+'%'),M('100%')],M(q+'%'),`ההנחה ${M(p+'%')} יורדת ← נשאר ${M('100 − '+p+' = '+q)}%.`)],
+  work:[{t:`נשאר: ${M('100 − '+p+' = ?')} %`,ans:[{label:'%',val:q}],why:'השלם = 100%. מורידים את ההנחה.'},{t:M(W+' : 100 = ?'),ans:[{label:'',val:W/100}],why:'אחוז אחד = השלם : 100.'},{t:M(W/100+' · '+q+' = ?'),ans:[{label:'',val:v}],why:`אחוז אחד · ${q}.`}],
+  lines:[`משלמים ${M('100% − '+p+'% = '+q+'%')}`,`${M(W)} · ${FRr(q,100)} = ${M(v)} ש״ח`],rule:'מה נשאר? 100% פחות ההנחה ← שלם · שבר.',trick:'ההנחה היא לא מה שמשלמים!',
+  diag:({vals:[x]})=>x===W*p/100?`זו <b>ההנחה</b> (${M(p+'%')}). משלמים את מה שנשאר: ${M(q+'%')}.`:x===W-p?`הורדתם ${M(p)} ש״ח. ההנחה היא ${M(p)} <b>אחוז</b>, לא שקלים.`:null};}
+function pWhole(){const [W,p]=pick(PW),v=W*p/100;
+ return {kind:'💯 אחוזים · השלם חסר',rc:7,text:`${HL(M(v)+' תלמידים')} הם ${M(p+'%')} מכל תלמידי השכבה. כמה תלמידים בשכבה (השלם)?`,ans:[{label:'תלמידים',col:PU,val:W}],
+  dia:hl=>pTB([{l:'שכבה',c:[[`${v} : ${FRr(p,100)} = ${W}`,2,true],[FRr(p,100),1],[v,0]]}],hl,'השלם חסר ← <b>חילוק</b>: חלק : שבר. כמו ביחס!'),
+  work:[{t:`אחוז אחד: ${M(v+' : '+p+' = ?')}`,ans:[{label:'',val:W/100}],why:`${M(v)} הם ${M(p)} אחוזים ← מחלקים ב־${M(p)} ← אחוז אחד.`},{t:`השלם = 100%: ${M(W/100+' · 100 = ?')}`,ans:[{label:'',val:W}],why:'השלם הוא 100 אחוזים.'}],
+  lines:[`השלם חסר ← חילוק: ${M(v)} : ${FRr(p,100)}`,`${M(v+' : '+p+' = '+W/100)} (אחוז אחד) ← ${M(W/100+' · 100 = '+W)}`],rule:'השלם חסר ← חלק : שבר.',trick:'כאן לא כופלים! השלם חסר ← מחלקים.',
+  diag:({vals:[x]})=>x===v*p/100?'כפלתם. אבל כאן <b>השלם חסר</b> ← מחלקים: '+M(v)+' : '+FRr(p,100)+'.':x===v/100*p?'הפוך! השלם חסר ← חלק : שבר.':null};}
+function pLink(){const [a,b]=pick([[1,4],[1,3],[1,1],[3,1],[2,3],[3,2],[1,9],[3,7],[2,8]].filter(([a,b])=>100%(a+b)===0||(a+b)===4)),S=a+b,pc=a*100/S;
+ return {kind:'💯 יחס ← אחוזים',rc:7,text:`מחלקים ממתקים בין ${C2('דנה',0)} ל${C2('נועם',1)} ביחס ${M(a+' : '+b)}. כמה <b>אחוזים</b> מהממתקים מקבלת דנה?`,ans:[{label:'%',col:COL[0],val:pc}],
+  dia:hl=>pTB([{l:C2('דנה',0),c:[[M('100%'),0],[FRr(a,S),1],[`${FRr(a,S)} = ${FRr(pc,100)} = ${pc}%`,2,true]]}],hl,'שבר של יחס ← מרחיבים למכנה 100 ← אחוז!'),
+  work:[{t:`החלק של דנה כשבר: המכנה = ${M(a+' + '+b+' = ?')}`,ans:[{label:'',val:S}],why:'המכנה = כל החלקים של היחס.'},{t:`גורם ההרחבה ל־100: ${M('100 : '+S+' = ?')}`,ans:[{label:'',val:100/S}],why:'אחוז = שבר שהמכנה שלו 100. בכמה כופלים את המכנה כדי לקבל 100?'},{t:M(a+' · '+100/S+' = ?')+' %',ans:[{label:'%',val:pc}],why:'כופלים גם את המונה באותו גורם.'}],
+  lines:[`דנה: ${FRr(a,S)} מהממתקים`,`מרחיבים פי ${M(100/S)}: ${FRr(a,S)} = ${FRr(pc,100)} = ${M(pc+'%')}`],rule:'יחס ← שבר (המכנה = כל החלקים) ← מרחיבים ל־100 ← אחוז.',trick:'יחס ואחוז הם אותו רעיון: חלק מתוך השלם.',
+  diag:({vals:[x]})=>x===a*100/b?'השוויתם את דנה ל<b>נועם</b>. אחוז הוא מתוך <b>כל</b> הממתקים: '+FRr(a,S)+'.':x===a?'זה מספר החלקים. אחוז = מתוך 100: מרחיבים את '+FRr(a,S)+'.':null};}
 /* ===== שלבים ===== */
 const eOrD=()=>Math.random()<.5?eSimple(false):dTwo();
 const LEVELS=[
- {n:1,t:'מזהים: הרחבה או חלוקה?',d:'מזהים סוג ← הרחבה פשוטה ← חלוקה לשניים',ladder:[{g:gType,n:5,h:2},{g:()=>eSimple(false),n:5,h:2},{g:dTwo,n:5,h:2},{g:eOrD,n:5,h:1}]},
- {n:2,t:'משולשים, זווית ומשוואה',d:'משולשים (x) ← זווית מחולקת ← x = חלק אחד',ladder:[{g:eTri,n:5,h:1},{g:dAngle,n:4,h:1},{g:dPrice,n:4,h:1},{g:()=>eSimple(true),n:3,h:1},{g:eWhole,n:4,h:0}]},
- {n:3,t:'הסה״כ מוסתר',d:'היקף מלבן ← 3 חלקים ← זוויות במשולש ← נימוק',ladder:[{g:dRect,n:5,h:1},{g:dThree,n:4,h:1},{g:dTriAng,n:4,h:1},{g:dFloor,n:3,h:0},{g:eCoef,n:2,h:0},{g:eBig,n:2,h:0}]},
- {n:4,t:'חשיבה ואוריינות',d:'מרובע ← נכון או לא? ← חלק מול כולל ← קנייה',ladder:[{g:dQuad,n:4,h:1},{g:dClaim,n:4,h:0},{g:dTF,n:4,h:0},{g:dPW,n:4,h:0},{g:dSalad,n:4,h:0}]}];
+ {n:1,t:'מזהים: הרחבה או חלוקה?',d:'מזהים סוג ← הרחבה פשוטה ← חלוקה לשניים',ladder:[{g:gType,n:5,h:2},{g:()=>eSimple(false),n:5,h:2},{g:dTwo,n:5,h:2},{g:eOrD,n:2,h:1},{g:pPart,n:3,h:2}]},
+ {n:2,t:'משולשים, זווית ומשוואה',d:'משולשים (x) ← זווית מחולקת ← x = חלק אחד',ladder:[{g:eTri,n:5,h:1},{g:dAngle,n:4,h:1},{g:dPrice,n:4,h:1},{g:()=>eSimple(true),n:2,h:1},{g:eWhole,n:3,h:0},{g:pRemain,n:2,h:1}]},
+ {n:3,t:'הסה״כ מוסתר',d:'היקף מלבן ← 3 חלקים ← זוויות במשולש ← נימוק',ladder:[{g:dRect,n:5,h:1},{g:dThree,n:4,h:1},{g:dTriAng,n:4,h:1},{g:dFloor,n:3,h:0},{g:eCoef,n:1,h:0},{g:eBig,n:1,h:0},{g:pWhole,n:2,h:0}]},
+ {n:4,t:'חשיבה ואוריינות',d:'מרובע ← נכון או לא? ← חלק מול כולל ← קנייה',ladder:[{g:dQuad,n:4,h:1},{g:dClaim,n:4,h:0},{g:dTF,n:4,h:0},{g:dPW,n:3,h:0},{g:dSalad,n:2,h:0},{g:pLink,n:3,h:0}]}];
 LEVELS.forEach(l=>l.g=()=>pick(l.ladder).g());
-const TEST=[[gType,()=>eSimple(false),dTwo,()=>genWarm('b')],[eTri,dAngle,dPrice,eWhole],[dRect,dThree,dTriAng,dFloor],[dQuad,dClaim,dTF,dSalad]];
+const TEST=[[gType,()=>eSimple(false),dTwo,pPart],[eTri,dAngle,eWhole,pRemain],[dRect,dThree,dTriAng,pWhole],[dQuad,dClaim,dSalad,pLink]];
 const WARM=['c','a','b','c','a','b','a','b'].map(t=>()=>genWarm(t));
 /* ===== הסבר מונפש: למה זה נכון ===== */
 const sq=(n,col,o={})=>Array.from({length:n},(_,i)=>`<span class="c rv" style="background:${col};--d:${(o.d||0)+i*(o.st||.2)}s">${o.t!=null?o.t:''}</span>`).join('');
@@ -416,9 +445,11 @@ const RECAP=[
   says:[`${M('4 : 1 = 4')} ← כופלים <b>גם</b> את ה־${M('5')}`],what:'מונה ומכנה ← אותו מספר.'},
  {h:'⚠️ הסה״כ מוסתר',d:.6,svg:()=>`<div class="row"><div class="tag tD rv" style="--d:.1s">היקף ← חצי היקף</div><div class="tag tD rv" style="--d:.5s">משולש ← 180°</div><div class="tag tD rv" style="--d:.9s">מרובע ← 360°</div></div>`,
   says:['לפעמים הסה״כ לא כתוב במספר.'],what:'קודם מוצאים את הסה״כ.'},
+ {h:'💯 אחוז = אותו רעיון!',d:2.4,svg:()=>TB([{h:'השלם',c:PU},{h:'החלק היחסי (שבר)',c:'#f3f6fb'},{h:'החלק המבוקש',c:GR}],[{l:'יחס',c:[[28,0],[FRr(3,7),1],[`28 · ${FRr(3,7)} = 12`,2]]},{l:'אחוז',c:[[400,0],[FRr(20,100),1],[`400 · ${FRr(20,100)} = 80`,2]]}],0,0,true),
+  says:['ביחס המכנה = כל החלקים. באחוזים = 100.'],def:'אותה טבלה, אותו כלל: שלם · שבר = החלק.',what:'אחוז = שבר מתוך 100.'},
  {h:'הטעויות הנפוצות',d:.4,says:[`${M('28')} ביחס ${M('3 : 4')} ← ${M('14')} ו־${M('14')} <span class="x">✗</span> נכון: ${M('12')} ו־${M('16')} <span class="v">✓</span>`,`${M('1 : 5')}, סוכר ${M('4')} ← קקאו ${M('8')} <span class="x">✗</span> נכון: ${M('20')} <span class="v">✓</span>`],what:'חלוקה: לא שווה. הרחבה: לא מוסיפים.'}];
 RECAP[0].chk=[()=>eSimple(false),gType];RECAP[1].chk=[()=>eSimple(false),()=>genWarm('b')];RECAP[2].chk=[dTwo,()=>genWarm('a')];RECAP[3].chk=[gType];
-RECAP[4].chk=[dTwo,eWhole];RECAP[5].chk=[()=>eSimple(false),()=>eSimple(true)];RECAP[6].chk=[dRect,dTriAng];RECAP[7].chk=[dTwo,()=>eSimple(false)];
+RECAP[4].chk=[dTwo,eWhole];RECAP[5].chk=[()=>eSimple(false),()=>eSimple(true)];RECAP[6].chk=[dRect,dTriAng];RECAP[7].chk=[pPart,pRemain];RECAP[8].chk=[dTwo,()=>eSimple(false)];
 
 const TL=['★ ידע','★★ יישום','★★★ הבנה ונימוק','★★★★ חשיבה ואוריינות'],TCOL=[GR,BL,OR,PU];
 const TOTAL=(APP&&APP.total)||20,PASS=Math.round(TOTAL*.8);let S={};
