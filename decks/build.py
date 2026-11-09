@@ -1,5 +1,5 @@
 import sys,base64,re,os
-FD='/tmp/claude-0/-home-claude/ca6028b6-cd78-5f55-815e-769f2353631b/scratchpad/fonts'
+FD=os.environ.get('FONTS','/tmp/claude-0/-home-claude/ca6028b6-cd78-5f55-815e-769f2353631b/scratchpad/fonts')
 src=open('t9_gcf.html',encoding='utf-8').read()
 content=open(sys.argv[1],encoding='utf-8').read()
 title=re.search(r'// TITLE: (.*)',content).group(1); bar=re.search(r'// BAR: (.*)',content).group(1)

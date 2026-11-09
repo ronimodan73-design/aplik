@@ -41,6 +41,15 @@ const asm=svg('0 0 920 400',sq(200,100,'x','4',['x²','4x','4x','16'],{mv:['tran
  `<g class="step" direction="ltr" font-size="30" text-anchor="middle"><text x="170" y="44" style="fill:${C.ray}">x</text><text x="320" y="44" style="fill:${C.ray2}">4</text><text x="40" y="170" style="fill:${C.ray}">x</text><text x="40" y="320" style="fill:${C.ray2}">4</text></g>`+
  `<g class="step"><text x="900" y="380" font-size="32" font-weight="900" text-anchor="end" direction="ltr"><tspan style="fill:${C.ray}">x²</tspan><tspan style="fill:${C.ink}"> + </tspan><tspan style="fill:${C.ok}">8x</tspan><tspan style="fill:${C.ink}"> + </tspan><tspan style="fill:${C.ray2}">16</tspan><tspan style="fill:${C.ink}"> = </tspan><tspan style="fill:${C.acc}">(x + 4)²</tspan></text></g>`);
 const area2=svg('0 0 340 340',`<rect x="40" y="40" width="260" height="260" fill="${C.ok}" fill-opacity=".25" stroke="${C.ok}" stroke-width="4"/><text x="170" y="182" font-size="30" text-anchor="middle" direction="ltr" style="fill:${C.ink}">4x² + 20x + 25</text><text x="170" y="28" font-size="30" text-anchor="middle" style="fill:${C.acc}">?</text>`);
+// why 2ab: generic square, two equal rectangles
+const why2=svg('0 0 920 400',sq(200,110,'a','b',['a²','a · b','a · b','b²'])+
+ `<g class="step"><rect x="270" y="60" width="110" height="200" fill="none" stroke="${C.acc}" stroke-width="6"/><circle cx="325" cy="95" r="18" fill="${C.acc}"/><text x="325" y="103" font-size="24" text-anchor="middle" style="fill:#0f1b2d;font-weight:900">1</text></g>`+
+ `<g class="step"><rect x="70" y="260" width="200" height="110" fill="none" stroke="${C.acc}" stroke-width="6"/><circle cx="105" cy="290" r="18" fill="${C.acc}"/><text x="105" y="298" font-size="24" text-anchor="middle" style="fill:#0f1b2d;font-weight:900">2</text></g>`+
+ T(90,`מלבן 1: אורך ${L('a')}, רוחב ${L('b')} → שטח ${L('a · b')}`)+
+ T(160,`מלבן 2: בדיוק אותו מלבן → שוב ${L('a · b')}`)+
+ T(230,`שני מלבנים זהים: ${L('a · b + a · b')}`)+
+ `<g class="step"><text x="900" y="310" font-size="40" font-weight="900" text-anchor="end" direction="ltr" style="fill:${C.ok}">= 2 · a · b = 2ab</text></g>`+
+ T(375,`ה־2 סופר את <tspan style="fill:${C.acc};font-weight:700">מספר המלבנים</tspan>`));
 const SLIDES=[
 menu('ט׳ א2 · נוסחאות הכפל המקוצר',[{id:'l1',n:1,t:'פתיחת סוגריים: ריבוע של סכום ושל הפרש',d:'דף העבודה · רמה א, תרגילים 1–6'},{id:'l2',n:2,t:'פירוק לגורמים: מזהים ריבוע שלם',d:'דף העבודה · רמות ב–ג, תרגילים 7–30'}]),
 // ================= LESSON 1 =================
@@ -78,6 +87,20 @@ cover('l1',1,'פתיחת סוגריים בריבוע','נוסחאות הכפל �
 <li class="step">${G('פעמיים הראשון כפול השני')}. הסימן שלו הוא הסימן שבסוגריים</li>
 <li class="step">${R('ריבוע של השני')}. תמיד פלוס, כי ריבוע אף פעם לא שלילי</li>
 </ol>`},
+{html:CSS+`<div class="eyebrow">מאיפה מגיע ה־2ab?</div><h2>2ab = שני מלבנים זהים</h2><div style="flex:1;min-height:0;display:flex;align-items:center">${why2}</div>`},
+{html:CSS+`<div class="eyebrow">איך מחשבים את האיבר האמצעי?</div><h2>שואלים 3 שאלות</h2>
+<p class="xl" style="text-align:center">${eq('(x + 5)²')}</p>
+${P('a = '+B('x'),1,'מי <b>הראשון</b> בסוגריים? '+eq(B('x')))}
+${P('b = '+R('5'),2,'מי <b>השני</b> בסוגריים? '+eq(R('5')))}
+${P(G('2 · ')+B('x')+G(' · ')+R('5')+' = '+G('10x'),3,'האמצעי: <b>פעמיים</b> הראשון כפול השני')}
+${P('x² + '+G('10x')+' + 25',4,'ריבוע של הראשון, האמצעי, ריבוע של השני')}`},
+{html:CSS+`<div class="eyebrow">מתי יש 2ab ומתי אין?</div><h2>יש ריבוע ⇐ יש 2ab. תמיד.</h2>
+<div class="chk">
+<div class="card">${eq('(x + 5)²')}<br>${eq('= (x + 5)(x + 5)')}<b class="n step">${eq('+10x')}</b><span class="step">יש 2ab, עם <b>פלוס</b></span></div>
+<div class="card step">${eq('(x − 5)²')}<br>${eq('= (x − 5)(x − 5)')}<b class="n step">${eq('−10x')}</b><span class="step">יש 2ab, עם <b>מינוס</b></span></div>
+<div class="card step">${eq('(x + 5)(x − 5)')}<br>${eq('+5x − 5x = 0')}<b class="n step">${eq('x² − 25')}</b><span class="step">אין 2ab: האמצעיים <b>מתבטלים</b> (הפרש ריבועים)</span></div>
+</div>
+<div class="card step what"><b>לזכור:</b> סוגריים <b>בריבוע</b> (אותם סוגריים פעמיים) ⇐ תמיד יש איבר אמצעי ${eq('2ab')}. רק כשהסימנים בסוגריים הפוכים, הוא נעלם.</div>`},
 {html:CSS+`<div class="eyebrow">הטעות הנפוצה</div><h2>${eq('(x + 3)²')} זה <span style="color:var(--ray2)">לא</span> ${eq('x² + 9')}</h2>
 <div class="row"><div class="col">
 <p class="xl">${eq('(x + 3)² = '+R('x² + 9')+' ✗')}</p>
@@ -164,6 +187,12 @@ cover('l2',2,'פירוק לגורמים: ריבוע שלם','נוסחאות הכ
 <div class="chk"><div class="card"><b class="n">1</b>בשני <b>הקצוות</b> יש ריבועים: מוצאים את ${B('a')} ואת ${R('b')}</div><div class="card step"><b class="n">2</b>בודקים: האיבר האמצעי הוא ${eq(G('2 · a · b'))}?</div><div class="card step"><b class="n">3</b>הסימן של האמצעי קובע את הסימן בסוגריים</div></div>
 <p class="step" style="text-align:center;font-family:var(--display);font-weight:900;font-size:3cqw">${eq(B('9x²')+' − '+G('30x')+' + '+R('25')+' &nbsp;→&nbsp; 2 · '+B('3x')+' · '+R('5')+' = '+G('30x')+' ✓ &nbsp;→&nbsp; ('+B('3x')+' − '+R('5')+')²')}</p>
 <div class="card step what"><b>אם הסדר מבולגן</b> (כמו ${eq('25 + 10x + x²')}): קודם מסדרים לפי החזקות, ואז בודקים.</div>`},
+{html:CSS+`<style>.tb{width:100%;border-collapse:collapse;font-size:2.1cqw;text-align:center}.tb td,.tb th{border:2px solid var(--line);padding:.6cqw}.tb th{color:var(--accent)}</style><div class="eyebrow">בדיקה 2 · שלב אחרי שלב</div><h2>האמצעי שווה ל־${eq('2 · a · b')}? רק אז זה ריבוע שלם</h2>
+<table class="tb"><tr><th>הביטוי</th><th>${eq('a')}</th><th>${eq('b')}</th><th>${eq('2 · a · b')}</th><th>האמצעי בביטוי</th><th>ריבוע שלם?</th></tr>
+<tr class="step"><td>${eq('x² + 6x + 9')}</td><td>${eq(B('x'))}</td><td>${eq(R('3'))}</td><td>${eq('2 · '+B('x')+' · '+R('3')+' = '+G('6x'))}</td><td>${eq(G('6x'))}</td><td>${G('כן')}: ${eq('(x + 3)²')}</td></tr>
+<tr class="step"><td>${eq('4x² − 12x + 9')}</td><td>${eq(B('2x'))}</td><td>${eq(R('3'))}</td><td>${eq('2 · '+B('2x')+' · '+R('3')+' = '+G('12x'))}</td><td>${eq(G('−12x'))}</td><td>${G('כן')}: ${eq('(2x − 3)²')}</td></tr>
+<tr class="step"><td>${eq('x² + 10x + 9')}</td><td>${eq(B('x'))}</td><td>${eq(R('3'))}</td><td>${eq('2 · '+B('x')+' · '+R('3')+' = '+G('6x'))}</td><td>${eq(R('10x'))}</td><td>${R('לא')}</td></tr>
+</table>`},
 {html:CSS+`<div class="eyebrow">הטעות הנפוצה</div><h2>לא כל ביטוי עם שני ריבועים הוא ריבוע שלם</h2>
 <p class="xl" style="text-align:center">${eq('x² + 10x + 9 = '+R('(x + 3)²')+' ✗')}</p>
 <p class="step">בודקים את האמצעי: ${eq('2 · x · 3 = '+G('6x'))}, אבל בביטוי כתוב ${eq(R('10x'))}.</p>
