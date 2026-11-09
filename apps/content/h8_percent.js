@@ -1,8 +1,8 @@
 /*META {"id":"h8_percent","title":"אחוזים · ערכה: רוני מודן","short":"אחוזים","topic":"אחוזים","glyph":"%","color":"#4fd18b"} */
 /* אחוזים · משבצת ח׳ פרק 5 (ספר א, עמ׳ 245–269) · יסוד מארגן אחד לכל השאלות: טבלת האחוזים 100% | 1% | החלק */
 const APP={key:'h8pct',topic:'אחוזים',total:25,sub:'טבלה אחת פותרת הכול: 100% ← 1% ← האחוז שמחפשים. צעד אחרי צעד, בצבעים.',
- rc:{'אחוז ושבר':1,'כמה אחוז צבוע?':0,'מוצאים 1%':2,'אחוז מכמות':2,'נכון או לא נכון?':2,'מוצאים את השלם':3,'איזה אחוז?':2,'כמה נשאר?':2,
-  'התייקרות והוזלה ככפל':4,'המחיר החדש':4,'המחיר לפני השינוי':4,'אחוז השינוי':4,'התייקרות ואז הוזלה':5,'שתי הנחות ברצף':5,'אחוז מהנותר':2,'ריבוע שגדל':5,'איפה משתלם?':4}};
+ rc:{'אחוז ושבר':1,'כמה אחוז צבוע?':0,'מוצאים 1%':3,'אחוז מכמות':3,'נכון או לא נכון?':3,'מוצאים את השלם':4,'איזה אחוז?':3,'כמה נשאר?':3,
+  'התייקרות והוזלה ככפל':5,'המחיר החדש':5,'המחיר לפני השינוי':5,'אחוז השינוי':5,'התייקרות ואז הוזלה':6,'שתי הנחות ברצף':6,'אחוז מהנותר':3,'ריבוע שגדל':6,'איפה משתלם?':5}};
 document.head.insertAdjacentHTML('beforeend',`<style>
 table.pt{border-collapse:separate;border-spacing:0;font-family:Rubik;font-weight:700;margin:6px auto;direction:rtl}
 .pt th,.pt td{border:2px solid var(--line);padding:6px 12px;text-align:center;font-size:21px;min-width:74px;height:46px}
@@ -10,6 +10,7 @@ table.pt{border-collapse:separate;border-spacing:0;font-family:Rubik;font-weight
 .pt .giv{background:#ffb02040;color:#ffd27a}.pt .one{box-shadow:inset 0 0 0 4px var(--ok)}.pt .calc{color:var(--ok)}
 .pt td.calc{font-size:17px}.pt .ask{border:3px dashed var(--blue);color:var(--blue);font-size:26px}.pt .bad{border:3px solid var(--red);background:#ff4d5e2e;color:#ffb3bb}
 .pt .vv{direction:ltr;unicode-bidi:isolate;display:inline-block;white-space:nowrap}
+.pgw{display:flex;flex-direction:column;align-items:center;gap:8px}.pgv{display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px;border-radius:14px;background:#ffffff08}.pgg{display:flex;gap:8px}.pgg .gr{width:150px}.pgt{font-weight:700;text-align:center}
 .gr{display:block;margin:0 auto;width:100%;max-width:210px;height:auto}
 @media (max-width:560px){.pt th,.pt td{padding:4px 4px;min-width:0;font-size:15px;height:40px}.pt td.calc{font-size:12.5px;padding:3px 2px}.pt th{font-size:13px}.pt td.lab{font-size:12px}}
 </style>`);
@@ -20,7 +21,21 @@ const CK=(lab,opts,ok,why)=>{const o=shuf(opts);return {lab,choice:o,correct:o.i
 const LOOK=ok=>CK('מה מחפשים בטבלה?',['את השלם (100%)','את החלק','את האחוז'],ok,'קוראים את סוף השאלה: מה שואלים? זה התא עם סימן השאלה.');
 /* ===== טבלת האחוזים: היסוד המארגן =====
  T={h:[כותרות], p:[שורת האחוזים], v:[שורת הכמות], g:[[r,c],...] נתונים, a:[r,c] מה מחפשים, x:{'r,c':'חישוב'} */
-function PT(T,hl,bad){const cell=(r,c)=>{const raw=r?T.v[c]:T.p[c],key=r+','+c,isG=T.g.some(([a,b])=>a===r&&b===c),isA=T.a&&T.a[0]===r&&T.a[1]===c,one=T.p[c]==='1%';
+/* הטבלה של רוני: השלם | החלק היחסי (שבר מתוך 100) | החלק המבוקש.  השלם ידוע ← כפל · השלם חסר ← חילוק */
+function PT(T,hl,bad){if(T.h.length!==3||T.p[1]!=='1%'||(T.a&&T.a[0]===1&&T.a[1]===1))return PT0(T,hl,bad);
+ const pc=parseFloat(T.p[2]),W=T.v[0],pa=T.v[2],G=(r,c)=>T.g.some(([a,b])=>a===r&&b===c),A=(r,c)=>T.a&&T.a[0]===r&&T.a[1]===c,F=FRr(pc,100);
+ const td=(cls,txt)=>`<td class="${cls}">${txt!==''?`<span class="vv">${txt}</span>`:''}</td>`;
+ const B=(r,c)=>bad&&bad.r===r&&bad.c===c;
+ const c0=B(1,0)?td('bad',fmt(bad.val)):G(1,0)?td('giv',fmt(W)):hl?td('calc',`${fmt(pa)} : ${F} = ${fmt(W)}`):td('ask','?');
+ const c1=B(0,2)?td('bad',FRr(fmt(bad.val),100)):G(0,2)?td('giv one',F):hl?td('calc one',`${FRr(fmt(pa),fmt(W))} = ${F}`):td('ask one',FRr('?',100));
+ const c2=B(1,2)?td('bad',fmt(bad.val)):G(1,2)?td('giv',fmt(pa)):hl?td('calc',`${fmt(W)} · ${F} = ${fmt(pa)}`):td('ask','?');
+ const h0=T.h[0]==='השלם'?'השלם':'השלם ('+T.h[0]+')',h2=T.h[2]==='החלק'?'החלק המבוקש':'החלק ('+T.h[2]+')';
+ return `<table class="pt"><tr><th>${h0}</th><th>החלק היחסי (שבר)</th><th>${h2}</th></tr><tr>${c0}${c1}${c2}</tr></table>`;}
+/* מוחשי: 100 משבצות, כל משבצת = 1% */
+function PG(T,hl){if(T.h.length!==3||T.p[1]!=='1%')return '';const pc=parseFloat(T.p[2]),W=T.v[0],pa=T.v[2],one=W/100,wk=T.g.some(([a,b])=>a===1&&b===0);
+ const SZ=x=>x.replace('class="gr"','class="gr" style="width:150px;height:150px"');const g=pc<=100?SZ(GRID(pc,{anim:hl?1:0,d:.2,st:.02})):SZ(GRID(100,{anim:hl?1:0,d:.2,st:.01}))+SZ(GRID(pc-100,{anim:hl?1:0,d:1.4,st:.03,col:OR}));
+ return `<div class="pgv"><div class="pgt">${wk||hl?M(fmt(W)):'?'} = ${M('100')} משבצות</div><div class="pgg">${g}</div>${hl?`<div class="pgt rv" style="--d:1.6s">משבצת = ${M(fmt(one))} ← ${M(pc+' · '+fmt(one)+' = '+fmt(pa))}</div>`:''}</div>`;}
+function PT0(T,hl,bad){const cell=(r,c)=>{const raw=r?T.v[c]:T.p[c],key=r+','+c,isG=T.g.some(([a,b])=>a===r&&b===c),isA=T.a&&T.a[0]===r&&T.a[1]===c,one=T.p[c]==='1%';
   let cls=isG?'giv':'',txt='';
   if(bad&&bad.r===r&&bad.c===c){cls='bad';txt=fmt(bad.val);}
   else if(isG)txt=r?fmt(raw):raw;
@@ -30,7 +45,7 @@ function PT(T,hl,bad){const cell=(r,c)=>{const raw=r?T.v[c]:T.p[c],key=r+','+c,i
  return `<table class="pt"><tr><th class="lab"></th>${T.h.map(h=>`<th>${h}</th>`).join('')}</tr>${['אחוזים','כמות'].map((l,r)=>`<tr><td class="lab">${l}</td>${T.h.map((_,c)=>cell(r,c)).join('')}</tr>`).join('')}</table>`;}
 /* טעות ← התא שלו בטבלה נצבע באדום */
 const RED=(q,x,msg)=>`${msg}<div style="margin-top:6px">${PT(q.T,false,{r:q.T.a[0],c:q.T.a[1],val:x})}</div>`;
-const tab=q=>{q.dia=hl=>PT(q.T,hl);return q;};
+const tab=q=>{q.dia=hl=>`<div class="pgw">${PG(q.T,hl)}${PT(q.T,hl)}</div>`;return q;};
 /* כל טעות בשאלת טבלה: התא שלה נצבע באדום, גם בלי הודעה מיוחדת */
 const DX=q=>{const d=q.diag;q.diag=o=>(d&&d(o))||RED(q,o.vals[0],'בודקים בטבלה: קודם 1%, ואז כופלים.');return q;};
 const KS=n=>R(2,n);
@@ -97,7 +112,7 @@ function genRemain(){const p=pick(MID),k=KS(8),W=100*k,r=100-p,[n,verb]=pick([['
 const ITEMS=['מעיל','שעון','טלפון','כיסא','תיק','שולחן'];
 const mul=(p,up)=>+((up?100+p:100-p)/100).toFixed(2);
 function genMult(){const p=pick([5,10,15,20,25,30,40,50,60,8,12,75]),up=Math.random()<.5,m=mul(p,up),opts=shuf([...new Set([m,+(p/100).toFixed(2),mul(p,!up),+(up?1+p/10:p/10).toFixed(2)])]),ci=opts.indexOf(m);
- return {kind:'התייקרות והוזלה ככפל',text:`${up?'התייקרות':'הוזלה'} של ${P(p)}. בכמה כופלים את המחיר הישן כדי לקבל את המחיר החדש?`,choice:opts.map(v=>M(fmt(v))),correct:ci,
+ return {kind:'התייקרות והוזלה ככפל',dia:hl=>{const S=x=>x.replace('class="gr"','class="gr" style="width:130px;height:130px"');return `<div class="pgv"><div class="pgg">${up?S(GRID(100))+S(GRID(p,{anim:1,d:.3,st:.05,col:OR})):S(GRID(100-p,{anim:1,d:.2,st:.02}))}</div><div class="pgt">${up?M('100% + '+p+'% = '+(100+p)+'%'):M('100% − '+p+'% = '+(100-p)+'%')}${hl?' ← '+M('· '+m):''}</div></div>`;},text:`${up?'התייקרות':'הוזלה'} של ${P(p)}. בכמה כופלים את המחיר הישן כדי לקבל את המחיר החדש?`,choice:opts.map(v=>M(fmt(v))),correct:ci,
  work:[{t:`המחיר החדש באחוזים: ${M('100 '+(up?'+':'−')+' '+p+' = ?')}`,ans:[{label:'%',val:up?100+p:100-p}],why:'המחיר הישן = 100%. '+(up?'בהתייקרות <b>מוסיפים</b>.':'בהוזלה <b>מורידים</b>.')},{t:`${P(up?100+p:100-p)} כמספר עשרוני = ?`,choice:opts.map(v=>fmt(v)),correct:ci,why:'מחלקים ב־100: '+P(100)+' = 1.'}],
  lines:[`הישן = ${P(100)} ← החדש = ${M('100% '+(up?'+':'−')+' '+p+'% = '+(up?100+p:100-p)+'%')}`,`${P(up?100+p:100-p)} = ${M(fmt(m))} ← כופלים ב־${M(fmt(m))}`],rule:'התייקרות: 100% + האחוז. הוזלה: 100% − האחוז. ואז מחלקים ב־100.',
  diag:({sel})=>sel>=0&&opts[sel]===+(p/100).toFixed(2)?'זה רק <b>השינוי</b>. המחיר החדש כולל גם את המחיר הישן (100%).':sel>=0&&opts[sel]===mul(p,!up)?'הפוך! '+(up?'התייקרות ← יותר מ־1.':'הוזלה ← פחות מ־1.'):null};}
@@ -187,14 +202,16 @@ const RECAP=[
  {h:'מה זה אחוז?',d:4.2,svg:()=>GRID(20,{anim:1,d:.4,st:.18}),says:[`${M(20)} משבצות מתוך ${M(100)} = ${P(20)}`],what:'אחוז = כמה מתוך 100.'},
  {h:'אחוז הוא שבר',d:1.8,svg:()=>`<div class="row" style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap"><div style="width:130px">${GRID(50,{col:OR})}<div class="say">${FRr(1,2)} = ${P(50)}</div></div><div style="width:130px">${GRID(25,{col:BL})}<div class="say">${FRr(1,4)} = ${P(25)}</div></div><div style="width:130px">${GRID(10,{col:PU})}<div class="say">${FRr(1,10)} = ${P(10)}</div></div></div>`,
   says:[`${P(100)} = הכול`],what:'מרחיבים את השבר למכנה 100.'},
- {h:'הטבלה: 100% ← 1% ← החלק',d:.6,svg:()=>PT({h:['השלם','1%','החלק'],p:['100%','1%','20%'],v:[300,3,60],g:[[0,0],[1,0],[0,1],[0,2]],a:[1,2],x:{'1,1':'300 : 100 = 3','1,2':'3 · 20 = 60'}},true),
-  says:[`1% = ${M('300 : 100 = 3')}`,`${P(20)} = ${M('3 · 20 = 60')}`],what:'תמיד דרך 1%: מחלקים ב־100, כופלים באחוז.'},
+ {h:'אחוז = יחס = שבר',d:1.8,svg:()=>`<div style="width:150px;margin:auto">${GRID(20,{anim:1,d:.2,st:.05})}</div>`,
+  says:[`${P(20)} = ${FRr(20,100)} = ${FRr(1,5)}`,`כמו יחס ${M('1 : 4')}: ${M('1')} חלק מתוך ${M('1 + 4 = 5')}`],what:'אחוז, שבר ויחס: חלק מתוך השלם.'},
+ {h:'הטבלה: שלם · שבר = החלק',d:.6,svg:()=>PT({h:['השלם','1%','החלק'],p:['100%','1%','20%'],v:[300,3,60],g:[[0,0],[1,0],[0,1],[0,2]],a:[1,2],x:{'1,1':'300 : 100 = 3','1,2':'3 · 20 = 60'}},true),
+  says:['השלם ידוע ← <b>כפל</b>'],what:'שלם · שבר = החלק.'},
  {h:'מוצאים את השלם',d:.6,svg:()=>PT({h:['השלם','1%','החלק'],p:['100%','1%','20%'],v:[300,3,60],g:[[0,0],[0,1],[0,2],[1,2]],a:[1,0],x:{'1,1':'60 : 20 = 3','1,0':'3 · 100 = 300'}},true),
-  says:[`${M(60)} הם ${P(20)} ← 1% = ${M('60 : 20 = 3')}`,`${P(100)} = ${M('3 · 100 = 300')}`],what:'נתון החלק ← מחלקים באחוז ← כופלים ב־100.'},
+  says:['השלם חסר ← <b>חילוק</b>'],what:'חלק : שבר = השלם.'},
  {h:'התייקרות והוזלה',d:2.6,svg:()=>`<svg viewBox="0 0 300 130" style="width:100%;max-width:320px" role="img" aria-label="מחיר ישן 100 אחוז, מחיר אחרי התייקרות 120 אחוז, מחיר אחרי הוזלה 80 אחוז">${BAR(200,'#9fb3cc',.2,'לפני: 100%')}<g transform="translate(0,46)">${BAR(240,GR,1,'התייקרות: 120%')}</g><g transform="translate(0,92)">${BAR(160,OR,1.8,'הוזלה: 80%')}</g></svg>`,
   says:[`התייקרות של ${P(20)} ← ${P(120)} ← כופלים ב־${M(1.2)}`,`הוזלה של ${P(20)} ← ${P(80)} ← כופלים ב־${M(0.8)}`],what:'המחיר הישן = 100%. תמיד!'},
  {h:'המוקש',d:.4,says:[`${M(100)} ← עלייה של ${P(10)} ← ${M(110)}`,`${M(110)} ← ירידה של ${P(10)} ← ${M(99)} <span class="x">✗ לא 100!</span>`],what:'כל שינוי מחושב מהמחיר שלפניו.'}];
-RECAP[0].chk=[genShade];RECAP[1].chk=[genRep];RECAP[2].chk=[genOnePct,()=>genPctOf(1)];RECAP[3].chk=[genWhole];RECAP[4].chk=[genNewPrice,genMult];RECAP[5].chk=[genUpDown];
+RECAP[0].chk=[genShade];RECAP[1].chk=[genRep];RECAP[2].chk=[genRep,genShade];RECAP[3].chk=[()=>genPctOf(1),genPctOf];RECAP[4].chk=[genWhole];RECAP[5].chk=[genNewPrice,genMult];RECAP[6].chk=[genUpDown];
 /* ===== כמו במשימת ההערכה (נוסף 1.11.2026): "קטן ברבע", "מי צודק?". הסבר פשוט, צעד אחרי צעד ===== */
 function gShrink(){const [nm,div,pct]=pick([['ברבע',4,25],['בחצי',2,50],['בחמישית',5,20],['בעשירית',10,10]]),k=R(2,8),X=div*k*pick([1,2]),cut=X/div,N=X-cut;
  return {kind:'קטן ב___',rc:RC_SHR,text:`טווח הטיסה של רחפן הוא ${M(X)} ק״מ. ביום סוער הטווח קטן ${nm}. מה הטווח ביום סוער?`,
