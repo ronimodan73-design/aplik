@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>/*TITLE*/</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,"Segoe UI",sans-serif;background:linear-gradient(160deg,#1e1b4b,#4c1d95);min-height:100vh;color:#1f2937;padding:14px}
+.wrap{max-width:640px;margin:0 auto}
+h1{color:#fff;text-align:center;font-size:26px;margin:6px 0 2px}
+.sub{color:#ddd6fe;text-align:center;font-size:15px;margin-bottom:14px}
+.card{background:#fff;border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.btn{display:block;width:100%;border:0;border-radius:14px;padding:16px;font-size:18px;font-weight:bold;margin:10px 0;cursor:pointer;color:#fff;text-align:right}
+.b1{background:#7c3aed}.b2{background:#0891b2}.b3{background:#db2777}.b4{background:#16a34a}
+.btn small{display:block;font-weight:normal;font-size:14px;opacity:.9;margin-top:3px}
+.f{direction:ltr;unicode-bidi:isolate;display:inline-block;font-weight:bold;color:#6d28d9;font-family:Arial,sans-serif;white-space:nowrap}
+.f sub{font-size:.7em}
+.top{display:flex;justify-content:space-between;align-items:center;color:#fff;margin-bottom:8px;font-size:15px}
+.back{background:rgba(255,255,255,.2);color:#fff;border:0;border-radius:10px;padding:8px 12px;font-size:15px;cursor:pointer}
+.bar{height:8px;background:rgba(255,255,255,.25);border-radius:6px;overflow:hidden;margin-bottom:12px}
+.bar div{height:100%;background:#facc15;transition:width .3s}
+.tag{display:inline-block;background:#ede9fe;color:#6d28d9;border-radius:8px;padding:3px 9px;font-size:13px;margin-bottom:8px}
+.lvl{float:left;font-size:13px;color:#b45309}
+.q{font-size:20px;font-weight:bold;line-height:1.5;margin-bottom:14px}
+.opt{display:block;width:100%;text-align:right;background:#f5f3ff;border:2px solid #ddd6fe;border-radius:12px;padding:13px;font-size:17px;margin:8px 0;cursor:pointer;color:#1f2937}
+.opt.ok{background:#dcfce7;border-color:#16a34a}
+.opt.no{background:#fee2e2;border-color:#dc2626}
+.exp{border-radius:12px;padding:14px;margin-top:12px;font-size:16px;line-height:1.65}
+.exp.ok{background:#f0fdf4;border-right:6px solid #16a34a}
+.exp.no{background:#fef2f2;border-right:6px solid #dc2626}
+.exp b.h{display:block;font-size:17px;margin-bottom:4px}
+.next{background:#7c3aed;color:#fff;border:0;border-radius:12px;padding:14px;font-size:18px;font-weight:bold;width:100%;margin-top:12px;cursor:pointer}
+.sum h3{color:#6d28d9;font-size:19px;margin-bottom:6px}
+.sum p{font-size:16px;line-height:1.65;margin-bottom:6px}
+.tip{background:#fef9c3;border-radius:10px;padding:9px 11px;font-size:15px;margin-top:6px}
+table{width:100%;border-collapse:collapse;font-size:16px}
+td,th{border:1px solid #ddd6fe;padding:7px;text-align:center}
+th{background:#ede9fe}
+.flash{text-align:center;padding:30px 10px}
+.flash .big{font-size:56px;font-weight:bold;color:#6d28d9;direction:ltr}
+.flash .heb{font-size:32px;font-weight:bold}
+.pt{display:grid;grid-template-columns:repeat(18,1fr);gap:2px;direction:ltr;margin:8px 0}
+.pt div{height:16px;border-radius:2px}
+.m{background:#93c5fd}.n{background:#fca5a5}.g{background:#fde68a}
+.score{font-size:46px;font-weight:bold;text-align:center;color:#6d28d9}
+.foot{color:#c4b5fd;text-align:center;font-size:13px;margin-top:10px}
+.rev{border-bottom:1px solid #eee;padding:10px 0;font-size:15px;line-height:1.6}
+.f sup{font-size:.7em}
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 3px;font-size:.9em}
+.fr span:first-child{border-bottom:2px solid currentColor;padding:0 3px}
+.flash .ans{font-size:24px;font-weight:bold;color:#6d28d9;line-height:1.5}
+.flash .heb{font-size:22px;line-height:1.5}
+svg{display:block;max-width:100%;margin:6px auto}
+.qr{background:#fff;border:2px dashed #c4b5fd;border-radius:10px;padding:9px;margin:6px 0 10px;font-size:15px}
+.exp{font-size:17px;line-height:1.8}
+.k{display:inline-block;background:#374151;color:#fff;border-radius:6px;padding:1px 7px;margin:2px 1px;font-size:.9em;box-shadow:0 2px 0 #111;font-weight:bold}
+.calc{background:#ecfeff;border-right:5px solid #0891b2;border-radius:10px;padding:8px 10px;margin-top:10px;line-height:2}
+.lvl-row{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:15px}.lvl-row span:first-child{width:120px}.lvb{flex:1;height:12px;background:#eee;border-radius:6px;overflow:hidden}.lvb i{display:block;height:100%}
+.fb{background:#f5f3ff;border-radius:10px;padding:10px;margin:8px 0;font-size:16px;line-height:1.7}.fb.ok{background:#f0fdf4}.fb.no{background:#fff7ed;border-right:5px solid #f59e0b}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<div class="foot">ערכה: רוני מודן</div>
+<script>
+/*DATA*/
+
+function F(s){
+ s=s.replace(/((?:🔵|🔴)[🔵🔴 ]*(?:🔵|🔴))|(🔵|🔴)/gu,function(m){return '<span dir="ltr" style="unicode-bidi:isolate">'+m+'</span>';});
+ return s.replace(/\[\[(.+?)\]\]/g,function(_,x){
+  x=x.replace(/\{\{(.+?)\|(.+?)\}\}/g,'<span class="fr"><span>$1</span><span>$2</span></span>');
+  x=x.replace(/⌈(.+?)⌉/g,'<span class="k">$1</span>');
+  return '<span class="f">'+x.replace(/\^(\d+)/g,'<sup>$1</sup>')+'</span>';});}
+var Q=D.Q,SYM=D.flash,TIPS=D.tips;
+var app=document.getElementById('app'),list=[],i=0,good=0,wrong=[],mode='';
+function sh(a){a=a.slice();for(var k=a.length-1;k>0;k--){var j=Math.floor(Math.random()*(k+1));var t=a[k];a[k]=a[j];a[j]=t;}return a;}
+function stars(l){return '★'.repeat(l)+'☆'.repeat(3-l);}
+function home(){
+ app.innerHTML='<h1>'+D.icon+' '+D.title+'</h1><div class="sub">הכנה למבחן – כיתה ח׳ א1</div>'+
+ '<button class="btn b1" onclick="summary()">📘 סיכום מהיר<small>כל החומר בדף אחד – קרא קודם</small></button>'+
+ '<button class="btn" style="background:#ea580c" onclick="tips()">⚡ טיפים לזכירה מהירה<small>טריקים ומלכודות נפוצות</small></button>'+
+ '<button class="btn b2" onclick="flash()">🔤 כרטיסיות<small>'+D.flashSub+'</small></button>'+
+ '<button class="btn b3" onclick="start(Q,\'all\')">🧠 כל השאלות לפי סדר הנושאים<small>'+Q.length+' שאלות, הסבר מפורט אחרי כל תשובה</small></button>'+
+ '<button class="btn b4" onclick="start(mock(),\'test\')">🏁 מבחן דמה<small>20 שאלות מעורבבות בכל הרמות · ציון ומשוב אישי</small></button>';
+ window.scrollTo(0,0);
+}
+function summary(){
+ var h='<div class="top"><button class="back" onclick="home()">→ חזרה</button><span>סיכום</span></div>';
+ D.summary.forEach(function(c){h+='<div class="card sum"><h3>'+c[0]+'</h3>'+F(c[1])+'</div>';});
+ app.innerHTML=h+'<button class="btn b4" onclick="start(Q,\'all\')">✅ קראתי – לשאלות!</button>';window.scrollTo(0,0);
+}
+function tips(){
+ var h='<div class="top"><button class="back" onclick="home()">→ חזרה</button><span>טיפים לזכירה</span></div>';
+ TIPS.forEach(function(b){h+='<div class="card sum"><h3>'+b[0]+'</h3>';b[1].forEach(function(t){h+='<p>• '+F(t)+'</p>';});h+='</div>';});
+ app.innerHTML=h+'<button class="btn b4" onclick="start(mock(),\'test\')">🏁 עכשיו למבחן דמה!</button>';window.scrollTo(0,0);
+}
+var fl=[],fi=0;
+function flash(){fl=sh(SYM);fi=0;showFlash(false);}
+function showFlash(open){
+ var s=fl[fi];
+ app.innerHTML='<div class="top"><button class="back" onclick="home()">→ חזרה</button><span>'+(fi+1)+' / '+fl.length+'</span></div>'+
+ '<div class="card flash"><div class="heb">'+F(s[0])+'</div><div style="margin:14px 0;color:#888">מה התשובה?</div>'+
+ (open?'<div class="ans">'+F(s[1])+'</div>':'<button class="next" onclick="showFlash(true)">👀 הצג תשובה</button>')+'</div>'+
+ (open?'<button class="next" onclick="'+(fi<fl.length-1?'fi++;showFlash(false)':'home()')+'">'+(fi<fl.length-1?'הבא ←':'סיום ✔')+'</button>':'');
+}
+function start(arr,m){list=arr;mode=m;i=0;good=0;wrong=[];ask();}
+function ask(){
+ var x=list[i],opts=sh(x.o.map(function(t,k){return {t:t,c:k===0};}));
+ var h='<div class="top"><button class="back" onclick="home()">→ תפריט</button><span>שאלה '+(i+1)+' / '+list.length+' · ✅ '+good+'</span></div>'+
+ '<div class="bar"><div style="width:'+(i/list.length*100)+'%"></div></div>'+
+ '<div class="card"><span class="tag">'+x.t+'</span><span class="lvl">'+stars(x.l)+'</span><div class="q">'+F(x.q)+'</div>'+(x.d?D.svg[x.d]:'');
+ opts.forEach(function(o,k){h+='<button class="opt" data-c="'+(o.c?1:0)+'" onclick="pick(this)">'+F(o.t)+'</button>';});
+ app.innerHTML=h+'<div id="ex"></div></div>';
+ window.scrollTo(0,0);
+}
+function pick(b){
+ var all=document.querySelectorAll('.opt'),ok=b.dataset.c==='1',x=list[i];
+ all.forEach(function(o){o.disabled=true;if(o.dataset.c==='1')o.classList.add('ok');});
+ if(ok)good++;else{b.classList.add('no');wrong.push(x);}
+ document.getElementById('ex').innerHTML='<div class="exp '+(ok?'ok':'no')+'"><b class="h">'+(ok?'✅ נכון! בואו נבין למה:':'❌ לא נורא! בואו נפתור ביחד:')+'</b><div class="qr">📝 <b>התרגיל:</b> '+F(x.q)+'<br>🎯 <b>התשובה הנכונה:</b> '+F(x.o[0])+'</div><b>👣 הפתרון צעד אחר צעד:</b><br>'+F(x.e)+'</div>'+
+ '<button class="next" onclick="nxt()">'+(i<list.length-1?'לשאלה הבאה ←':'לתוצאות 🏁')+'</button>';
+}
+function nxt(){i++;if(i<list.length)ask();else end();}
+function mock(){
+ var want={1:6,2:8,3:6},out=[];
+ [1,2,3].forEach(function(l){
+  var pool=sh(Q.filter(function(q){return q.l==l;})),by={},keys=[];
+  pool.forEach(function(q){if(!by[q.t]){by[q.t]=[];keys.push(q.t);}by[q.t].push(q);});
+  keys=sh(keys);var k=0,n=0;
+  while(n<want[l]&&pool.length>n){var t=keys[k%keys.length];if(by[t].length){out.push(by[t].shift());n++;}k++;if(k>500)break;}
+ });
+ while(out.length<20&&out.length<Q.length){var r=Q[Math.floor(Math.random()*Q.length)];if(out.indexOf(r)<0)out.push(r);}
+ return sh(out);
+}
+function end(){
+ var p=Math.round(good/list.length*100),msg=p>=90?'🏆 מצוין! אתה מוכן למבחן!':p>=75?'💪 טוב מאוד! עוד קצת חיזוק ואתה שם':p>=55?'👍 בדרך הנכונה – כדאי לחזק את הנושאים למטה':'📘 כדאי לקרוא שוב את הסיכום והטיפים, ואז לנסות שוב';
+ var h='<div class="card"><div style="text-align:center;font-size:16px;color:#666">'+(mode=='test'?'הציון שלך במבחן הדמה':'התוצאה שלך')+'</div><div class="score">'+p+'</div><div style="text-align:center;font-size:18px;margin:6px 0 14px">'+good+' מתוך '+list.length+' נכונות<br>'+msg+'</div>';
+ if(mode=='test'){
+  var lv={1:[0,0],2:[0,0],3:[0,0]},tp={},order=[];
+  list.forEach(function(q){var ok=wrong.indexOf(q)<0;lv[q.l][1]++;if(ok)lv[q.l][0]++;if(!tp[q.t]){tp[q.t]=[0,0];order.push(q.t);}tp[q.t][1]++;if(ok)tp[q.t][0]++;});
+  var nm={1:'★ בסיס',2:'★★ הבנה',3:'★★★ חשיבה גבוהה'};
+  h+='<h3 style="color:#6d28d9">📊 לפי רמות חשיבה</h3>';
+  [1,2,3].forEach(function(l){if(!lv[l][1])return;var r=lv[l][0]/lv[l][1];h+='<div class="lvl-row"><span>'+nm[l]+'</span><span class="lvb"><i style="width:'+Math.round(r*100)+'%;background:'+(r>=0.8?'#16a34a':r>=0.5?'#f59e0b':'#dc2626')+'"></i></span><b>'+lv[l][0]+'/'+lv[l][1]+'</b></div>';});
+  var weak=order.filter(function(t){return tp[t][0]<tp[t][1];}),strong=order.filter(function(t){return tp[t][0]==tp[t][1];});
+  h+='<h3 style="color:#6d28d9;margin-top:12px">📝 משוב – מה אתה צריך לדעת</h3>';
+  if(strong.length)h+='<div class="fb ok">✅ <b>שולט:</b> '+strong.join(' · ')+'</div>';
+  weak.forEach(function(t){h+='<div class="fb no">📘 <b>לחזק: '+t+'</b> ('+tp[t][0]+'/'+tp[t][1]+')<br>💡 '+F((D.know&&D.know[t])||'קרא שוב את הסיכום של הנושא הזה.')+'</div>';});
+  if(!weak.length)h+='<div class="fb ok">🌟 לא היו טעויות – כל הכבוד!</div>';
+  else if(lv[3][1]&&lv[3][0]<lv[3][1]&&lv[1][0]==lv[1][1])h+='<div class="fb">🎯 הבסיס חזק! עכשיו כדאי לתרגל שאלות ★★★ – לקרוא את השאלה לאט ולצייר.</div>';
+  else if(lv[1][0]<lv[1][1])h+='<div class="fb">🎯 כדאי להתחיל מהבסיס: לקרוא את הסיכום, ואז לתרגל את הטעויות.</div>';
+ }
+ if(wrong.length){
+  h+='<button class="next" style="background:#db2777" onclick="start(wrong.slice(),\'w\')">🔁 תרגל שוב רק את '+wrong.length+' הטעויות</button><h3 style="margin-top:14px;color:#6d28d9">איפה טעיתי:</h3>';
+  wrong.forEach(function(w){h+='<div class="rev">📝 '+F(w.q)+(w.d?D.svg[w.d]:'')+'<br>🎯 <b>'+F(w.o[0])+'</b><div class="exp ok" style="margin-top:6px">'+F(w.e)+'</div></div>';});
+ }
+ if(mode=='test')h+='<button class="next" style="background:#16a34a" onclick="start(mock(),\'test\')">🏁 מבחן דמה חדש (שאלות אחרות)</button>';
+ app.innerHTML=h+'<button class="next" onclick="home()">חזרה לתפריט</button></div>';
+ window.scrollTo(0,0);
+}
+home();
+</script>
+</body>
+</html>
