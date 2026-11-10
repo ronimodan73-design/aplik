@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>מהנדסי הגשר</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:#0f172a;font-family:"Assistant","Rubik",Arial,sans-serif;color:#1e293b}
+#wrap{display:flex;flex-direction:column;height:100%;align-items:center}
+#top{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 12px;background:#1e3a8a;color:#fff}
+#top h1{font-size:18px}
+#lvl{font-size:15px;color:#fde68a}
+.sm{background:rgba(255,255,255,.18);color:#fff;border:0;border-radius:10px;padding:7px 11px;font-size:14px;cursor:pointer;font-family:inherit}
+#cv{display:block;touch-action:none;flex:0 0 auto}
+#bar{width:100%;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;padding:8px;background:#1e293b}
+.tb{border:3px solid transparent;border-radius:14px;padding:10px 14px;font-size:17px;font-weight:bold;cursor:pointer;background:#334155;color:#fff;font-family:inherit}
+.tb.on{border-color:#facc15;background:#475569}
+.go{background:#16a34a}
+.go:disabled{opacity:.4}
+#money{color:#fff;font-size:17px;font-weight:bold;padding:0 6px}
+#money .bad{color:#f87171}
+.ov{position:fixed;inset:0;background:rgba(15,23,42,.6);display:none;align-items:center;justify-content:center;padding:14px;z-index:5}
+.ov.on{display:flex}
+.panel{background:#fff;border-radius:22px;max-width:560px;width:100%;padding:22px;box-shadow:0 20px 50px rgba(0,0,0,.4);animation:pop .4s cubic-bezier(.2,1.4,.4,1);max-height:92vh;overflow:auto}
+@keyframes pop{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+.panel h2{font-size:26px;margin-bottom:8px;color:#1e3a8a}
+.panel p{font-size:19px;line-height:1.6;margin:8px 0}
+.panel .big{font-size:54px;text-align:center;margin:4px 0}
+.pb{display:block;width:100%;border:0;border-radius:16px;padding:15px;font-size:20px;font-weight:bold;cursor:pointer;margin-top:10px;color:#fff;background:#2563eb;font-family:inherit}
+.pb.g{background:#16a34a}.pb.o{background:#f59e0b}
+.rule{background:#fef3c7;border:3px dashed #f59e0b;border-radius:16px;padding:12px 14px;font-size:18px;line-height:1.7;margin-top:10px}
+.stars{font-size:46px;text-align:center;letter-spacing:6px}
+#toast{position:fixed;top:58px;left:50%;transform:translateX(-50%);background:#fef3c7;color:#78350f;border:2px solid #f59e0b;border-radius:14px;padding:10px 16px;font-size:17px;font-weight:bold;display:none;z-index:4;max-width:92%;text-align:center}
+#credit{position:fixed;bottom:2px;left:8px;color:#94a3b8;font-size:12px;z-index:3;pointer-events:none}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div id="top"><h1>🌉 מהנדסי הגשר</h1><span id="lvl"></span><button class="sm" onclick="fs()">⛶ מסך מלא</button></div>
+  <canvas id="cv"></canvas>
+  <div id="bar">
+    <button class="tb on" id="t-road" onclick="setTool('road')">🛣️ כביש</button>
+    <button class="tb" id="t-wood" onclick="setTool('wood')">🪵 קורה</button>
+    <button class="tb" id="t-del" onclick="setTool('del')">🗑️ מחיקה</button>
+    <span id="money"></span>
+    <button class="tb go" id="goBtn" onclick="startTest()">▶️ שלחו משאית</button>
+    <button class="tb" id="clr" onclick="clearAll()">↺ נקו</button>
+  </div>
+</div>
+<div id="toast"></div>
+<div id="rot" style="display:none;position:fixed;inset:0;background:#1e3a8a;color:#fff;z-index:9;align-items:center;justify-content:center;flex-direction:column;font-size:24px;text-align:center;padding:20px"><div style="font-size:70px">📱🔄</div>סובבו את הטלפון לרוחב כדי לבנות גשר</div>
+<div id="credit">ערכה: רוני מודן · שחקים</div>
+
+<div class="ov on" id="ovIntro"><div class="panel">
+  <div class="big">🏘️ 🌊 🚚</div>
+  <h2>הכפר מנותק!</h2>
+  <p>הגשר נסחף בשיטפון, והמשאית עם האוכל תקועה מעבר לנהר. אתם המהנדסים, ואתם צריכים לבנות גשר חדש.</p>
+  <p>🛣️ <b>כביש</b>: המשאית נוסעת רק עליו.<br>🪵 <b>קורה</b>: מחזקת את הגשר.<br>👆 גוררים מבורג לבורג כדי לבנות.</p>
+  <p>יש לכם תקציב מוגבל. האם הגשר שלכם יחזיק? 🤔</p>
+  <button class="pb g" onclick="closeOv('ovIntro');sfx('place')">יאללה, בונים! 🔨</button>
+</div></div>
+
+<div class="ov" id="ovFail"><div class="panel">
+  <div class="big">💥</div>
+  <h2>הגשר קרס!</h2>
+  <p>הקורות ש<b style="color:#dc2626">האדימו</b> היו בעומס הכי גדול, ושם הגשר נשבר.</p>
+  <p id="hint" style="background:#eff6ff;border-radius:12px;padding:10px"></p>
+  <button class="pb" onclick="backToBuild()">✏️ מתקנים ומנסים שוב</button>
+</div></div>
+
+<div class="ov" id="ovWin"><div class="panel">
+  <div class="stars" id="stars"></div>
+  <h2>המשאית עברה! 🎉</h2>
+  <p id="winTxt"></p>
+  <p id="triTxt" style="font-size:21px;font-weight:bold;color:#b45309"></p>
+  <div class="rule" id="rule" style="display:none">
+    🔧 <b>חוק המהנדס:</b><br>
+    🔺 <b>משולש הוא צורה קשיחה.</b> כשאורכי שלוש הצלעות קבועים, הצורה שלו לא יכולה להשתנות.<br>
+    ⬜ <b>מרובע לא קשיח.</b> אותן ארבע צלעות יכולות ליצור צורות שונות, כי הזוויות משתנות.<br>
+    לכן כל הגשרים, המנופים ומגדלי החשמל בנויים ממשולשים.
+  </div>
+  <button class="pb o" id="ruleBtn" onclick="showRule()">🔍 למה הגשר החזיק?</button>
+  <button class="pb" onclick="backToBuild()">✏️ לשפר ולחסוך עוד</button>
+  <button class="pb g" id="nextBtn" onclick="nextLevel()">🚛 לשלב הבא</button>
+</div></div>
+
+<script>
+/* ===== עולם ===== */
+const WW=1000,WH=600,G=50,ROADY=350,LB=300,RB=700,MAXL=152;
+const LEVELS=[
+ {name:'שלב 1 · משאית רגילה',M:5,budget:2600,s3:2000,s2:2300,big:false},
+ {name:'שלב 2 · משאית כבדה',M:12,budget:3600,s3:3100,s2:3400,big:true}];
+const ANCH=[[300,350],[700,350],[300,450],[700,450]];
+const GRAV=500,K=500000,BREAK=0.01,DAMP=60,SUB=20,SPEED=110;
+let LV=0,nodes=[],beams=[],mode='build',tool='road',drag=null,hover=null,fails=0,built=false;
+let simT=0,truck,parts=[],shakeT=0,resultT=0,result=null,t=0;
+const cv=document.getElementById('cv'),cx=cv.getContext('2d');let S=1,DPR=1;
+
+function mk(x,y,f){return{x,y,x0:x,y0:y,vx:0,vy:0,fx:0,fy:0,m:0,fixed:!!f}}
+function resetDesign(){nodes=ANCH.map(([x,y])=>mk(x,y,true));beams=[];}
+resetDesign();
+const used=i=>nodes[i].fixed||beams.some(b=>b.a===i||b.b===i);
+const len=b=>Math.hypot(nodes[b.a].x0-nodes[b.b].x0,nodes[b.a].y0-nodes[b.b].y0);
+const cost=()=>Math.round(beams.reduce((s,b)=>s+len(b)*(b.road?2:1),0));
+function nodeAt(x,y,r){let best=-1,bd=r;nodes.forEach((n,i)=>{if(!used(i))return;const d=Math.hypot(n.x0-x,n.y0-y);if(d<bd){bd=d;best=i}});return best}
+function okPos(x,y){return x>LB&&x<RB&&y>=150&&y<=500}
+
+/* ===== בנייה ===== */
+function setTool(k){tool=k;['road','wood','del'].forEach(n=>document.getElementById('t-'+n).classList.toggle('on',n===k))}
+function toast(s,ms){const e=document.getElementById('toast');e.innerHTML=s;e.style.display='block';clearTimeout(e._t);e._t=setTimeout(()=>e.style.display='none',ms||2600)}
+function world(e){const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)/S,y:(e.clientY-r.top)/S}}
+function snap(p){return{x:Math.round(p.x/G)*G,y:Math.round(p.y/G)*G}}
+function preview(){if(!drag)return null;const A=nodes[drag.from],q=drag.to;
+  const L=Math.hypot(q.x-A.x0,q.y-A.y0);const ex=nodeAt(q.x,q.y,5);
+  let ok=L>1&&L<=MAXL&&(ex>=0||okPos(q.x,q.y));
+  if(ex>=0&&beams.some(b=>(b.a===drag.from&&b.b===ex)||(b.b===drag.from&&b.a===ex)))ok=false;
+  return{A,q,L,ok,ex}}
+cv.addEventListener('pointerdown',e=>{if(mode!=='build')return;audio();const p=world(e);
+  if(tool==='del'){const i=beamNear(p);if(i>=0){beams.splice(i,1);sfx('del');upd()}return}
+  const n=nodeAt(p.x,p.y,innerWidth<900?45:28);if(n>=0){drag={from:n,to:snap(p)};cv.setPointerCapture(e.pointerId)}});
+cv.addEventListener('pointermove',e=>{const p=world(e);hover=p;if(drag)drag.to=snap(p)});
+cv.addEventListener('pointerup',()=>{if(!drag)return;const pv=preview();
+  if(pv&&pv.ok){const add=pv.L*(tool==='road'?2:1);
+    if(cost()+add>LEVELS[LV].budget){toast('💰 נגמר התקציב! נסו לבנות חכם יותר.');sfx('del')}
+    else{let j=pv.ex;if(j<0){j=nodes.findIndex((n,i)=>!used(i)&&n.x0===pv.q.x&&n.y0===pv.q.y);if(j<0){nodes.push(mk(pv.q.x,pv.q.y));j=nodes.length-1}}
+      beams.push({a:drag.from,b:j,road:tool==='road'});sfx('place');
+      if(!built){built=true;toast('👍 מעולה! המשיכו לבנות עד הגדה השנייה. אפשר לגרור גם מבורג חדש.',3500)}}}
+  else if(pv&&pv.L>MAXL)toast('📏 הקורה ארוכה מדי. בנו בקטעים קצרים יותר.');
+  drag=null;upd()});
+function beamNear(p){let best=-1,bd=16;beams.forEach((b,i)=>{const A=nodes[b.a],B=nodes[b.b];const d=segD(p,A.x0,A.y0,B.x0,B.y0);if(d<bd){bd=d;best=i}});return best}
+function segD(p,x1,y1,x2,y2){const dx=x2-x1,dy=y2-y1,L2=dx*dx+dy*dy;let k=L2?((p.x-x1)*dx+(p.y-y1)*dy)/L2:0;k=Math.max(0,Math.min(1,k));return Math.hypot(p.x-x1-k*dx,p.y-y1-k*dy)}
+function upd(){const c=cost(),B=LEVELS[LV].budget;document.getElementById('money').innerHTML=`💰 <span class="${c>B?'bad':''}">${c.toLocaleString()}</span> / ${B.toLocaleString()}`;
+  document.getElementById('lvl').textContent=LEVELS[LV].name}
+function clearAll(){if(mode!=='build')return;resetDesign();upd()}
+
+/* ===== פיזיקה ===== */
+function physInit(){nodes.forEach(n=>{n.x=n.x0;n.y=n.y0;n.vx=n.vy=0;n.m=.3});
+  beams.forEach(b=>{b.broken=false;b.st=0;b.L0=len(b);const mm=b.L0/100*(b.road?.9:.45);nodes[b.a].m+=mm/2;nodes[b.b].m+=mm/2});
+  simT=0;truck={x:120,y:ROADY,ang:0,vy:0,fall:false,done:false};result=null;resultT=0;parts=[]}
+function roadAt(x,prefY){if(x<=LB||x>=RB)return{y:ROADY,g:true};let best=null;
+  beams.forEach(b=>{if(!b.road||b.broken)return;const A=nodes[b.a],B=nodes[b.b];const lo=Math.min(A.x,B.x),hi=Math.max(A.x,B.x);
+    if(x<lo||x>hi||hi-lo<1)return;const k=(x-A.x)/(B.x-A.x),y=A.y+k*(B.y-A.y);
+    if(!best||Math.abs(y-prefY)<Math.abs(best.y-prefY))best={y,b,k}});return best}
+function sub(dt){const used_=nodes.map((n,i)=>used(i));
+  const ramp=Math.min(1,simT/0.8);nodes.forEach(n=>{n.fx=0;n.fy=n.m*GRAV*.25*ramp});
+  if(!truck.fall&&!truck.done){const W=LEVELS[LV].M*GRAV/2;[truck.x-30,truck.x+30].forEach(wx=>{const r=roadAt(wx,truck.y);
+    if(r&&!r.g){nodes[r.b.a].fy+=W*(1-r.k);nodes[r.b.b].fy+=W*r.k}})}
+  for(const b of beams){if(b.broken)continue;const A=nodes[b.a],B=nodes[b.b];let dx=B.x-A.x,dy=B.y-A.y;const L=Math.hypot(dx,dy)||1e-6;dx/=L;dy/=L;
+    const e=(L-b.L0)/b.L0;b.st=e;const f=K*e+DAMP*((B.vx-A.vx)*dx+(B.vy-A.vy)*dy);
+    A.fx+=f*dx;A.fy+=f*dy;B.fx-=f*dx;B.fy-=f*dy;
+    if(Math.abs(e)>BREAK){b.broken=true;breakFx((A.x+B.x)/2,(A.y+B.y)/2,b.road)}}
+  nodes.forEach((n,i)=>{if(n.fixed||!used_[i])return;n.vx+=n.fx/n.m*dt;n.vy+=n.fy/n.m*dt;n.vx*=.9997;n.vy*=.9997;n.x+=n.vx*dt;n.y+=n.vy*dt;
+    if(n.y>575){n.y=575;n.vy*=-.2;n.vx*=.7}})}
+function step(dt){simT+=dt;for(let i=0;i<SUB;i++)sub(dt/SUB);
+  const T=truck;if(!T.done){
+   if(!T.fall){T.x+=SPEED*dt;const r1=roadAt(T.x-30,T.y),r2=roadAt(T.x+30,T.y);
+     if(!r1||!r2||Math.abs(r1.y-T.y)>40&&!r1.g){T.fall=true}else{T.y=(r1.y+r2.y)/2;T.ang=Math.atan2(r2.y-r1.y,60);if(Math.abs(T.ang)>.65)T.fall=true}
+     if(T.x>RB+140){T.done=true;finish('win')}}
+   else{T.vy+=GRAV*1.4*dt;T.y+=T.vy*dt;T.x+=SPEED*.35*dt;T.ang+=1.6*dt;
+     if(T.y>520){T.done=true;splash(T.x);finish('fail')}}}}
+function finish(r){if(result)return;result=r;resultT=r==='win'?1.1:1.4}
+
+/* ===== אפקטים וצלילים ===== */
+let AC=null;function audio(){if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(AC&&AC.state==='suspended')AC.resume()}
+function tone(f,d,type,v,when){if(!AC)return;const o=AC.createOscillator(),g=AC.createGain();o.type=type||'sine';o.frequency.value=f;g.gain.setValueAtTime(v||.15,AC.currentTime+(when||0));g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+(when||0)+d);o.connect(g).connect(AC.destination);o.start(AC.currentTime+(when||0));o.stop(AC.currentTime+(when||0)+d)}
+function noise(d,fq,v,type){if(!AC)return;const n=AC.createBufferSource(),buf=AC.createBuffer(1,AC.sampleRate*d,AC.sampleRate),a=buf.getChannelData(0);for(let i=0;i<a.length;i++)a[i]=(Math.random()*2-1)*(1-i/a.length);n.buffer=buf;const f=AC.createBiquadFilter();f.type=type||'lowpass';f.frequency.value=fq;const g=AC.createGain();g.gain.value=v;n.connect(f).connect(g).connect(AC.destination);n.start()}
+function sfx(k){audio();if(k==='place')tone(660,.08,'triangle',.12);if(k==='del')tone(220,.12,'square',.06);
+  if(k==='snap'){noise(.25,2500,.5,'highpass');tone(90,.25,'sine',.3)}if(k==='splash')noise(.9,900,.6);
+  if(k==='win')[523,659,784,1047].forEach((f,i)=>tone(f,.35,'triangle',.15,i*.12));if(k==='go')tone(140,.4,'sawtooth',.05)}
+function breakFx(x,y,road){shakeT=.35;sfx('snap');for(let i=0;i<14;i++)parts.push({x,y,vx:(Math.random()-.5)*260,vy:-Math.random()*220,l:1,c:road?'#475569':'#b45309',s:4+Math.random()*4})}
+function splash(x){sfx('splash');shakeT=.3;for(let i=0;i<40;i++)parts.push({x,y:525,vx:(Math.random()-.5)*300,vy:-150-Math.random()*300,l:1.3,c:'#bae6fd',s:4+Math.random()*5})}
+
+/* ===== מעברים ===== */
+function startTest(){if(mode!=='build')return;audio();
+  if(!beams.some(b=>b.road)){toast('🛣️ קודם בנו כביש מהגדה לגדה.');return}
+  mode='test';physInit();sfx('go');document.getElementById('goBtn').disabled=true;document.getElementById('clr').disabled=true}
+const HINTS=['👀 הסתכלו איפה הגשר התכופף ונשבר. מה אפשר להוסיף שם כדי לחזק אותו?',
+ '🤔 נסו לדמיין ריבוע מקורות שמחוברות בברגים. אם לוחצים על הפינה שלו, הוא מתעוות. איזו צורה לא מתעוותת גם כשלוחצים עליה?',
+ '💡 רמז של מהנדסים: חברו את הקורות כך שייווצרו <b>משולשים</b> 🔺 מעל הכביש או מתחתיו.'];
+function showFail(){fails++;document.getElementById('hint').innerHTML=HINTS[Math.min(fails-1,2)];openOv('ovFail')}
+function tris(){let n=0;const N=nodes.length,adj=nodes.map(()=>new Set());beams.forEach(b=>{adj[b.a].add(b.b);adj[b.b].add(b.a)});
+  for(let i=0;i<N;i++)for(const j of adj[i])if(j>i)for(const k of adj[j])if(k>j&&adj[i].has(k)){const A=nodes[i],B=nodes[j],C=nodes[k];
+    if(Math.abs((B.x0-A.x0)*(C.y0-A.y0)-(B.y0-A.y0)*(C.x0-A.x0))>1)n++}return n}
+function showWin(){sfx('win');const L=LEVELS[LV],c=cost(),st=c<=L.s3?3:c<=L.s2?2:1;
+  document.getElementById('stars').textContent='⭐'.repeat(st)+'☆'.repeat(3-st);
+  document.getElementById('winTxt').innerHTML=`הגשר עלה <b>${c.toLocaleString()} ₪</b>. ${st<3?`לשלושה כוכבים צריך לבנות ב־${L.s3.toLocaleString()} ₪ או פחות.`:'גשר חסכוני ומושלם!'}`;
+  const n=tris();document.getElementById('triTxt').textContent=n?`🔺 ספרנו בגשר שלכם ${n} משולשים!`:'';
+  document.getElementById('rule').style.display='none';document.getElementById('ruleBtn').style.display='block';
+  document.getElementById('nextBtn').style.display=LV<LEVELS.length-1?'block':'none';openOv('ovWin')}
+function showRule(){document.getElementById('rule').style.display='block';document.getElementById('ruleBtn').style.display='none'}
+function backToBuild(){closeOv('ovFail');closeOv('ovWin');mode='build';beams.forEach(b=>b.broken=false);nodes.forEach(n=>{n.x=n.x0;n.y=n.y0});
+  document.getElementById('goBtn').disabled=false;document.getElementById('clr').disabled=false;upd()}
+function nextLevel(){LV++;fails=0;backToBuild();toast(`🚛 ${LEVELS[LV].name}: משאית כבדה יותר מפי 2! הגשר שלכם יחזיק?`,3500)}
+function openOv(id){document.getElementById(id).classList.add('on')}function closeOv(id){document.getElementById(id).classList.remove('on')}
+function fs(){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()}
+
+/* ===== ציור ===== */
+function resize(){DPR=window.devicePixelRatio||1;const top=document.getElementById('top').offsetHeight,bar=document.getElementById('bar').offsetHeight;
+  const w=Math.min(innerWidth,(innerHeight-top-bar)*WW/WH);S=w/WW;cv.style.width=w+'px';cv.style.height=w*WH/WW+'px';cv.width=w*DPR;cv.height=w*WH/WW*DPR}
+addEventListener('resize',resize);
+function rot(){document.getElementById('rot').style.display=innerHeight>innerWidth&&innerWidth<700?'flex':'none';resize()}addEventListener('resize',rot);addEventListener('orientationchange',()=>setTimeout(rot,300));
+function stressCol(e){const k=Math.min(1,Math.abs(e)/BREAK);const r=k<.5?Math.round(80+k*2*175):255,g=k<.5?200:Math.round(200-(k-.5)*2*200);return`rgb(${r},${g},60)`}
+function draw(){const c=cx;c.setTransform(S*DPR,0,0,S*DPR,0,0);
+  if(shakeT>0)c.translate((Math.random()-.5)*14*shakeT,(Math.random()-.5)*14*shakeT);
+  const sky=c.createLinearGradient(0,0,0,WH);sky.addColorStop(0,'#7dd3fc');sky.addColorStop(1,'#e0f2fe');c.fillStyle=sky;c.fillRect(-20,-20,WW+40,WH+40);
+  c.fillStyle='#fde047';c.beginPath();c.arc(880,80,40,0,7);c.fill();
+  c.fillStyle='#bbf7d0';c.beginPath();c.moveTo(0,300);c.quadraticCurveTo(200,180,420,290);c.quadraticCurveTo(650,170,1000,280);c.lineTo(1000,600);c.lineTo(0,600);c.fill();
+  // נהר
+  c.fillStyle='#0ea5e9';c.fillRect(LB,520,RB-LB,90);c.strokeStyle='#e0f2fe';c.lineWidth=3;c.beginPath();
+  for(let x=LB;x<=RB;x+=6)c.lineTo(x,532+Math.sin(x/22+t*3)*4);c.stroke();
+  // גדות
+  [[0,LB],[RB,WW]].forEach(([a,b])=>{c.fillStyle='#a16207';c.fillRect(a,ROADY,b-a,260);c.fillStyle='#65a30d';c.fillRect(a,ROADY-6,b-a,14);
+    c.fillStyle='#475569';c.fillRect(a,ROADY-4,b-a,8)});
+  c.font='46px serif';c.textAlign='center';c.fillText('🏘️',900,ROADY-14);c.fillText('🌳',60,ROADY-14);
+  // רשת בבנייה
+  if(mode==='build'){c.fillStyle='rgba(30,58,138,.28)';for(let x=LB+G;x<RB;x+=G)for(let y=150;y<=500;y+=G){c.beginPath();c.arc(x,y,3,0,7);c.fill()}}
+  // קורות
+  beams.forEach(b=>{if(b.broken)return;const A=nodes[b.a],B=nodes[b.b];const st=mode==='test'?stressCol(b.st):null;
+    c.lineCap='round';
+    if(b.road){c.strokeStyle=st||'#334155';c.lineWidth=16;line(A,B);c.strokeStyle='#1e293b';c.lineWidth=10;line(A,B);c.strokeStyle='#facc15';c.lineWidth=2;c.setLineDash([10,10]);line(A,B);c.setLineDash([])}
+    else{c.strokeStyle=st||'#78350f';c.lineWidth=11;line(A,B);c.strokeStyle=mode==='test'?'rgba(255,255,255,.35)':'#d97706';c.lineWidth=4;line(A,B)}});
+  // מבנה בתצוגה מקדימה
+  const pv=preview();if(pv){c.strokeStyle=pv.ok?(tool==='road'?'rgba(51,65,85,.7)':'rgba(180,83,9,.7)'):'rgba(220,38,38,.8)';c.lineWidth=12;c.setLineDash([12,8]);
+    c.beginPath();c.moveTo(pv.A.x0,pv.A.y0);c.lineTo(pv.q.x,pv.q.y);c.stroke();c.setLineDash([]);
+    c.fillStyle='#fff';c.font='bold 20px Arial';c.fillText(Math.round(pv.L*(tool==='road'?2:1))+' ₪',(pv.A.x0+pv.q.x)/2,(pv.A.y0+pv.q.y)/2-14)}
+  // ברגים
+  nodes.forEach((n,i)=>{if(!used(i))return;const x=mode==='test'?n.x:n.x0,y=mode==='test'?n.y:n.y0;
+    if(n.fixed){c.fillStyle='#dc2626';c.fillRect(x-10,y-10,20,20);c.strokeStyle='#fff';c.lineWidth=3;c.strokeRect(x-10,y-10,20,20)}
+    else{c.fillStyle='#e2e8f0';c.beginPath();c.arc(x,y,8,0,7);c.fill();c.strokeStyle='#475569';c.lineWidth=3;c.stroke()}});
+  // הדרכה בהתחלה
+  if(mode==='build'&&!beams.length){const k=(t*0.8)%1;c.strokeStyle='rgba(220,38,38,'+(1-k)+')';c.lineWidth=4;c.beginPath();c.arc(300,350,14+k*30,0,7);c.stroke();
+    c.font='40px serif';c.fillText('👆',300+k*50,395);c.fillStyle='#1e3a8a';c.font='bold 24px Arial';c.fillText('גררו מהבורג האדום',470,300)}
+  // משאית
+  if(mode==='test')drawTruck(c);
+  // חלקיקים
+  parts.forEach(p=>{c.globalAlpha=Math.max(0,Math.min(1,p.l));c.fillStyle=p.c;c.fillRect(p.x-p.s/2,p.y-p.s/2,p.s,p.s)});c.globalAlpha=1}
+function line(A,B){const ax=mode==='test'?A.x:A.x0,ay=mode==='test'?A.y:A.y0,bx=mode==='test'?B.x:B.x0,by=mode==='test'?B.y:B.y0;cx.beginPath();cx.moveTo(ax,ay);cx.lineTo(bx,by);cx.stroke()}
+function drawTruck(c){const T=truck,big=LEVELS[LV].big;c.save();c.translate(T.x,T.y-8);c.rotate(T.ang);
+  c.fillStyle=big?'#b91c1c':'#f97316';c.fillRect(-52,-50,72,40);c.fillStyle='#fff';c.font='bold 15px Arial';c.fillText(big?'כבד!':'אוכל',-16,-25);
+  c.fillStyle='#1d4ed8';c.beginPath();c.moveTo(22,-10);c.lineTo(22,-42);c.lineTo(42,-42);c.lineTo(54,-24);c.lineTo(54,-10);c.fill();
+  c.fillStyle='#bfdbfe';c.fillRect(28,-38,14,12);
+  [-34,36].forEach(x=>{c.fillStyle='#111827';c.beginPath();c.arc(x,-4,11,0,7);c.fill();c.fillStyle='#9ca3af';c.beginPath();c.arc(x,-4,4,0,7);c.fill()});c.restore()}
+
+/* ===== לולאה ===== */
+let last=performance.now();
+function loop(now){let dt=Math.min(.033,(now-last)/1000);last=now;t+=dt;
+  if(mode==='test'){step(dt);if(result){resultT-=dt;if(resultT<=0){const r=result;result='shown';r==='win'?showWin():showFail()}}}
+  parts.forEach(p=>{p.vy+=600*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.l-=dt});parts=parts.filter(p=>p.l>0);
+  if(shakeT>0)shakeT-=dt;draw();requestAnimationFrame(loop)}
+rot();upd();requestAnimationFrame(loop);
+
+/* ===== לבדיקה אוטומטית ===== */
+window.simTest=function(design,lv){LV=lv;resetDesign();
+  design.forEach(([x1,y1,x2,y2,road])=>{const f=p=>{let j=nodes.findIndex(n=>n.x0===p[0]&&n.y0===p[1]);if(j<0){nodes.push(mk(p[0],p[1]));j=nodes.length-1}return j};
+    beams.push({a:f([x1,y1]),b:f([x2,y2]),road:!!road})});
+  mode='test';physInit();let mx=0;for(let i=0;i<60*14&&!truck.done;i++){step(1/60);beams.forEach(b=>{if(!b.broken)mx=Math.max(mx,Math.abs(b.st))})}
+  const out={res:truck.done?(truck.fall?'fail':'win'):'timeout',broken:beams.filter(b=>b.broken).length,maxStrain:+(mx/BREAK).toFixed(2),cost:cost(),tris:tris()};
+  mode='build';result=null;fails=0;return out};
+</script>
+</body>
+</html>
