@@ -52,7 +52,7 @@ footer{text-align:center;color:#a78bfa;font-size:13px;margin-top:14px}
     <button class="bb" id="bSong" onclick="openSong()"><span>🎵</span>שיר</button>
     <button class="bb" id="bMake" onclick="record()"><span>🎬</span>צור קליפ</button>
   </div>
-  <input type="file" id="photoIn" class="hidefile" accept="image/*" multiple>
+  <input type="file" id="photoIn" class="hidefile" accept="image/*,video/*" multiple>
   <input type="file" id="songIn" class="hidefile" accept="audio/*">
   <div id="thumbs"></div>
   <div id="status"></div>
@@ -103,10 +103,21 @@ function gpt(){const t=`צור תמונה מציאותית וקולנועית מ
 /* ===== תמונות ===== */
 function pickPhotos(){$('photoIn').value='';$('photoIn').click()}
 $('photoIn').addEventListener('change',async e=>{const fs=[...e.target.files];if(!fs.length)return;status('📸 טוענת '+fs.length+' תמונות…');
-  for(const f of fs){const img=await loadImg(f);if(img)photos.push(img)}status('');thumbs();regen();drawIdle();toast('✅ נוספו '+fs.length+' תמונות')});
+  for(const f of fs){const img=/^video/.test(f.type)?await loadVid(f):await loadImg(f);if(img)photos.push(img)}status('');thumbs();regen();drawIdle();toast('✅ נוספו '+fs.length+' תמונות')});
+function loadVid(f){return new Promise(r=>{const u=URL.createObjectURL(f),v=document.createElement('video');v.muted=true;v.playsInline=true;v.setAttribute('playsinline','');v.preload='auto';v.src=u;
+  let done=false;const fail=()=>{if(done)return;done=true;toast('סרטון אחד לא נפתח, דילגתי עליו');r(null)};const to=setTimeout(fail,15000);
+  v.onerror=fail;v.onloadeddata=()=>{v.currentTime=Math.min(1,(v.duration||2)*.15)};v.onseeked=()=>{if(done)return;done=true;clearTimeout(to);
+    const s=Math.min(1,960/Math.max(v.videoWidth,v.videoHeight)),c=document.createElement('canvas');c.width=Math.round(v.videoWidth*s);c.height=Math.round(v.videoHeight*s);
+    c.getContext('2d').drawImage(v,0,0,c.width,c.height);c.vid=v;c.vstart=v.currentTime;c.src=c.toDataURL('image/jpeg',.6);v.onseeked=null;r(c)}})}
+let liveKey=null,liveItem=null;
+function liveVideo(item,key,lb){if(!item||!item.vid)return;const v=item.vid;
+  if(!playing){return}
+  if(liveKey!==key){if(liveItem&&liveItem.vid)liveItem.vid.pause();liveKey=key;liveItem=item;try{v.currentTime=item.vstart;v.play().catch(()=>{})}catch(e){}}
+  v.playbackRate=lb<1?1.25:lb>2.7?.45:1;if(v.readyState>=2)item.getContext('2d').drawImage(v,0,0,item.width,item.height)}
+function stopVideos(){photos.forEach(p=>p.vid&&p.vid.pause());liveKey=null;liveItem=null}
 function loadImg(f){return new Promise(r=>{const u=URL.createObjectURL(f),im=new Image();im.onload=()=>{const s=Math.min(1,1400/Math.max(im.width,im.height)),c=document.createElement('canvas');
   c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);c.getContext('2d').drawImage(im,0,0,c.width,c.height);c.src=u;r(c)};im.onerror=()=>{toast('תמונה אחת לא נפתחה, דילגתי עליה');r(null)};im.src=u})}
-function thumbs(){$('thumbs').innerHTML=photos.map((p,i)=>`<div class="th"><img src="${p.src}"><b onclick="delPhoto(${i})">✖</b></div>`).join('')}
+function thumbs(){$('thumbs').innerHTML=photos.map((p,i)=>`<div class="th"><img src="${p.src}">${p.vid?'<i style="position:absolute;bottom:2px;right:4px;font-style:normal">🎬</i>':''}<b onclick="delPhoto(${i})">✖</b></div>`).join('')}
 function delPhoto(i){photos.splice(i,1);thumbs();regen();drawIdle()}
 
 /* ===== שיר ===== */
@@ -163,7 +174,7 @@ async function renderTrack(style,T){const key=style+T;if(trackCache[key])return 
 
 /* ======= ציר זמן ורינדור ======= */
 function plan(){const n=photos.length,C=8+4*Math.max(0,n-1)+4;return{n,C,T:C+12}}
-const isFreeze=(i,n)=>(i===2||i===6)&&i<n-1;
+const isFreeze=(i,n)=>(i===2||i===6)&&i<n-1&&!(photos[i]&&photos[i].vid);
 function styleOf(i,n){if(isFreeze(i,n))return'freeze';let st=STY[i%STY.length];if(NEEDS[st]&&i<NEEDS[st])st='kb';return st}
 function drawFreeze(i,lb,pulse){const img=photos[i];if(lb<1){kb(img,lb,i,pulse);return}photo(img,1.16+.1*Math.exp(-(lb-1)*8),0,0,0);
   cx.save();cx.globalCompositeOperation='saturation';cx.fillStyle='#777';cx.fillRect(0,0,W,H);cx.restore();cx.fillStyle='rgba(255,225,150,.14)';cx.fillRect(0,0,W,H);
@@ -248,7 +259,14 @@ function whip(dir,lb){if(lb>=.3)return;const k=1-lb/.3;cx.save();for(let s=1;s<=
 function glitch(seed,amt){if(amt<=0)return;for(let k=0;k<9;k++){const y=rnd(seed+k)*H,h=18+rnd(seed+k+50)*70,o=(rnd(seed+k+90)-.5)*90*amt;cx.drawImage(cv,0,y,W,h,o,y,W,h)}
   cx.save();cx.globalCompositeOperation='screen';cx.globalAlpha=.35*amt;cx.fillStyle='#ff0050';cx.fillRect(-8*amt,0,W,H);cx.fillStyle='#00e5ff';cx.fillRect(8*amt,0,W,H);cx.restore()}
 
-function frame(t,beat){const {n,C,T}=plan(),b=t/beat,fb=b-Math.floor(b),pulse=Math.exp(-fb*7);cx.fillStyle='#000';cx.fillRect(0,0,W,H);
+const GR=(()=>{const c=document.createElement('canvas');c.width=c.height=256;const g=c.getContext('2d'),d=g.createImageData(256,256);for(let i=0;i<d.data.length;i+=4){const v=Math.random()*255;d.data[i]=d.data[i+1]=d.data[i+2]=v;d.data[i+3]=255}g.putImageData(d,0,0);return c})();
+let GRP=null;
+function filmFx(t){const f=Math.floor(t*24);if(!GRP)GRP=cx.createPattern(GR,'repeat');cx.save();cx.globalCompositeOperation='overlay';cx.globalAlpha=.13;const ox=(rnd(f)*256)|0,oy=(rnd(f+7)*256)|0;
+  cx.translate(-ox,-oy);cx.fillStyle=GRP;cx.fillRect(ox,oy,W,H);cx.restore();
+  if(rnd(Math.floor(t*10))>.72){const x=rnd(Math.floor(t*10)+3)*W;cx.fillStyle='rgba(255,255,255,.22)';cx.fillRect(x,0,1.5,H)}
+  cx.fillStyle=`rgba(255,240,220,${.025*rnd(f+11)})`;cx.fillRect(0,0,W,H)}
+function frame(t,beat){frameCore(t,beat);if(photos.length)filmFx(t)}
+function frameCore(t,beat){const {n,C,T}=plan(),b=t/beat,fb=b-Math.floor(b),pulse=Math.exp(-fb*7);cx.fillStyle='#000';cx.fillRect(0,0,W,H);
   if(!n){text('הוסיפו תמונות 📸',H/2,60,1,1);return}
   const last=photos[n-1];
   if(b<8){ // פתיחה
@@ -259,14 +277,14 @@ function frame(t,beat){const {n,C,T}=plan(),b=t/beat,fb=b-Math.floor(b),pulse=Ma
     else{const k=eob((b-4)/.7);text(caps.intro,H*.48,48,1,clamp(1-(b-4)*2,0,1));text(caps.name,H*.58,150,(.2+.8*k)*(1+.05*pulse),1,null,'#fde047')}
     letterbox(clamp(1.3-b/6,0,1));if(b>=4)flash(1-(b-4)*4,'#fff');return}
   if(b>=C-4&&b<C){drawRapid(b-(C-4),n,t);return}
-  if(b<C){const i=Math.floor((b-8)/4),lb=(b-8)-i*4,img=photos[i],dir=i%2?-1:1,st=styleOf(i,n);
+  if(b<C){const i=Math.floor((b-8)/4),lb=(b-8)-i*4,img=photos[i],dir=i%2?-1:1,st=img.vid?'kb':styleOf(i,n);liveVideo(img,'m'+i,lb);
     if(st==='kb')kb(img,lb,i,pulse);else if(st==='freeze')drawFreeze(i,lb,pulse);else if(st==='polaroid')drawPolaroid(i,lb);else if(st==='collage')drawCollage(i,lb,pulse);else if(st==='carousel')drawCarousel(i,lb);
     else if(st==='flip')drawFlip(i,lb,pulse);else if(st==='iris')drawIris(i,lb,pulse);else if(st==='zoomthru')drawZoomThru(i,lb,pulse);else if(st==='film')drawFilm(i,lb);else drawKaleido(i,lb,pulse);
     grade(.12);dust(t,30,'#fff7cc');if(st==='kb')whip(dir,lb);leak(1-lb/.6);
     const ct=st==='collage'?2.4:st==='kaleido'?1.6:st==='freeze'?1.25:.3,k=eob((lb-ct)/.55);text(words(caps.mont[i],lb,ct),H*.82,60,.5+.5*k,clamp((lb-ct)*4,0,1),st==='freeze'?'rgba(220,38,38,.92)':['rgba(219,39,119,.88)','rgba(124,58,237,.88)','rgba(234,88,12,.88)'][i%3]);
     emoji(TH.e,W-80,110,70,1+.15*pulse,.85,0);
     if(st==='kb')flash(1-lb*5,'#fff');return}
-  if(b<C+8){const lb=b-C,sh=14*pulse;cx.save();cx.translate((rnd(Math.floor(b)*3)-.5)*sh,(rnd(Math.floor(b)*7)-.5)*sh);photo(last,1.1+lb*.03+.06*pulse,0,0,0);cx.restore();grade(.25);dust(t,70,'#fde047');
+  if(b<C+8){const lb=b-C,sh=14*pulse;liveVideo(last,'hero',1.5);cx.save();cx.translate((rnd(Math.floor(b)*3)-.5)*sh,(rnd(Math.floor(b)*7)-.5)*sh);photo(last,1.1+lb*.03+.06*pulse,0,0,0);cx.restore();grade(.25);dust(t,70,'#fde047');
     cx.fillStyle=`rgba(253,224,71,${.12*pulse})`;cx.fillRect(0,0,W,H);
     text(caps.c1,H*.55,70,eob(lb/.5),clamp(lb*4,0,1),'rgba(0,0,0,.5)');
     text(caps.c2,H*.71,118,eob((lb-1)/.6)*(1+.05*pulse),clamp((lb-1)*4,0,1),'rgba(124,58,237,.9)','#fde047');
@@ -292,7 +310,7 @@ async function start(recording){if(playing)stop();const m=await prepare();if(!m)
   const tick=()=>{if(!playing)return;const t=ac.currentTime-t0;frame(Math.max(0,t),m.beat);
     if(recording)status('🎬 מקליטה… '+Math.min(100,Math.round(t/dur*100))+'%');
     if(t>=dur){stop();return}raf=requestAnimationFrame(tick)};tick();return true}
-function stop(){playing=false;cancelAnimationFrame(raf);try{src&&src.stop();fxSrc&&fxSrc.stop()}catch(e){}src=null;$('hint').textContent='👆 לחיצה על המסך = צפייה';if(rec&&rec.state==='recording')rec.stop();else drawIdle()}
+function stop(){playing=false;stopVideos();cancelAnimationFrame(raf);try{src&&src.stop();fxSrc&&fxSrc.stop()}catch(e){}src=null;$('hint').textContent='👆 לחיצה על המסך = צפייה';if(rec&&rec.state==='recording')rec.stop();else drawIdle()}
 function togglePlay(){getAC();playing?stop():start(false)}
 async function record(){getAC();if(!window.MediaRecorder||!cv.captureStream){toast('הדפדפן הזה לא יודע לשמור וידאו. נסו בכרום או בספארי מעודכן.');return}
   const types=['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4','video/webm;codecs=vp9,opus','video/webm'],type=types.find(x=>MediaRecorder.isTypeSupported(x))||'';
