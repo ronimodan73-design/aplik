@@ -85,14 +85,14 @@ const PLACES=['ירושלים','אילת','ים המלח','הצפון','הגלי
 function analyze(idea){const t=idea||'',cls=(t.match(/[א-ת]['׳]?\s?\d{1,2}/)||[''])[0].replace(/\s/,'').replace("'",'׳'),place=PLACES.find(p=>t.includes(p))||'';
   if(/טיול|גיחה|סיור|מסע/.test(t))return{e:'📍',ce:place==='ירושלים'?'🦁':'🏆',intro:'הטיול השנתי…',big:cls||place||'יוצאים לדרך',
     pool:['יוצאים לדרך 🚌','רגע של צחוק 😂','מקשיבים… כמעט','עוד תמונה קבוצתית 📸','הנופים האלה 😍','כוח לאנשים 💪','זוכרים את הרגע הזה?','החברים הכי טובים','ממשיכים ללכת… 🥵'],
-    last:'בדרך הביתה… 😴',c1:cls||'אנחנו',c2:cls?`כבשה את ${place||'השטח'}!`:`כבשנו את ${place||'השטח'}!`,tag:'הטיול הכי טוב 💙',outro:'איזה טיול ✨'};
+    last:'בדרך הביתה… 😴',fz:['רגע… עצרו הכל ✋','זה הרגע שבו כולם הבינו שזה יהיה יום ארוך 😅'],c1:cls||'אנחנו',c2:cls?`כבשה את ${place||'השטח'}!`:`כבשנו את ${place||'השטח'}!`,tag:'הטיול הכי טוב 💙',outro:'איזה טיול ✨'};
   if(/הולדת/.test(t)){const nm=(t.match(/הולדת\s+(?:ל|של\s+)?([א-ת]+)/)||['',''])[1];return{e:'🎂',ce:'🎉',intro:'היום חוגגים…',big:nm||'מזל טוב',
     pool:['הכי מצחיק בעולם 😂','חבר אמיתי','תמיד עם חיוך','רגעים שלא שוכחים','מלך המסיבה 👑','ממשיכים לחגוג 🥳'],last:'וזה רק ההתחלה',c1:'מזל טוב',c2:nm?nm+'!':'יום הולדת שמח!',tag:'עד 120 🎈',outro:'שנה מדהימה ✨'}}
   if(/סיום|פרידה|סוף שנה/.test(t))return{e:'🎓',ce:'🎓',intro:'עוד שנה עברה…',big:cls||'השנה שלנו',pool:['איך שהזמן עובר','צחקנו','למדנו','גדלנו יחד','רגעים שלא שוכחים','החברים לכל החיים'],last:'ועכשיו…',c1:'כל הכבוד',c2:cls?cls+'!':'לכולנו!',tag:'גאים בכם 💙',outro:'להתראות בשנה הבאה ✨'};
   if(/חלום|אהיה|רוצה להיות/.test(t)){const nm=(t.match(/^([א-ת]+)/)||['',''])[1];return{e:'⭐',ce:'🦁',intro:'יש לי חלום…',big:nm||'החלום',pool:['כל יום לומדים משהו חדש','גם כשקשה, לא מוותרים','מאמינים בעצמנו','צעד אחרי צעד'],last:'חולמים בגדול',c1:'החלום',c2:'מתגשם!',tag:'חזקים כמו אריה 🦁',outro:'החלום מתחיל עכשיו ✨'}}
   return{e:'✨',ce:'🔥',intro:'מוכנים?',big:cls||(t.split(' ').slice(0,3).join(' '))||'הקליפ שלנו',pool:['רגעים שלא שוכחים','צחוק אמיתי 😂','ביחד זה הכי','עוד רגע מטורף','אנרגיות 🔥','זוכרים?'],last:'וזה עוד לא נגמר',c1:'פשוט',c2:'מושלם!',tag:'הכי טובים 💙',outro:'עד הפעם הבאה ✨'}}
 function regen(){const a=analyze($('idea').value.trim());TH={e:a.e,ce:a.ce};if(capsEdited&&caps){caps.mont.length=Math.max(0,photos.length-1);for(let i=0;i<caps.mont.length;i++)if(caps.mont[i]==null)caps.mont[i]=a.pool[i%a.pool.length];return renderCaps()}
-  const n=Math.max(0,photos.length-1);caps={intro:a.intro,name:a.big,mont:Array.from({length:n},(_,i)=>i===n-1&&n>2?a.last:a.pool[i<a.pool.length?i:1+(i-1)%(a.pool.length-1)]),c1:a.c1,c2:a.c2,tag:a.tag,outro:a.outro};renderCaps()}
+  const n=Math.max(0,photos.length-1);const FZ=a.fz||['רגע… עצרו הכל ✋','ואז… זה קרה 😅'];caps={intro:a.intro,name:a.big,mont:Array.from({length:n},(_,i)=>isFreeze(i,n+1)?FZ[i===2?0:1]:i===n-1&&n>2?a.last:a.pool[i<a.pool.length?i:1+(i-1)%(a.pool.length-1)]),c1:a.c1,c2:a.c2,tag:a.tag,outro:a.outro};renderCaps()}
 function renderCaps(){const rows=[['intro','פתיחה'],['name','כותרת גדולה']].concat(caps.mont.map((_,i)=>['m'+i,'תמונה '+(i+1)]),[['c1','שיא – שורה 1'],['c2','שיא – שורה 2'],['tag','שיא – תגית'],['outro','סיום']]);
   $('caps').innerHTML=rows.map(([k,l])=>`<label class="lb">${l}</label><input class="cap" data-k="${k}" value="${String(/^m\d+$/.test(k)?caps.mont[+k.slice(1)]:caps[k]).replace(/"/g,'&quot;')}">`).join('');
   $('caps').oninput=e=>{const k=e.target.dataset.k;if(!k)return;capsEdited=true;if(/^m\d+$/.test(k))caps.mont[+k.slice(1)]=e.target.value;else caps[k]=e.target.value;if(!playing)drawIdle()}}
@@ -162,7 +162,29 @@ async function renderTrack(style,T){const key=style+T;if(trackCache[key])return 
   const buf=await oc.startRendering();trackCache[key]=buf;return buf}
 
 /* ======= ציר זמן ורינדור ======= */
-function plan(){const n=photos.length,C=8+4*Math.max(0,n-1);return{n,C,T:C+12}}
+function plan(){const n=photos.length,C=8+4*Math.max(0,n-1)+4;return{n,C,T:C+12}}
+const isFreeze=(i,n)=>(i===2||i===6)&&i<n-1;
+function styleOf(i,n){if(isFreeze(i,n))return'freeze';let st=STY[i%STY.length];if(NEEDS[st]&&i<NEEDS[st])st='kb';return st}
+function drawFreeze(i,lb,pulse){const img=photos[i];if(lb<1){kb(img,lb,i,pulse);return}photo(img,1.16+.1*Math.exp(-(lb-1)*8),0,0,0);
+  cx.save();cx.globalCompositeOperation='saturation';cx.fillStyle='#777';cx.fillRect(0,0,W,H);cx.restore();cx.fillStyle='rgba(255,225,150,.14)';cx.fillRect(0,0,W,H);
+  text('⏸ רגע…',150,40,1,1,'rgba(220,38,38,.92)');flash(1-(lb-1)*6,'#fff')}
+function drawRapid(rb,n,t){const k=Math.floor(rb*2),lf=rb*2-k,img=photos[k%n];photo(img,1.28-.18*eob(lf/.5),0,0,(k%2?1:-1)*.02);grade(.2);
+  cx.fillStyle=`rgba(253,224,71,${rb/4*.3})`;cx.fillRect(0,0,W,H);flash(1-lf*6,'#fff');
+  if(rb>=1){const c=4-Math.floor(rb);text(String(c),H*.5,300,1+.4*Math.exp(-(rb%1)*6),1,null,'#fde047')}}
+function drawMosaic(lb,n){cx.fillStyle='#000';cx.fillRect(0,0,W,H);const cols=Math.max(2,Math.round(Math.sqrt(n*W/H))),rows=Math.ceil(n/cols),tw=W/cols,th=H/rows,zz=1.1-.05*lb;
+  cx.save();cx.translate(W/2,H/2);cx.scale(zz,zz);cx.translate(-W/2,-H/2);
+  for(let j=0;j<n;j++){const c=j%cols,r=Math.floor(j/cols),e=eob((lb-rnd(j)*.9)/.5);if(e<=0)continue;cx.save();cx.translate(c*tw+tw/2,r*th+th/2);cx.scale(e,e);cx.rotate((1-e)*(rnd(j+3)-.5)*1.6);clipImg(photos[j],-tw/2+3,-th/2+3,tw-6,th-6,1.05);cx.restore()}
+  cx.restore()}
+async function renderSfx(beat){const {n,C,T}=plan(),sr=44100,oc=new OfflineAudioContext(2,Math.ceil((T*beat+1.5)*sr),sr),out=oc.createGain();out.gain.value=.55;out.connect(oc.destination);
+  const nb=oc.createBuffer(1,sr,sr),na=nb.getChannelData(0);for(let i=0;i<na.length;i++)na[i]=Math.random()*2-1;
+  function nz(t,type,f0,f1,d,v,q){const s=oc.createBufferSource();s.buffer=nb;const fl=oc.createBiquadFilter();fl.type=type;fl.Q.value=q||1;fl.frequency.setValueAtTime(f0,t);fl.frequency.exponentialRampToValueAtTime(f1,t+d);
+    const g=oc.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+d*.3);g.gain.exponentialRampToValueAtTime(.001,t+d);s.connect(fl);fl.connect(g);g.connect(out);s.start(t);s.stop(t+d+.05)}
+  const whoosh=t=>nz(Math.max(0,t),'bandpass',3500,300,.4,.7,1.3),click=t=>{nz(t,'highpass',3000,2500,.035,.8);nz(t+.06,'highpass',2500,2000,.03,.6)};
+  function scratch(t){nz(t,'bandpass',700,2600,.18,.8,4);nz(t+.18,'bandpass',2600,500,.2,.8,4);const o=oc.createOscillator(),g=oc.createGain();o.type='sawtooth';o.frequency.setValueAtTime(500,t);o.frequency.exponentialRampToValueAtTime(90,t+.35);g.gain.setValueAtTime(.12,t);g.gain.exponentialRampToValueAtTime(.001,t+.38);o.connect(g);g.connect(out);o.start(t);o.stop(t+.4)}
+  function boom(t,v){const o=oc.createOscillator(),g=oc.createGain();o.frequency.setValueAtTime(90,t);o.frequency.exponentialRampToValueAtTime(35,t+.6);g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+.8);o.connect(g);g.connect(out);o.start(t);o.stop(t+.85)}
+  boom(4*beat,.6);for(let i=0;i<n-1;i++){const t=(8+4*i)*beat,st=styleOf(i,n);if(st==='polaroid')click(t+.45*beat);else whoosh(t-.18);if(st==='freeze')scratch((9+4*i)*beat)}
+  for(let k=0;k<8;k++)click((C-4+k/2)*beat);whoosh((C+8)*beat-.15);return oc.startRendering()}
+
 const rnd=i=>{const x=Math.sin(i*12.9898+78.233)*43758.5453;return x-Math.floor(x)};
 const eob=x=>{x=Math.max(0,Math.min(1,x));const c=1.9;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
@@ -236,38 +258,41 @@ function frame(t,beat){const {n,C,T}=plan(),b=t/beat,fb=b-Math.floor(b),pulse=Ma
     if(b<4){const k=clamp((b-.6)/1.6,0,1);text(caps.intro,H*.58,78,1+(1-k)*.25,k)}
     else{const k=eob((b-4)/.7);text(caps.intro,H*.48,48,1,clamp(1-(b-4)*2,0,1));text(caps.name,H*.58,150,(.2+.8*k)*(1+.05*pulse),1,null,'#fde047')}
     letterbox(clamp(1.3-b/6,0,1));if(b>=4)flash(1-(b-4)*4,'#fff');return}
-  if(b<C){const i=Math.floor((b-8)/4),lb=(b-8)-i*4,img=photos[i],dir=i%2?-1:1;let st=STY[i%STY.length];if(NEEDS[st]&&i<NEEDS[st])st='kb';
-    if(st==='kb')kb(img,lb,i,pulse);else if(st==='polaroid')drawPolaroid(i,lb);else if(st==='collage')drawCollage(i,lb,pulse);else if(st==='carousel')drawCarousel(i,lb);
+  if(b>=C-4&&b<C){drawRapid(b-(C-4),n,t);return}
+  if(b<C){const i=Math.floor((b-8)/4),lb=(b-8)-i*4,img=photos[i],dir=i%2?-1:1,st=styleOf(i,n);
+    if(st==='kb')kb(img,lb,i,pulse);else if(st==='freeze')drawFreeze(i,lb,pulse);else if(st==='polaroid')drawPolaroid(i,lb);else if(st==='collage')drawCollage(i,lb,pulse);else if(st==='carousel')drawCarousel(i,lb);
     else if(st==='flip')drawFlip(i,lb,pulse);else if(st==='iris')drawIris(i,lb,pulse);else if(st==='zoomthru')drawZoomThru(i,lb,pulse);else if(st==='film')drawFilm(i,lb);else drawKaleido(i,lb,pulse);
     grade(.12);dust(t,30,'#fff7cc');if(st==='kb')whip(dir,lb);leak(1-lb/.6);
-    const ct=st==='collage'?2.4:st==='kaleido'?1.6:.3,k=eob((lb-ct)/.55);text(words(caps.mont[i],lb,ct),H*.82,60,.5+.5*k,clamp((lb-ct)*4,0,1),['rgba(219,39,119,.88)','rgba(124,58,237,.88)','rgba(234,88,12,.88)'][i%3]);
+    const ct=st==='collage'?2.4:st==='kaleido'?1.6:st==='freeze'?1.25:.3,k=eob((lb-ct)/.55);text(words(caps.mont[i],lb,ct),H*.82,60,.5+.5*k,clamp((lb-ct)*4,0,1),st==='freeze'?'rgba(220,38,38,.92)':['rgba(219,39,119,.88)','rgba(124,58,237,.88)','rgba(234,88,12,.88)'][i%3]);
     emoji(TH.e,W-80,110,70,1+.15*pulse,.85,0);
-    if(st==='kb')flash(1-lb*5,'#fff');if(b>C-4)flash((b-(C-4))/4*.35,'#fde047');return}
+    if(st==='kb')flash(1-lb*5,'#fff');return}
   if(b<C+8){const lb=b-C,sh=14*pulse;cx.save();cx.translate((rnd(Math.floor(b)*3)-.5)*sh,(rnd(Math.floor(b)*7)-.5)*sh);photo(last,1.1+lb*.03+.06*pulse,0,0,0);cx.restore();grade(.25);dust(t,70,'#fde047');
     cx.fillStyle=`rgba(253,224,71,${.12*pulse})`;cx.fillRect(0,0,W,H);
     text(caps.c1,H*.55,70,eob(lb/.5),clamp(lb*4,0,1),'rgba(0,0,0,.5)');
     text(caps.c2,H*.71,118,eob((lb-1)/.6)*(1+.05*pulse),clamp((lb-1)*4,0,1),'rgba(124,58,237,.9)','#fde047');
     if(lb>=4){const k=eob((lb-4)/.6);emoji(TH.ce,W/2,H*.3,200,k*(1+.08*pulse),1,Math.sin(t*20)*.08*Math.exp(-(lb-4)*2));text(caps.tag,H*.86,54,k,1,'rgba(219,39,119,.85)')}
     confetti(lb*beat);glitch(Math.floor(b)*13,(lb<6?1:0)*clamp(1-fb/.14,0,1));flash(1-lb*2.5,'#fff');return}
-  const lb=b-C-8;cover(last,1.34+lb*.02,0,0);cx.fillStyle=`rgba(0,0,0,${clamp(.4+lb*.2,0,.9)})`;cx.fillRect(0,0,W,H);dust(t,50,'#fde68a');
-  text(caps.outro,H*.46,74,eob(lb/.6),clamp(lb*3,0,1),null,'#fde047');text('ערכה: רוני מודן · שחקים',H*.9,30,1,clamp(lb-1,0,1)*.9);letterbox(clamp(lb/2,0,1))}
+  const lb=b-C-8;drawMosaic(lb,n);dust(t,50,'#fde68a');cx.fillStyle=`rgba(0,0,0,${clamp((lb-1)*.4,0,.55)})`;cx.fillRect(0,H*.37,W,H*.2);
+  text(caps.outro,H*.46,74,eob((lb-1)/.6),clamp((lb-1)*3,0,1),null,'#fde047');text('ערכה: רוני מודן · שחקים',H*.9,30,1,clamp(lb-1,0,1)*.9);letterbox(clamp(lb/2,0,1))}
 
 /* ======= הפעלה והקלטה ======= */
-let playing=false,src=null,raf=0,rec=null,cur={beat:.6,T:0};
+let fxSrc=null,playing=false,src=null,raf=0,rec=null,cur={beat:.6,T:0};
 function status(s){$('status').textContent=s}
 function drawIdle(){if(!caps)regen();const {C}=plan(),beat=60/STYLES.epic.bpm;frame((C+5.5)*beat,beat)}
 async function prepare(){const ac=getAC(),{n,T}=plan();if(!n){toast('📸 קודם מוסיפים תמונות');return null}
   if(music==='own'){if(!song){toast('📁 בחרו שיר מהטלפון');return null}const off=+$('start').value,bt=detectBeat(song.buf,off);return{buf:song.buf,offset:off+bt.phase,beat:bt.beat,T}}
   status('🎵 מלחינה את השיר…');const buf=await renderTrack(music,T);status('');return{buf,offset:0,beat:60/STYLES[music].bpm,T}}
 async function start(recording){if(playing)stop();const m=await prepare();if(!m)return false;const ac=getAC();
+  status('🎚️ מכינה אפקטים קוליים…');let fxBuf=null;try{fxBuf=await renderSfx(m.beat)}catch(e){}status('');
   src=ac.createBufferSource();src.buffer=m.buf;const g=ac.createGain(),t0=ac.currentTime+.2,dur=m.T*m.beat;src.connect(g);g.connect(ac.destination);
   g.gain.setValueAtTime(1,t0+dur-1.6);g.gain.linearRampToValueAtTime(0,t0+dur);
   let dest=null;if(recording){dest=ac.createMediaStreamDestination();g.connect(dest)}
-  src.start(t0,m.offset);playing=true;cur={beat:m.beat,T:m.T,t0,dur,dest};$('hint').textContent='👆 לחיצה על המסך = עצירה';
+  let fx=null;if(fxBuf){fx=ac.createBufferSource();fx.buffer=fxBuf;fx.connect(g)}
+  src.start(t0,m.offset);if(fx)fx.start(t0);fxSrc=fx;playing=true;cur={beat:m.beat,T:m.T,t0,dur,dest};$('hint').textContent='👆 לחיצה על המסך = עצירה';
   const tick=()=>{if(!playing)return;const t=ac.currentTime-t0;frame(Math.max(0,t),m.beat);
     if(recording)status('🎬 מקליטה… '+Math.min(100,Math.round(t/dur*100))+'%');
     if(t>=dur){stop();return}raf=requestAnimationFrame(tick)};tick();return true}
-function stop(){playing=false;cancelAnimationFrame(raf);try{src&&src.stop()}catch(e){}src=null;$('hint').textContent='👆 לחיצה על המסך = צפייה';if(rec&&rec.state==='recording')rec.stop();else drawIdle()}
+function stop(){playing=false;cancelAnimationFrame(raf);try{src&&src.stop();fxSrc&&fxSrc.stop()}catch(e){}src=null;$('hint').textContent='👆 לחיצה על המסך = צפייה';if(rec&&rec.state==='recording')rec.stop();else drawIdle()}
 function togglePlay(){getAC();playing?stop():start(false)}
 async function record(){getAC();if(!window.MediaRecorder||!cv.captureStream){toast('הדפדפן הזה לא יודע לשמור וידאו. נסו בכרום או בספארי מעודכן.');return}
   const types=['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4','video/webm;codecs=vp9,opus','video/webm'],type=types.find(x=>MediaRecorder.isTypeSupported(x))||'';
