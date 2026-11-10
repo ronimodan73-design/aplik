@@ -134,7 +134,7 @@ function mock(){
  return sh(out);
 }
 function end(){
- var p=Math.round(good/list.length*100),msg=p>=90?'🏆 מצוין! אתה מוכן למבחן!':p>=75?'💪 טוב מאוד! עוד קצת חיזוק ואתה שם':p>=55?'👍 בדרך הנכונה – כדאי לחזק את הנושאים למטה':'📘 כדאי לקרוא שוב את הסיכום והטיפים, ואז לנסות שוב';
+ var p=Math.round(good/list.length*100),msg=p>=90?'🏆 מצוין! מוכנים למבחן!':p>=75?'💪 טוב מאוד! עוד קצת חיזוק ומגיעים':p>=55?'👍 בדרך הנכונה – כדאי לחזק את הנושאים למטה':'📘 כדאי לקרוא שוב את הסיכום והטיפים, ואז לנסות שוב';
  var h='<div class="card"><div style="text-align:center;font-size:16px;color:#666">'+(mode=='test'?'הציון שלך במבחן הדמה':'התוצאה שלך')+'</div><div class="score">'+p+'</div><div style="text-align:center;font-size:18px;margin:6px 0 14px">'+good+' מתוך '+list.length+' נכונות<br>'+msg+'</div>';
  if(mode=='test'){
   var lv={1:[0,0],2:[0,0],3:[0,0]},tp={},order=[];
@@ -143,9 +143,9 @@ function end(){
   h+='<h3 style="color:#6d28d9">📊 לפי רמות חשיבה</h3>';
   [1,2,3].forEach(function(l){if(!lv[l][1])return;var r=lv[l][0]/lv[l][1];h+='<div class="lvl-row"><span>'+nm[l]+'</span><span class="lvb"><i style="width:'+Math.round(r*100)+'%;background:'+(r>=0.8?'#16a34a':r>=0.5?'#f59e0b':'#dc2626')+'"></i></span><b>'+lv[l][0]+'/'+lv[l][1]+'</b></div>';});
   var weak=order.filter(function(t){return tp[t][0]<tp[t][1];}),strong=order.filter(function(t){return tp[t][0]==tp[t][1];});
-  h+='<h3 style="color:#6d28d9;margin-top:12px">📝 משוב – מה אתה צריך לדעת</h3>';
-  if(strong.length)h+='<div class="fb ok">✅ <b>שולט:</b> '+strong.join(' · ')+'</div>';
-  weak.forEach(function(t){h+='<div class="fb no">📘 <b>לחזק: '+t+'</b> ('+tp[t][0]+'/'+tp[t][1]+')<br>💡 '+F((D.know&&D.know[t])||'קרא שוב את הסיכום של הנושא הזה.')+'</div>';});
+  h+='<h3 style="color:#6d28d9;margin-top:12px">📝 משוב – מה צריך לדעת</h3>';
+  if(strong.length)h+='<div class="fb ok">✅ <b>יודעים טוב:</b> '+strong.join(' · ')+'</div>';
+  weak.forEach(function(t){h+='<div class="fb no">📘 <b>לחזק: '+t+'</b> ('+tp[t][0]+'/'+tp[t][1]+')<br>💡 '+F((D.know&&D.know[t])||'כדאי לקרוא שוב את הסיכום של הנושא הזה.')+'</div>';});
   if(!weak.length)h+='<div class="fb ok">🌟 לא היו טעויות – כל הכבוד!</div>';
   else if(lv[3][1]&&lv[3][0]<lv[3][1]&&lv[1][0]==lv[1][1])h+='<div class="fb">🎯 הבסיס חזק! עכשיו כדאי לתרגל שאלות ★★★ – לקרוא את השאלה לאט ולצייר.</div>';
   else if(lv[1][0]<lv[1][1])h+='<div class="fb">🎯 כדאי להתחיל מהבסיס: לקרוא את הסיכום, ואז לתרגל את הטעויות.</div>';
