@@ -58,6 +58,8 @@ th{background:#ede9fe}
 .flash .ans{font-size:24px;font-weight:bold;color:#6d28d9;line-height:1.5}
 .flash .heb{font-size:22px;line-height:1.5}
 svg{display:block;max-width:100%;margin:6px auto}
+.qr{background:#fff;border:2px dashed #c4b5fd;border-radius:10px;padding:9px;margin:6px 0 10px;font-size:15px}
+.exp{font-size:17px;line-height:1.8}
 </style>
 </head>
 <body>
@@ -174,7 +176,7 @@ function pick(b){
  var all=document.querySelectorAll('.opt'),ok=b.dataset.c==='1',x=list[i];
  all.forEach(function(o){o.disabled=true;if(o.dataset.c==='1')o.classList.add('ok');});
  if(ok)good++;else{b.classList.add('no');wrong.push(x);}
- document.getElementById('ex').innerHTML='<div class="exp '+(ok?'ok':'no')+'"><b class="h">'+(ok?'✅ נכון! הנה למה:':'❌ לא נכון – הנה ההסבר:')+'</b>'+F(x.e)+'</div>'+
+ document.getElementById('ex').innerHTML='<div class="exp '+(ok?'ok':'no')+'"><b class="h">'+(ok?'✅ נכון! בואו נבין למה:':'❌ לא נורא! בואו נפתור ביחד:')+'</b><div class="qr">📝 <b>התרגיל:</b> '+F(x.q)+'<br>🎯 <b>התשובה הנכונה:</b> '+F(x.o[0])+'</div><b>👣 הפתרון צעד אחר צעד:</b><br>'+F(x.e)+'</div>'+
  '<button class="next" onclick="nxt()">'+(i<list.length-1?'לשאלה הבאה ←':'לתוצאות 🏁')+'</button>';
 }
 function nxt(){i++;if(i<list.length)ask();else end();}
@@ -183,7 +185,7 @@ function end(){
  var h='<div class="card"><div class="score">'+p+'</div><div style="text-align:center;font-size:18px;margin:6px 0 14px">'+good+' מתוך '+list.length+' · '+msg+'</div>';
  if(wrong.length){
   h+='<button class="next" style="background:#db2777" onclick="start(wrong.slice(),\'w\')">🔁 תרגל שוב רק את '+wrong.length+' הטעויות</button><h3 style="margin-top:14px;color:#6d28d9">איפה טעיתי:</h3>';
-  wrong.forEach(function(w){h+='<div class="rev">❓ '+F(w.q)+'<br>✅ <b>'+F(w.o[0])+'</b></div>';});
+  wrong.forEach(function(w){h+='<div class="rev">📝 '+F(w.q)+(w.d?D.svg[w.d]:'')+'<br>🎯 <b>'+F(w.o[0])+'</b><div class="exp ok" style="margin-top:6px">'+F(w.e)+'</div></div>';});
  }
  app.innerHTML=h+'<button class="next" onclick="home()">חזרה לתפריט</button></div>';
  window.scrollTo(0,0);
