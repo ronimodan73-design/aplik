@@ -1,0 +1,69 @@
+/*META {"id":"circle","title":"מעבדת המעגל והעיגול","icon":"⭕"} */
+const LAB={hide:true,tip:'🖐 גררו את העיגול הצהוב (או לחצו + / −) כדי לשנות את הרדיוס. אחר כך לחצו על כפתור ותראו למה הנוסחה נכונה.',refresh:()=>out()};
+const U=16,CX=380,CY=140,RMIN=2,RMAX=7,N=16,PI=3.14;
+let r=5,chal=null,why='';
+const f=x=>String(+x.toFixed(2));
+function draw(){const R=r*U;let s='';
+ s+=`<circle id="disk" cx="${CX}" cy="${CY}" r="${R}" fill="${COL.blue}" fill-opacity=".12"/>`;
+ s+=`<circle id="circ" cx="${CX}" cy="${CY}" r="${R}" fill="none" stroke="${COL.orange}" stroke-width="6" transform="rotate(90 ${CX} ${CY})"/>`;
+ s+=`<g id="top"><line x1="${CX}" y1="${CY}" x2="${CX+R}" y2="${CY}" stroke="${COL.green}" stroke-width="6" stroke-linecap="round"/>`;
+ s+=`<text x="${CX+R/2}" y="${CY-14}" text-anchor="middle" font-size="26" font-weight="800" fill="${COL.green}">r = ${r}</text></g>`;
+ s+=`<circle cx="${CX}" cy="${CY}" r="6" fill="${COL.ink}"/><text x="${CX-10}" y="${CY+28}" text-anchor="middle" font-size="20" font-weight="700" fill="${COL.ink}">O</text>`;
+ s+=`<g id="bot"></g><circle id="hd" cx="${CX+R}" cy="${CY}" r="17" fill="${COL.gold}" stroke="${COL.ink}" stroke-width="3" style="cursor:grab"/>`;
+ $('#sv').innerHTML=s;why='';out();}
+function setR(n){n=Math.max(RMIN,Math.min(RMAX,n));if(n!==r){r=n;ST.revealed=false;draw();}}
+function out(){const H=hidCls(),d=2*r;
+ card('dims',`<div class="ctl"><b class="green">רדיוס</b><button class="lt" id="rm">−</button><span class="big green">${r}</span><button class="lt" id="rp">+</button><span class="tip">ס״מ</span></div>`);
+ $('#rm').onclick=()=>{if(!ST.busy)setR(r-1)};$('#rp').onclick=()=>{if(!ST.busy)setR(r+1)};
+ let t=`<div class="big"><span class="green">רדיוס</span>: ${M(C(r,'green'))} ס״מ</div>`;
+ t+=`<div class="big"><span class="purple">קוטר</span>: <span class="${H}">${M(`2·${C(r,'green')} = ${C(d,'purple')}`)} ס״מ</span></div>`;
+ t+=`<div class="big"><span class="orange">היקף</span>: <span class="${H}">${M(`2·π·${C(r,'green')} ≈ ${C(f(2*PI*r),'orange')}`)} ס״מ</span></div>`;
+ t+=`<div class="big"><span class="blue">שטח</span>: <span class="${H}">${M(`π·${C(r,'green')}·${C(r,'green')} ≈ ${C(f(PI*r*r),'blue')}`)} סמ״ר</span></div>`;
+ t+=`<div class="tip">${M('π ≈ 3.14')} · ה<b class="orange">היקף</b> הוא אורך הקו מסביב · ה<b class="blue">שטח</b> הוא כל מה שבפנים</div>`;
+ if(H)t+=`<button class="noprint" id="bReveal" style="margin-top:8px">👀 גלו את התשובה</button>`;
+ card('out',t);if($('#bReveal'))$('#bReveal').onclick=()=>{ST.revealed=true;out();};
+ if(why)card('why',why,'');else if($('#why'))$('#why').remove();
+ if(chal){const el=$('#chs');if(el)el.innerHTML=chal.ok()?'<div class="okbox">✅ <b>מצוין!</b> מצאתם את המעגל הנכון.</div>':'הזיזו את הרדיוס עד שהמשימה מתקיימת.';}}
+/* 1. קוטר = 2 רדיוסים */
+function runD(){if(ST.busy)return;draw();const R=r*U,b=$('#bot'),YB=CY+R+40;$('#top').style.opacity='0';
+ const lab=(x,t)=>`<text x="${x}" y="${CY-14}" text-anchor="middle" font-size="24" font-weight="800" fill="${COL.green}">${t}</text>`;
+ seq(3,2700,i=>{if(i===0)b.innerHTML+=`<line x1="${CX}" y1="${CY}" x2="${CX+R}" y2="${CY}" stroke="${COL.green}" stroke-width="8" stroke-linecap="round"/>`+lab(CX+R/2,r);
+   if(i===1)b.innerHTML+=`<line x1="${CX}" y1="${CY}" x2="${CX-R}" y2="${CY}" stroke="${COL.green}" stroke-width="8" stroke-linecap="round"/>`+lab(CX-R/2,r);
+   if(i===2)b.innerHTML+=`<line x1="${CX-R}" y1="${CY+14}" x2="${CX+R}" y2="${CY+14}" stroke="${COL.purple}" stroke-width="8" stroke-linecap="round"/><text x="${CX}" y="${YB}" text-anchor="middle" font-size="26" class="he" font-weight="800" fill="${COL.purple}">קוטר = 2 רדיוסים</text><text x="${CX}" y="${YB+36}" text-anchor="middle" font-size="28" font-weight="800" fill="${COL.purple}">${r} + ${r} = ${2*r}</text>`;},
+  ()=>{ST.revealed=true;why=`<div class="big purple" style="font-size:24px">למה הקוטר הוא פי 2 מהרדיוס?</div><div>הקוטר עובר מקצה לקצה <b>דרך המרכז</b>, ולכן הוא בנוי משני רדיוסים: ${M(`${C(r,'green')}+${C(r,'green')} = ${C(2*r,'purple')}`)}</div><div class="badbox">⚠️ טעות נפוצה: להציב בנוסחה את הקוטר במקום את הרדיוס.</div>`;out();});}
+/* 2. היקף: פורשים את המעגל לקו ישר */
+function runP(){if(ST.busy)return;draw();const R=r*U,L=2*Math.PI*R,X0=(760-L)/2,Y0=315,c=$('#circ'),b=$('#bot');
+ b.innerHTML=`<line id="ul" x1="${X0}" y1="${Y0}" x2="${X0}" y2="${Y0}" stroke="${COL.orange}" stroke-width="7" stroke-linecap="round"/>`;
+ seq(40,3200,i=>{const t=(i+1)/40;c.setAttribute('stroke-dasharray',`${(1-t)*L} ${L}`);$('#ul').setAttribute('x2',X0+t*L);},
+  ()=>{ST.busy=true;b.innerHTML+=`<text x="${X0+L/2}" y="${Y0-16}" text-anchor="middle" font-size="22" font-weight="800" class="he" fill="${COL.orange}">ההיקף פרוש לקו ישר</text>`;
+   const D=2*R;let x=X0;
+   seq(4,3200,i=>{const w=i<3?D:L-3*D,col=i<3?COL.purple:COL.red;
+     b.innerHTML+=`<rect x="${x+1}" y="${Y0+18}" width="${w-2}" height="16" rx="4" fill="${col}"/><text x="${x+w/2}" y="${Y0+60}" text-anchor="middle" font-size="${i<3?22:18}" font-weight="800" class="he" fill="${col}">${i<3?'קוטר '+(i+1):'+ קצת'}</text>`;x+=w;},
+    ()=>{b.innerHTML+=`<text x="380" y="${Y0+110}" text-anchor="middle" font-size="26" font-weight="800" class="he" fill="${COL.ink}">ההיקף ≈ 3.14 קטרים</text>`;ST.revealed=true;
+     why=`<div class="big orange" style="font-size:24px">למה ההיקף הוא ${M('2·π·r')}?</div><div>פרשנו את המעגל לקו. על הקו נכנסים <b class="purple">3 קטרים</b> ועוד <b class="red">קצת</b>, כלומר בערך ${M('3.14')} קטרים. המספר הזה נקרא ${M('π')}, והוא זהה בכל מעגל, קטן או גדול.</div><div>היקף: ${M(`3.14·${C(2*r,'purple')} = 2·3.14·${C(r,'green')} ≈ ${C(f(2*PI*r),'orange')}`)}</div>`;out();});});}
+/* 3. שטח: חותכים לפרוסות ומסדרים כמעט כמלבן */
+function wedge(R){const a=Math.PI/N,x=R*Math.sin(a),y=-R*Math.cos(a);return `M0,0 L${-x},${y} A${R},${R} 0 0 1 ${x},${y} Z`;}
+function runS(){if(ST.busy)return;draw();const R=r*U,s=2*Math.PI*R/N,W=(N/2+.5)*s,X0=(760-W)/2,YT=300,b=$('#bot');
+ $('#disk').remove();$('#circ').setAttribute('stroke-opacity','.25');$('#top').style.opacity='0';
+ let g='';for(let i=0;i<N;i++){const th=i*360/N;g+=`<path id="w${i}" d="${wedge(R)}" fill="${i%2?'#60a5fa':'#bfdbfe'}" stroke="#fff" stroke-width="2" style="transform-box:view-box;transform-origin:0 0;transition:transform .9s ease-in-out;transform:translate(${CX}px,${CY}px) rotate(${th}deg)"/>`;}
+ b.innerHTML=g;
+ seq(N,N*330,i=>{const j=Math.floor(i/2),th=i*360/N,el=$('#w'+i);
+   if(i%2===0)el.style.transform=`translate(${X0+s/2+j*s}px,${YT}px) rotate(180deg)`;
+   else el.style.transform=`translate(${X0+(j+1)*s}px,${YT+R}px) rotate(${th>180?360:0}deg)`;},
+  ()=>{ST.busy=true;setTimeout(()=>{ST.busy=false;
+   b.innerHTML+=`<line x1="${X0-14}" y1="${YT}" x2="${X0-14}" y2="${YT+R}" stroke="${COL.green}" stroke-width="6"/><text x="${X0-24}" y="${YT+R/2+8}" text-anchor="end" font-size="24" font-weight="800" fill="${COL.green}">r</text>
+    <line x1="${X0}" y1="${YT+R+16}" x2="${X0+W}" y2="${YT+R+16}" stroke="${COL.orange}" stroke-width="6"/><text x="${X0+W/2}" y="${YT+R+48}" text-anchor="middle" font-size="22" font-weight="800" class="he" fill="${COL.orange}">חצי היקף</text><text x="${X0+W/2}" y="${YT+R+78}" text-anchor="middle" font-size="22" font-weight="800" fill="${COL.orange}">≈ 3.14·r</text>`;
+   ST.revealed=true;why=`<div class="big blue" style="font-size:24px">למה השטח הוא ${M('π·r·r')}?</div><div>חתכנו את העיגול ל־${N} פרוסות וסידרנו אותן הפוך־ישר. יצאה צורה שהיא <b>כמעט מלבן</b>. ככל שהפרוסות דקות יותר, היא דומה יותר למלבן.</div><div>• ה<b class="green">גובה</b> הוא הרדיוס ${C(r,'green')}.<br>• ה<b class="orange">רוחב</b> הוא חצי מההיקף, ${M('3.14·'+C(r,'green'))}.</div><div>שטח = רוחב · גובה: ${M(`3.14·${C(r,'green')}·${C(r,'green')} ≈ ${C(f(PI*r*r),'blue')}`)}</div>`;out();},1000);});}
+const CH=[()=>{const n=R(RMIN,RMAX);return {t:`מצאו את המעגל שה<b class="purple">קוטר</b> שלו ${M(2*n)} ס״מ.`,ok:()=>r===n,a:`רדיוס ${n}, כי ${M(`${2*n} : 2 = ${n}`)}`}},
+ ()=>{const n=R(RMIN,RMAX);return {t:`מצאו את המעגל שה<b class="orange">היקף</b> שלו בערך ${M(f(2*PI*n))} ס״מ.`,ok:()=>r===n,a:`רדיוס ${n}, כי ${M(`2·3.14·${n} ≈ ${f(2*PI*n)}`)}`}},
+ ()=>{const n=R(RMIN,RMAX);return {t:`מצאו את העיגול שה<b class="blue">שטח</b> שלו בערך ${M(f(PI*n*n))} סמ״ר.`,ok:()=>r===n,a:`רדיוס ${n}, כי ${M(`3.14·${n}·${n} ≈ ${f(PI*n*n)}`)}`}},
+ ()=>({t:`הגדילו את הרדיוס <b>פי 2</b> (למשל מ־3 ל־6). פי כמה גדל ה<b class="orange">היקף</b>? ופי כמה ה<b class="blue">שטח</b>? בדקו בטבלה.`,ok:()=>false,a:`ההיקף גדל פי 2, והשטח גדל פי 4, כי ${M('2·2 = 4')}: גם הרוחב וגם הגובה גדלו פי 2.`})];
+function start(){svgSize(760,520);
+ tool('bD','📏 קוטר = 2 רדיוסים',runD,{lt:1});
+ tool('bP','🧵 היקף: פורשים',runP,{lt:1});
+ tool('bS','🍕 שטח: פורסים',runS,{lt:1});
+ tool('bC','🎯 אתגר',()=>{chal=pick(CH)();
+  card('chal',`<div class="big" style="font-size:24px">🎯 ${chal.t}</div><div id="chs" class="tip"></div><button class="lt noprint" id="bAll" style="margin-top:8px">הפתרון</button><div id="allx"></div>`,'chal');
+  $('#bAll').onclick=()=>{$('#allx').innerHTML='<div class="tip">'+chal.a+'</div>';};out();});
+ draggable(['hd'],(id,p)=>setR(Math.round(Math.hypot(p.x-CX,p.y-CY)/U)));
+ draw();}
