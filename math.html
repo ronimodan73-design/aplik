@@ -939,9 +939,10 @@ function b(t){return `<b>${t}</b>`;}
 REG.push({id:'frac1',title:'משמעות השבר',levels:[{t:'איזה שבר צבוע?',s:'★'},{t:'איזה ציור?',s:'★★'},{t:'שבר בסיפור',s:'★★★'},{t:'שבר מכמות',s:'★★★★'}],
  gen:[
   function(i){const d=R(3,i<10?8:12),k=R(1,d-1),shape=i%2?'pie':'bar';
-    const why=`יש ${K(PC[1],d+' חלקים')} שווים, ו־${K(FC,k)} צבועים.<br>`+FRULE;
+    const why=`יש ${K(PC[1],d+' חלקים')} שווים, ${k===1?`ו${K(FC,'חלק אחד')} צבוע`:`ו־${K(FC,k)} צבועים`}.<br>`+FRULE;
     return {prompt:'איזה חלק צבוע?',v0:`<div class="fps">${fracPic(k,d,{shape})}</div>`,v1:`<div class="fps">${fracPic(k,d,{shape})}</div>`,
-      opts:opts4({label:FR(k,d),ok:true},[{label:FR(d-k,d),why:`ספרת את החלקים ה${b('לבנים')}.<br>`+why},{label:FR(k,d-k),why:`המכנה הוא ${b('כל')} החלקים – גם הצבועים.<br>`+why},{label:FR(d,k),why:`הפכת: למטה כותבים את כל החלקים.<br>`+why}]),
+      opts:opts4({label:FR(k,d),ok:true},[{label:FR(d-k,d),why:`ספרת את החלקים ה${b('לבנים')}.<br>`+why},{label:FR(k,d-k),why:`המכנה הוא ${b('כל')} החלקים – גם הצבועים.<br>`+why},{label:FR(d,k),why:`הפכת: למטה כותבים את כל החלקים.<br>`+why},
+        {label:FR(k,d+1),why:`בדוק שוב: יש בדיוק ${d} חלקים.<br>`+why},{label:FR(k+1,d),why:`ספור שוב את החלקים הצבועים.<br>`+why},{label:FR(k===1?2:k-1,d),why:`ספור שוב את החלקים הצבועים.<br>`+why}]),
       right:`נכון! ${K(FC,k)} מתוך ${K(PC[1],d)} חלקים שווים = ${FR(k,d)}`};},
   function(i){const d=R(3,i<10?6:10),k=R(1,d-1),shape=i%2?'pie':'bar';
     const why=FRULE;
@@ -951,44 +952,51 @@ REG.push({id:'frac1',title:'משמעות השבר',levels:[{t:'איזה שבר �
         {label:fracPic(k,d+1,{shape}),why:`בציור הזה יש ${d+1} חלקים, וצריך ${K(PC[1],d)}.<br>`+why},
         {label:fracPic(d-k===k?k+1:d-k,d,{shape}),why:`בציור הזה צבועים ${d-k===k?k+1:d-k} חלקים, וצריך ${K(FC,k)}.<br>`+why}]),
       right:`נכון! ${K(PC[1],d)} חלקים שווים, ${K(FC,k)} צבועים.`};},
-  function(i){const d=R(4,i<10?8:12),k=R(1,d-1),S=pick([['פיצה','אכלו'],['עוגה','אכלו'],['שוקולד','אכלו'],['גינה','שתלו פרחים ב־']]);
-    const why=`כל ה${S[0]} חולקה ל־${K(PC[1],d)} חלקים שווים → זה המכנה.<br>${S[1].replace('ב־','')} ${K(FC,k)} חלקים → זה המונה.`;
-    return {prompt:`${S[0]==='גינה'?'🌷':'🍕'} ${S[0]} חולקה ל־${d} חלקים שווים.<br>${S[1]==='אכלו'?`אכלו ${k} חלקים`:`${S[1]}${k} חלקים`}.<br>איזה חלק ${S[1]==='אכלו'?'אכלו':'שתלו'}?`,v0:'',v1:`<div class="fps">${fracPic(k,d,{shape:'pie'})}</div>`,
-      opts:opts4({label:FR(k,d),ok:true},[{label:FR(d,k),why:`הפכת את המונה והמכנה.<br>`+why},{label:FR(d-k,d),why:`זה החלק ש${b('נשאר')}.<br>`+why},{label:FR(k,d-k),why:`המכנה הוא ${b('כל')} החלקים.<br>`+why}]),
-      right:`נכון! ${FR(k,d)} – ${k} מתוך ${d} חלקים שווים.`};},
+  function(i){const d=R(4,i<10?8:12),k=R(1,d-1);
+    const S=pick([{e:'🍕',n:'פיצה',sh:'pie',eat:1,q:'איזה חלק מהפיצה אכלו?'},{e:'🎂',n:'עוגה',sh:'pie',eat:1,q:'איזה חלק מהעוגה אכלו?'},
+      {e:'🍫',n:'חפיסת שוקולד',sh:'bar',eat:1,q:'איזה חלק מהחפיסה אכלו?'},{e:'🌷',n:'גינה',sh:'bar',eat:0,q:'באיזה חלק מהגינה שתלו פרחים?'}]);
+    const cnt=(c)=>k===1?`חלק ${c?K(FC,'אחד'):'אחד'}`:`${c?K(FC,k):k} חלקים`;
+    const act=c=>S.eat?`אכלו ${cnt(c)}`:(k===1?`שתלו פרחים ב${cnt(c)}`:`שתלו פרחים ב־${cnt(c)}`);
+    const why=`ה${S.n} חולקה ל־${K(PC[1],d)} חלקים שווים → זה המכנה.<br>${act(1)} → זה המונה.`;
+    return {prompt:`${S.e} ${S.n} חולקה ל־${d} חלקים שווים.<br>${act(0)}.<br>${S.q}`,v0:'',v1:`<div class="fps">${fracPic(k,d,{shape:S.sh})}</div>`,
+      opts:opts4({label:FR(k,d),ok:true},[{label:FR(d,k),why:`הפכת את המונה והמכנה.<br>`+why},{label:FR(d-k,d),why:`זה החלק ש${b(S.eat?'נשאר':'לא שתלו בו')}.<br>`+why},{label:FR(k,d-k),why:`המכנה הוא ${b('כל')} החלקים.<br>`+why},
+        {label:FR(k,d+1),why},{label:FR(k+1,d),why},{label:FR(k===1?2:k-1,d),why}]),
+      right:`נכון! ${FR(k,d)} – ${k===1?'חלק אחד':k} מתוך ${d} חלקים שווים.`};},
   function(i){const d=pick(i<10?[2,3,4,5]:[3,4,5,6,8,10]),k=i<6?1:R(1,d-1),one=R(3,i<10?8:15),tot=d*one,ans=k*one;
     const v=cbars([{lab:fmt(tot),segs:copies(d,one,'',0).map((g,j)=>j<k?{...g,c:[FCL,FC]}:g)}]);
     const why=`מחלקים ${N(tot)} ל־${K(PC[1],d)} חלקים שווים: <span class="n">${tot} : ${d} = ${one}</span> בכל חלק.<br>`+(k>1?`לוקחים ${K(FC,k)} חלקים: <span class="n">${k} · ${one} = ${ans}</span>`:'לוקחים חלק אחד.');
     return {prompt:`כמה זה ${FR(k,d)} מ־${N(tot)}?`,v0:v,v1:cbars([{lab:fmt(tot),segs:copies(d,one,String(one),0).map((g,j)=>j<k?{...g,c:[FCL,FC]}:g)}]),
-      opts:opts4({label:fmt(ans),ok:true},[...(k>1?[{label:fmt(one),why:`מצאת חלק אחד – אבל צריך ${K(FC,k)} חלקים.<br>`+why}]:[]),{label:fmt(tot-d),why},{label:fmt(tot*k),why},{label:fmt(ans+one),why},{label:fmt(tot),why},{label:fmt(ans+1),why}]),
+      opts:opts4({label:fmt(ans),ok:true},[...(k>1?[{label:fmt(one),why:`מצאת חלק אחד – אבל צריך ${K(FC,k)} חלקים.<br>`+why}]:[]),{label:fmt(tot-d),why},{label:fmt(tot*k),why},{label:fmt(ans+one),why},{label:fmt(tot),why},{label:fmt(ans+1),why},{label:fmt(ans+2),why},{label:fmt(ans+one+1),why}]),
       right:`נכון! ${why}`};}],
  introHTML:()=>`<p class="prompt">שבר = חלק משלם שחולק ל${b('חלקים שווים')}.</p><div class="fps">${fracPic(3,4,{shape:'pie'})}</div><p class="center" style="font-size:24px">${FR(3,4)}</p><p class="center">${K(FC,'3')} = כמה חלקים לקחנו (מונה)<br>${K(PC[1],'4')} = לכמה חלקים שווים חילקנו (מכנה)</p>`});
 
 REG.push({id:'frac2',title:'מספר מעורב והשלמה לשלם',levels:[{t:'גדול משלם?',s:'★'},{t:'מעורב ← שבר',s:'★★'},{t:'שבר ← מעורב',s:'★★★'},{t:'השלמה לשלם',s:'★★★★'}],
  gen:[
-  function(i){const d=R(3,9),t=i%2;const big=d+R(1,d),sm=R(1,d-1);
+  function(i){const d=R(3,9),t=i%2;const big=d+R(1,d),smalls=shuffle([...Array(d-1)].map((_,j)=>j+1)),sm=smalls[0];
     const make=(k)=>({label:FR(k,d),k});
-    if(t===0){const opts=[make(big),make(sm),make(R(1,d-1)),make(d)];
+    if(t===0){const opts=[make(big),make(sm),make(smalls[1]),make(d)];
       return {prompt:'איזה שבר גדול משלם?',v0:'',v1:wholes(Math.floor(big/d),big%d,d,'bar'),
         opts:opts4({label:opts[0].label,ok:true},opts.slice(1).map(o=>({label:o.label,why:o.k===d?`${FR(d,d)} = בדיוק שלם אחד – לא גדול ממנו.<br>💡 מונה גדול מהמכנה → גדול משלם.`:`המונה ${o.k} קטן מהמכנה ${d} → פחות משלם.<br>💡 מונה גדול מהמכנה → גדול משלם.`,vh:wholes(Math.floor(o.k/d),o.k%d,d,'bar')}))),
         right:`נכון! המונה ${big} גדול מהמכנה ${d} – יותר מ־${d} חלקים, יותר משלם.`};}
     return {prompt:'איזה שבר שווה בדיוק לשלם?',v0:'',v1:wholes(1,0,d,'bar'),
-      opts:opts4({label:FR(d,d),ok:true},[sm,big,d-1].map(k=>({label:FR(k,d),why:`${FR(k,d)}: ${k} חלקים מתוך ${d} – ${k<d?'פחות':'יותר'} משלם.<br>💡 מונה = מכנה → שלם אחד.`,vh:wholes(Math.floor(k/d),k%d,d,'bar')}))),
+      opts:opts4({label:FR(d,d),ok:true},[sm,big,smalls[1],d+1].map(k=>({label:FR(k,d),why:`${FR(k,d)}: ${k} חלקים מתוך ${d} – ${k<d?'פחות':'יותר'} משלם.<br>💡 מונה = מכנה → שלם אחד.`,vh:wholes(Math.floor(k/d),k%d,d,'bar')}))),
       right:`נכון! ${d} חלקים מתוך ${d} = כל השלם.`};},
   function(i){const d=R(2,i<10?5:9),w=R(1,i<10?3:5),k=R(1,d-1),n=w*d+k;
     const why=`${w} שלמים = <span class="n">${w} · ${d} = ${w*d}</span> חלקים.<br>ועוד ${k} חלקים: <span class="n">${w*d} + ${k} = ${n}</span>`;
     return {prompt:`כתוב כשבר: ${MX(w,k,d)}`,v0:wholes(w,k,d,i%2?'pie':'bar'),v1:wholes(w,k,d,i%2?'pie':'bar'),
-      opts:opts4({label:FR(n,d),ok:true},[{label:FR(w*d,d),why:`שכחת להוסיף את ${k} החלקים.<br>`+why},{label:FR(w+k,d),why:`כל שלם הוא ${d} חלקים – לא חלק אחד.<br>`+why},{label:FR(w*k+d,d),why},{label:FR(n,w*d)===FR(n,d)?FR(n+1,d):FR(n,w*d),why}]),
+      opts:opts4({label:FR(n,d),ok:true},[{label:FR(w*d,d),why:`שכחת להוסיף את ${k} החלקים.<br>`+why},{label:FR(w+k,d),why:`כל שלם הוא ${d} חלקים – לא חלק אחד.<br>`+why},{label:FR(w*k+d,d),why},{label:FR(n,w*d)===FR(n,d)?FR(n+1,d):FR(n,w*d),why},{label:FR(n+1,d),why},{label:FR(n-1,d),why},{label:FR(n+d,d),why:`בדוק כמה שלמים יש: ${w}.<br>`+why}]),
       right:`נכון! ${MX(w,k,d)} = ${FR(n,d)}`};},
   function(i){const d=R(2,i<10?5:9),w=R(1,i<10?3:5),k=R(1,d-1),n=w*d+k;
     const why=`כמה שלמים? <span class="n">${n} : ${d} = ${w}</span>, ונשארים ${k} חלקים.`;
     return {prompt:`כתוב כמספר מעורב: ${FR(n,d)}`,v0:'',v1:wholes(w,k,d,'bar'),
-      opts:opts4({label:MX(w,k,d),ok:true},[{label:MX(w,d-k===k?(k%d)+1:d-k,d),why},{label:MX(w+1,k,d),why:`בדוק: ${w+1} שלמים זה ${(w+1)*d} חלקים – יותר מ־${n}.<br>`+why},{label:MX(w,k,n),why:`המכנה לא משתנה – נשאר ${d}.<br>`+why},{label:MX(k,w===k?w+1:w,d),why}]),
+      opts:opts4({label:MX(w,k,d),ok:true},[...shuffle([...Array(d-1)].map((_,j)=>j+1).filter(x=>x!==k)).slice(0,1).map(x=>({label:MX(w,x,d),why:`בדוק כמה חלקים נשארים: <span class="n">${n} ${MINUS} ${w*d} = ${k}</span>.<br>`+why})),
+        {label:MX(w+1,k,d),why:`בדוק: ${w+1} שלמים זה ${(w+1)*d} חלקים – יותר מ־${n}.<br>`+why},{label:MX(w,k,n),why:`המכנה לא משתנה – נשאר ${d}.<br>`+why},
+        ...(w>1?[{label:MX(w-1,k,d),why}]:[]),...(w<d&&w!==k?[{label:MX(k,w,d),why}]:[]),{label:MX(w+2,k,d),why}]),
       right:`נכון! ${FR(n,d)} = ${MX(w,k,d)}`};},
   function(i){const d=R(3,i<10?8:12),k=R(1,d-1),w=i<10?0:R(1,4),ans=d-k;
-    const why=`שלם = ${FR(d,d)}. יש ${K(FC,k)} חלקים, חסרים <span class="n">${d} ${MINUS} ${k}</span> חלקים.`;
+    const why=`${w?`${w} השלמים כבר שלמים. `:''}שלם = ${FR(d,d)}. יש ${k===1?K(FC,'חלק אחד'):K(FC,k)+' חלקים'}, חסרים <span class="n">${d} ${MINUS} ${k}</span> חלקים.`;
     const q=w?`${EQ(`${MX(w,k,d)} + ${QB} = ${w+1}`)}`:`${EQ(`${FR(k,d)} + ${QB} = 1`)}`;
-    return {prompt:`כמה חסר לשלם?<br>${q}`,v0:`<div class="fps">${fracPic(k,d)}</div>`,v1:`<div class="fps">${fracPic(d,d)}</div>`,
+    return {prompt:`כמה חסר לשלם?<br>${q}`,v0:wholes(w,k,d,'bar'),v1:wholes(w+1,0,d,'bar'),
       opts:opts4({label:FR(ans,d),ok:true},[{label:FR(k,d),why:`זה מה ש${b('יש')}, לא מה שחסר.<br>`+why},{label:FR(ans,2*d),why:`המכנה נשאר ${d}.<br>`+why},{label:FR(ans===1?2:1,d),why},{label:FR(d,ans),why}]),
       right:`נכון! <span class="n">${k} + ${ans} = ${d}</span> חלקים = שלם.`};}],
  introHTML:()=>`<p class="prompt">מספר מעורב = שלמים וגם שבר.</p>${wholes(2,1,4,'pie')}<p class="center" style="font-size:22px">${MX(2,1,4)} = ${FR(9,4)}</p><p class="center"><span class="n">2 · 4 = 8</span> חלקים, ועוד 1 = ${b('9 רבעים')}.</p><p class="center">💡 מונה גדול מהמכנה → יותר משלם.</p>`});
