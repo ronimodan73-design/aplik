@@ -68,21 +68,25 @@ footer{text-align:center;color:#a78bfa;font-size:13px;margin-top:14px}
   <h3>🎵 בחירת שיר</h3>
   <button class="opt" data-m="epic" onclick="setMusic('epic')">🔥 שיר מקורי – אפי ודרמטי</button>
   <button class="opt" data-m="happy" onclick="setMusic('happy')">😄 שיר מקורי – שמח וקצבי</button>
+  <button class="opt" data-m="soft" onclick="setMusic('soft')">💛 שיר מקורי – מרגש</button>
   <button class="opt" data-m="own" onclick="$('songIn').click()">📁 שיר מהטלפון</button>
   <div id="startBox" style="display:none"><label class="lb">מאיזו שנייה בשיר להתחיל: <b id="startV">0</b></label><input type="range" id="start" min="0" max="120" value="0" oninput="startV.textContent=this.value"></div>
   <button class="opt" style="background:#7c3aed;text-align:center;font-weight:bold" onclick="closeSong()">סיום</button>
 </div></div>
+<div class="ov" id="ovFocus"><div class="sheet"><h3>👆 געו בפנים של הילד בתמונה</h3><div style="position:relative;display:flex;justify-content:center"><img id="fImg" style="max-width:100%;max-height:55vh;border-radius:12px"><div id="fMark" style="position:absolute;font-size:44px;transform:translate(-50%,-50%);pointer-events:none;display:none">💛</div></div>
+  <button class="opt" style="background:#7c3aed;text-align:center;font-weight:bold" onclick="$('ovFocus').classList.remove('on');thumbs();drawIdle()">סיום</button></div></div>
 <div id="toast"></div>
 <script>
 const W=720,H=1280,cv=document.getElementById('cv'),cx=cv.getContext('2d');
-const STYLES={epic:{bpm:96,prog:[[57,60,64],[57,60,65],[55,60,64],[55,59,62]],bass:[45,41,48,43]},happy:{bpm:116,prog:[[55,60,64],[55,59,62],[57,60,64],[57,60,65]],bass:[48,43,45,41]}};
+const STYLES={epic:{bpm:96,prog:[[57,60,64],[57,60,65],[55,60,64],[55,59,62]],bass:[45,41,48,43]},soft:{bpm:76,soft:true,prog:[[60,64,67],[57,60,64],[53,57,60],[55,59,62]],bass:[48,45,41,43]},happy:{bpm:116,prog:[[55,60,64],[55,59,62],[57,60,64],[57,60,65]],bass:[48,43,45,41]}};
 let photos=[],caps=null,capsEdited=false,song=null,music='epic',TH={e:'✨',ce:'🔥'};
 const $=id=>document.getElementById(id);
 function toast(s,ms){const e=$('toast');e.textContent=s;e.style.display='block';clearTimeout(e._t);e._t=setTimeout(()=>e.style.display='none',ms||2800)}
 
 /* ===== רעיון ← כתוביות ===== */
 const PLACES=['ירושלים','אילת','ים המלח','הצפון','הגליל','הגולן','תל אביב','חיפה','המדבר','הנגב','צפת','עכו','מצדה','הכנרת'];
-function analyze(idea){const t=idea||'',cls=(t.match(/[א-ת]['׳]?\s?\d{1,2}/)||[''])[0].replace(/\s/,'').replace("'",'׳'),place=PLACES.find(p=>t.includes(p))||'';
+function analyze(idea){const t=idea||'',HEART=/(^|\s)(לב|בלב|מרגש|מרגשת|מרגשים)(\s|$|[.,!])|כל ילד/.test(t),cls=(t.match(/[א-ת]['׳]?\s?\d{1,2}/)||[''])[0].replace(/\s/,'').replace("'",'׳'),place=PLACES.find(p=>t.includes(p))||'';
+  if(HEART)return{e:'💛',ce:'💛',heart:true,intro:'יש לנו משהו להגיד…',big:cls||'אתם',pool:['כל אחד מכם מיוחד 💛','הלב שלנו גדול בגללכם','אתם האור של הכיתה','רגע שלא נשכח','גאים בכם','ביחד אנחנו הכי חזקים'],last:'תמיד בלב שלנו',c1:'אוהבים',c2:'אתכם!',tag:'💛 '+(cls||'הכיתה שלנו'),outro:'תמיד בלב ✨'};
   if(/טיול|גיחה|סיור|מסע/.test(t))return{e:'📍',ce:place==='ירושלים'?'🦁':'🏆',intro:'הטיול השנתי…',big:cls||place||'יוצאים לדרך',
     pool:['יוצאים לדרך 🚌','רגע של צחוק 😂','מקשיבים… כמעט','עוד תמונה קבוצתית 📸','הנופים האלה 😍','כוח לאנשים 💪','זוכרים את הרגע הזה?','החברים הכי טובים','ממשיכים ללכת… 🥵'],
     last:'בדרך הביתה… 😴',fz:['רגע… עצרו הכל ✋','זה הרגע שבו כולם הבינו שזה יהיה יום ארוך 😅'],c1:cls||'אנחנו',c2:cls?`כבשה את ${place||'השטח'}!`:`כבשנו את ${place||'השטח'}!`,tag:'הטיול הכי טוב 💙',outro:'איזה טיול ✨'};
@@ -91,7 +95,7 @@ function analyze(idea){const t=idea||'',cls=(t.match(/[א-ת]['׳]?\s?\d{1,2}/)|
   if(/סיום|פרידה|סוף שנה/.test(t))return{e:'🎓',ce:'🎓',intro:'עוד שנה עברה…',big:cls||'השנה שלנו',pool:['איך שהזמן עובר','צחקנו','למדנו','גדלנו יחד','רגעים שלא שוכחים','החברים לכל החיים'],last:'ועכשיו…',c1:'כל הכבוד',c2:cls?cls+'!':'לכולנו!',tag:'גאים בכם 💙',outro:'להתראות בשנה הבאה ✨'};
   if(/חלום|אהיה|רוצה להיות/.test(t)){const nm=(t.match(/^([א-ת]+)/)||['',''])[1];return{e:'⭐',ce:'🦁',intro:'יש לי חלום…',big:nm||'החלום',pool:['כל יום לומדים משהו חדש','גם כשקשה, לא מוותרים','מאמינים בעצמנו','צעד אחרי צעד'],last:'חולמים בגדול',c1:'החלום',c2:'מתגשם!',tag:'חזקים כמו אריה 🦁',outro:'החלום מתחיל עכשיו ✨'}}
   return{e:'✨',ce:'🔥',intro:'מוכנים?',big:cls||(t.split(' ').slice(0,3).join(' '))||'הקליפ שלנו',pool:['רגעים שלא שוכחים','צחוק אמיתי 😂','ביחד זה הכי','עוד רגע מטורף','אנרגיות 🔥','זוכרים?'],last:'וזה עוד לא נגמר',c1:'פשוט',c2:'מושלם!',tag:'הכי טובים 💙',outro:'עד הפעם הבאה ✨'}}
-function regen(){const a=analyze($('idea').value.trim());TH={e:a.e,ce:a.ce};if(capsEdited&&caps){caps.mont.length=Math.max(0,photos.length-1);for(let i=0;i<caps.mont.length;i++)if(caps.mont[i]==null)caps.mont[i]=a.pool[i%a.pool.length];return renderCaps()}
+function regen(){const a=analyze($('idea').value.trim());TH={e:a.e,ce:a.ce,heart:!!a.heart};if(a.heart&&!musicChosen&&music!=='own')music='soft';if(!a.heart&&!musicChosen&&music==='soft')music='epic';if(capsEdited&&caps){caps.mont.length=Math.max(0,photos.length-1);for(let i=0;i<caps.mont.length;i++)if(caps.mont[i]==null)caps.mont[i]=a.pool[i%a.pool.length];return renderCaps()}
   const n=Math.max(0,photos.length-1);const FZ=a.fz||['רגע… עצרו הכל ✋','ואז… זה קרה 😅'];caps={intro:a.intro,name:a.big,mont:Array.from({length:n},(_,i)=>isFreeze(i,n+1)?FZ[i===2?0:1]:i===n-1&&n>2?a.last:a.pool[i<a.pool.length?i:1+(i-1)%(a.pool.length-1)]),c1:a.c1,c2:a.c2,tag:a.tag,outro:a.outro};renderCaps()}
 function renderCaps(){const rows=[['intro','פתיחה'],['name','כותרת גדולה']].concat(caps.mont.map((_,i)=>['m'+i,'תמונה '+(i+1)]),[['c1','שיא – שורה 1'],['c2','שיא – שורה 2'],['tag','שיא – תגית'],['outro','סיום']]);
   $('caps').innerHTML=rows.map(([k,l])=>`<label class="lb">${l}</label><input class="cap" data-k="${k}" value="${String(/^m\d+$/.test(k)?caps.mont[+k.slice(1)]:caps[k]).replace(/"/g,'&quot;')}">`).join('');
@@ -117,13 +121,16 @@ function liveVideo(item,key,lb){if(!item||!item.vid)return;const v=item.vid;
 function stopVideos(){photos.forEach(p=>p.vid&&p.vid.pause());liveKey=null;liveItem=null}
 function loadImg(f){return new Promise(r=>{const u=URL.createObjectURL(f),im=new Image();im.onload=()=>{const s=Math.min(1,1400/Math.max(im.width,im.height)),c=document.createElement('canvas');
   c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);c.getContext('2d').drawImage(im,0,0,c.width,c.height);c.src=u;r(c)};im.onerror=()=>{toast('תמונה אחת לא נפתחה, דילגתי עליה');r(null)};im.src=u})}
-function thumbs(){$('thumbs').innerHTML=photos.map((p,i)=>`<div class="th"><img src="${p.src}">${p.vid?'<i style="position:absolute;bottom:2px;right:4px;font-style:normal">🎬</i>':''}<b onclick="delPhoto(${i})">✖</b></div>`).join('')}
+let fIdx=0;function focusOpen(i){fIdx=i;const p=photos[i];$('fImg').src=p.src;$('fMark').style.display=p.fx==null?'none':'block';$('ovFocus').classList.add('on');setTimeout(placeMark,60)}
+function placeMark(){const p=photos[fIdx],im=$('fImg');if(p.fx==null)return;$('fMark').style.left=(im.offsetLeft+p.fx*im.clientWidth)+'px';$('fMark').style.top=(im.offsetTop+p.fy*im.clientHeight)+'px';$('fMark').style.display='block'}
+function thumbs(){$('thumbs').innerHTML=photos.map((p,i)=>`<div class="th" onclick="focusOpen(${i})"><img src="${p.src}">${p.fx!=null?'<i style="position:absolute;top:2px;right:3px;font-style:normal">💛</i>':''}${p.vid?'<i style="position:absolute;bottom:2px;right:4px;font-style:normal">🎬</i>':''}<b onclick="event.stopPropagation();delPhoto(${i})">✖</b></div>`).join('')+(photos.length?'<div style="flex:0 0 auto;align-self:center;font-size:13px;color:#c4b5fd;padding:0 4px">👆 נגיעה בתמונה = לבחור פנים</div>':'')}
+$('fImg').addEventListener('click',e=>{const r=e.target.getBoundingClientRect(),p=photos[fIdx];p.fx=clamp((e.clientX-r.left)/r.width,0,1);p.fy=clamp((e.clientY-r.top)/r.height,0,1);placeMark();if(!playing)drawIdle()});
 function delPhoto(i){photos.splice(i,1);thumbs();regen();drawIdle()}
 
 /* ===== שיר ===== */
 function openSong(){[...document.querySelectorAll('.opt[data-m]')].forEach(b=>b.classList.toggle('on',b.dataset.m===music));$('ovSong').classList.add('on')}
 function closeSong(){$('ovSong').classList.remove('on')}
-function setMusic(m){music=m;openSong()}
+let musicChosen=false;function setMusic(m){music=m;musicChosen=true;openSong()}
 $('songIn').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;status('🎵 טוענת את השיר…');
   try{const buf=await getAC().decodeAudioData(await f.arrayBuffer());song={buf,name:f.name};music='own';$('start').max=Math.max(0,Math.floor(buf.duration-20));$('startBox').style.display='block';status('');openSong();toast('🎵 השיר נטען')}
   catch(err){status('');toast('לא הצלחתי לקרוא את השיר. נסו קובץ MP3.')}});
@@ -163,10 +170,10 @@ async function renderTrack(style,T){const key=style+T;if(trackCache[key])return 
     for(let h=0;h<2;h++){const tt=t+h*beat/2,arpN=ch[(i*2+h)%3]+12;
       if(i>=4&&!outro)tone('triangle',mf(arpN),tt,.28,intro?.05:drop?.085:.065,4000);
       if(build||drop)tone('sawtooth',mf(root),tt,beat*.45,drop?.2:.16,drop?700:450,false);
-      if(build)hat(tt+beat/4,.05);}
+      if(build&&!S.soft)hat(tt+beat/4,.05);}
     if(drop){const mel=[2,1,2,0,1,2,1,0];for(let h=0;h<2;h++)tone('square',mf(ch[mel[(i*2+h)%8]]+24),t+h*beat/2,beat*.4,.035,2500);
       for(let q=0;q<4;q++)hat(t+q*beat/4,q%2?.06:.035)}
-    if(build&&i<C-4){if(i%2===0)kick(t,.9);else snare(t,.45)}
+    if(build&&i<C-4){if(S.soft){if(i%4===0)kick(t,.5)}else if(i%2===0)kick(t,.9);else snare(t,.45)}
     if(i>=C-4&&i<C){kick(t,.8);const n=i<C-2?2:4;for(let r=0;r<n;r++)snare(t+r*beat/n,.18+.1*(i-C+4))}
     if(i===C-4)riser(t,4*beat);
     if(drop){kick(t,1);if(i%2)snare(t,.55);if(i===C)impact(t)}}
@@ -174,8 +181,8 @@ async function renderTrack(style,T){const key=style+T;if(trackCache[key])return 
 
 /* ======= ציר זמן ורינדור ======= */
 function plan(){const n=photos.length,C=8+4*Math.max(0,n-1)+4;return{n,C,T:C+12}}
-const isFreeze=(i,n)=>(i===2||i===9)&&i<n-1&&!(photos[i]&&photos[i].vid);
-function styleOf(i,n){if(isFreeze(i,n))return'freeze';let st=STY[i%STY.length];if(NEEDS[st]&&i<NEEDS[st])st='kb';return st}
+const isFreeze=(i,n)=>!TH.heart&&(i===2||i===9)&&i<n-1&&!(photos[i]&&photos[i].vid);
+function styleOf(i,n){if(TH.heart)return'heart';if(isFreeze(i,n))return'freeze';let st=STY[i%STY.length];if(NEEDS[st]&&i<NEEDS[st])st='kb';return st}
 function drawFreeze(i,lb,pulse){const img=photos[i];if(lb<1){kb(img,lb,i,pulse);return}photo(img,1.16+.1*Math.exp(-(lb-1)*8),0,0,0);
   cx.save();cx.globalCompositeOperation='saturation';cx.fillStyle='#777';cx.fillRect(0,0,W,H);cx.restore();cx.fillStyle='rgba(255,225,150,.14)';cx.fillRect(0,0,W,H);
   text('⏸ רגע…',150,40,1,1,'rgba(220,38,38,.92)');flash(1-(lb-1)*6,'#fff')}
@@ -232,10 +239,12 @@ function shapePath(kind,x,y,r){cx.beginPath();
   else if(kind==='star'){for(let k=0;k<10;k++){const a=-Math.PI/2+k*Math.PI/5,rr2=k%2?r*.45:r;const px=x+Math.cos(a)*rr2,py=y+Math.sin(a)*rr2;k?cx.lineTo(px,py):cx.moveTo(px,py)}}
   else cx.arc(x,y,Math.max(1,r),0,7);cx.closePath()}
 function gray(x,y,w,h){cx.save();cx.beginPath();cx.rect(x,y,w,h);cx.clip();cx.globalCompositeOperation='saturation';cx.fillStyle='#777';cx.fillRect(x,y,w,h);cx.restore()}
-function drawShapeFrame(i,lb,pulse){const img=photos[i],kind=['heart','diamond','star'][i%3],r=Math.max(1,eob(lb/.6)*W*.44*(1+.03*pulse)),x=W/2,y=H*.44;bgBlur(img);
-  cx.save();shapePath(kind,x,y,r);cx.clip();const s2=Math.max(2.2*r/img.width,2.2*r/img.height)*(1.05+.02*lb),dw=img.width*s2,dh=img.height*s2;cx.drawImage(img,x-dw/2,y-dh/2,dw,dh);cx.restore();
+function drawShapeFrame(i,lb,pulse,kindF){const img=photos[i],kind=kindF||['heart','diamond','star'][i%3],r=Math.max(1,eob(lb/.6)*W*.44*(1+.03*pulse)),x=W/2,y=H*.44;bgBlur(img);
+  const fx=img.fx==null?.5:img.fx,fy=img.fy==null?.38:img.fy,base=Math.max(2.3*W*.44/img.width,2.3*W*.44/img.height),s2=base*(1+.55*clamp(lb/3.6,0,1)*(img.fx==null?.4:1)),dw=img.width*s2,dh=img.height*s2;
+  cx.save();shapePath(kind,x,y,r);cx.clip();cx.drawImage(img,x-fx*dw,y-fy*dh,dw,dh);cx.restore();
   cx.save();shapePath(kind,x,y,r);cx.strokeStyle='#fde047';cx.lineWidth=12;cx.shadowColor='#fbbf24';cx.shadowBlur=30;cx.stroke();cx.restore();
   for(let k=0;k<8;k++){const a=lb*.9+k*Math.PI/4,d=r*1.18;emoji('✨',x+Math.cos(a)*d,y+Math.sin(a)*d,34,1,.9*clamp(lb*2,0,1),0)}}
+function drawHeart(i,lb,pulse){drawShapeFrame(i,lb,pulse,'heart');for(let k=0;k<9;k++){const p=(lb/4+rnd(k+i*9))%1,x=W*(.1+.8*rnd(k+40+i)),y=H*(1-p)-40;emoji(['💛','💖','🤍'][k%3],x+Math.sin(lb*2+k)*18,y,30+16*rnd(k+70),1,clamp((1-p)*1.5,0,.85),0)}}
 function drawColorPop(i,lb,pulse){kb(photos[i],lb,i,pulse);const p=clamp((lb-.5)/1.1,0,1),edge=W*(1-p);gray(0,0,edge,H);
   if(p>0&&p<1){cx.fillStyle='rgba(255,255,255,.9)';cx.shadowColor='#fff';cx.shadowBlur=25;cx.fillRect(edge-3,0,6,H);cx.shadowBlur=0}}
 function sepia(x,y,w,h){gray(x,y,w,h);cx.save();cx.beginPath();cx.rect(x,y,w,h);cx.clip();cx.globalCompositeOperation='color';cx.fillStyle='#8a5a2b';cx.fillRect(x,y,w,h);cx.restore()}
@@ -299,7 +308,7 @@ function frameCore(t,beat){const {n,C,T}=plan(),b=t/beat,fb=b-Math.floor(b),puls
   if(b>=C-4&&b<C){drawRapid(b-(C-4),n,t);return}
   if(b<C){const i=Math.floor((b-8)/4),lb=(b-8)-i*4,img=photos[i],dir=i%2?-1:1,st=img.vid?'kb':styleOf(i,n);liveVideo(img,'m'+i,lb);
     if(st==='kb')kb(img,lb,i,pulse);else if(st==='freeze')drawFreeze(i,lb,pulse);else if(st==='polaroid')drawPolaroid(i,lb);else if(st==='collage')drawCollage(i,lb,pulse);else if(st==='carousel')drawCarousel(i,lb);
-    else if(st==='flip')drawFlip(i,lb,pulse);else if(st==='iris')drawIris(i,lb,pulse);else if(st==='zoomthru')drawZoomThru(i,lb,pulse);else if(st==='film')drawFilm(i,lb);else if(st==='shapeframe')drawShapeFrame(i,lb,pulse);else if(st==='colorpop')drawColorPop(i,lb,pulse);else if(st==='duo')drawDuo(i,lb,pulse);else if(st==='triple')drawTriple(i,lb,pulse);else drawKaleido(i,lb,pulse);
+    else if(st==='flip')drawFlip(i,lb,pulse);else if(st==='iris')drawIris(i,lb,pulse);else if(st==='zoomthru')drawZoomThru(i,lb,pulse);else if(st==='film')drawFilm(i,lb);else if(st==='shapeframe')drawShapeFrame(i,lb,pulse);else if(st==='colorpop')drawColorPop(i,lb,pulse);else if(st==='duo')drawDuo(i,lb,pulse);else if(st==='heart')drawHeart(i,lb,pulse);else if(st==='triple')drawTriple(i,lb,pulse);else drawKaleido(i,lb,pulse);
     grade(.12);dust(t,30,'#fff7cc');if(st==='kb')whip(dir,lb);leak(1-lb/.6);
     const ct=st==='triple'?1.4:st==='collage'?2.4:st==='kaleido'?1.6:st==='freeze'?1.25:.3,k=eob((lb-ct)/.55);text(words(caps.mont[i],lb,ct),H*.82,60,.5+.5*k,clamp((lb-ct)*4,0,1),st==='freeze'?'rgba(220,38,38,.92)':['rgba(219,39,119,.88)','rgba(124,58,237,.88)','rgba(234,88,12,.88)'][i%3]);
     emoji(TH.e,W-80,110,70,1+.15*pulse,.85,0);
