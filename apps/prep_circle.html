@@ -62,6 +62,8 @@ svg{display:block;max-width:100%;margin:6px auto}
 .exp{font-size:17px;line-height:1.8}
 .k{display:inline-block;background:#374151;color:#fff;border-radius:6px;padding:1px 7px;margin:2px 1px;font-size:.9em;box-shadow:0 2px 0 #111;font-weight:bold}
 .calc{background:#ecfeff;border-right:5px solid #0891b2;border-radius:10px;padding:8px 10px;margin-top:10px;line-height:2}
+.lvl-row{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:15px}.lvl-row span:first-child{width:120px}.lvb{flex:1;height:12px;background:#eee;border-radius:6px;overflow:hidden}.lvb i{display:block;height:100%}
+.fb{background:#f5f3ff;border-radius:10px;padding:10px;margin:8px 0;font-size:16px;line-height:1.7}.fb.ok{background:#f0fdf4}.fb.no{background:#fff7ed;border-right:5px solid #f59e0b}
 </style>
 </head>
 <body>
@@ -122,6 +124,9 @@ var R=[
 ["שטח",2,"רדיוס 0.5 מ'. מה השטח? (השאר ב-π)",["[[0.25π]] מ\"ר","[[π]] מ\"ר","[[0.5π]] מ\"ר","[[2π]] מ\"ר"],"1️⃣ [[0.5 · 0.5 = 0.25]]<br>2️⃣ [[S = 0.25π]]<br>✅ [[0.25π]] מ\"ר<br>💡 חצי כפול חצי = רבע (קטן יותר!)."]
 ];
 
+/*KNOW*/
+D.know={"מושגים": "עיגול = עוגייה (יש שטח). מעגל = רק הקו (יש היקף). קוטר = 2 רדיוסים.", "היקף": "[[P = 2πr]] או [[P = πd]]. אורך ← בלי ריבוע.", "שטח": "[[S = π · r · r]]. קיבלת קוטר? קודם מחלקים ב-2!", "מהיקף לשטח": "תמיד עוברים דרך הרדיוס: היקף ← רדיוס ← שטח.", "השוואות": "רדיוס פי 2 ← היקף פי 2, שטח פי 4.", "צורות משולבות": "שטח שנשאר = הצורה הגדולה פחות העיגול.", "יחידות": "שטח ← סמ\"ר. היקף ← ס\"מ."};
+
 D.Q=R.map(function(r){return {t:r[0],l:r[1],q:r[2],o:r[3],e:r[4],d:r[5]};});
 if(!D.svg)D.svg={};
 
@@ -142,7 +147,7 @@ function home(){
  '<button class="btn" style="background:#ea580c" onclick="tips()">⚡ טיפים לזכירה מהירה<small>טריקים ומלכודות נפוצות</small></button>'+
  '<button class="btn b2" onclick="flash()">🔤 כרטיסיות<small>'+D.flashSub+'</small></button>'+
  '<button class="btn b3" onclick="start(Q,\'all\')">🧠 כל השאלות לפי סדר הנושאים<small>'+Q.length+' שאלות, הסבר מפורט אחרי כל תשובה</small></button>'+
- '<button class="btn b4" onclick="start(sh(Q).slice(0,15),\'test\')">🏁 מבחן דמה<small>15 שאלות אקראיות + ציון</small></button>';
+ '<button class="btn b4" onclick="start(mock(),\'test\')">🏁 מבחן דמה<small>20 שאלות מעורבבות בכל הרמות · ציון ומשוב אישי</small></button>';
  window.scrollTo(0,0);
 }
 function summary(){
@@ -153,7 +158,7 @@ function summary(){
 function tips(){
  var h='<div class="top"><button class="back" onclick="home()">→ חזרה</button><span>טיפים לזכירה</span></div>';
  TIPS.forEach(function(b){h+='<div class="card sum"><h3>'+b[0]+'</h3>';b[1].forEach(function(t){h+='<p>• '+F(t)+'</p>';});h+='</div>';});
- app.innerHTML=h+'<button class="btn b4" onclick="start(sh(Q).slice(0,15),\'test\')">🏁 עכשיו למבחן דמה!</button>';window.scrollTo(0,0);
+ app.innerHTML=h+'<button class="btn b4" onclick="start(mock(),\'test\')">🏁 עכשיו למבחן דמה!</button>';window.scrollTo(0,0);
 }
 var fl=[],fi=0;
 function flash(){fl=sh(SYM);fi=0;showFlash(false);}
@@ -182,13 +187,39 @@ function pick(b){
  '<button class="next" onclick="nxt()">'+(i<list.length-1?'לשאלה הבאה ←':'לתוצאות 🏁')+'</button>';
 }
 function nxt(){i++;if(i<list.length)ask();else end();}
+function mock(){
+ var want={1:6,2:8,3:6},out=[];
+ [1,2,3].forEach(function(l){
+  var pool=sh(Q.filter(function(q){return q.l==l;})),by={},keys=[];
+  pool.forEach(function(q){if(!by[q.t]){by[q.t]=[];keys.push(q.t);}by[q.t].push(q);});
+  keys=sh(keys);var k=0,n=0;
+  while(n<want[l]&&pool.length>n){var t=keys[k%keys.length];if(by[t].length){out.push(by[t].shift());n++;}k++;if(k>500)break;}
+ });
+ while(out.length<20&&out.length<Q.length){var r=Q[Math.floor(Math.random()*Q.length)];if(out.indexOf(r)<0)out.push(r);}
+ return sh(out);
+}
 function end(){
- var p=Math.round(good/list.length*100),msg=p>=90?'🏆 מוכן למבחן!':p>=70?'💪 טוב מאוד! עבור על הטעויות':'📘 כדאי לקרוא שוב את הסיכום ולתרגל את הטעויות';
- var h='<div class="card"><div class="score">'+p+'</div><div style="text-align:center;font-size:18px;margin:6px 0 14px">'+good+' מתוך '+list.length+' · '+msg+'</div>';
+ var p=Math.round(good/list.length*100),msg=p>=90?'🏆 מצוין! אתה מוכן למבחן!':p>=75?'💪 טוב מאוד! עוד קצת חיזוק ואתה שם':p>=55?'👍 בדרך הנכונה – כדאי לחזק את הנושאים למטה':'📘 כדאי לקרוא שוב את הסיכום והטיפים, ואז לנסות שוב';
+ var h='<div class="card"><div style="text-align:center;font-size:16px;color:#666">'+(mode=='test'?'הציון שלך במבחן הדמה':'התוצאה שלך')+'</div><div class="score">'+p+'</div><div style="text-align:center;font-size:18px;margin:6px 0 14px">'+good+' מתוך '+list.length+' נכונות<br>'+msg+'</div>';
+ if(mode=='test'){
+  var lv={1:[0,0],2:[0,0],3:[0,0]},tp={},order=[];
+  list.forEach(function(q){var ok=wrong.indexOf(q)<0;lv[q.l][1]++;if(ok)lv[q.l][0]++;if(!tp[q.t]){tp[q.t]=[0,0];order.push(q.t);}tp[q.t][1]++;if(ok)tp[q.t][0]++;});
+  var nm={1:'★ בסיס',2:'★★ הבנה',3:'★★★ חשיבה גבוהה'};
+  h+='<h3 style="color:#6d28d9">📊 לפי רמות חשיבה</h3>';
+  [1,2,3].forEach(function(l){if(!lv[l][1])return;var r=lv[l][0]/lv[l][1];h+='<div class="lvl-row"><span>'+nm[l]+'</span><span class="lvb"><i style="width:'+Math.round(r*100)+'%;background:'+(r>=0.8?'#16a34a':r>=0.5?'#f59e0b':'#dc2626')+'"></i></span><b>'+lv[l][0]+'/'+lv[l][1]+'</b></div>';});
+  var weak=order.filter(function(t){return tp[t][0]<tp[t][1];}),strong=order.filter(function(t){return tp[t][0]==tp[t][1];});
+  h+='<h3 style="color:#6d28d9;margin-top:12px">📝 משוב – מה אתה צריך לדעת</h3>';
+  if(strong.length)h+='<div class="fb ok">✅ <b>שולט:</b> '+strong.join(' · ')+'</div>';
+  weak.forEach(function(t){h+='<div class="fb no">📘 <b>לחזק: '+t+'</b> ('+tp[t][0]+'/'+tp[t][1]+')<br>💡 '+F((D.know&&D.know[t])||'קרא שוב את הסיכום של הנושא הזה.')+'</div>';});
+  if(!weak.length)h+='<div class="fb ok">🌟 לא היו טעויות – כל הכבוד!</div>';
+  else if(lv[3][1]&&lv[3][0]<lv[3][1]&&lv[1][0]==lv[1][1])h+='<div class="fb">🎯 הבסיס חזק! עכשיו כדאי לתרגל שאלות ★★★ – לקרוא את השאלה לאט ולצייר.</div>';
+  else if(lv[1][0]<lv[1][1])h+='<div class="fb">🎯 כדאי להתחיל מהבסיס: לקרוא את הסיכום, ואז לתרגל את הטעויות.</div>';
+ }
  if(wrong.length){
   h+='<button class="next" style="background:#db2777" onclick="start(wrong.slice(),\'w\')">🔁 תרגל שוב רק את '+wrong.length+' הטעויות</button><h3 style="margin-top:14px;color:#6d28d9">איפה טעיתי:</h3>';
   wrong.forEach(function(w){h+='<div class="rev">📝 '+F(w.q)+(w.d?D.svg[w.d]:'')+'<br>🎯 <b>'+F(w.o[0])+'</b><div class="exp ok" style="margin-top:6px">'+F(w.e)+'</div></div>';});
  }
+ if(mode=='test')h+='<button class="next" style="background:#16a34a" onclick="start(mock(),\'test\')">🏁 מבחן דמה חדש (שאלות אחרות)</button>';
  app.innerHTML=h+'<button class="next" onclick="home()">חזרה לתפריט</button></div>';
  window.scrollTo(0,0);
 }
