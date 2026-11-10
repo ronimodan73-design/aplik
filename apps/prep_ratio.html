@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>יחס – הכנה למבחן</title>
+<link rel="manifest" href="prep_ratio.webmanifest">
+<link rel="apple-touch-icon" href="icon-prep_ratio-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="יחס">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1e1b4b">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,"Segoe UI",sans-serif;background:linear-gradient(160deg,#1e1b4b,#4c1d95);min-height:100vh;color:#1f2937;padding:14px}
+.wrap{max-width:640px;margin:0 auto}
+h1{color:#fff;text-align:center;font-size:26px;margin:6px 0 2px}
+.sub{color:#ddd6fe;text-align:center;font-size:15px;margin-bottom:14px}
+.card{background:#fff;border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.btn{display:block;width:100%;border:0;border-radius:14px;padding:16px;font-size:18px;font-weight:bold;margin:10px 0;cursor:pointer;color:#fff;text-align:right}
+.b1{background:#7c3aed}.b2{background:#0891b2}.b3{background:#db2777}.b4{background:#16a34a}
+.btn small{display:block;font-weight:normal;font-size:14px;opacity:.9;margin-top:3px}
+.f{direction:ltr;unicode-bidi:isolate;display:inline-block;font-weight:bold;color:#6d28d9;font-family:Arial,sans-serif;white-space:nowrap}
+.f sub{font-size:.7em}
+.top{display:flex;justify-content:space-between;align-items:center;color:#fff;margin-bottom:8px;font-size:15px}
+.back{background:rgba(255,255,255,.2);color:#fff;border:0;border-radius:10px;padding:8px 12px;font-size:15px;cursor:pointer}
+.bar{height:8px;background:rgba(255,255,255,.25);border-radius:6px;overflow:hidden;margin-bottom:12px}
+.bar div{height:100%;background:#facc15;transition:width .3s}
+.tag{display:inline-block;background:#ede9fe;color:#6d28d9;border-radius:8px;padding:3px 9px;font-size:13px;margin-bottom:8px}
+.lvl{float:left;font-size:13px;color:#b45309}
+.q{font-size:20px;font-weight:bold;line-height:1.5;margin-bottom:14px}
+.opt{display:block;width:100%;text-align:right;background:#f5f3ff;border:2px solid #ddd6fe;border-radius:12px;padding:13px;font-size:17px;margin:8px 0;cursor:pointer;color:#1f2937}
+.opt.ok{background:#dcfce7;border-color:#16a34a}
+.opt.no{background:#fee2e2;border-color:#dc2626}
+.exp{border-radius:12px;padding:14px;margin-top:12px;font-size:16px;line-height:1.65}
+.exp.ok{background:#f0fdf4;border-right:6px solid #16a34a}
+.exp.no{background:#fef2f2;border-right:6px solid #dc2626}
+.exp b.h{display:block;font-size:17px;margin-bottom:4px}
+.next{background:#7c3aed;color:#fff;border:0;border-radius:12px;padding:14px;font-size:18px;font-weight:bold;width:100%;margin-top:12px;cursor:pointer}
+.sum h3{color:#6d28d9;font-size:19px;margin-bottom:6px}
+.sum p{font-size:16px;line-height:1.65;margin-bottom:6px}
+.tip{background:#fef9c3;border-radius:10px;padding:9px 11px;font-size:15px;margin-top:6px}
+table{width:100%;border-collapse:collapse;font-size:16px}
+td,th{border:1px solid #ddd6fe;padding:7px;text-align:center}
+th{background:#ede9fe}
+.flash{text-align:center;padding:30px 10px}
+.flash .big{font-size:56px;font-weight:bold;color:#6d28d9;direction:ltr}
+.flash .heb{font-size:32px;font-weight:bold}
+.pt{display:grid;grid-template-columns:repeat(18,1fr);gap:2px;direction:ltr;margin:8px 0}
+.pt div{height:16px;border-radius:2px}
+.m{background:#93c5fd}.n{background:#fca5a5}.g{background:#fde68a}
+.score{font-size:46px;font-weight:bold;text-align:center;color:#6d28d9}
+.foot{color:#c4b5fd;text-align:center;font-size:13px;margin-top:10px}
+.rev{border-bottom:1px solid #eee;padding:10px 0;font-size:15px;line-height:1.6}
+.f sup{font-size:.7em}
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 3px;font-size:.9em}
+.fr span:first-child{border-bottom:2px solid currentColor;padding:0 3px}
+.flash .ans{font-size:24px;font-weight:bold;color:#6d28d9;line-height:1.5}
+.flash .heb{font-size:22px;line-height:1.5}
+svg{display:block;max-width:100%;margin:6px auto}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<div class="foot">ערכה: רוני מודן · שחקים</div>
+<script>
+var D={title:"יחס",icon:"⚖️",flashSub:"מושג ← הסבר / תרגיל קצר"};
+D.summary=[
+["⚖️ מהו יחס?","<p>יחס אומר <b>כמה מכל סוג בקבוצה אחת</b>.</p><p>[[2 : 3]] = 🔵🔵 🔴🔴🔴</p><p>על כל 2 כחולים – יש 3 אדומים.</p><div class='tip'>⚠️ הסדר חשוב! מה שכתוב ראשון בשאלה – כותבים ראשון.</div>"],
+["🧱 שיטת הקבוצה – 3 צעדים","<p>מחלקים 84 ביחס [[2 : 5]]:</p><p>1️⃣ <b>קבוצה אחת</b>: 🔵🔵 🔴🔴🔴🔴🔴 = 7</p><p>2️⃣ <b>גורם ההרחבה</b> – כמה קבוצות? [[84 : 7 = 12]]</p><p>3️⃣ <b>מכפילים</b>: [[2 · 12 = 24]] , [[5 · 12 = 60]]</p><div class='tip'>✅ בודקים: [[24 + 60 = 84]]</div>"],
+["🍕 יחס כשבר","<p>כותבים את היחס כשבר, ומרחיבים באותו מספר למעלה ולמטה:</p><p>[[{{2|3}} = {{8|12}}]] (פי 4 למעלה, פי 4 למטה)</p><p>חלק <b>מתוך הכול</b>: 🔵🔵🔵 🔴🔴🔴🔴🔴 ← כחולים [[{{3|8}}]].</p>"],
+["✂️ צמצום","<p>מחלקים את <b>שני</b> המספרים באותו מספר:</p><p>[[12 : 18]] ← חלקי 6 ← [[2 : 3]]</p><div class='tip'>⚠️ קודם אותן יחידות! שעה = 60 דקות, מטר = 100 ס\"מ.</div><div class='tip'>⚠️ כפל שומר על יחס. <b>חיבור הורס</b> אותו.</div>"]
+];
+D.tips=[
+["🧱 תמיד מתחילים כך",["מציירים קבוצה אחת בעיגולים: [[2 : 3]] = 🔵🔵 🔴🔴🔴","שואלים: כמה קבוצות כאלה יש? ← זה גורם ההרחבה.","מכפילים כל צבע בגורם ההרחבה."]],
+["🔎 מה נתון?",["נתון <b>הכול</b> ← מחלקים במספר העיגולים בקבוצה.","נתון <b>צבע אחד</b> ← מחלקים במספר העיגולים של הצבע הזה.","נתון <b>הפרש</b> ← מחלקים בהפרש העיגולים."]],
+["⚠️ שלוש טעויות שכדאי להכיר",["<b>סדר</b>: סמן בעיגול מה כתוב ראשון בשאלה.","<b>יחידות</b>: דקות עם דקות, ס\"מ עם ס\"מ.","<b>חלק מהכול</b>: ב-[[3 : 5]] יש 8 בקבוצה, לכן [[{{3|8}}]]."]],
+["✅ בדיקה",["מחברים את התשובות – יוצא המספר שנתון?","מצמצמים את התשובה – חוזרים ליחס שבשאלה?"]]
+];
+D.flash=[["מהו יחס?","השוואה בין כמויות בעזרת חילוק"],["צמצם: [[12 : 18]]","[[2 : 3]]"],["צמצם: [[0.5 : 2]]","[[1 : 4]]"],["[[{{1|2}} : {{1|3}}]] במספרים שלמים","[[3 : 2]]"],["חלק 60 ביחס [[1 : 2]]","20 ו-40"],["בנים:בנות = [[3 : 5]]. איזה שבר מהכיתה בנים?","[[{{3|8}}]]"],["פתור: [[x : 12 = 5 : 4]]","[[x = 15]]"],["מה נשמר ביחס – כפל או חיבור?","כפל (וחילוק)"],["40 דקות : 2 שעות","[[1 : 3]]"],["קנה מידה [[1 : 50000]], 4 ס\"מ במפה =","2 ק\"מ"],["זוויות משולש ביחס [[2 : 3 : 4]]","40°, 60°, 80°"],["[[a : b = 3 : 7]], ההפרש 28. מה a?","21"]];
+var R=[
+["משמעות היחס",1,"מהו היחס [[12 : 18]] בצורה המצומצמת ביותר?",["[[2 : 3]]","[[3 : 2]]","[[6 : 12]]","[[1 : 6]]"],"👀 צריך למצוא מספר ששני המספרים מתחלקים בו.<br>1️⃣ גם 12 וגם 18 מתחלקים ב-6.<br>2️⃣ [[12 : 6 = 2]]<br>3️⃣ [[18 : 6 = 3]]<br>✅ התשובה: [[2 : 3]]<br>💡 צמצום = מחלקים את <b>שני</b> המספרים באותו מספר."],
+["משמעות היחס",1,"בכיתה 12 בנים ו-18 בנות. מהו היחס בין מספר הבנות למספר הבנים?",["[[3 : 2]]","[[2 : 3]]","[[18 : 30]]","[[12 : 30]]"],"👀 קוראים מה השאלה מבקשת <b>קודם</b>: \"בנות למספר הבנים\" ← בנות קודם!<br>1️⃣ בנות 18, בנים 12 ← [[18 : 12]]<br>2️⃣ מצמצמים ב-6 ← [[3 : 2]]<br>⚠️ אם כתבת [[2 : 3]] – הפכת את הסדר. סמן בעיגול את המילה שמופיעה ראשונה בשאלה."],
+["משמעות היחס",1,"באותה כיתה (12 בנים, 18 בנות) – מהו היחס בין מספר הבנים לכל תלמידי הכיתה?",["[[2 : 5]]","[[2 : 3]]","[[3 : 5]]","[[5 : 2]]"],"👀 \"לכל התלמידים\" = כל הכיתה.<br>1️⃣ כל הכיתה: [[12 + 18 = 30]]<br>2️⃣ בנים : כל הכיתה = [[12 : 30]]<br>3️⃣ מצמצמים ב-6 ← [[2 : 5]]<br>💡 כשכתוב \"מכל\" – מחברים קודם את כולם."],
+["משמעות היחס",1,"איזה יחס שווה ל-[[4 : 6]]?",["[[10 : 15]]","[[6 : 8]]","[[8 : 10]]","[[5 : 7]]"],"👀 יחס שווה = מכפילים או מחלקים את <b>שני</b> המספרים באותו מספר.<br>1️⃣ [[4 : 6]] ← מחלקים ב-2 ← [[2 : 3]]<br>2️⃣ [[10 : 15]] ← מחלקים ב-5 ← [[2 : 3]] ✅<br>⚠️ [[6 : 8]] – פשוט הוסיפו 2 לכל מספר. חיבור <b>לא</b> שומר על היחס."],
+["משמעות היחס",1,"איזה יחס <b>אינו</b> שווה ל-[[6 : 8]]?",["[[4 : 6]]","[[3 : 4]]","[[12 : 16]]","[[9 : 12]]"],"👀 קודם מצמצמים: [[6 : 8 = 3 : 4]].<br>עכשיו בודקים כל תשובה:<br>• [[12 : 16]] ← חלקי 4 ← [[3 : 4]] ✔<br>• [[9 : 12]] ← חלקי 3 ← [[3 : 4]] ✔<br>• [[4 : 6]] ← חלקי 2 ← [[2 : 3]] ✘<br>✅ [[4 : 6]] הוא היחיד שלא שווה."],
+["משמעות היחס",2,"מהו היחס בין 40 דקות ל-2 שעות?",["[[1 : 3]]","[[20 : 1]]","[[40 : 2]]","[[1 : 2]]"],"👀 אי אפשר להשוות דקות לשעות! קודם עוברים לאותן יחידות.<br>1️⃣ שעה = 60 דקות ← 2 שעות = 120 דקות<br>2️⃣ [[40 : 120]]<br>3️⃣ מחלקים ב-40 ← [[1 : 3]]"],
+["משמעות היחס",2,"מהו היחס בין 50 ס\"מ ל-2 מטרים?",["[[1 : 4]]","[[25 : 1]]","[[50 : 2]]","[[1 : 2]]"],"👀 קודם אותן יחידות: מטר = 100 ס\"מ.<br>1️⃣ 2 מטרים = 200 ס\"מ<br>2️⃣ [[50 : 200]]<br>3️⃣ מחלקים ב-50 ← [[1 : 4]]"],
+["משמעות היחס",2,"כתוב את [[0.5 : 2]] במספרים שלמים מצומצמים:",["[[1 : 4]]","[[5 : 2]]","[[1 : 2]]","[[2 : 1]]"],"👀 לא אוהבים נקודה עשרונית – מכפילים כדי להיפטר ממנה.<br>1️⃣ [[0.5 · 2 = 1]]<br>2️⃣ [[2 · 2 = 4]]<br>✅ [[1 : 4]]<br>💡 מה שעושים למספר אחד – עושים גם לשני."],
+["משמעות היחס",2,"כתוב את [[{{1|2}} : {{1|3}}]] במספרים שלמים:",["[[3 : 2]]","[[2 : 3]]","[[1 : 1]]","[[6 : 1]]"],"👀 נפטרים מהשברים: מכפילים במספר ש-2 וגם 3 נכנסים בו ← 6.<br>1️⃣ [[{{1|2}} · 6 = 3]] (חצי מ-6)<br>2️⃣ [[{{1|3}} · 6 = 2]] (שליש מ-6)<br>✅ [[3 : 2]]<br>🍕 חצי פיצה גדול משליש פיצה – לכן המספר הראשון גדול יותר."],
+["משמעות היחס",3,"מוסיפים 2 לכל אחד מאיברי היחס [[3 : 5]]. מה קורה ליחס?",["משתנה ל-[[5 : 7]], שאינו שווה ל-[[3 : 5]]","נשאר אותו יחס","הופך ל-[[5 : 3]]","תמיד מתקרב ל-[[1 : 2]]"],"👀 נצייר! [[3 : 5]] = 🔵🔵🔵 🔴🔴🔴🔴🔴<br>אחרי שמוסיפים 2: 🔵🔵🔵🔵🔵 🔴🔴🔴🔴🔴🔴🔴 = [[5 : 7]]<br>האם זה אותו יחס? נכפיל את [[3 : 5]] ב-2 ← [[6 : 10]], ב-3 ← [[9 : 15]]. אף פעם לא מגיעים ל-[[5 : 7]].<br>✅ <b>היחס משתנה.</b><br>💡 כפל שומר על יחס. חיבור הורס אותו."],
+["חלוקה לפי יחס",1,"מחלקים 60 ביחס [[1 : 2]]. מה החלקים?",["20 ו-40","30 ו-30","10 ו-50","15 ו-45"],"🧱 קבוצה אחת: 🔵 🔴🔴 = 3 עצמים.<br>1️⃣ כמה קבוצות נכנסות ב-60? [[60 : 3 = 20]] ← זה גורם ההרחבה.<br>2️⃣ כחולים: [[1 · 20 = 20]]<br>3️⃣ אדומים: [[2 · 20 = 40]]<br>✅ בדיקה: [[20 + 40 = 60]]"],
+["חלוקה לפי יחס",1,"היחס [[3 : 5]]. הכמות הקטנה היא 21. מה הכמות הגדולה?",["35","63","29","105"],"🧱 קבוצה אחת: 🔵🔵🔵 🔴🔴🔴🔴🔴<br>1️⃣ הקטנה (3) הפכה ל-21. פי כמה? [[21 : 3 = 7]] ← גורם ההרחבה.<br>2️⃣ גם הגדולה גדלה פי 7: [[5 · 7 = 35]]<br>✅ [[{{3|5}} = {{21|35}}]]"],
+["חלוקה לפי יחס",2,"מחלקים 84 ביחס [[2 : 5]]. מהו החלק הגדול?",["60","24","42","70"],"🧱 קבוצה אחת: 🔵🔵 🔴🔴🔴🔴🔴 = 7 עצמים.<br>1️⃣ כמה קבוצות ב-84? [[84 : 7 = 12]] ← גורם ההרחבה.<br>2️⃣ החלק הגדול: [[5 · 12 = 60]]<br>3️⃣ החלק הקטן: [[2 · 12 = 24]]<br>✅ בדיקה: [[60 + 24 = 84]]"],
+["חלוקה לפי יחס",2,"מחלקים 96 ביחס [[3 : 4 : 5]]. מהו החלק הגדול ביותר?",["40","32","24","48"],"🧱 קבוצה אחת: 3 + 4 + 5 = 12 עצמים.<br>1️⃣ כמה קבוצות ב-96? [[96 : 12 = 8]] ← גורם ההרחבה.<br>2️⃣ הגדול ביותר: [[5 · 8 = 40]]<br>✅ בדיקה: [[24 + 32 + 40 = 96]]"],
+["חלוקה לפי יחס",2,"זוויות משולש ביחס [[2 : 3 : 4]]. מהי הזווית הגדולה?",["80°","40°","60°","90°"],"📐 זוכרים: בכל משולש – כל הזוויות יחד הן 180°.<br>🧱 קבוצה אחת: 2 + 3 + 4 = 9.<br>1️⃣ [[180 : 9 = 20]] ← גורם ההרחבה.<br>2️⃣ הגדולה: [[4 · 20 = 80]]°<br>✅ בדיקה: [[40 + 60 + 80 = 180]]"],
+["חלוקה לפי יחס",2,"[[a : b = 3 : 7]], וההפרש בין b ל-a הוא 28. מהו a?",["21","12","49","84"],"🧱 🔵🔵🔵 🔴🔴🔴🔴🔴🔴🔴<br>👀 ההפרש = כמה אדומים <b>יותר</b>: [[7 − 3 = 4]].<br>1️⃣ ההפרש האמיתי 28. פי כמה? [[28 : 4 = 7]] ← גורם ההרחבה.<br>2️⃣ [[a = 3 · 7 = 21]]<br>✅ בדיקה: [[b = 49]], [[49 − 21 = 28]]"],
+["חלוקה לפי יחס",2,"[[a : b = 5 : 2]] ו-a גדול מ-b ב-15. מהו b?",["10","25","6","5"],"🧱 🔵🔵🔵🔵🔵 🔴🔴<br>👀 ההפרש: [[5 − 2 = 3]].<br>1️⃣ ההפרש האמיתי 15. פי כמה? [[15 : 3 = 5]]<br>2️⃣ [[b = 2 · 5 = 10]]<br>✅ בדיקה: [[a = 25]], [[25 − 10 = 15]]"],
+["חלוקה לפי יחס",2,"שתי זוויות צמודות ביחס [[1 : 5]]. מהי הזווית הקטנה?",["30°","36°","18°","150°"],"📐 זוויות צמודות = יחד 180° (קו ישר).<br>🧱 קבוצה: 1 + 5 = 6.<br>1️⃣ [[180 : 6 = 30]]<br>2️⃣ הקטנה: [[1 · 30 = 30]]°, הגדולה: 150°<br>✅ [[30 + 150 = 180]]"],
+["חלוקה לפי יחס",3,"צלעות מלבן ביחס [[3 : 5]] והיקפו 64 ס\"מ. מהו שטחו?",["240 סמ\"ר","60 סמ\"ר","120 סמ\"ר","15 סמ\"ר"],"📏 היקף = כל 4 הצלעות. אורך + רוחב = חצי היקף.<br>1️⃣ [[64 : 2 = 32]]<br>2️⃣ קבוצה: 3 + 5 = 8 ← [[32 : 8 = 4]]<br>3️⃣ צלעות: [[3 · 4 = 12]] ו-[[5 · 4 = 20]]<br>4️⃣ שטח: [[12 · 20 = 240]]"],
+["יחס ושבר",1,"היחס בין בנים לבנות [[3 : 5]]. איזה חלק מהכיתה הם בנים?",["[[{{3|8}}]]","[[{{3|5}}]]","[[{{5|8}}]]","[[{{5|3}}]]"],"🧱 🔵🔵🔵 🔴🔴🔴🔴🔴 ← כל הכיתה: 8.<br>שבר = חלק <b>מתוך הכול</b>.<br>✅ בנים: 3 מתוך 8 = [[{{3|8}}]]<br>⚠️ [[{{3|5}}]] זה בנים מול בנות, לא מתוך כל הכיתה."],
+["יחס ושבר",2,"[[{{2|5}}]] מתלמידי השכבה הן בנות. מהו היחס בנות:בנים?",["[[2 : 3]]","[[2 : 5]]","[[3 : 2]]","[[5 : 2]]"],"🧱 [[{{2|5}}]] = 2 מתוך 5: 🔴🔴 🔵🔵🔵<br>1️⃣ בנות: 2<br>2️⃣ בנים: [[5 − 2 = 3]]<br>✅ בנות : בנים = [[2 : 3]]"],
+["יחס ושבר",2,"בנים:בנות = [[1 : 4]]. כמה אחוזים מהכיתה בנים?",["20%","25%","40%","10%"],"🧱 🔵 🔴🔴🔴🔴 ← כל הכיתה: 5.<br>1️⃣ בנים: 1 מתוך 5 = [[{{1|5}}]]<br>2️⃣ [[{{1|5}} = {{20|100}} = 20%]] (הרחבה פי 20)<br>⚠️ 25% זה אחד מתוך 4 – שכחו לספור את הבנים."],
+["פרופורציה",1,"במתכון: 2 כוסות קמח ל-3 כוסות מים. כמה מים צריך ל-8 כוסות קמח?",["12","11","9","16"],"🧱 קבוצה: 2 קמח, 3 מים.<br>1️⃣ קמח מ-2 ל-8: פי כמה? [[8 : 2 = 4]]<br>2️⃣ גם המים פי 4: [[3 · 4 = 12]]<br>✅ [[{{2|3}} = {{8|12}}]]"],
+["פרופורציה",1,"3 מחברות עולות 24 ₪. כמה יעלו 7 מחברות?",["56 ₪","48 ₪","63 ₪","28 ₪"],"💰 מחיר מחברת אחת: [[24 : 3 = 8]] ₪.<br>1️⃣ 7 מחברות: [[7 · 8 = 56]] ₪<br>💡 קודם מוצאים כמה עולה <b>אחת</b>."],
+["פרופורציה",2,"פתור: [[x : 12 = 5 : 4]]",["[[x = 15]]","[[x = 9.6]]","[[x = 20]]","[[x = 3]]"],"👀 רושמים כשבר: [[{{x|12}} = {{5|4}}]].<br>1️⃣ מ-4 ל-12: פי כמה? [[12 : 4 = 3]] ← גורם ההרחבה.<br>2️⃣ גם המונה פי 3: [[5 · 3 = 15]]<br>✅ [[x = 15]]"],
+["פרופורציה",2,"פתור: [[6 : x = 9 : 15]]",["[[x = 10]]","[[x = 12]]","[[x = 22.5]]","[[x = 3.6]]"],"👀 [[{{6|x}} = {{9|15}}]]. קודם מצמצמים: [[{{9|15}} = {{3|5}}]].<br>1️⃣ מ-3 ל-6: פי 2.<br>2️⃣ גם המכנה פי 2: [[5 · 2 = 10]]<br>✅ [[x = 10]]"],
+["קנה מידה",1,"קנה מידה [[1 : 50000]]. מרחק של 4 ס\"מ במפה הוא במציאות:",["2 ק\"מ","20 ק\"מ","200 מ'","0.2 ק\"מ"],"🗺️ [[1 : 50000]] = ס\"מ במפה הוא 50,000 ס\"מ באמת.<br>1️⃣ [[4 · 50000 = 200000]] ס\"מ<br>2️⃣ מחלקים ב-100 ← 2,000 מטר<br>3️⃣ מחלקים ב-1,000 ← 2 ק\"מ"],
+["קנה מידה",3,"מרחק של 15 ק\"מ מופיע במפה כ-3 ס\"מ. מהו קנה המידה?",["[[1 : 500000]]","[[1 : 5]]","[[1 : 50000]]","[[3 : 15]]"],"🗺️ קודם אותן יחידות – הכול בס\"מ.<br>1️⃣ 15 ק\"מ = 15,000 מטר = 1,500,000 ס\"מ<br>2️⃣ [[3 : 1500000]]<br>3️⃣ מחלקים ב-3 ← [[1 : 500000]]"],
+["בעיות מתקדמות",3,"היחס בנים:בנות בחוג [[2 : 3]]. הצטרפו 5 בנים, ועכשיו מספר הבנים שווה למספר הבנות. כמה בנות בחוג?",["15","10","5","25"],"🧱 🔵🔵 🔴🔴🔴 (כחול = בנים, אדום = בנות)<br>👀 הבנות לא השתנו!<br>1️⃣ בכל קבוצה יש בת אחת יותר מבנים.<br>2️⃣ 5 בנים סגרו את כל הפער ← יש 5 קבוצות (גורם ההרחבה 5).<br>3️⃣ בנות: [[3 · 5 = 15]]<br>✅ בנים: 10 + 5 = 15 = בנות"],
+["בעיות מתקדמות",3,"[[a : b = 2 : 3]] ו-[[b : c = 4 : 5]]. מהו [[a : b : c]]?",["[[8 : 12 : 15]]","[[2 : 3 : 5]]","[[2 : 7 : 5]]","[[8 : 3 : 5]]"],"👀 b מופיע בשני היחסים, אבל פעם הוא 3 ופעם 4. צריך שיהיה אותו מספר.<br>1️⃣ מספר ש-3 ו-4 נכנסים בו: 12.<br>2️⃣ [[2 : 3]] פי 4 ← [[8 : 12]]<br>3️⃣ [[4 : 5]] פי 3 ← [[12 : 15]]<br>✅ [[8 : 12 : 15]]"],
+["בעיות מתקדמות",3,"היחס בין הכסף של דן לכסף של רון [[5 : 3]]. דן נתן לרון 20 ₪ ועכשיו יש להם סכום שווה. כמה כסף יש לשניהם יחד?",["160 ₪","80 ₪","40 ₪","100 ₪"],"💰 🔵🔵🔵🔵🔵 (דן) 🔴🔴🔴 (רון) ← יחד 8.<br>👀 כשדן נותן לרון – הסכום של שניהם לא משתנה.<br>1️⃣ אם דן נותן לרון עיגול אחד: 🔵🔵🔵🔵 ו-🔴🔴🔴🔴 ← שווים! לכן עיגול אחד = 20 ₪.<br>2️⃣ יחד: [[8 · 20 = 160]] ₪<br>✅ דן 100, רון 60. דן נותן 20 ← 80 ו-80."],
+["בעיות מתקדמות",3,"בשקית כדורים אדומים:כחולים = [[4 : 7]], ובסך הכול 66 כדורים. כמה כדורים כחולים צריך להוסיף כדי שהיחס יהיה [[1 : 2]]?",["6","12","8","3"],"🧱 🔴🔴🔴🔴 🔵🔵🔵🔵🔵🔵🔵 = 11.<br>1️⃣ [[66 : 11 = 6]] ← אדומים [[4 · 6 = 24]], כחולים [[7 · 6 = 42]]<br>2️⃣ יחס [[1 : 2]] ← כחולים פי 2 מאדומים: [[24 · 2 = 48]]<br>3️⃣ חסרים [[48 − 42 = 6]]"],
+["בעיות מתקדמות",3,"[[x : y = 3 : 4]]. מהו היחס [[(x + y) : y]]?",["[[7 : 4]]","[[3 : 7]]","[[4 : 7]]","[[7 : 3]]"],"🧱 x = 🔵🔵🔵, y = 🔴🔴🔴🔴<br>1️⃣ [[x + y]] = 7 עיגולים<br>2️⃣ y = 4 עיגולים<br>✅ [[7 : 4]]"],
+["בעיות מתקדמות",3,"צלעות של שני ריבועים ביחס [[1 : 3]]. מהו היחס בין שטחיהם?",["[[1 : 9]]","[[1 : 3]]","[[1 : 6]]","[[3 : 1]]"],"🟩 נצייר: ריבוע עם צלע 1 = משבצת אחת.<br>ריבוע עם צלע 3 = [[3 · 3 = 9]] משבצות.<br>✅ [[1 : 9]]<br>⚠️ הצלע גדלה פי 3, אבל השטח פי 9!"],
+["חלוקה לפי יחס",1,"היחס בין ניצחונות להפסדים של קבוצה [[3 : 1]], והיא שיחקה 20 משחקים (בלי תיקו). כמה ניצחונות?",["15","5","10","12"],"🧱 🔵🔵🔵 🔴 (כחול = ניצחון) ← קבוצה של 4 משחקים.<br>1️⃣ [[20 : 4 = 5]] ← גורם ההרחבה.<br>2️⃣ ניצחונות: [[3 · 5 = 15]]<br>✅ הפסדים 5, [[15 + 5 = 20]]"]
+];
+
+D.Q=R.map(function(r){return {t:r[0],l:r[1],q:r[2],o:r[3],e:r[4],d:r[5]};});
+if(!D.svg)D.svg={};
+
+
+function F(s){
+ s=s.replace(/((?:🔵|🔴)[🔵🔴 ]*(?:🔵|🔴))|(🔵|🔴)/gu,function(m){return '<span dir="ltr" style="unicode-bidi:isolate">'+m+'</span>';});
+ return s.replace(/\[\[(.+?)\]\]/g,function(_,x){
+  x=x.replace(/\{\{(.+?)\|(.+?)\}\}/g,'<span class="fr"><span>$1</span><span>$2</span></span>');
+  return '<span class="f">'+x.replace(/\^(\d+)/g,'<sup>$1</sup>')+'</span>';});}
+var Q=D.Q,SYM=D.flash,TIPS=D.tips;
+var app=document.getElementById('app'),list=[],i=0,good=0,wrong=[],mode='';
+function sh(a){a=a.slice();for(var k=a.length-1;k>0;k--){var j=Math.floor(Math.random()*(k+1));var t=a[k];a[k]=a[j];a[j]=t;}return a;}
+function stars(l){return '★'.repeat(l)+'☆'.repeat(3-l);}
+function home(){
+ app.innerHTML='<h1>'+D.icon+' '+D.title+'</h1><div class="sub">הכנה למבחן – כיתה ח׳ א1</div>'+
+ '<button class="btn b1" onclick="summary()">📘 סיכום מהיר<small>כל החומר בדף אחד – קרא קודם</small></button>'+
+ '<button class="btn" style="background:#ea580c" onclick="tips()">⚡ טיפים לזכירה מהירה<small>טריקים ומלכודות נפוצות</small></button>'+
+ '<button class="btn b2" onclick="flash()">🔤 כרטיסיות<small>'+D.flashSub+'</small></button>'+
+ '<button class="btn b3" onclick="start(Q,\'all\')">🧠 כל השאלות לפי סדר הנושאים<small>'+Q.length+' שאלות, הסבר מפורט אחרי כל תשובה</small></button>'+
+ '<button class="btn b4" onclick="start(sh(Q).slice(0,15),\'test\')">🏁 מבחן דמה<small>15 שאלות אקראיות + ציון</small></button>';
+ window.scrollTo(0,0);
+}
+function summary(){
+ var h='<div class="top"><button class="back" onclick="home()">→ חזרה</button><span>סיכום</span></div>';
+ D.summary.forEach(function(c){h+='<div class="card sum"><h3>'+c[0]+'</h3>'+F(c[1])+'</div>';});
+ app.innerHTML=h+'<button class="btn b4" onclick="start(Q,\'all\')">✅ קראתי – לשאלות!</button>';window.scrollTo(0,0);
+}
+function tips(){
+ var h='<div class="top"><button class="back" onclick="home()">→ חזרה</button><span>טיפים לזכירה</span></div>';
+ TIPS.forEach(function(b){h+='<div class="card sum"><h3>'+b[0]+'</h3>';b[1].forEach(function(t){h+='<p>• '+F(t)+'</p>';});h+='</div>';});
+ app.innerHTML=h+'<button class="btn b4" onclick="start(sh(Q).slice(0,15),\'test\')">🏁 עכשיו למבחן דמה!</button>';window.scrollTo(0,0);
+}
+var fl=[],fi=0;
+function flash(){fl=sh(SYM);fi=0;showFlash(false);}
+function showFlash(open){
+ var s=fl[fi];
+ app.innerHTML='<div class="top"><button class="back" onclick="home()">→ חזרה</button><span>'+(fi+1)+' / '+fl.length+'</span></div>'+
+ '<div class="card flash"><div class="heb">'+F(s[0])+'</div><div style="margin:14px 0;color:#888">מה התשובה?</div>'+
+ (open?'<div class="ans">'+F(s[1])+'</div>':'<button class="next" onclick="showFlash(true)">👀 הצג תשובה</button>')+'</div>'+
+ (open?'<button class="next" onclick="'+(fi<fl.length-1?'fi++;showFlash(false)':'home()')+'">'+(fi<fl.length-1?'הבא ←':'סיום ✔')+'</button>':'');
+}
+function start(arr,m){list=arr;mode=m;i=0;good=0;wrong=[];ask();}
+function ask(){
+ var x=list[i],opts=sh(x.o.map(function(t,k){return {t:t,c:k===0};}));
+ var h='<div class="top"><button class="back" onclick="home()">→ תפריט</button><span>שאלה '+(i+1)+' / '+list.length+' · ✅ '+good+'</span></div>'+
+ '<div class="bar"><div style="width:'+(i/list.length*100)+'%"></div></div>'+
+ '<div class="card"><span class="tag">'+x.t+'</span><span class="lvl">'+stars(x.l)+'</span><div class="q">'+F(x.q)+'</div>'+(x.d?D.svg[x.d]:'');
+ opts.forEach(function(o,k){h+='<button class="opt" data-c="'+(o.c?1:0)+'" onclick="pick(this)">'+F(o.t)+'</button>';});
+ app.innerHTML=h+'<div id="ex"></div></div>';
+ window.scrollTo(0,0);
+}
+function pick(b){
+ var all=document.querySelectorAll('.opt'),ok=b.dataset.c==='1',x=list[i];
+ all.forEach(function(o){o.disabled=true;if(o.dataset.c==='1')o.classList.add('ok');});
+ if(ok)good++;else{b.classList.add('no');wrong.push(x);}
+ document.getElementById('ex').innerHTML='<div class="exp '+(ok?'ok':'no')+'"><b class="h">'+(ok?'✅ נכון! הנה למה:':'❌ לא נכון – הנה ההסבר:')+'</b>'+F(x.e)+'</div>'+
+ '<button class="next" onclick="nxt()">'+(i<list.length-1?'לשאלה הבאה ←':'לתוצאות 🏁')+'</button>';
+}
+function nxt(){i++;if(i<list.length)ask();else end();}
+function end(){
+ var p=Math.round(good/list.length*100),msg=p>=90?'🏆 מוכן למבחן!':p>=70?'💪 טוב מאוד! עבור על הטעויות':'📘 כדאי לקרוא שוב את הסיכום ולתרגל את הטעויות';
+ var h='<div class="card"><div class="score">'+p+'</div><div style="text-align:center;font-size:18px;margin:6px 0 14px">'+good+' מתוך '+list.length+' · '+msg+'</div>';
+ if(wrong.length){
+  h+='<button class="next" style="background:#db2777" onclick="start(wrong.slice(),\'w\')">🔁 תרגל שוב רק את '+wrong.length+' הטעויות</button><h3 style="margin-top:14px;color:#6d28d9">איפה טעיתי:</h3>';
+  wrong.forEach(function(w){h+='<div class="rev">❓ '+F(w.q)+'<br>✅ <b>'+F(w.o[0])+'</b></div>';});
+ }
+ app.innerHTML=h+'<button class="next" onclick="home()">חזרה לתפריט</button></div>';
+ window.scrollTo(0,0);
+}
+home();
+if('serviceWorker' in navigator){navigator.serviceWorker.register('../sw.js',{scope:'../'}).catch(()=>{});}
+</script>
+</body>
+</html>

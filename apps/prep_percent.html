@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>אחוזים – הכנה למבחן</title>
+<link rel="manifest" href="prep_percent.webmanifest">
+<link rel="apple-touch-icon" href="icon-prep_percent-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="אחוזים">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1e1b4b">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,"Segoe UI",sans-serif;background:linear-gradient(160deg,#1e1b4b,#4c1d95);min-height:100vh;color:#1f2937;padding:14px}
+.wrap{max-width:640px;margin:0 auto}
+h1{color:#fff;text-align:center;font-size:26px;margin:6px 0 2px}
+.sub{color:#ddd6fe;text-align:center;font-size:15px;margin-bottom:14px}
+.card{background:#fff;border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.btn{display:block;width:100%;border:0;border-radius:14px;padding:16px;font-size:18px;font-weight:bold;margin:10px 0;cursor:pointer;color:#fff;text-align:right}
+.b1{background:#7c3aed}.b2{background:#0891b2}.b3{background:#db2777}.b4{background:#16a34a}
+.btn small{display:block;font-weight:normal;font-size:14px;opacity:.9;margin-top:3px}
+.f{direction:ltr;unicode-bidi:isolate;display:inline-block;font-weight:bold;color:#6d28d9;font-family:Arial,sans-serif;white-space:nowrap}
+.f sub{font-size:.7em}
+.top{display:flex;justify-content:space-between;align-items:center;color:#fff;margin-bottom:8px;font-size:15px}
+.back{background:rgba(255,255,255,.2);color:#fff;border:0;border-radius:10px;padding:8px 12px;font-size:15px;cursor:pointer}
+.bar{height:8px;background:rgba(255,255,255,.25);border-radius:6px;overflow:hidden;margin-bottom:12px}
+.bar div{height:100%;background:#facc15;transition:width .3s}
+.tag{display:inline-block;background:#ede9fe;color:#6d28d9;border-radius:8px;padding:3px 9px;font-size:13px;margin-bottom:8px}
+.lvl{float:left;font-size:13px;color:#b45309}
+.q{font-size:20px;font-weight:bold;line-height:1.5;margin-bottom:14px}
+.opt{display:block;width:100%;text-align:right;background:#f5f3ff;border:2px solid #ddd6fe;border-radius:12px;padding:13px;font-size:17px;margin:8px 0;cursor:pointer;color:#1f2937}
+.opt.ok{background:#dcfce7;border-color:#16a34a}
+.opt.no{background:#fee2e2;border-color:#dc2626}
+.exp{border-radius:12px;padding:14px;margin-top:12px;font-size:16px;line-height:1.65}
+.exp.ok{background:#f0fdf4;border-right:6px solid #16a34a}
+.exp.no{background:#fef2f2;border-right:6px solid #dc2626}
+.exp b.h{display:block;font-size:17px;margin-bottom:4px}
+.next{background:#7c3aed;color:#fff;border:0;border-radius:12px;padding:14px;font-size:18px;font-weight:bold;width:100%;margin-top:12px;cursor:pointer}
+.sum h3{color:#6d28d9;font-size:19px;margin-bottom:6px}
+.sum p{font-size:16px;line-height:1.65;margin-bottom:6px}
+.tip{background:#fef9c3;border-radius:10px;padding:9px 11px;font-size:15px;margin-top:6px}
+table{width:100%;border-collapse:collapse;font-size:16px}
+td,th{border:1px solid #ddd6fe;padding:7px;text-align:center}
+th{background:#ede9fe}
+.flash{text-align:center;padding:30px 10px}
+.flash .big{font-size:56px;font-weight:bold;color:#6d28d9;direction:ltr}
+.flash .heb{font-size:32px;font-weight:bold}
+.pt{display:grid;grid-template-columns:repeat(18,1fr);gap:2px;direction:ltr;margin:8px 0}
+.pt div{height:16px;border-radius:2px}
+.m{background:#93c5fd}.n{background:#fca5a5}.g{background:#fde68a}
+.score{font-size:46px;font-weight:bold;text-align:center;color:#6d28d9}
+.foot{color:#c4b5fd;text-align:center;font-size:13px;margin-top:10px}
+.rev{border-bottom:1px solid #eee;padding:10px 0;font-size:15px;line-height:1.6}
+.f sup{font-size:.7em}
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 3px;font-size:.9em}
+.fr span:first-child{border-bottom:2px solid currentColor;padding:0 3px}
+.flash .ans{font-size:24px;font-weight:bold;color:#6d28d9;line-height:1.5}
+.flash .heb{font-size:22px;line-height:1.5}
+svg{display:block;max-width:100%;margin:6px auto}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<div class="foot">ערכה: רוני מודן · שחקים</div>
+<script>
+var D={title:"אחוזים",icon:"💯",flashSub:"שאלה ← תשובה מהירה"};
+D.summary=[
+["💯 מהו אחוז?","<p>אחוז = חלק מ-100. [[25% = {{25|100}} = {{1|4}} = 0.25]]</p><p>[[50% = {{1|2}}]] · [[20% = {{1|5}}]] · [[10% = {{1|10}}]] · [[75% = {{3|4}}]]</p>"],
+["🔍 שלושה סוגי שאלות","<p>1️⃣ <b>אחוז ממספר</b>: [[25%]] מ-80 ← [[0.25 · 80 = 20]]</p><p>2️⃣ <b>כמה אחוזים</b>: 15 מתוך 60 ← [[{{15|60}} = 0.25 = 25%]]</p><p>3️⃣ <b>מציאת השלם</b>: [[30%]] הם 12 ← [[12 : 0.3 = 40]]</p><div class='tip'>💡 \"מתוך\" = מחלקים ב<b>שלם</b> (מה שאחרי המילה \"מתוך\").</div>"],
+["📈 המכפיל – הכלי הכי חזק","<p>עלייה של [[p%]] ← כופלים ב-[[(1 + {{p|100}})]] · ירידה ← כופלים ב-[[(1 − {{p|100}})]]</p><p>עלייה 15%: [[200 · 1.15 = 230]] · ירידה 25%: [[80 · 0.75 = 60]]</p><div class='tip'>💡 מחיר <b>לפני</b> השינוי: מחלקים במכפיל. אחרי הנחה של 20% המחיר 96 ← [[96 : 0.8 = 120]].</div>"],
+["📊 אחוז שינוי","<p>[[{{שינוי|ערך מקורי}} · 100]]</p><p>מ-50 ל-60: [[{{10|50}} = 20%]] עלייה · מ-60 ל-50: [[{{10|60}} ≈ 16.7%]] ירידה</p><div class='tip'>⚠️ מחלקים תמיד ב<b>ערך המקורי</b> (לפני השינוי) – לכן התשובות שונות!</div>"],
+["🔁 שינויים רצופים","<p>כופלים את המכפילים: עלייה 10% ואז ירידה 10% ← [[1.1 · 0.9 = 0.99]] ← ירידה של 1%!</p><p>שתי עליות של 20%: [[1.2 · 1.2 = 1.44]] ← עלייה של 44% (ולא 40%).</p>"]
+];
+D.tips=[
+["⚡ חישוב בראש",["10% = מזיזים את הנקודה ספרה אחת שמאלה: 10% מ-350 = 35.","5% = חצי מ-10%. 1% = מזיזים שתי ספרות.","[[x%]] מ-y = [[y%]] מ-x! לכן 8% מ-25 = 25% מ-8 = 2."]],
+["🧭 המילים שבשאלה",["\"<b>מ</b>\" / \"<b>מתוך</b>\" = כפל או חילוק בשלם.","\"<b>היה</b>\" / \"<b>לפני</b>\" ← מחפשים מקור ← מחלקים במכפיל.","\"<b>בכמה אחוזים</b>\" ← מחשבים שינוי חלקי מקור."]],
+["⚠️ מלכודות",["אחרי הנחה של 20% <b>לא</b> מוסיפים 20% כדי לחזור – צריך 25%!","עלייה של 10% ואז ירידה של 10% <b>לא</b> מחזירה למקום – יורד ל-99%.","עלייה של 100% = <b>פי 2</b> (לא פי 100).","ריבית שעלתה מ-4% ל-5% – עלתה ב<b>נקודת אחוז</b> אחת, אבל ב-25% יחסית."]],
+["✅ בדיקה",["אחרי מציאת מחיר מקורי – הפעל עליו את השינוי וודא שקיבלת את הנתון.","תוצאה של הנחה חייבת להיות <b>קטנה</b> מהמקור, ושל התייקרות – <b>גדולה</b>."]]
+];
+D.flash=[["[[25%]] מ-80","20"],["10% מ-350","35"],["15 מתוך 60 באחוזים","[[25%]]"],["[[30%]] הם 12. מה השלם?","40"],["מכפיל לעלייה של 20%","[[1.2]]"],["מכפיל לירידה של 35%","[[0.65]]"],["[[{{3|4}}]] באחוזים","[[75%]]"],["[[0.07]] באחוזים","[[7%]]"],["8% מ-25","2 (כמו 25% מ-8)"],["עלייה 10% ואז ירידה 10%","ירידה של 1%"],["שתי עליות של 20%","עלייה של 44%"],["ירידה של 20% – כמה עלייה מחזירה?","[[25%]]"]];
+var R=[
+["אחוז ממספר",1,"כמה הם [[25%]] מ-80?",["20","25","32","4"],"🍕 [[25%]] = רבע.<br>1️⃣ מחלקים את 80 ל-4 חלקים שווים.<br>2️⃣ [[80 : 4 = 20]]<br>✅ 20"],
+["אחוז ממספר",1,"כמה הם 10% מ-350?",["35","3.5","350","10"],"🍕 10% = חלק אחד מתוך 10.<br>1️⃣ [[350 : 10 = 35]]<br>✅ 35<br>💡 טריק: 10% = מורידים אפס או מזיזים את הנקודה צעד אחד."],
+["אחוז ממספר",1,"כמה הם [[120%]] מ-50?",["60","70","6","120"],"🍕 [[120% = 100% + 20%]]<br>1️⃣ 100% מ-50 = 50 (הכול)<br>2️⃣ 20% מ-50: 10% = 5, אז 20% = 10<br>3️⃣ [[50 + 10 = 60]]<br>✅ 60"],
+["אחוז ממספר",2,"כמה הם [[0.5%]] מ-400?",["2","20","200","0.2"],"🍕 1% = חלק אחד מתוך 100.<br>1️⃣ 1% מ-400 = [[400 : 100 = 4]]<br>2️⃣ חצי אחוז = חצי מ-4 = 2<br>✅ 2"],
+["אחוז ממספר",2,"בכיתה 32 תלמידים, ו-[[12.5%]] חסרים. כמה חסרים?",["4","12","8","2"],"🍕 [[12.5%]] = שמינית (100 חלקי 8).<br>1️⃣ [[32 : 8 = 4]]<br>✅ 4 תלמידים חסרים"],
+["אחוז ממספר",2,"מה גדול יותר: 20% מ-50 או 50% מ-20?",["שווים","20% מ-50","50% מ-20","תלוי"],"1️⃣ 20% מ-50: 10% = 5 ← 20% = 10<br>2️⃣ 50% מ-20 = חצי מ-20 = 10<br>✅ שווים! שניהם 10.<br>💡 תמיד אפשר להחליף את המספרים: 20% מ-50 = 50% מ-20."],
+["אחוז ממספר",3,"כמה הם 8% מ-25?",["2","0.2","3.125","20"],"💡 טריק ההחלפה: 8% מ-25 = 25% מ-8.<br>1️⃣ 25% = רבע<br>2️⃣ רבע מ-8 = 2<br>✅ 2"],
+["אחוז ממספר",3,"200 תלמידים, 30% מהם בתזמורת, ו-25% מחברי התזמורת מתופפים. כמה מתופפים?",["15","55","60","50"],"👀 שני שלבים – כל פעם מהקבוצה החדשה.<br>1️⃣ בתזמורת: 30% מ-200. 10% = 20 ← 30% = 60<br>2️⃣ מתופפים: 25% (רבע) מ-60 = 15<br>✅ 15"],
+["כמה אחוזים",1,"כמה אחוזים הם 15 מתוך 60?",["[[25%]]","[[15%]]","[[40%]]","[[4%]]"],"👀 15 מתוך 60 ← כותבים שבר.<br>1️⃣ [[{{15|60}}]] ← מצמצמים ב-15 ← [[{{1|4}}]]<br>2️⃣ רבע = [[25%]]<br>✅ [[25%]]"],
+["כמה אחוזים",1,"כתוב את [[{{3|4}}]] באחוזים:",["[[75%]]","[[34%]]","[[43%]]","[[0.75%]]"],"👀 אחוז = שבר עם 100 למטה.<br>1️⃣ מ-4 ל-100: פי 25<br>2️⃣ [[{{3|4}} = {{75|100}}]]<br>✅ [[75%]]"],
+["כמה אחוזים",1,"כתוב את [[0.07]] באחוזים:",["[[7%]]","[[0.07%]]","[[70%]]","[[0.7%]]"],"👀 אחוז = כמה מתוך 100.<br>1️⃣ [[0.07 = {{7|100}}]] (שבע מאיות)<br>✅ [[7%]]"],
+["כמה אחוזים",2,"במבחן קיבלת 36 נקודות מתוך 45. מה הציון באחוזים?",["[[80%]]","[[36%]]","[[90%]]","[[75%]]"],"👀 36 מתוך 45 ← שבר.<br>1️⃣ [[{{36|45}}]] ← מצמצמים ב-9 ← [[{{4|5}}]]<br>2️⃣ [[{{4|5}} = {{80|100}}]] (פי 20)<br>✅ [[80%]]"],
+["כמה אחוזים",2,"היחס בנים:בנות [[3 : 2]]. כמה אחוזים מהתלמידים הן בנות?",["[[40%]]","[[66.7%]]","[[60%]]","[[20%]]"],"🧱 🔵🔵🔵 🔴🔴 (כחול = בנים, אדום = בנות) ← 5 בקבוצה.<br>1️⃣ בנות: 2 מתוך 5 = [[{{2|5}}]]<br>2️⃣ [[{{2|5}} = {{40|100}}]]<br>✅ [[40%]]"],
+["מציאת השלם",1,"[[30%]] ממספר הם 12. מהו המספר?",["40","3.6","36","4"],"📦 30% = 3 חלקים מתוך 10.<br>1️⃣ 3 חלקים = 12 ← חלק אחד (10%) = 4<br>2️⃣ הכול = 10 חלקים: [[10 · 4 = 40]]<br>✅ 40"],
+["מציאת השלם",2,"60 ליטר הם 40% מהמיכל. כמה ליטר במיכל מלא?",["150","24","100","240"],"📦 40% = 4 חלקים מתוך 10.<br>1️⃣ 4 חלקים = 60 ליטר ← חלק אחד (10%) = 15<br>2️⃣ מיכל מלא = 10 חלקים: [[10 · 15 = 150]]<br>✅ 150 ליטר"],
+["מציאת השלם",2,"מספר גדל ב-25% והפך ל-75. מה היה המספר?",["60","50","56.25","93.75"],"👀 \"גדל ב-25%\" ← אחרי הגדילה יש [[125%]].<br>📦 [[125%]] = 5 רבעים.<br>1️⃣ 5 רבעים = 75 ← רבע אחד = 15<br>2️⃣ המספר המקורי = 4 רבעים = 60<br>✅ 60<br>⚠️ לא מורידים 25% מ-75 – האחוזים הם מהמספר המקורי."],
+["מציאת השלם",2,"אחרי הנחה של 20% המחיר 96 ₪. מה היה המחיר המקורי?",["120 ₪","115.2 ₪","116 ₪","76.8 ₪"],"👀 הנחה 20% ← נשאר 80% מהמחיר.<br>📦 80% = 8 חלקים מתוך 10.<br>1️⃣ 8 חלקים = 96 ← חלק אחד (10%) = 12<br>2️⃣ מחיר מלא = 10 חלקים = 120<br>✅ 120 ₪<br>🔁 בדיקה: 20% מ-120 = 24, [[120 − 24 = 96]]"],
+["מציאת השלם",3,"מחיר כולל תוספת של 25% הוא 150 ₪. מה המחיר לפני התוספת?",["120 ₪","112.5 ₪","125 ₪","187.5 ₪"],"👀 תוספת 25% ← יש [[125%]] = 5 רבעים.<br>1️⃣ 5 רבעים = 150 ← רבע אחד = 30<br>2️⃣ לפני התוספת = 4 רבעים = 120<br>✅ 120 ₪"],
+["עלייה וירידה",1,"מחיר 200 ₪ עלה ב-15%. מה המחיר החדש?",["230 ₪","215 ₪","300 ₪","170 ₪"],"1️⃣ 10% מ-200 = 20<br>2️⃣ 5% = חצי מ-10% = 10<br>3️⃣ 15% = [[20 + 10 = 30]]<br>4️⃣ מחיר חדש: [[200 + 30 = 230]]<br>✅ 230 ₪"],
+["עלייה וירידה",1,"מחיר 80 ₪ ירד ב-25%. מה המחיר החדש?",["60 ₪","55 ₪","20 ₪","100 ₪"],"1️⃣ [[25%]] = רבע ← רבע מ-80 = 20<br>2️⃣ ירד ← מורידים: [[80 − 20 = 60]]<br>✅ 60 ₪"],
+["עלייה וירידה",1,"משכורת 8,000 ₪ עלתה ב-5%. מה המשכורת החדשה?",["8,400 ₪","8,005 ₪","8,040 ₪","12,000 ₪"],"1️⃣ 1% מ-8,000 = 80<br>2️⃣ 5% = [[5 · 80 = 400]]<br>3️⃣ [[8000 + 400 = 8400]]<br>✅ 8,400 ₪"],
+["עלייה וירידה",2,"מהו המכפיל של עלייה ב-20%?",["[[1.2]]","[[0.2]]","[[0.8]]","[[20]]"],"👀 המכפיל = כמה אחוזים יש <b>אחרי</b> השינוי, כמספר.<br>1️⃣ [[100% + 20% = 120%]]<br>2️⃣ [[120% = 1.2]]<br>✅ [[1.2]]"],
+["עלייה וירידה",2,"מהו המכפיל של ירידה ב-35%?",["[[0.65]]","[[0.35]]","[[1.35]]","[[−0.35]]"],"👀 ירידה ← מורידים מ-100%.<br>1️⃣ [[100% − 35% = 65%]]<br>2️⃣ [[65% = 0.65]]<br>✅ [[0.65]]"],
+["עלייה וירידה",2,"עלייה של 100% פירושה:",["המחיר הוכפל פי 2","המחיר הוכפל פי 100","המחיר עלה ב-1 ₪","המחיר לא השתנה"],"👀 100% = עוד פעם כל המחיר.<br>1️⃣ 50 ₪ + עוד 50 ₪ = 100 ₪<br>✅ המחיר הוכפל פי 2."],
+["אחוז שינוי",2,"מחיר עלה מ-50 ₪ ל-60 ₪. בכמה אחוזים עלה?",["[[20%]]","[[10%]]","[[16.7%]]","[[60%]]"],"1️⃣ כמה עלה? [[60 − 50 = 10]]<br>2️⃣ 10 מתוך המחיר <b>המקורי</b> (50): [[{{10|50}} = {{1|5}}]]<br>3️⃣ [[{{1|5}} = 20%]]<br>✅ [[20%]]"],
+["אחוז שינוי",2,"מחיר ירד מ-60 ₪ ל-50 ₪. בכמה אחוזים ירד (בערך)?",["[[16.7%]]","[[20%]]","[[10%]]","[[83.3%]]"],"1️⃣ כמה ירד? [[60 − 50 = 10]]<br>2️⃣ 10 מתוך המקורי – עכשיו המקורי הוא 60: [[{{10|60}} = {{1|6}}]]<br>3️⃣ [[{{1|6}} ≈ 16.7%]]<br>⚠️ אותו שינוי של 10 ₪, אבל אחוז אחר – כי מתחילים ממספר אחר."],
+["אחוז שינוי",3,"a גדול מ-b ב-25%. בכמה אחוזים b קטן מ-a?",["[[20%]]","[[25%]]","[[75%]]","[[80%]]"],"💡 בוחרים מספר נוח: [[b = 100]].<br>1️⃣ a גדול ב-25% ← [[a = 125]]<br>2️⃣ ההפרש: 25<br>3️⃣ 25 מתוך a (125): [[{{25|125}} = {{1|5}} = 20%]]<br>✅ [[20%]]"],
+["אחוז שינוי",3,"מחיר ירד ב-20%. בכמה אחוזים צריך להעלות אותו כדי לחזור למחיר המקורי?",["[[25%]]","[[20%]]","[[40%]]","[[80%]]"],"💡 מתחילים מ-100 ₪.<br>1️⃣ ירידה 20% ← 80 ₪<br>2️⃣ צריך לעלות 20 ₪ בחזרה.<br>3️⃣ 20 מתוך 80: [[{{20|80}} = {{1|4}} = 25%]]<br>✅ [[25%]]"],
+["אחוז שינוי",3,"ריבית עלתה מ-4% ל-5%. בכמה אחוזים עלתה הריבית?",["[[25%]]","[[1%]]","[[20%]]","[[5%]]"],"👀 כמה עלתה הריבית? מ-4 ל-5 ← עלתה ב-1.<br>1️⃣ 1 מתוך המקורי (4): [[{{1|4}} = 25%]]<br>✅ [[25%]]"],
+["שינויים רצופים",2,"מחיר 400 ₪ ירד ב-25% ואחר כך עלה ב-25%. מה המחיר הסופי?",["375 ₪","400 ₪","425 ₪","350 ₪"],"1️⃣ ירידה 25% (רבע): רבע מ-400 = 100 ← 300<br>2️⃣ עלייה 25%: רבע מ-<b>300</b> = 75 ← 375<br>✅ 375 ₪<br>⚠️ לא חוזרים ל-400, כי הרבע השני נלקח ממספר קטן יותר."],
+["שינויים רצופים",3,"מחיר עלה ב-10% ואחר כך ירד ב-10%. איך השתנה ביחס למקור?",["ירד ב-1%","לא השתנה","עלה ב-1%","ירד ב-10%"],"💡 מתחילים מ-100 ₪.<br>1️⃣ עלייה 10%: 10 ₪ ← 110<br>2️⃣ ירידה 10% מ-110: 11 ₪ ← 99<br>✅ 99 ₪ ← ירד ב-1%."],
+["שינויים רצופים",3,"מחיר עלה ב-20% ושוב ב-20%. בכמה אחוזים עלה בסך הכול?",["[[44%]]","[[40%]]","[[20%]]","[[24%]]"],"💡 מתחילים מ-100 ₪.<br>1️⃣ עלייה 20%: 20 ₪ ← 120<br>2️⃣ עלייה 20% מ-120: 24 ₪ ← 144<br>✅ 144 ₪ ← עלה ב-44%."],
+["שינויים רצופים",3,"חנות א': 30% הנחה. חנות ב': 20% הנחה ואחריה עוד 10% על המחיר המוזל. איפה זול יותר?",["חנות א'","חנות ב'","אותו מחיר","תלוי במחיר"],"💡 מתחילים ממחיר 100 ₪.<br>1️⃣ חנות א': 30% הנחה ← 70 ₪<br>2️⃣ חנות ב': 20% הנחה ← 80, ועוד 10% מ-80 (= 8) ← 72 ₪<br>✅ חנות א' זולה יותר (70 פחות מ-72)."],
+["שינויים רצופים",3,"באוכלוסייה 2,000 תושבים, והיא גדלה ב-10% בכל שנה. כמה תושבים יהיו אחרי שנתיים?",["2,420","2,400","2,200","2,440"],"1️⃣ שנה ראשונה: 10% מ-2,000 = 200 ← 2,200<br>2️⃣ שנה שנייה: 10% מ-<b>2,200</b> = 220 ← 2,420<br>✅ 2,420"],
+["אחוז ממספר",2,"בתמיסה של 200 גרם יש 15% מלח. כמה גרם מלח?",["30","15","185","13.3"],"1️⃣ 10% מ-200 = 20<br>2️⃣ 5% = חצי = 10<br>3️⃣ 15% = [[20 + 10 = 30]]<br>✅ 30 גרם מלח"]
+];
+
+D.Q=R.map(function(r){return {t:r[0],l:r[1],q:r[2],o:r[3],e:r[4],d:r[5]};});
+if(!D.svg)D.svg={};
+
+
+function F(s){
+ s=s.replace(/((?:🔵|🔴)[🔵🔴 ]*(?:🔵|🔴))|(🔵|🔴)/gu,function(m){return '<span dir="ltr" style="unicode-bidi:isolate">'+m+'</span>';});
+ return s.replace(/\[\[(.+?)\]\]/g,function(_,x){
+  x=x.replace(/\{\{(.+?)\|(.+?)\}\}/g,'<span class="fr"><span>$1</span><span>$2</span></span>');
+  return '<span class="f">'+x.replace(/\^(\d+)/g,'<sup>$1</sup>')+'</span>';});}
+var Q=D.Q,SYM=D.flash,TIPS=D.tips;
+var app=document.getElementById('app'),list=[],i=0,good=0,wrong=[],mode='';
+function sh(a){a=a.slice();for(var k=a.length-1;k>0;k--){var j=Math.floor(Math.random()*(k+1));var t=a[k];a[k]=a[j];a[j]=t;}return a;}
+function stars(l){return '★'.repeat(l)+'☆'.repeat(3-l);}
+function home(){
+ app.innerHTML='<h1>'+D.icon+' '+D.title+'</h1><div class="sub">הכנה למבחן – כיתה ח׳ א1</div>'+
+ '<button class="btn b1" onclick="summary()">📘 סיכום מהיר<small>כל החומר בדף אחד – קרא קודם</small></button>'+
+ '<button class="btn" style="background:#ea580c" onclick="tips()">⚡ טיפים לזכירה מהירה<small>טריקים ומלכודות נפוצות</small></button>'+
+ '<button class="btn b2" onclick="flash()">🔤 כרטיסיות<small>'+D.flashSub+'</small></button>'+
+ '<button class="btn b3" onclick="start(Q,\'all\')">🧠 כל השאלות לפי סדר הנושאים<small>'+Q.length+' שאלות, הסבר מפורט אחרי כל תשובה</small></button>'+
+ '<button class="btn b4" onclick="start(sh(Q).slice(0,15),\'test\')">🏁 מבחן דמה<small>15 שאלות אקראיות + ציון</small></button>';
+ window.scrollTo(0,0);
+}
+function summary(){
+ var h='<div class="top"><button class="back" onclick="home()">→ חזרה</button><span>סיכום</span></div>';
+ D.summary.forEach(function(c){h+='<div class="card sum"><h3>'+c[0]+'</h3>'+F(c[1])+'</div>';});
+ app.innerHTML=h+'<button class="btn b4" onclick="start(Q,\'all\')">✅ קראתי – לשאלות!</button>';window.scrollTo(0,0);
+}
+function tips(){
+ var h='<div class="top"><button class="back" onclick="home()">→ חזרה</button><span>טיפים לזכירה</span></div>';
+ TIPS.forEach(function(b){h+='<div class="card sum"><h3>'+b[0]+'</h3>';b[1].forEach(function(t){h+='<p>• '+F(t)+'</p>';});h+='</div>';});
+ app.innerHTML=h+'<button class="btn b4" onclick="start(sh(Q).slice(0,15),\'test\')">🏁 עכשיו למבחן דמה!</button>';window.scrollTo(0,0);
+}
+var fl=[],fi=0;
+function flash(){fl=sh(SYM);fi=0;showFlash(false);}
+function showFlash(open){
+ var s=fl[fi];
+ app.innerHTML='<div class="top"><button class="back" onclick="home()">→ חזרה</button><span>'+(fi+1)+' / '+fl.length+'</span></div>'+
+ '<div class="card flash"><div class="heb">'+F(s[0])+'</div><div style="margin:14px 0;color:#888">מה התשובה?</div>'+
+ (open?'<div class="ans">'+F(s[1])+'</div>':'<button class="next" onclick="showFlash(true)">👀 הצג תשובה</button>')+'</div>'+
+ (open?'<button class="next" onclick="'+(fi<fl.length-1?'fi++;showFlash(false)':'home()')+'">'+(fi<fl.length-1?'הבא ←':'סיום ✔')+'</button>':'');
+}
+function start(arr,m){list=arr;mode=m;i=0;good=0;wrong=[];ask();}
+function ask(){
+ var x=list[i],opts=sh(x.o.map(function(t,k){return {t:t,c:k===0};}));
+ var h='<div class="top"><button class="back" onclick="home()">→ תפריט</button><span>שאלה '+(i+1)+' / '+list.length+' · ✅ '+good+'</span></div>'+
+ '<div class="bar"><div style="width:'+(i/list.length*100)+'%"></div></div>'+
+ '<div class="card"><span class="tag">'+x.t+'</span><span class="lvl">'+stars(x.l)+'</span><div class="q">'+F(x.q)+'</div>'+(x.d?D.svg[x.d]:'');
+ opts.forEach(function(o,k){h+='<button class="opt" data-c="'+(o.c?1:0)+'" onclick="pick(this)">'+F(o.t)+'</button>';});
+ app.innerHTML=h+'<div id="ex"></div></div>';
+ window.scrollTo(0,0);
+}
+function pick(b){
+ var all=document.querySelectorAll('.opt'),ok=b.dataset.c==='1',x=list[i];
+ all.forEach(function(o){o.disabled=true;if(o.dataset.c==='1')o.classList.add('ok');});
+ if(ok)good++;else{b.classList.add('no');wrong.push(x);}
+ document.getElementById('ex').innerHTML='<div class="exp '+(ok?'ok':'no')+'"><b class="h">'+(ok?'✅ נכון! הנה למה:':'❌ לא נכון – הנה ההסבר:')+'</b>'+F(x.e)+'</div>'+
+ '<button class="next" onclick="nxt()">'+(i<list.length-1?'לשאלה הבאה ←':'לתוצאות 🏁')+'</button>';
+}
+function nxt(){i++;if(i<list.length)ask();else end();}
+function end(){
+ var p=Math.round(good/list.length*100),msg=p>=90?'🏆 מוכן למבחן!':p>=70?'💪 טוב מאוד! עבור על הטעויות':'📘 כדאי לקרוא שוב את הסיכום ולתרגל את הטעויות';
+ var h='<div class="card"><div class="score">'+p+'</div><div style="text-align:center;font-size:18px;margin:6px 0 14px">'+good+' מתוך '+list.length+' · '+msg+'</div>';
+ if(wrong.length){
+  h+='<button class="next" style="background:#db2777" onclick="start(wrong.slice(),\'w\')">🔁 תרגל שוב רק את '+wrong.length+' הטעויות</button><h3 style="margin-top:14px;color:#6d28d9">איפה טעיתי:</h3>';
+  wrong.forEach(function(w){h+='<div class="rev">❓ '+F(w.q)+'<br>✅ <b>'+F(w.o[0])+'</b></div>';});
+ }
+ app.innerHTML=h+'<button class="next" onclick="home()">חזרה לתפריט</button></div>';
+ window.scrollTo(0,0);
+}
+home();
+if('serviceWorker' in navigator){navigator.serviceWorker.register('../sw.js',{scope:'../'}).catch(()=>{});}
+</script>
+</body>
+</html>

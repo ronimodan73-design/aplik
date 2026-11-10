@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>חוק הפילוג – הכנה למבחן</title>
+<link rel="manifest" href="prep_pilug.webmanifest">
+<link rel="apple-touch-icon" href="icon-prep_pilug-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="פילוג">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1e1b4b">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,"Segoe UI",sans-serif;background:linear-gradient(160deg,#1e1b4b,#4c1d95);min-height:100vh;color:#1f2937;padding:14px}
+.wrap{max-width:640px;margin:0 auto}
+h1{color:#fff;text-align:center;font-size:26px;margin:6px 0 2px}
+.sub{color:#ddd6fe;text-align:center;font-size:15px;margin-bottom:14px}
+.card{background:#fff;border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.btn{display:block;width:100%;border:0;border-radius:14px;padding:16px;font-size:18px;font-weight:bold;margin:10px 0;cursor:pointer;color:#fff;text-align:right}
+.b1{background:#7c3aed}.b2{background:#0891b2}.b3{background:#db2777}.b4{background:#16a34a}
+.btn small{display:block;font-weight:normal;font-size:14px;opacity:.9;margin-top:3px}
+.f{direction:ltr;unicode-bidi:isolate;display:inline-block;font-weight:bold;color:#6d28d9;font-family:Arial,sans-serif;white-space:nowrap}
+.f sub{font-size:.7em}
+.top{display:flex;justify-content:space-between;align-items:center;color:#fff;margin-bottom:8px;font-size:15px}
+.back{background:rgba(255,255,255,.2);color:#fff;border:0;border-radius:10px;padding:8px 12px;font-size:15px;cursor:pointer}
+.bar{height:8px;background:rgba(255,255,255,.25);border-radius:6px;overflow:hidden;margin-bottom:12px}
+.bar div{height:100%;background:#facc15;transition:width .3s}
+.tag{display:inline-block;background:#ede9fe;color:#6d28d9;border-radius:8px;padding:3px 9px;font-size:13px;margin-bottom:8px}
+.lvl{float:left;font-size:13px;color:#b45309}
+.q{font-size:20px;font-weight:bold;line-height:1.5;margin-bottom:14px}
+.opt{display:block;width:100%;text-align:right;background:#f5f3ff;border:2px solid #ddd6fe;border-radius:12px;padding:13px;font-size:17px;margin:8px 0;cursor:pointer;color:#1f2937}
+.opt.ok{background:#dcfce7;border-color:#16a34a}
+.opt.no{background:#fee2e2;border-color:#dc2626}
+.exp{border-radius:12px;padding:14px;margin-top:12px;font-size:16px;line-height:1.65}
+.exp.ok{background:#f0fdf4;border-right:6px solid #16a34a}
+.exp.no{background:#fef2f2;border-right:6px solid #dc2626}
+.exp b.h{display:block;font-size:17px;margin-bottom:4px}
+.next{background:#7c3aed;color:#fff;border:0;border-radius:12px;padding:14px;font-size:18px;font-weight:bold;width:100%;margin-top:12px;cursor:pointer}
+.sum h3{color:#6d28d9;font-size:19px;margin-bottom:6px}
+.sum p{font-size:16px;line-height:1.65;margin-bottom:6px}
+.tip{background:#fef9c3;border-radius:10px;padding:9px 11px;font-size:15px;margin-top:6px}
+table{width:100%;border-collapse:collapse;font-size:16px}
+td,th{border:1px solid #ddd6fe;padding:7px;text-align:center}
+th{background:#ede9fe}
+.flash{text-align:center;padding:30px 10px}
+.flash .big{font-size:56px;font-weight:bold;color:#6d28d9;direction:ltr}
+.flash .heb{font-size:32px;font-weight:bold}
+.pt{display:grid;grid-template-columns:repeat(18,1fr);gap:2px;direction:ltr;margin:8px 0}
+.pt div{height:16px;border-radius:2px}
+.m{background:#93c5fd}.n{background:#fca5a5}.g{background:#fde68a}
+.score{font-size:46px;font-weight:bold;text-align:center;color:#6d28d9}
+.foot{color:#c4b5fd;text-align:center;font-size:13px;margin-top:10px}
+.rev{border-bottom:1px solid #eee;padding:10px 0;font-size:15px;line-height:1.6}
+.f sup{font-size:.7em}
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 3px;font-size:.9em}
+.fr span:first-child{border-bottom:2px solid currentColor;padding:0 3px}
+.flash .ans{font-size:24px;font-weight:bold;color:#6d28d9;line-height:1.5}
+.flash .heb{font-size:22px;line-height:1.5}
+svg{display:block;max-width:100%;margin:6px auto}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<div class="foot">ערכה: רוני מודן · שחקים</div>
+<script>
+var D={title:"חוק הפילוג",icon:"🌈",flashSub:"תרגיל ← תוצאה"};
+D.summary=[
+["🌈 חוק הפילוג","<p>המספר שמחוץ לסוגריים <b>מוכפל בכל איבר</b> שבתוך הסוגריים:</p><p>[[a(b + c) = ab + ac]] &nbsp;·&nbsp; [[a(b − c) = ab − ac]]</p><p>[[3(x + 4) = 3x + 12]] &nbsp;·&nbsp; [[5(2x − 3) = 10x − 15]]</p><div class='tip'>💡 \"קשת\" מהמכפיל לכל איבר – אף איבר לא נשאר בלי כפל!</div>"],
+["➖ מינוס לפני סוגריים","<p>המינוס נכפל בכל איבר ← <b>כל הסימנים בפנים מתהפכים</b>.</p><p>[[−2(x + 6) = −2x − 12]] &nbsp;·&nbsp; [[−(x − 7) = −x + 7]]</p><p>[[5(x − 1) − 3(x − 4) = 5x − 5 − 3x + 12 = 2x + 7]]</p>"],
+["🔄 הוצאת גורם משותף (הפילוג \"הפוך\")","<p>[[6x + 9 = 3(2x + 3)]] &nbsp;·&nbsp; [[x^2 + 5x = x(x + 5)]]</p><div class='tip'>💡 מוציאים את הגורם המשותף <b>הגדול ביותר</b>: [[12x − 18 = 6(2x − 3)]]. בדיקה: פותחים סוגריים וחוזרים לביטוי המקורי.</div>"],
+["✖️ כפל סוגריים בסוגריים","<p>כל איבר בסוגריים הראשונים כופל כל איבר בשניים:</p><p>[[(x + 2)(x + 5) = x^2 + 5x + 2x + 10 = x^2 + 7x + 10]]</p><p>[[(x + 3)^2 = x^2 + 6x + 9]] (ולא [[x^2 + 9]]!)</p><p>[[(x − 5)(x + 5) = x^2 − 25]]</p>"],
+["🧮 חשבון בעל-פה","<p>[[7 · 102 = 7 · 100 + 7 · 2 = 714]]</p><p>[[13 · 99 = 13 · 100 − 13 = 1287]]</p>"],
+["⚖️ משוואות עם סוגריים","<p>1️⃣ פותחים סוגריים &nbsp;2️⃣ מכנסים איברים דומים &nbsp;3️⃣ פותרים</p><p>[[2(x + 3) = 14]] ← [[2x + 6 = 14]] ← [[x = 4]]</p><div class='tip'>💡 אם ה-x נעלם: נשאר משפט נכון (כמו [[6 = 6]]) ← אינסוף פתרונות. נשאר משפט שקרי (כמו [[2 = 5]]) ← אין פתרון.</div>"]
+];
+D.tips=[
+["🎯 הקשתות",["צייר קשת מהמכפיל לכל איבר בסוגריים – כמה קשתות = כמה מכפלות.","בסוגריים · סוגריים: 2 איברים · 2 איברים = <b>4 מכפלות</b>. ספור שיש 4!"]],
+["➖ כלל המינוס",["מינוס לפני סוגריים = \"מתג הפוך\" לכל הסימנים בפנים.","מינוס כפול מינוס = פלוס: [[−3 · (−4) = +12]].","הטעות הכי נפוצה: [[−3(x − 4) = −3x − 12]] ✘. נכון: [[−3x + 12]]."]],
+["⚠️ מלכודת הריבוע",["[[(x + 3)^2 ≠ x^2 + 9]]! זה [[(x + 3)(x + 3)]] – 4 מכפלות.","כלל מהיר: [[(a + b)^2 = a^2 + 2ab + b^2]]."]],
+["🔍 בדיקה תמיד",["אחרי הוצאת גורם משותף – פתח חזרה וודא שקיבלת את המקור.","אחרי פתרון משוואה – הצב את התשובה במשוואה המקורית.","טריק: הצב [[x = 1]] בשני הצדדים של הפתיחה. אם יוצא אותו מספר – כנראה צדקת."]],
+["⚡ קיצורים חכמים",["אם [[x + y = 7]] אז [[3x + 3y = 3(x + y) = 21]] – בלי לדעת את x ו-y!","[[99 = 100 − 1]], [[102 = 100 + 2]] – פילוג הופך חשבון קשה לקל."]]
+];
+D.flash=[["[[3(x + 4)]]","[[3x + 12]]"],["[[−2(x + 6)]]","[[−2x − 12]]"],["[[−(x − 7)]]","[[−x + 7]]"],["[[x(x + 3)]]","[[x^2 + 3x]]"],["הוצא גורם משותף: [[6x + 9]]","[[3(2x + 3)]]"],["[[(x + 2)(x + 5)]]","[[x^2 + 7x + 10]]"],["[[(x + 3)^2]]","[[x^2 + 6x + 9]]"],["[[(x − 5)(x + 5)]]","[[x^2 − 25]]"],["[[7 · 102]] בעל-פה","[[700 + 14 = 714]]"],["פתור: [[2(x + 3) = 14]]","[[x = 4]]"],["[[5(x − 1) − 3(x − 4)]]","[[2x + 7]]"],["הוצא גורם משותף: [[12x − 18]]","[[6(2x − 3)]]"]];
+var R=[
+["פתיחת סוגריים",1,"[[3(x + 4) =]]",["[[3x + 12]]","[[3x + 4]]","[[x + 12]]","[[3x + 7]]"],"🛍️ 3 שקיות. בכל שקית: x תפוחים ו-4 בננות.<br>1️⃣ תפוחים: [[3 · x = 3x]]<br>2️⃣ בננות: [[3 · 4 = 12]]<br>✅ [[3x + 12]]<br>⚠️ ה-3 כופל את <b>כל</b> מה שבסוגריים – גם את ה-4."],
+["פתיחת סוגריים",1,"[[5(2x − 3) =]]",["[[10x − 15]]","[[10x − 3]]","[[7x − 15]]","[[10x + 15]]"],"🌈 מציירים קשת מה-5 לכל איבר.<br>1️⃣ [[5 · 2x = 10x]]<br>2️⃣ [[5 · (−3) = −15]]<br>✅ [[10x − 15]]"],
+["פתיחת סוגריים",1,"[[−2(x + 6) =]]",["[[−2x − 12]]","[[−2x + 12]]","[[−2x + 6]]","[[2x − 12]]"],"🌈 המכפיל הוא [[−2]] – יחד עם המינוס!<br>1️⃣ [[−2 · x = −2x]]<br>2️⃣ [[−2 · 6 = −12]] (מינוס כפול פלוס = מינוס)<br>✅ [[−2x − 12]]"],
+["פתיחת סוגריים",1,"[[−(x − 7) =]]",["[[−x + 7]]","[[−x − 7]]","[[x − 7]]","[[x + 7]]"],"👀 מינוס לפני סוגריים = כאילו כתוב [[−1]].<br>1️⃣ [[−1 · x = −x]]<br>2️⃣ [[−1 · (−7) = +7]]<br>✅ [[−x + 7]]<br>💡 כל הסימנים בפנים מתהפכים."],
+["פתיחת סוגריים",1,"[[x(x + 3) =]]",["[[x^2 + 3x]]","[[2x + 3]]","[[x^2 + 3]]","[[x + 3x]]"],"🌈 קשת מה-x לכל איבר.<br>1️⃣ [[x · x = x^2]]<br>2️⃣ [[x · 3 = 3x]]<br>✅ [[x^2 + 3x]]"],
+["פתיחת סוגריים",2,"[[2x(3x − 4) =]]",["[[6x^2 − 8x]]","[[6x − 8]]","[[5x^2 − 8x]]","[[6x^2 − 4]]"],"🌈 קשת מה-[[2x]] לכל איבר.<br>1️⃣ [[2x · 3x]]: מספרים [[2 · 3 = 6]], אותיות [[x · x = x^2]] ← [[6x^2]]<br>2️⃣ [[2x · (−4) = −8x]]<br>✅ [[6x^2 − 8x]]"],
+["פתיחת סוגריים",2,"[[−x(2 − x) =]]",["[[x^2 − 2x]]","[[−x^2 − 2x]]","[[−2x − x^2]]","[[2x − x^2]]"],"🌈 המכפיל הוא [[−x]].<br>1️⃣ [[−x · 2 = −2x]]<br>2️⃣ [[−x · (−x) = +x^2]] (מינוס כפול מינוס = פלוס)<br>✅ מסדרים: [[x^2 − 2x]]"],
+["פתיחת סוגריים",2,"תלמיד כתב: [[−3(x − 4) = −3x − 12]]. מה הטעות?",["האיבר השני צריך להיות [[+12]]","האיבר הראשון צריך להיות [[3x]]","צריך [[−3x − 4]]","אין טעות"],"🔍 בודקים כל קשת:<br>1️⃣ [[−3 · x = −3x]] ✔<br>2️⃣ [[−3 · (−4) = +12]] – כאן הטעות!<br>💡 מינוס כפול מינוס = <b>פלוס</b>.<br>✅ נכון: [[−3x + 12]]"],
+["פישוט ביטויים",2,"[[3(x + 2) + 2(x − 1) =]]",["[[5x + 4]]","[[5x + 1]]","[[5x + 8]]","[[6x + 4]]"],"1️⃣ פותחים את הראשון: [[3x + 6]]<br>2️⃣ פותחים את השני: [[2x − 2]]<br>3️⃣ x-ים ביחד: [[3x + 2x = 5x]]<br>4️⃣ מספרים ביחד: [[6 − 2 = 4]]<br>✅ [[5x + 4]]"],
+["פישוט ביטויים",2,"[[5(x − 1) − 3(x − 4) =]]",["[[2x + 7]]","[[2x − 17]]","[[2x + 17]]","[[2x − 7]]"],"1️⃣ [[5(x − 1) = 5x − 5]]<br>2️⃣ [[−3(x − 4) = −3x + 12]] (המינוס הופך סימנים!)<br>3️⃣ x-ים: [[5x − 3x = 2x]]<br>4️⃣ מספרים: [[−5 + 12 = 7]]<br>✅ [[2x + 7]]"],
+["פישוט ביטויים",3,"[[(x + 1)(x + 2) − x^2 =]]",["[[3x + 2]]","[[2x + 2]]","[[x^2 + 3x + 2]]","[[3x]]"],"1️⃣ [[(x + 1)(x + 2)]]: 4 קשתות ← [[x^2 + 2x + x + 2 = x^2 + 3x + 2]]<br>2️⃣ מורידים [[x^2]]: [[x^2 − x^2 = 0]]<br>✅ נשאר [[3x + 2]]"],
+["פישוט ביטויים",3,"[[a(b − c) − b(a − c) =]]",["[[bc − ac]]","[[0]]","[[ab − bc]]","[[2ab − ac − bc]]"],"1️⃣ [[a(b − c) = ab − ac]]<br>2️⃣ [[−b(a − c) = −ab + bc]]<br>3️⃣ [[ab]] ועוד [[−ab]] = 0 – נעלמים!<br>✅ נשאר [[bc − ac]]"],
+["פישוט ביטויים",3,"היקף מלבן שצלעותיו [[2x + 1]] ו-[[x − 3]]:",["[[6x − 4]]","[[3x − 2]]","[[6x + 8]]","[[2x^2 − 5x − 3]]"],"📏 היקף מלבן = 2 · (אורך + רוחב).<br>1️⃣ אורך + רוחב: [[2x + 1 + x − 3 = 3x − 2]]<br>2️⃣ כפול 2: [[2(3x − 2) = 6x − 4]]<br>✅ [[6x − 4]]<br>⚠️ היקף = מחברים צלעות, שטח = כופלים צלעות."],
+["גורם משותף",1,"הוצא גורם משותף: [[4x + 12]]",["[[4(x + 3)]]","[[4(x + 12)]]","[[4x(1 + 3)]]","[[2(x + 6)]]"],"👀 איזה מספר נכנס גם ב-[[4x]] וגם ב-12? ← 4<br>1️⃣ [[4x : 4 = x]]<br>2️⃣ [[12 : 4 = 3]]<br>✅ [[4(x + 3)]]<br>🔁 בדיקה: [[4 · x + 4 · 3 = 4x + 12]]"],
+["גורם משותף",1,"הוצא גורם משותף: [[6x + 9]]",["[[3(2x + 3)]]","[[6(x + 9)]]","[[3(2x + 9)]]","[[9(x + 1)]]"],"👀 איזה מספר נכנס גם ב-6 וגם ב-9? ← 3<br>1️⃣ [[6x : 3 = 2x]]<br>2️⃣ [[9 : 3 = 3]]<br>✅ [[3(2x + 3)]]"],
+["גורם משותף",2,"הוצא גורם משותף: [[x^2 + 5x]]",["[[x(x + 5)]]","[[x(x + 5x)]]","[[5x(x + 1)]]","[[x^2(1 + 5)]]"],"👀 מה יש בשני האיברים? ← x<br>1️⃣ [[x^2 : x = x]]<br>2️⃣ [[5x : x = 5]]<br>✅ [[x(x + 5)]]"],
+["גורם משותף",2,"הוצא את הגורם המשותף <b>הגדול ביותר</b>: [[12x − 18]]",["[[6(2x − 3)]]","[[3(4x − 6)]]","[[2(6x − 9)]]","[[6(2x + 3)]]"],"👀 המספר <b>הכי גדול</b> שנכנס ב-12 וגם ב-18? ← 6<br>1️⃣ [[12x : 6 = 2x]]<br>2️⃣ [[18 : 6 = 3]]<br>✅ [[6(2x − 3)]]<br>💡 [[3(4x − 6)]] נכון, אבל עוד אפשר להוציא 2 מהסוגריים – לכן לא הכי גדול."],
+["גורם משותף",3,"ידוע ש-[[x + y = 7]]. מהו [[3x + 3y]]?",["21","10","7","אי אפשר לדעת"],"👀 ב-[[3x + 3y]] יש 3 בשני האיברים ← מוציאים אותו.<br>1️⃣ [[3x + 3y = 3(x + y)]]<br>2️⃣ יודעים ש-[[x + y = 7]]<br>3️⃣ [[3 · 7 = 21]]<br>✅ 21"],
+["גורם משותף",3,"ידוע ש-[[a − b = 4]]. מהו [[5b − 5a]]?",["[[−20]]","20","9","[[−1]]"],"👀 ב-[[5b − 5a]] מוציאים [[−5]] כדי לקבל [[(a − b)]].<br>1️⃣ [[5b − 5a = −5(a − b)]]<br>2️⃣ [[a − b = 4]]<br>3️⃣ [[−5 · 4 = −20]]<br>✅ [[−20]]"],
+["גורם משותף",3,"מצא את k: [[k(x + 3) = 4x + 12]] לכל x",["[[k = 4]]","[[k = 3]]","[[k = 12]]","[[k = x]]"],"👀 צריך ש-[[k(x + 3)]] ייתן [[4x + 12]].<br>1️⃣ [[k · x = 4x]] ← [[k = 4]]<br>✅ בדיקה: [[4 · 3 = 12]] ✔"],
+["חשבון בעל-פה",1,"[[7 · 102 =]]",["714","7014","704","720"],"👀 102 = 100 + 2<br>1️⃣ [[7 · 100 = 700]]<br>2️⃣ [[7 · 2 = 14]]<br>3️⃣ [[700 + 14 = 714]]<br>✅ 714"],
+["חשבון בעל-פה",2,"[[98 · 15 =]]",["1470","1500","1530","1480"],"👀 98 = 100 − 2<br>1️⃣ [[15 · 100 = 1500]]<br>2️⃣ [[15 · 2 = 30]]<br>3️⃣ [[1500 − 30 = 1470]]<br>✅ 1470"],
+["חשבון בעל-פה",2,"[[13 · 99 =]]",["1287","1300","1313","1277"],"👀 99 = 100 − 1<br>1️⃣ [[13 · 100 = 1300]]<br>2️⃣ [[13 · 1 = 13]]<br>3️⃣ [[1300 − 13 = 1287]]<br>✅ 1287"],
+["סוגריים כפול סוגריים",2,"[[(x + 2)(x + 5) =]]",["[[x^2 + 7x + 10]]","[[x^2 + 10]]","[[2x + 7]]","[[x^2 + 7x + 7]]"],"🌈 2 איברים · 2 איברים = <b>4 קשתות</b>:<br>1️⃣ [[x · x = x^2]]<br>2️⃣ [[x · 5 = 5x]]<br>3️⃣ [[2 · x = 2x]]<br>4️⃣ [[2 · 5 = 10]]<br>➕ [[5x + 2x = 7x]]<br>✅ [[x^2 + 7x + 10]]"],
+["סוגריים כפול סוגריים",2,"[[(x − 3)(x + 4) =]]",["[[x^2 + x − 12]]","[[x^2 − x − 12]]","[[x^2 + x + 12]]","[[x^2 − 12]]"],"🌈 4 קשתות:<br>1️⃣ [[x · x = x^2]]<br>2️⃣ [[x · 4 = 4x]]<br>3️⃣ [[−3 · x = −3x]]<br>4️⃣ [[−3 · 4 = −12]]<br>➕ [[4x − 3x = x]]<br>✅ [[x^2 + x − 12]]"],
+["סוגריים כפול סוגריים",2,"[[(2x + 1)(x − 3) =]]",["[[2x^2 − 5x − 3]]","[[2x^2 − 3]]","[[2x^2 + 7x − 3]]","[[3x − 2]]"],"🌈 4 קשתות:<br>1️⃣ [[2x · x = 2x^2]]<br>2️⃣ [[2x · (−3) = −6x]]<br>3️⃣ [[1 · x = x]]<br>4️⃣ [[1 · (−3) = −3]]<br>➕ [[−6x + x = −5x]]<br>✅ [[2x^2 − 5x − 3]]"],
+["סוגריים כפול סוגריים",3,"[[(x + 3)^2 =]]",["[[x^2 + 6x + 9]]","[[x^2 + 9]]","[[x^2 + 3x + 9]]","[[2x + 6]]"],"👀 בריבוע = כפול עצמו: [[(x + 3)(x + 3)]]<br>1️⃣ [[x · x = x^2]]<br>2️⃣ [[x · 3 = 3x]]<br>3️⃣ [[3 · x = 3x]]<br>4️⃣ [[3 · 3 = 9]]<br>✅ [[x^2 + 6x + 9]]<br>⚠️ [[x^2 + 9]] שוכח את שתי הקשתות האמצעיות."],
+["סוגריים כפול סוגריים",3,"[[(x − 5)(x + 5) =]]",["[[x^2 − 25]]","[[x^2 + 25]]","[[x^2 − 10x − 25]]","[[x^2 − 10]]"],"🌈 4 קשתות:<br>1️⃣ [[x · x = x^2]]<br>2️⃣ [[x · 5 = 5x]]<br>3️⃣ [[−5 · x = −5x]]<br>4️⃣ [[−5 · 5 = −25]]<br>➕ [[5x − 5x = 0]] – נעלמים!<br>✅ [[x^2 − 25]]"],
+["סוגריים כפול סוגריים",3,"[[(2x − 3)(2x + 3) =]]",["[[4x^2 − 9]]","[[4x^2 + 9]]","[[2x^2 − 9]]","[[4x^2 − 12x − 9]]"],"🌈 4 קשתות:<br>1️⃣ [[2x · 2x = 4x^2]]<br>2️⃣ [[2x · 3 = 6x]]<br>3️⃣ [[−3 · 2x = −6x]]<br>4️⃣ [[−3 · 3 = −9]]<br>➕ [[6x − 6x = 0]]<br>✅ [[4x^2 − 9]]"],
+["משוואות",1,"פתור: [[2(x + 3) = 14]]",["[[x = 4]]","[[x = 5.5]]","[[x = 7]]","[[x = 10]]"],"1️⃣ פותחים סוגריים: [[2x + 6 = 14]]<br>2️⃣ מורידים 6 משני הצדדים: [[2x = 8]]<br>3️⃣ מחלקים ב-2: [[x = 4]]<br>✅ בדיקה: [[2(4 + 3) = 2 · 7 = 14]]"],
+["משוואות",2,"פתור: [[3(x − 2) − (x + 4) = 0]]",["[[x = 5]]","[[x = 1]]","[[x = −5]]","[[x = 2.5]]"],"1️⃣ פותחים: [[3x − 6 − x − 4 = 0]] (המינוס הופך את [[+4]] ל-[[−4]])<br>2️⃣ מכנסים: [[2x − 10 = 0]]<br>3️⃣ [[2x = 10]] ← [[x = 5]]<br>✅ בדיקה: [[3 · 3 − 9 = 0]]"],
+["משוואות",3,"פתור: [[4(x − 1) − 2(3 − x) = 8]]",["[[x = 3]]","[[x = 9]]","[[x = 1]]","[[x = 2]]"],"1️⃣ [[4(x − 1) = 4x − 4]]<br>2️⃣ [[−2(3 − x) = −6 + 2x]]<br>3️⃣ מכנסים: [[6x − 10 = 8]]<br>4️⃣ [[6x = 18]] ← [[x = 3]]<br>✅ בדיקה: [[4 · 2 − 2 · 0 = 8]]"],
+["משוואות",3,"פתור: [[(x + 2)(x + 3) = x(x + 1) + 18]]",["[[x = 3]]","[[x = 2]]","[[x = 6]]","אין פתרון"],"1️⃣ שמאל: [[(x + 2)(x + 3) = x^2 + 5x + 6]]<br>2️⃣ ימין: [[x(x + 1) + 18 = x^2 + x + 18]]<br>3️⃣ [[x^2]] בשני הצדדים – מוחקים.<br>4️⃣ [[5x + 6 = x + 18]] ← [[4x = 12]] ← [[x = 3]]<br>✅ בדיקה: [[5 · 6 = 30]], [[3 · 4 + 18 = 30]]"],
+["משוואות",3,"פתור: [[2(x + 1) = 2x + 5]]",["אין פתרון","[[x = 3]]","אינסוף פתרונות","[[x = 0]]"],"1️⃣ פותחים: [[2x + 2 = 2x + 5]]<br>2️⃣ מורידים [[2x]] משני הצדדים: [[2 = 5]]<br>3️⃣ זה לא נכון אף פעם!<br>✅ <b>אין פתרון</b>.<br>💡 אם היה יוצא משהו נכון (כמו [[5 = 5]]) – כל x היה פתרון."],
+["משוואות",2,"מלבן מחולק לשניים: צלע משותפת 3, ושאר הצלעות x ו-4. מהו שטח המלבן הגדול?",["[[3x + 12]]","[[3x + 4]]","[[3 + x + 4]]","[[12x]]"],"🟦 מלבן אחד גדול = שני מלבנים קטנים.<br>1️⃣ מלבן קטן: [[3 · x = 3x]]<br>2️⃣ מלבן קטן: [[3 · 4 = 12]]<br>3️⃣ ביחד: [[3x + 12]]<br>✅ וזה בדיוק [[3(x + 4)]] – חוק הפילוג!"]
+];
+
+D.Q=R.map(function(r){return {t:r[0],l:r[1],q:r[2],o:r[3],e:r[4],d:r[5]};});
+if(!D.svg)D.svg={};
+
+
+function F(s){
+ s=s.replace(/((?:🔵|🔴)[🔵🔴 ]*(?:🔵|🔴))|(🔵|🔴)/gu,function(m){return '<span dir="ltr" style="unicode-bidi:isolate">'+m+'</span>';});
+ return s.replace(/\[\[(.+?)\]\]/g,function(_,x){
+  x=x.replace(/\{\{(.+?)\|(.+?)\}\}/g,'<span class="fr"><span>$1</span><span>$2</span></span>');
+  return '<span class="f">'+x.replace(/\^(\d+)/g,'<sup>$1</sup>')+'</span>';});}
+var Q=D.Q,SYM=D.flash,TIPS=D.tips;
+var app=document.getElementById('app'),list=[],i=0,good=0,wrong=[],mode='';
+function sh(a){a=a.slice();for(var k=a.length-1;k>0;k--){var j=Math.floor(Math.random()*(k+1));var t=a[k];a[k]=a[j];a[j]=t;}return a;}
+function stars(l){return '★'.repeat(l)+'☆'.repeat(3-l);}
+function home(){
+ app.innerHTML='<h1>'+D.icon+' '+D.title+'</h1><div class="sub">הכנה למבחן – כיתה ח׳ א1</div>'+
+ '<button class="btn b1" onclick="summary()">📘 סיכום מהיר<small>כל החומר בדף אחד – קרא קודם</small></button>'+
+ '<button class="btn" style="background:#ea580c" onclick="tips()">⚡ טיפים לזכירה מהירה<small>טריקים ומלכודות נפוצות</small></button>'+
+ '<button class="btn b2" onclick="flash()">🔤 כרטיסיות<small>'+D.flashSub+'</small></button>'+
+ '<button class="btn b3" onclick="start(Q,\'all\')">🧠 כל השאלות לפי סדר הנושאים<small>'+Q.length+' שאלות, הסבר מפורט אחרי כל תשובה</small></button>'+
+ '<button class="btn b4" onclick="start(sh(Q).slice(0,15),\'test\')">🏁 מבחן דמה<small>15 שאלות אקראיות + ציון</small></button>';
+ window.scrollTo(0,0);
+}
+function summary(){
+ var h='<div class="top"><button class="back" onclick="home()">→ חזרה</button><span>סיכום</span></div>';
+ D.summary.forEach(function(c){h+='<div class="card sum"><h3>'+c[0]+'</h3>'+F(c[1])+'</div>';});
+ app.innerHTML=h+'<button class="btn b4" onclick="start(Q,\'all\')">✅ קראתי – לשאלות!</button>';window.scrollTo(0,0);
+}
+function tips(){
+ var h='<div class="top"><button class="back" onclick="home()">→ חזרה</button><span>טיפים לזכירה</span></div>';
+ TIPS.forEach(function(b){h+='<div class="card sum"><h3>'+b[0]+'</h3>';b[1].forEach(function(t){h+='<p>• '+F(t)+'</p>';});h+='</div>';});
+ app.innerHTML=h+'<button class="btn b4" onclick="start(sh(Q).slice(0,15),\'test\')">🏁 עכשיו למבחן דמה!</button>';window.scrollTo(0,0);
+}
+var fl=[],fi=0;
+function flash(){fl=sh(SYM);fi=0;showFlash(false);}
+function showFlash(open){
+ var s=fl[fi];
+ app.innerHTML='<div class="top"><button class="back" onclick="home()">→ חזרה</button><span>'+(fi+1)+' / '+fl.length+'</span></div>'+
+ '<div class="card flash"><div class="heb">'+F(s[0])+'</div><div style="margin:14px 0;color:#888">מה התשובה?</div>'+
+ (open?'<div class="ans">'+F(s[1])+'</div>':'<button class="next" onclick="showFlash(true)">👀 הצג תשובה</button>')+'</div>'+
+ (open?'<button class="next" onclick="'+(fi<fl.length-1?'fi++;showFlash(false)':'home()')+'">'+(fi<fl.length-1?'הבא ←':'סיום ✔')+'</button>':'');
+}
+function start(arr,m){list=arr;mode=m;i=0;good=0;wrong=[];ask();}
+function ask(){
+ var x=list[i],opts=sh(x.o.map(function(t,k){return {t:t,c:k===0};}));
+ var h='<div class="top"><button class="back" onclick="home()">→ תפריט</button><span>שאלה '+(i+1)+' / '+list.length+' · ✅ '+good+'</span></div>'+
+ '<div class="bar"><div style="width:'+(i/list.length*100)+'%"></div></div>'+
+ '<div class="card"><span class="tag">'+x.t+'</span><span class="lvl">'+stars(x.l)+'</span><div class="q">'+F(x.q)+'</div>'+(x.d?D.svg[x.d]:'');
+ opts.forEach(function(o,k){h+='<button class="opt" data-c="'+(o.c?1:0)+'" onclick="pick(this)">'+F(o.t)+'</button>';});
+ app.innerHTML=h+'<div id="ex"></div></div>';
+ window.scrollTo(0,0);
+}
+function pick(b){
+ var all=document.querySelectorAll('.opt'),ok=b.dataset.c==='1',x=list[i];
+ all.forEach(function(o){o.disabled=true;if(o.dataset.c==='1')o.classList.add('ok');});
+ if(ok)good++;else{b.classList.add('no');wrong.push(x);}
+ document.getElementById('ex').innerHTML='<div class="exp '+(ok?'ok':'no')+'"><b class="h">'+(ok?'✅ נכון! הנה למה:':'❌ לא נכון – הנה ההסבר:')+'</b>'+F(x.e)+'</div>'+
+ '<button class="next" onclick="nxt()">'+(i<list.length-1?'לשאלה הבאה ←':'לתוצאות 🏁')+'</button>';
+}
+function nxt(){i++;if(i<list.length)ask();else end();}
+function end(){
+ var p=Math.round(good/list.length*100),msg=p>=90?'🏆 מוכן למבחן!':p>=70?'💪 טוב מאוד! עבור על הטעויות':'📘 כדאי לקרוא שוב את הסיכום ולתרגל את הטעויות';
+ var h='<div class="card"><div class="score">'+p+'</div><div style="text-align:center;font-size:18px;margin:6px 0 14px">'+good+' מתוך '+list.length+' · '+msg+'</div>';
+ if(wrong.length){
+  h+='<button class="next" style="background:#db2777" onclick="start(wrong.slice(),\'w\')">🔁 תרגל שוב רק את '+wrong.length+' הטעויות</button><h3 style="margin-top:14px;color:#6d28d9">איפה טעיתי:</h3>';
+  wrong.forEach(function(w){h+='<div class="rev">❓ '+F(w.q)+'<br>✅ <b>'+F(w.o[0])+'</b></div>';});
+ }
+ app.innerHTML=h+'<button class="next" onclick="home()">חזרה לתפריט</button></div>';
+ window.scrollTo(0,0);
+}
+home();
+if('serviceWorker' in navigator){navigator.serviceWorker.register('../sw.js',{scope:'../'}).catch(()=>{});}
+</script>
+</body>
+</html>
