@@ -47,6 +47,7 @@ footer{text-align:center;color:#a78bfa;font-size:13px;margin-top:14px}
   <div id="stage"><canvas id="cv" width="720" height="1280" onclick="togglePlay()"></canvas></div>
   <div id="hint">👆 לחיצה על המסך = צפייה</div>
   <input id="idea" placeholder="✨ מה הרעיון? למשל: טיול שנתי של ח׳3 לירושלים" oninput="regen();drawIdle()">
+  <button class="bb" style="width:100%;background:linear-gradient(135deg,#0ea5e9,#7c3aed);padding:14px;font-size:19px" onclick="openScript()">📝 תסריט – הבינה מעצבת את הקליפ</button>
   <div class="big3">
     <button class="bb" id="bPhotos" onclick="pickPhotos()"><span>📸</span>תמונות</button>
     <button class="bb" id="bSong" onclick="openSong()"><span>🎵</span>שיר</button>
@@ -73,8 +74,23 @@ footer{text-align:center;color:#a78bfa;font-size:13px;margin-top:14px}
   <div id="startBox" style="display:none"><label class="lb">מאיזו שנייה בשיר להתחיל: <b id="startV">0</b></label><input type="range" id="start" min="0" max="120" value="0" oninput="startV.textContent=this.value"></div>
   <button class="opt" style="background:#7c3aed;text-align:center;font-weight:bold" onclick="closeSong()">סיום</button>
 </div></div>
-<div class="ov" id="ovFocus"><div class="sheet"><h3>👆 געו בפנים של הילד בתמונה</h3><div style="position:relative;display:flex;justify-content:center"><img id="fImg" style="max-width:100%;max-height:55vh;border-radius:12px"><div id="fMark" style="position:absolute;font-size:44px;transform:translate(-50%,-50%);pointer-events:none;display:none">💛</div></div>
+<div class="ov" id="ovFocus"><div class="sheet"><h3>👆 געי בפנים של הילד (שם ייפול הלב)</h3><div style="position:relative;display:flex;justify-content:center"><img id="fImg" style="max-width:100%;max-height:55vh;border-radius:12px"><div id="fMark" style="position:absolute;font-size:44px;transform:translate(-50%,-50%);pointer-events:none;display:none">💛</div></div>
+  <label class="lb">✨ מה לשנות בתמונה? (בינה)</label><input id="eTxt" class="cap" placeholder="למשל: תהפוך אותו לאסטרונאוט בחלל">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button class="opt" style="text-align:center;background:#10a37f" onclick="editPhoto('gpt')">ChatGPT</button><button class="opt" style="text-align:center;background:#1a73e8" onclick="editPhoto('gemini')">Gemini</button></div>
+  <button class="opt" style="text-align:center" onclick="$('repIn').value='';$('repIn').click()">🔁 להחליף בתמונה הערוכה</button>
+  <input type="file" id="repIn" class="hidefile" accept="image/*">
   <button class="opt" style="background:#7c3aed;text-align:center;font-weight:bold" onclick="$('ovFocus').classList.remove('on');thumbs();drawIdle()">סיום</button></div></div>
+<div class="ov" id="ovScript" onclick="if(event.target===this)this.classList.remove('on')"><div class="sheet" style="max-height:92vh;overflow:auto">
+  <h3>📝 ספרי לבינה מה הרעיון</h3>
+  <textarea id="sIdea" rows="4" style="width:100%;border-radius:14px;border:2px solid #a78bfa;background:rgba(0,0,0,.35);color:#fff;font-size:17px;padding:12px;font-family:inherit" placeholder="למשל: קליפ מצחיק על הטיול של ח׳3 לירושלים, שיתחיל רגוע, יהיו בו רגעים מצחיקים, ויתפוצץ בכותל"></textarea>
+  <button class="opt" id="sGo" style="background:#7c3aed;text-align:center;font-weight:bold" onclick="makeScript()">✨ צור תסריט</button>
+  <div id="sPasteBox" style="display:none"><label class="lb">הדביקי כאן את התשובה מ־ChatGPT:</label><textarea id="sPaste" rows="4" style="width:100%;border-radius:12px;background:rgba(0,0,0,.35);color:#fff;font-size:14px;padding:10px"></textarea>
+    <button class="opt" style="background:#16a34a;text-align:center;font-weight:bold" onclick="applyPasted()">✅ החל את התסריט</button></div>
+  <details style="margin-top:10px"><summary>🔑 בינה בתוך הסטודיו, בלי העתק־הדבק (חינם)</summary>
+    <p style="font-size:15px;line-height:1.6;margin:8px 0">1. פותחים את <a href="https://aistudio.google.com/apikey" target="_blank" style="color:#fde047">הדף של Google</a> ונכנסים עם חשבון הג׳ימייל.<br>2. לוחצים <b>Create API key</b> ומעתיקים.<br>3. מדביקים כאן ושומרים. המפתח נשמר רק בטלפון שלך.</p>
+    <input id="gKey" class="cap" placeholder="הדביקי כאן את המפתח"><button class="opt" style="text-align:center" onclick="saveKey()">💾 שמירה</button></details>
+  <button class="opt" style="text-align:center" onclick="$('ovScript').classList.remove('on')">סגירה</button>
+</div></div>
 <div id="toast"></div>
 <script>
 const W=720,H=1280,cv=document.getElementById('cv'),cx=cv.getContext('2d');
@@ -95,7 +111,7 @@ function analyze(idea){const t=idea||'',HEART=/(^|\s)(לב|בלב|מרגש|מר�
   if(/סיום|פרידה|סוף שנה/.test(t))return{e:'🎓',ce:'🎓',intro:'עוד שנה עברה…',big:cls||'השנה שלנו',pool:['איך שהזמן עובר','צחקנו','למדנו','גדלנו יחד','רגעים שלא שוכחים','החברים לכל החיים'],last:'ועכשיו…',c1:'כל הכבוד',c2:cls?cls+'!':'לכולנו!',tag:'גאים בכם 💙',outro:'להתראות בשנה הבאה ✨'};
   if(/חלום|אהיה|רוצה להיות/.test(t)){const nm=(t.match(/^([א-ת]+)/)||['',''])[1];return{e:'⭐',ce:'🦁',intro:'יש לי חלום…',big:nm||'החלום',pool:['כל יום לומדים משהו חדש','גם כשקשה, לא מוותרים','מאמינים בעצמנו','צעד אחרי צעד'],last:'חולמים בגדול',c1:'החלום',c2:'מתגשם!',tag:'חזקים כמו אריה 🦁',outro:'החלום מתחיל עכשיו ✨'}}
   return{e:'✨',ce:'🔥',intro:'מוכנים?',big:cls||(t.split(' ').slice(0,3).join(' '))||'הקליפ שלנו',pool:['רגעים שלא שוכחים','צחוק אמיתי 😂','ביחד זה הכי','עוד רגע מטורף','אנרגיות 🔥','זוכרים?'],last:'וזה עוד לא נגמר',c1:'פשוט',c2:'מושלם!',tag:'הכי טובים 💙',outro:'עד הפעם הבאה ✨'}}
-function regen(){const a=analyze($('idea').value.trim());TH={e:a.e,ce:a.ce,heart:!!a.heart};if(a.heart&&!musicChosen&&music!=='own')music='soft';if(!a.heart&&!musicChosen&&music==='soft')music='epic';if(capsEdited&&caps){caps.mont.length=Math.max(0,photos.length-1);for(let i=0;i<caps.mont.length;i++)if(caps.mont[i]==null)caps.mont[i]=a.pool[i%a.pool.length];return renderCaps()}
+function regen(){const a=analyze($('idea').value.trim());TH={e:a.e,ce:a.ce,heart:!!a.heart,ch:TH.ch};if(a.heart&&!musicChosen&&music!=='own')music='soft';if(!a.heart&&!musicChosen&&music==='soft')music='epic';if(capsEdited&&caps){caps.mont.length=Math.max(0,photos.length-1);for(let i=0;i<caps.mont.length;i++)if(caps.mont[i]==null)caps.mont[i]=a.pool[i%a.pool.length];return renderCaps()}
   const n=Math.max(0,photos.length-1);const FZ=a.fz||['רגע… עצרו הכל ✋','ואז… זה קרה 😅'];caps={intro:a.intro,name:a.big,mont:Array.from({length:n},(_,i)=>isFreeze(i,n+1)?FZ[i===5?0:1]:i===n-1&&n>2?a.last:a.pool[i<a.pool.length?i:1+(i-1)%(a.pool.length-1)]),c1:a.c1,c2:a.c2,tag:a.tag,outro:a.outro};renderCaps()}
 function renderCaps(){const rows=[['intro','פתיחה'],['name','כותרת גדולה']].concat(caps.mont.map((_,i)=>['m'+i,'תמונה '+(i+1)]),[['c1','שיא – שורה 1'],['c2','שיא – שורה 2'],['tag','שיא – תגית'],['outro','סיום']]);
   $('caps').innerHTML=rows.map(([k,l])=>`<label class="lb">${l}</label><input class="cap" data-k="${k}" value="${String(/^m\d+$/.test(k)?caps.mont[+k.slice(1)]:caps[k]).replace(/"/g,'&quot;')}">`).join('');
@@ -125,6 +141,46 @@ let fIdx=0;function focusOpen(i){fIdx=i;const p=photos[i];$('fImg').src=p.src;$(
 function placeMark(){const p=photos[fIdx],im=$('fImg');if(p.fx==null)return;$('fMark').style.left=(im.offsetLeft+p.fx*im.clientWidth)+'px';$('fMark').style.top=(im.offsetTop+p.fy*im.clientHeight)+'px';$('fMark').style.display='block'}
 function thumbs(){$('thumbs').innerHTML=photos.map((p,i)=>`<div class="th" onclick="focusOpen(${i})"><img src="${p.src}">${p.fx!=null?'<i style="position:absolute;top:2px;right:3px;font-style:normal">💛</i>':''}${p.vid?'<i style="position:absolute;bottom:2px;right:4px;font-style:normal">🎬</i>':''}<b onclick="event.stopPropagation();delPhoto(${i})">✖</b></div>`).join('')+(photos.length?'<div style="flex:0 0 auto;align-self:center;font-size:13px;color:#c4b5fd;padding:0 4px">👆 נגיעה בתמונה = לבחור פנים</div>':'')}
 $('fImg').addEventListener('click',e=>{const r=e.target.getBoundingClientRect(),p=photos[fIdx];p.fx=clamp((e.clientX-r.left)/r.width,0,1);p.fy=clamp((e.clientY-r.top)/r.height,0,1);placeMark();if(!playing)drawIdle()});
+
+async function photoFile(p){const b=await new Promise(r=>p.toBlob(r,'image/jpeg',.9));return new File([b],'photo.jpg',{type:'image/jpeg'})}
+async function editPhoto(app){const want=$('eTxt').value.trim()||'תהפוך את התמונה לפוסטר קולנועי מרהיב';const t=`ערוך את התמונה המצורפת: ${want}. שמור בדיוק על הפנים והמראה של האנשים. איכות גבוהה, מציאותי וקולנועי, פורמט אנכי 9:16.`;
+  const url=app==='gpt'?'https://chatgpt.com/':'https://gemini.google.com/app';
+  try{const file=await photoFile(photos[fIdx]);if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.clipboard.writeText(t)}catch(e){}await navigator.share({files:[file],text:t});toast('אחרי שהתמונה מוכנה: שומרים אותה ולוחצים כאן על 🔁',5000);return}}catch(e){if(e&&e.name==='AbortError')return}
+  try{await navigator.clipboard.writeText(t);toast('✅ ההוראה הועתקה. שם: מצרפים את התמונה, מדביקים ושולחים. אחר כך 🔁 להחלפה.',6000)}catch(e){prompt('העתיקי את ההוראה:',t)}
+  setTimeout(()=>window.open(url,'_blank'),400)}
+$('repIn').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;const img=await loadImg(f);if(!img)return;const o=photos[fIdx];img.fx=o.fx;img.fy=o.fy;img.fxs=o.fxs;photos[fIdx]=img;$('fImg').src=img.src;thumbs();drawIdle();toast('✅ התמונה הוחלפה')});
+/* ===== תסריט בינה ===== */
+const FXLIST={kb:'תמונה מלאה עם זום קולנועי',polaroid:'פולארואיד שנזרק על ערימה',flip:'היפוך תלת־ממדי',collage:'קולאז׳ של 3 תמונות',iris:'חשיפה בצורת לב/יהלום/כוכב',tunnel:'מנהרת מסגרות בעומק',carousel:'קרוסלה מסתובבת',duo:'חצי צבע חצי שחור־לבן',zoomthru:'זום שעובר דרך התמונה',shapeframe:'תמונה בתוך מסגרת זהב',film:'פס צילום של סרט',colorpop:'צבע שנשפך על שחור־לבן',triple:'שחור־לבן / צבע / חום',kaleido:'קליידוסקופ',line:'חבל של זיכרונות',plane:'מטוס נייר מביא את התמונה',heart:'לב עם זום לפנים',freeze:'פריז קומי עם תקליט נשרט (רק לרגע מצחיק)'};
+function scriptPrompt(idea,n){return `אתה עורך קליפים מקצועי. כתוב תסריט לקליפ אנכי בעברית לפי הרעיון: "${idea}".
+יש ${n} תמונות לפי הסדר (תמונה 1 עד ${n}). התמונה האחרונה היא רגע השיא. ${n>1?`לכל אחת מהתמונות 1 עד ${n-1} כתוב כתובית ובחר אפקט.`:''}
+אפקטים מותרים: ${Object.entries(FXLIST).map(([k,v])=>k+' = '+v).join('; ')}.
+כללים: כתוביות קצרות (עד 7 מילים), עברית תקנית, עם הומור או רגש לפי הרעיון, אימוג׳י אחד לכל היותר. בנה קשת סיפורית: התחלה, אמצע ושיא. גוון באפקטים ואל תחזור על אותו אפקט ברצף.
+החזר רק JSON תקין, בלי שום טקסט נוסף, במבנה הזה:
+{"intro":"משפט פתיחה קצר","title":"כותרת גדולה (2-3 מילים)","music":"epic או happy או soft","chapters":["פרק 1","פרק 2","פרק 3"],"scenes":[{"caption":"...","effect":"kb"}],"climax1":"שורת שיא 1","climax2":"שורת שיא 2","tag":"תגית קצרה","outro":"משפט סיום"}
+במערך scenes צריכים להיות בדיוק ${Math.max(0,n-1)} פריטים.`}
+function openScript(){$('sIdea').value=$('sIdea').value||$('idea').value;$('gKey').value=getKey();$('sPasteBox').style.display='none';$('ovScript').classList.add('on')}
+function getKey(){try{return localStorage.getItem('gkey')||''}catch(e){return ''}}
+function saveKey(){try{localStorage.setItem('gkey',$('gKey').value.trim());toast('🔑 נשמר. מעכשיו הבינה עובדת בתוך הסטודיו')}catch(e){toast('לא הצלחתי לשמור בטלפון הזה')}}
+async function thumbB64(p){const c=document.createElement('canvas'),k=384/Math.max(p.width,p.height);c.width=Math.round(p.width*k);c.height=Math.round(p.height*k);c.getContext('2d').drawImage(p,0,0,c.width,c.height);return c.toDataURL('image/jpeg',.7).split(',')[1]}
+async function makeScript(){const idea=$('sIdea').value.trim();if(!idea){toast('כתבי במשפט מה הרעיון');return}if(!photos.length){toast('📸 קודם מוסיפים תמונות, כדי שהבינה תכתוב לכל תמונה');return}
+  $('idea').value=idea;regen();const n=photos.length,pr=scriptPrompt(idea,n),key=getKey();
+  if(key){$('sGo').disabled=true;$('sGo').textContent='✨ הבינה כותבת… (כמה שניות)';
+    try{const parts=[{text:pr+'\nהתמונות מצורפות לפי הסדר. כתוב כתוביות שמתאימות למה שרואים בהן.'}];for(const p of photos.slice(0,16))parts.push({inline_data:{mime_type:'image/jpeg',data:await thumbB64(p)}});
+      let js=null,err='';for(const m of ['gemini-2.5-flash','gemini-flash-latest','gemini-2.0-flash']){try{const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${encodeURIComponent(key)}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts}],generationConfig:{responseMimeType:'application/json',temperature:.9}})});
+        const d=await r.json();if(!r.ok){err=(d.error&&d.error.message)||r.status;continue}js=d.candidates[0].content.parts.map(x=>x.text||'').join('');break}catch(e){err=e.message}}
+      if(!js)throw new Error(err);applyScript(js);$('ovScript').classList.remove('on')}
+    catch(e){toast('הבינה לא ענתה ('+String(e.message).slice(0,60)+'). אפשר לנסות שוב או דרך ChatGPT.',6000);manualScript(pr)}
+    finally{$('sGo').disabled=false;$('sGo').textContent='✨ צור תסריט'}return}
+  manualScript(pr)}
+function manualScript(pr){(navigator.clipboard?navigator.clipboard.writeText(pr):Promise.reject()).then(()=>toast('✅ הבקשה הועתקה. ב־ChatGPT: מדביקים ושולחים, מעתיקים את התשובה ומדביקים כאן למטה.',7000),()=>prompt('העתיקי את הבקשה:',pr));
+  $('sPasteBox').style.display='block';setTimeout(()=>window.open('https://chatgpt.com/','_blank'),500)}
+function applyPasted(){try{applyScript($('sPaste').value);$('ovScript').classList.remove('on')}catch(e){toast('לא הצלחתי לקרוא את התשובה. ודאי שהעתקת את כולה.',5000)}}
+function applyScript(txt){const m=String(txt).match(/\{[\s\S]*\}/);if(!m)throw new Error('no json');const S=JSON.parse(m[0]),n=photos.length;
+  caps={intro:S.intro||caps.intro,name:S.title||caps.name,mont:Array.from({length:Math.max(0,n-1)},(_,i)=>(S.scenes&&S.scenes[i]&&S.scenes[i].caption)||caps.mont[i]||''),c1:S.climax1||caps.c1,c2:S.climax2||caps.c2,tag:S.tag||caps.tag,outro:S.outro||caps.outro};
+  photos.forEach((p,i)=>{const e=S.scenes&&S.scenes[i]&&S.scenes[i].effect;p.fxs=FXLIST[e]?e:null});
+  if(Array.isArray(S.chapters)&&S.chapters.length>=3)TH.ch=S.chapters.slice(0,3);
+  if(['epic','happy','soft'].includes(S.music)&&music!=='own'){music=S.music;musicChosen=true}
+  capsEdited=true;renderCaps();drawIdle();toast('🎬 התסריט מוכן! לחצי על המסך לצפייה',4000)}
 function delPhoto(i){photos.splice(i,1);thumbs();regen();drawIdle()}
 
 /* ===== שיר ===== */
@@ -182,7 +238,7 @@ async function renderTrack(style,T){const key=style+T;if(trackCache[key])return 
 /* ======= ציר זמן ורינדור ======= */
 function plan(){const n=photos.length,C=8+4*Math.max(0,n-1)+4;return{n,C,T:C+12}}
 const isFreeze=(i,n)=>!TH.heart&&(i===5||i===11)&&i<n-1&&!(photos[i]&&photos[i].vid);
-function styleOf(i,n){if(TH.heart)return i>0&&i%3===1?'tunnel':i>0&&i%3===2?'line':'heart';if(isFreeze(i,n))return'freeze';let st=STY[i%STY.length];if(NEEDS[st]&&i<NEEDS[st])st='kb';return st}
+function styleOf(i,n){const o=photos[i]&&photos[i].fxs;if(o&&!(photos[i].vid)&&!(NEEDS[o]&&i<NEEDS[o]))return o;if(TH.heart)return i>0&&i%3===1?'tunnel':i>0&&i%3===2?'line':'heart';if(isFreeze(i,n))return'freeze';let st=STY[i%STY.length];if(NEEDS[st]&&i<NEEDS[st])st='kb';return st}
 function drawFreeze(i,lb,pulse){const img=photos[i];if(lb<1){kb(img,lb,i,pulse);return}photo(img,1.16+.1*Math.exp(-(lb-1)*8),0,0,0);
   cx.save();cx.globalCompositeOperation='saturation';cx.fillStyle='#777';cx.fillRect(0,0,W,H);cx.restore();cx.fillStyle='rgba(255,225,150,.14)';cx.fillRect(0,0,W,H);
   text('⏸ רגע…',150,40,1,1,'rgba(220,38,38,.92)');flash(1-(lb-1)*6,'#fff')}
@@ -268,7 +324,7 @@ function storyBar(b,C,n){const p=clamp((b-8)/(C-12),0,1),y=H*.955,x0=W*.9,x1=W*.
   const m=Math.max(1,n-1);for(let k=0;k<=m;k++){const xx=x0+(x1-x0)*k/m,on=p>=k/m-1e-6;cx.fillStyle=on?'#fde047':'rgba(255,255,255,.35)';cx.beginPath();cx.arc(xx,y,on?7:5,0,7);cx.fill()}
   const ix=x0+(x1-x0)*p;emoji(TH.heart?'💛':TH.e==='📍'?'🚌':'✈️',ix,y-22-Math.abs(Math.sin(b*Math.PI))*8,40,1,1,0);cx.restore()}
 function chapterCard(i,lb,n){const m=n-1,ks=[0,Math.floor(m/3),Math.floor(2*m/3)];const c=ks.indexOf(i);if(c<0||lb>1.1||(c>0&&ks[c]===ks[c-1]))return;const a=lb<.8?clamp(lb*5,0,1):clamp((1.1-lb)*3.3,0,1);
-  const T2=TH.heart?['איך הכל התחיל','הרגעים שלנו','תמיד ביחד']:TH.e==='📍'?['יוצאים לדרך','ההרפתקה','הרגע הגדול']:['ההתחלה','בדרך','השיא'];
+  const T2=TH.ch?TH.ch:TH.heart?['איך הכל התחיל','הרגעים שלנו','תמיד ביחד']:TH.e==='📍'?['יוצאים לדרך','ההרפתקה','הרגע הגדול']:['ההתחלה','בדרך','השיא'];
   cx.save();cx.globalAlpha=a;cx.fillStyle='rgba(0,0,0,.55)';cx.fillRect(0,H*.36,W,H*.2);cx.restore();text('פרק '+(c+1),H*.41,46,1,a,null,'#fde047');text(T2[c],H*.495,70,.9+.1*eob(lb/.5),a)}
 function drawColorPop(i,lb,pulse){kb(photos[i],lb,i,pulse);const p=clamp((lb-.5)/1.1,0,1),edge=W*(1-p);gray(0,0,edge,H);
   if(p>0&&p<1){cx.fillStyle='rgba(255,255,255,.9)';cx.shadowColor='#fff';cx.shadowBlur=25;cx.fillRect(edge-3,0,6,H);cx.shadowBlur=0}}
