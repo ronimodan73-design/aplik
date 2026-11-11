@@ -1,5 +1,5 @@
 /*META {"id":"prita","title":"מעבדת הפריטה: שלם פחות שבר","icon":"🍫"} */
-const LAB={hide:true,tip:'🖐 בחרו צורה (מלבן, עיגול או ציר מספרים) וקבעו את התרגיל בכפתורי + / −. לחצו על השלם המסומן כדי לפרוט אותו, ואחר כך לחצו על החלקים שמורידים. אפשר גם "➡ צעד הבא".',refresh:()=>out()};
+const LAB={hide:true,tip:'🖐 קבעו את התרגיל בכפתורי + / −. התלמיד לוחץ על השלם המסומן, ואז כל לחיצה על העיגול חותכת אותו לעוד חלק, עד שיש חלקים כמו המכנה. אחר כך לוחצים על החלקים שמורידים.',refresh:()=>out()};
 const X0=30,Y=150,H=80,GAP=16,MAXW=5;
 let W=3,n=3,d=4,step=0,chal=null;
 /* שבר בטקסט (HTML): מונה מעל מכנה */
@@ -13,7 +13,7 @@ const mx=(w,a,b,c)=>a===0?`<span class="${c||''}">${w}</span>`:`<span class="mx 
 function sf(x,y,a,b,col,fs=30){return `<text x="${x}" y="${y-6}" text-anchor="middle" font-size="${fs}" font-weight="800" fill="${col}">${a}</text><line x1="${x-fs*.45}" y1="${y}" x2="${x+fs*.45}" y2="${y}" stroke="${col}" stroke-width="3"/><text x="${x}" y="${y+fs}" text-anchor="middle" font-size="${fs}" font-weight="800" fill="${col}">${b}</text>`;}
 const BW=()=>Math.min(130,(700-GAP*(W-1))/W);
 const bx=i=>X0+i*(BW()+GAP);
-let shape='rect',rem=new Set(),cut=0;
+let shape='circle',rem=new Set(),cut=0;
 /* מיקום השלם ה־i לפי הצורה */
 function geo(i){const w=BW();if(shape==='line'){const u=Math.min(140,700/W),x=X0+i*u;return {x,w:u,cx:x+u/2,cy:Y+H/2,u};}
  const x=bx(i);return {x,w,cx:x+w/2,cy:Y+H/2,r:Math.min(w/2-4,62)};}
@@ -35,15 +35,17 @@ function draw(){const L=W-1;if(step===0){rem=new Set();}let s='';
   for(let j=0;j<=W;j++){const x=geo(j).x;s+=`<line x1="${x}" y1="${g0.cy-18}" x2="${x}" y2="${g0.cy+18}" stroke="${COL.ink}" stroke-width="4"/><text x="${x}" y="${g0.cy+48}" text-anchor="middle" font-size="26" font-weight="800" fill="${COL.ink}">${j}</text>`;}}
  for(let i=0;i<W;i++){const g=geo(i),last=i===L,ly=shape==='line'?g.cy-50:bot+40;
   if(last&&step>=1){
-   if(step===1&&cut<d){s+=piece(i,-1,d,COL.purple,.85,COL.purple);for(let k=1;k<=cut;k++)s+=cutLine(i,k);}
+   if(step===1&&cut!==d){const bad=cut>d,cc=bad?COL.red:COL.purple;
+    if(cut<=1)s+=piece(i,-1,1,cc,.85,COL.gold,'stroke-width="6"','cw0');else for(let k=0;k<cut;k++)s+=piece(i,k,cut,cc,.85,'#fff','','cw'+k);
+    s+=`<text x="${g.cx}" y="${shape==='line'?g.cy-34:Y-14}" text-anchor="middle" font-size="26">✂️</text>`;}
    else for(let k=0;k<d;k++){const gone=rem.has(k);s+=piece(i,k,d,gone?COL.red:COL.purple,gone?.15:.85,gone?COL.red:COL.purple,gone?'stroke-dasharray="6 5"':'',step<3&&!gone?'p'+k:'');}
-   s+=shape==='line'?sf(g.cx,ly-18,d,d,COL.purple,24):sf(g.cx,ly-8,d,d,COL.purple,26);
+   if(cut===d)s+=shape==='line'?sf(g.cx,ly-18,d,d,COL.purple,24):sf(g.cx,ly-8,d,d,COL.purple,26);
   }else{s+=piece(i,-1,1,COL.green,.85,last&&step===0?COL.gold:COL.green,last&&step===0?'stroke-width="6"':'',last&&step===0?'whole':'');
    if(shape!=='line')s+=`<text x="${g.cx}" y="${ly}" text-anchor="middle" font-size="28" font-weight="800" fill="${COL.green}">1</text>`;}}
  const gh=geo(L),hx=shape==='line'?geo(W).x+34:gh.x+gh.w+16;
  s+=`<circle id="hd" cx="${Math.min(hx,742)}" cy="${g0.cy}" r="16" fill="${COL.gold}" stroke="${COL.ink}" stroke-width="3" style="cursor:grab"/>`;
  const msg=[`צריך להוריד ${parts(n,d)}. לחצו על השלם המסומן כדי לפרוט אותו`,
-  `פורטים שלם אחד ל־${d} חלקים שווים. עכשיו לחצו על ${n===1?'החלק':n+' חלקים'} שמורידים`,
+  (cut===d?`מצוין! ${d} חלקים, כמו המכנה. לחצו על ${n===1?'חלק אחד':n+' חלקים'} כדי להוריד`:cut>d?`חתכתם ל־${cut} חלקים: יותר מדי! צריך ${d}. לחצו "↩ בטל חיתוך"`:`חתכתם ל־${cut===1?'חלק אחד':cut+' חלקים'}. המכנה ${d}, אז צריך ${d} חלקים. לחצו כדי לחתוך עוד`),
   `הורדנו ${rem.size} מתוך ${n}. ${rem.size<n?'לחצו על עוד חלק':''}`,
   L>0?`נשארו ${wholes(L)} ועוד ${parts(d-n,d)}`:`לא נשארו שלמים. נשארו ${parts(d-n,d)}`][step];
  s+=`<text x="380" y="${bot+90}" text-anchor="middle" font-size="24" font-weight="700" class="he" fill="${COL.ink}">${msg}</text>`;
@@ -54,15 +56,16 @@ function out(){const H2=hidCls(),L=W-1;
   <div class="ctl"><b class="red">מונה</b><button class="lt" id="nm">−</button><span class="big red">${n}</span><button class="lt" id="np">+</button></div>
   <div class="ctl"><b class="purple">מכנה</b><button class="lt" id="dm">−</button><span class="big purple">${d}</span><button class="lt" id="dp">+</button></div>
   <div class="ctl"><button id="bNext">➡ צעד הבא</button><button class="lt" id="bRe">🔁 מההתחלה</button><span class="tip">צעד ${step+1} מתוך 4</span></div>
+  ${step===1&&cut!==d?`<div class="ctl"><button id="bCut">✂️ עוד חיתוך</button><button class="lt" id="bUn">↩ בטל חיתוך</button><span class="big ${cut>d?'red':'purple'}">${cut} / ${d}</span></div>`:''}
   <div class="ctl"><b>צורה</b><button class="${shape==='rect'?'on':'lt'}" id="sR">🍫 מלבן</button><button class="${shape==='circle'?'on':'lt'}" id="sC">🍕 עיגול</button><button class="${shape==='line'?'on':'lt'}" id="sL">📏 ציר מספרים</button></div>`);
  [['sR','rect'],['sC','circle'],['sL','line']].forEach(([id,v])=>$('#'+id).onclick=()=>{if(!ST.busy&&shape!==v){shape=v;step=0;ST.revealed=false;draw();}});
  const set=(w2,n2,d2)=>{if(ST.busy)return;d2=Math.max(2,Math.min(10,d2));n2=Math.max(1,Math.min(d2-1,n2));w2=Math.max(1,Math.min(MAXW,w2));
   if(w2!==W||n2!==n||d2!==d){W=w2;n=n2;d=d2;step=0;ST.revealed=false;draw();}};
  $('#wm').onclick=()=>set(W-1,n,d);$('#wp').onclick=()=>set(W+1,n,d);$('#nm').onclick=()=>set(W,n-1,d);$('#np').onclick=()=>set(W,n+1,d);
  $('#dm').onclick=()=>set(W,n,d-1);$('#dp').onclick=()=>set(W,n,d+1);
- $('#bNext').onclick=next;$('#bRe').onclick=()=>{if(!ST.busy){step=0;ST.revealed=false;draw();}};
+ $('#bNext').onclick=next;if($('#bCut')){$('#bCut').onclick=addCut;$('#bUn').onclick=undoCut;}$('#bRe').onclick=()=>{if(!ST.busy){step=0;ST.revealed=false;draw();}};
  let t=`<div class="big">התרגיל: ${M(`${C(W,'green')} − ${fr(n,d,'red')}`)}</div>`;
- if(step>=1)t+=`<div class="big" style="font-size:26px">1. פורטים שלם: ${M(`${C(W,'green')} = ${L>0?C(L,'green')+' + ':''}${fr(d,d,'purple')}`)}</div>`;
+ if(step>=1&&cut===d)t+=`<div class="big" style="font-size:26px">1. פורטים שלם: ${M(`${C(W,'green')} = ${L>0?C(L,'green')+' + ':''}${fr(d,d,'purple')}`)}</div>`;
  if(step>=2)t+=`<div class="big" style="font-size:26px">2. מחסרים: ${M(`${fr(d,d,'purple')} − ${fr(n,d,'red')} = <span class="${H2}">${fr(d-n,d,'blue')}</span>`)}</div>`;
  if(step>=3)t+=`<div class="big okbox" style="font-size:28px">התשובה: <span class="${H2}">${M(`${C(W,'green')} − ${fr(n,d,'red')} = ${mx(L,d-n,d,'blue')}`)}</span></div>
    <div class="tip">בדיקה: ${M(`${mx(L,d-n,d)} + ${fr(n,d)} = ${W}`)}</div>`;
@@ -71,11 +74,14 @@ function out(){const H2=hidCls(),L=W-1;
  if(step>=3)card('why',`<div class="big purple" style="font-size:24px">למה פורטים?</div><div>אי אפשר להוריד ${fr(n,d,'red')} משלם שלא חתוך. לכן פורטים <b>שלם אחד</b> ל־${M(fr(d,d,'purple'))}, באותו מכנה כמו השבר שמורידים. את שאר השלמים לא נוגעים.</div><div class="badbox">⚠️ טעות נפוצה: ${M(`${W} − ${fr(n,d)} = ${mx(W-1,n,d)}`)} (מעתיקים את השבר שמורידים). צריך לבדוק כמה חלקים <b>נשארו</b> בשלם שפרטנו: ${M(`${d} − ${n} = ${d-n}`)}</div>`);
  else if($('#why'))$('#why').remove();
  if(chal)chalCard();}
-function doCut(){if(ST.busy||step!==0)return;step=1;cut=0;draw();
- seq(d,Math.min(2600,d*380),i=>{cut=i+1;draw();},()=>{cut=d;draw();});}
+/* התלמיד חותך: כל לחיצה על העיגול מוסיפה חיתוך, עד שיש חלקים כמספר המכנה */
+function doCut(){if(ST.busy||step!==0)return;step=1;cut=1;draw();}
+function addCut(){if(ST.busy||step!==1||cut===d||cut>=12)return;cut++;draw();}
+function undoCut(){if(ST.busy||step!==1)return;cut=Math.max(1,cut-1);draw();}
 function takeOne(k){if(ST.busy||step<1||step>2||rem.has(k)||rem.size>=n)return;rem.add(k);step=rem.size>=n?3:2;draw();}
 function next(){if(ST.busy)return;if(step>=3){step=0;draw();return;}
  if(step===0){doCut();return;}
+ if(step===1&&cut!==d){if(cut>d){cut=d;draw();return;}const m=d-cut;seq(m,Math.min(2600,m*380),()=>{cut++;draw();});return;}
  const need=[];for(let k=d-1;k>=0&&rem.size+need.length<n;k--)if(!rem.has(k))need.push(k);
  seq(need.length,Math.max(800,need.length*450),i=>{rem.add(need[i]);step=2;draw();},()=>{step=3;draw();});}
 /* אתגר לכיתה: תרגיל חדש + 4 תשובות, נבדק לבד */
@@ -97,6 +103,6 @@ function start(){svgSize(760,450);
  const st=document.createElement('style');st.textContent='.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1;margin:0 3px;font-size:.8em}.fr .nu{border-bottom:3px solid currentColor;padding:0 4px 2px}.fr .de{padding-top:2px}.mx{display:inline-flex;align-items:center;gap:1px}';document.head.appendChild(st);
  tool('bC','🎯 אתגר לכיתה',newChal,{lt:1});
  tool('bS','➡ צעד הבא',next,{lt:1});
- $('#sv').addEventListener('click',e=>{const id=e.target.id||'';if(id==='whole')doCut();else if(/^p\d+$/.test(id))takeOne(+id.slice(1));});
+ $('#sv').addEventListener('click',e=>{const id=e.target.id||'';if(id==='whole')doCut();else if(/^cw\d+$/.test(id))addCut();else if(/^p\d+$/.test(id))takeOne(+id.slice(1));});
  draggable(['hd'],(id,p)=>{const u=shape==='line'?Math.min(140,700/W):Math.min(130,(700-GAP*(W-1))/W)+GAP,k=Math.round((p.x-X0)/u);const w2=Math.max(1,Math.min(MAXW,k));if(w2!==W){W=w2;step=0;ST.revealed=false;draw();}});
  draw();}
