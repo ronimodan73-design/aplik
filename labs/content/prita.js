@@ -1,5 +1,5 @@
 /*META {"id":"prita","title":"מעבדת הפריטה: שלם פחות שבר","icon":"🍫"} */
-const LAB={hide:true,tip:'🖐 קבעו את התרגיל בכפתורי + / −. התלמיד לוחץ על השלם המסומן, ואז כל לחיצה על העיגול חותכת אותו לעוד חלק, עד שיש חלקים כמו המכנה. אחר כך לוחצים על החלקים שמורידים.',refresh:()=>out()};
+const LAB={hide:true,tip:'🔪 התלמיד גורר את הסכין (האצבע או העכבר) דרך העיגול המסומן, וכל חיתוך מחלק אותו לעוד חלק שווה, עד שיש חלקים כמו המכנה. אחר כך לוחצים על החלקים שמורידים. אפשר גם ללחוץ על העיגול.',refresh:()=>out()};
 const X0=30,Y=150,H=80,GAP=16,MAXW=5;
 let W=3,n=3,d=4,step=0,chal=null;
 /* שבר בטקסט (HTML): מונה מעל מכנה */
@@ -37,15 +37,16 @@ function draw(){const L=W-1;if(step===0){rem=new Set();}let s='';
   if(last&&step>=1){
    if(step===1&&cut!==d){const bad=cut>d,cc=bad?COL.red:COL.purple;
     if(cut<=1)s+=piece(i,-1,1,cc,.85,COL.gold,'stroke-width="6"','cw0');else for(let k=0;k<cut;k++)s+=piece(i,k,cut,cc,.85,'#fff','','cw'+k);
-    s+=`<text x="${g.cx}" y="${shape==='line'?g.cy-34:Y-14}" text-anchor="middle" font-size="26">✂️</text>`;}
+    s+=`<text x="${g.cx}" y="${shape==='line'?g.cy-34:Y-14}" text-anchor="middle" font-size="30">🔪</text>`;}
    else for(let k=0;k<d;k++){const gone=rem.has(k);s+=piece(i,k,d,gone?COL.red:COL.purple,gone?.15:.85,gone?COL.red:COL.purple,gone?'stroke-dasharray="6 5"':'',step<3&&!gone?'p'+k:'');}
    if(cut===d)s+=shape==='line'?sf(g.cx,ly-18,d,d,COL.purple,24):sf(g.cx,ly-8,d,d,COL.purple,26);
   }else{s+=piece(i,-1,1,COL.green,.85,last&&step===0?COL.gold:COL.green,last&&step===0?'stroke-width="6"':'',last&&step===0?'whole':'');
+   if(last&&step===0)s+=`<text x="${g.cx}" y="${shape==='line'?g.cy-34:Y-14}" text-anchor="middle" font-size="30">🔪</text>`;
    if(shape!=='line')s+=`<text x="${g.cx}" y="${ly}" text-anchor="middle" font-size="28" font-weight="800" fill="${COL.green}">1</text>`;}}
  const gh=geo(L),hx=shape==='line'?geo(W).x+34:gh.x+gh.w+16;
  s+=`<circle id="hd" cx="${Math.min(hx,742)}" cy="${g0.cy}" r="16" fill="${COL.gold}" stroke="${COL.ink}" stroke-width="3" style="cursor:grab"/>`;
- const msg=[`צריך להוריד ${parts(n,d)}. לחצו על השלם המסומן כדי לפרוט אותו`,
-  (cut===d?`מצוין! ${d} חלקים, כמו המכנה. לחצו על ${n===1?'חלק אחד':n+' חלקים'} כדי להוריד`:cut>d?`חתכתם ל־${cut} חלקים: יותר מדי! צריך ${d}. לחצו "↩ בטל חיתוך"`:`חתכתם ל־${cut===1?'חלק אחד':cut+' חלקים'}. המכנה ${d}, אז צריך ${d} חלקים. לחצו כדי לחתוך עוד`),
+ const msg=[`צריך להוריד ${parts(n,d)}. קחו את הסכין 🔪 וחתכו את השלם המסומן`,
+  (cut===d?`מצוין! ${d} חלקים, כמו המכנה. לחצו על ${n===1?'חלק אחד':n+' חלקים'} כדי להוריד`:cut>d?`חתכתם ל־${cut} חלקים: יותר מדי! צריך ${d}. לחצו "↩ בטל חיתוך"`:`חתכתם ל־${cut===1?'חלק אחד':cut+' חלקים'}. המכנה ${d}, אז צריך ${d} חלקים. חתכו עוד עם הסכין`),
   `הורדנו ${rem.size} מתוך ${n}. ${rem.size<n?'לחצו על עוד חלק':''}`,
   L>0?`נשארו ${wholes(L)} ועוד ${parts(d-n,d)}`:`לא נשארו שלמים. נשארו ${parts(d-n,d)}`][step];
  s+=`<text x="380" y="${bot+90}" text-anchor="middle" font-size="24" font-weight="700" class="he" fill="${COL.ink}">${msg}</text>`;
@@ -56,7 +57,7 @@ function out(){const H2=hidCls(),L=W-1;
   <div class="ctl"><b class="red">מונה</b><button class="lt" id="nm">−</button><span class="big red">${n}</span><button class="lt" id="np">+</button></div>
   <div class="ctl"><b class="purple">מכנה</b><button class="lt" id="dm">−</button><span class="big purple">${d}</span><button class="lt" id="dp">+</button></div>
   <div class="ctl"><button id="bNext">➡ צעד הבא</button><button class="lt" id="bRe">🔁 מההתחלה</button><span class="tip">צעד ${step+1} מתוך 4</span></div>
-  ${step===1&&cut!==d?`<div class="ctl"><button id="bCut">✂️ עוד חיתוך</button><button class="lt" id="bUn">↩ בטל חיתוך</button><span class="big ${cut>d?'red':'purple'}">${cut} / ${d}</span></div>`:''}
+  ${step===1&&cut!==d?`<div class="ctl"><button id="bCut">🔪 עוד חיתוך</button><button class="lt" id="bUn">↩ בטל חיתוך</button><span class="big ${cut>d?'red':'purple'}">${cut} / ${d}</span></div>`:''}
   <div class="ctl"><b>צורה</b><button class="${shape==='rect'?'on':'lt'}" id="sR">🍫 מלבן</button><button class="${shape==='circle'?'on':'lt'}" id="sC">🍕 עיגול</button><button class="${shape==='line'?'on':'lt'}" id="sL">📏 ציר מספרים</button></div>`);
  [['sR','rect'],['sC','circle'],['sL','line']].forEach(([id,v])=>$('#'+id).onclick=()=>{if(!ST.busy&&shape!==v){shape=v;step=0;ST.revealed=false;draw();}});
  const set=(w2,n2,d2)=>{if(ST.busy)return;d2=Math.max(2,Math.min(10,d2));n2=Math.max(1,Math.min(d2-1,n2));w2=Math.max(1,Math.min(MAXW,w2));
@@ -103,6 +104,21 @@ function start(){svgSize(760,450);
  const st=document.createElement('style');st.textContent='.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1;margin:0 3px;font-size:.8em}.fr .nu{border-bottom:3px solid currentColor;padding:0 4px 2px}.fr .de{padding-top:2px}.mx{display:inline-flex;align-items:center;gap:1px}';document.head.appendChild(st);
  tool('bC','🎯 אתגר לכיתה',newChal,{lt:1});
  tool('bS','➡ צעד הבא',next,{lt:1});
- $('#sv').addEventListener('click',e=>{const id=e.target.id||'';if(id==='whole')doCut();else if(/^cw\d+$/.test(id))addCut();else if(/^p\d+$/.test(id))takeOne(+id.slice(1));});
+ /* 🔪 סכין: גוררים קו דרך השלם המסומן, ובסוף הגרירה הוא נחתך לעוד חלק */
+ let kn=null,swiped=false;
+ const canCut=()=>!ST.busy&&(step===0||(step===1&&cut!==d));
+ $('#sv').addEventListener('pointerdown',e=>{if(e.target.id==='hd'||!canCut())return;kn={a:svgPt(e)};e.preventDefault();});
+ window.addEventListener('pointermove',e=>{if(!kn)return;const b=svgPt(e);kn.b=b;let k=$('#knife');
+  if(!k){$('#sv').insertAdjacentHTML('beforeend','<g id="knife" style="pointer-events:none"><line id="kl" stroke="#1f2937" stroke-width="5" stroke-dasharray="10 7" stroke-linecap="round"/><text id="kt" font-size="44" text-anchor="middle">🔪</text></g>');}
+  const l=$('#kl');l.setAttribute('x1',kn.a.x);l.setAttribute('y1',kn.a.y);l.setAttribute('x2',b.x);l.setAttribute('y2',b.y);
+  const t=$('#kt');t.setAttribute('x',b.x);t.setAttribute('y',b.y+14);});
+ window.addEventListener('pointerup',()=>{if(!kn)return;const {a,b}=kn;kn=null;if($('#knife'))$('#knife').remove();if(!b)return;
+  const g=geo(W-1),r=shape==='circle'?g.r:shape==='line'?26:H/2,cy=g.cy,cx=g.cx;
+  const dx=b.x-a.x,dy=b.y-a.y,len=Math.hypot(dx,dy);if(len<r*.9)return;
+  const t=Math.max(0,Math.min(1,((cx-a.x)*dx+(cy-a.y)*dy)/(len*len))),dist=Math.hypot(a.x+t*dx-cx,a.y+t*dy-cy);
+  if(dist>(shape==='circle'?r*.75:Math.max(r,g.w/2)))return;
+  swiped=true;setTimeout(()=>swiped=false,350);
+  if(step===0){doCut();addCut();}else addCut();});
+ $('#sv').addEventListener('click',e=>{if(swiped)return;const id=e.target.id||'';if(id==='whole')doCut();else if(/^cw\d+$/.test(id))addCut();else if(/^p\d+$/.test(id))takeOne(+id.slice(1));});
  draggable(['hd'],(id,p)=>{const u=shape==='line'?Math.min(140,700/W):Math.min(130,(700-GAP*(W-1))/W)+GAP,k=Math.round((p.x-X0)/u);const w2=Math.max(1,Math.min(MAXW,k));if(w2!==W){W=w2;step=0;ST.revealed=false;draw();}});
  draw();}
