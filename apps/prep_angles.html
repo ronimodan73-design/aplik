@@ -64,6 +64,13 @@ svg{display:block;max-width:100%;margin:6px auto}
 .calc{background:#ecfeff;border-right:5px solid #0891b2;border-radius:10px;padding:8px 10px;margin-top:10px;line-height:2}
 .lvl-row{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:15px}.lvl-row span:first-child{width:120px}.lvb{flex:1;height:12px;background:#eee;border-radius:6px;overflow:hidden}.lvb i{display:block;height:100%}
 .fb{background:#f5f3ff;border-radius:10px;padding:10px;margin:8px 0;font-size:16px;line-height:1.7}.fb.ok{background:#f0fdf4}.fb.no{background:#fff7ed;border-right:5px solid #f59e0b}
+.mg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+.gc{background:#fff;border:3px solid #e5e7eb;border-radius:12px;padding:4px;text-align:center;cursor:pointer;font-size:14px;position:relative}
+.gc.sel{border-color:#f59e0b;box-shadow:0 0 0 4px #fde68a}
+.gc .bd{position:absolute;top:4px;right:6px;color:#fff;border-radius:50%;width:24px;height:24px;line-height:24px;font-weight:bold;font-size:14px}
+.mc{background:#f5f3ff;border:2px solid #ddd6fe;border-radius:12px;padding:10px 6px;font-size:15px;line-height:1.7;cursor:pointer;color:#1f2937;text-align:center}
+.mc.dn{color:#fff;cursor:default}.mc.dn .f,.mc.dn b{color:#fff!important}
+.shake{animation:shk .4s}@keyframes shk{25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
 </style>
 </head>
 <body>
@@ -194,6 +201,30 @@ function F(s){
   return '<span class="f">'+x.replace(/\^(\d+)/g,'<sup>$1</sup>')+'</span>';});}
 var Q=D.Q,SYM=D.flash,TIPS=D.tips;
 var app=document.getElementById('app'),list=[],i=0,good=0,wrong=[],mode='';
+var MB=[],MI=0,MR=0,MS=null,MD={},MO=[],ME=0,MC=['#16a34a','#0891b2','#db2777','#ea580c'];
+function match(){MB=[];for(var k=0;k<D.match.length;k+=4)MB.push(D.match.slice(k,k+4));MI=0;MR=0;ME=0;mnew();}
+function mnew(){MS=null;MD={};MO=sh(MB[MI].map(function(_,k){return k;}));mdraw('');}
+function mdraw(fb){
+ var set=MB[MI],n=0,h='<div class="top"><button class="back" onclick="home()">→ תפריט</button><span>לוח '+(MI+1)+' / '+MB.length+' · שלב '+(MR+1)+' / 2 · ❌ '+ME+'</span></div>';
+ h+='<div class="card"><div class="q" style="font-size:17px">'+(MR==0?'🧩 שלב 1: איזו <b>משוואה</b> מתאימה לכל גרף?':'🧩 שלב 2: באיזה <b>תחום</b> כל גרף חיובי ובאיזה שלילי?')+'<br><small style="font-weight:normal;color:#6b7280">לוחצים על גרף 👆 ואז על הכרטיס שמתאים לו</small></div><div class="mg">';
+ set.forEach(function(s,k){var d=MD[k];if(d)n++;h+='<div class="gc'+(MS===k?' sel':'')+'" style="'+(d?'border-color:'+MC[k]:'')+'" onclick="msel('+k+')">'+(d?'<span class="bd" style="background:'+MC[k]+'">✓</span>':'')+D.svg[s.g]+(MR==1||d?'<div>'+F(MR==1?s.e:'')+'</div>':'')+'</div>';});
+ h+='</div><div class="mg"'+(MR==1?' style="grid-template-columns:1fr"':'')+'>';
+ MO.forEach(function(k){var s=set[k],d=MD[k];h+='<button class="mc'+(d?' dn':'')+'" id="mc'+k+'" style="'+(d?'background:'+MC[k]+';border-color:'+MC[k]:'')+'" '+(d?'disabled':'onclick="mtry('+k+')"')+'>'+F(MR==0?s.e:s.r)+'</button>';});
+ h+='</div><div id="mfb">'+fb+'</div>';
+ if(n==set.length)h+='<div class="fb ok">🎉 כל הכבוד! כל הזוגות נכונים.</div><button class="next" onclick="mgo()">'+(MR==0?'לשלב 2: התאמת תחומים ←':MI<MB.length-1?'ללוח הבא ←':'לסיכום 🏁')+'</button>';
+ app.innerHTML=h+'</div>';
+}
+function msel(k){if(MD[k])return;MS=k;mdraw('');}
+function mtry(k){
+ if(MS===null){document.getElementById('mfb').innerHTML='<div class="fb">👆 קודם לוחצים על גרף, ואז על הכרטיס.</div>';return;}
+ var s=MB[MI][MS];
+ if(k===MS){MD[k]=1;MS=null;mdraw('');return;}
+ ME++;var b=document.getElementById('mc'+k);b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');
+ document.getElementById('mfb').innerHTML='<div class="fb no">❌ לא מתאים לגרף שבחרת. רמז:<br>💡 '+F(MR==0?s.h1:s.h2)+'</div>';
+ document.querySelector('.top span').innerHTML='לוח '+(MI+1)+' / '+MB.length+' · שלב '+(MR+1)+' / 2 · ❌ '+ME;
+}
+function mgo(){if(MR==0){MR=1;mnew();}else{MR=0;MI++;if(MI<MB.length)mnew();else mend();}window.scrollTo(0,0);}
+function mend(){app.innerHTML='<div class="card" style="text-align:center"><div class="score">🧩</div><h2>סיימת את משחק ההתאמה!</h2><div class="fb '+(ME<3?'ok':'no')+'">'+(ME==0?'🏆 בלי אף טעות – מצוין!':'מספר טעויות: '+ME+(ME<3?' – יפה מאוד!':' – כדאי לשחק שוב ולשים לב לצורה ולאפסים.'))+'</div><button class="next" onclick="match()">🔁 לשחק שוב</button><button class="next" style="background:#16a34a" onclick="home()">→ לתפריט</button></div>';}
 function sh(a){a=a.slice();for(var k=a.length-1;k>0;k--){var j=Math.floor(Math.random()*(k+1));var t=a[k];a[k]=a[j];a[j]=t;}return a;}
 function stars(l){return '★'.repeat(l)+'☆'.repeat(3-l);}
 function home(){
@@ -201,6 +232,7 @@ function home(){
  '<button class="btn b1" onclick="summary()">📘 סיכום מהיר<small>כל החומר בדף אחד – קרא קודם</small></button>'+
  '<button class="btn" style="background:#ea580c" onclick="tips()">⚡ טיפים לזכירה מהירה<small>טריקים ומלכודות נפוצות</small></button>'+
  '<button class="btn b2" onclick="flash()">🔤 כרטיסיות<small>'+D.flashSub+'</small></button>'+
+ (D.match?'<button class="btn" style="background:#ca8a04" onclick="match()">🧩 משחק התאמה<small>'+(D.matchSub||'מתאימים כרטיסים')+'</small></button>':'')+
  '<button class="btn b3" onclick="start(Q,\'all\')">🧠 כל השאלות לפי סדר הנושאים<small>'+Q.length+' שאלות, הסבר מפורט אחרי כל תשובה</small></button>'+
  '<button class="btn b4" onclick="start(mock(),\'test\')">🏁 מבחן דמה<small>20 שאלות מעורבבות בכל הרמות · ציון ומשוב אישי</small></button>';
  window.scrollTo(0,0);
