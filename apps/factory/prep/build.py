@@ -1,7 +1,7 @@
 # Builds exam-prep apps: python3 build.py  (run from this folder)
 # engine.html = shared engine; <slug>.js = content (D.summary, D.tips, D.flash, R questions, D.svg, D.know)
 import os
-APPS=[('yachas','prep_ratio','יחס','יחס'),('pilug','prep_pilug','חוק הפילוג','פילוג'),('achuzim','prep_percent','אחוזים','אחוזים'),('maagal','prep_circle','מעגל ועיגול','מעגל'),('zaviot','prep_angles','זוויות מתאימות ומתחלפות','זוויות'),('kimia','prep_kimia','שפת הכימאים','כימיה','הכנה למבחן בכימיה')]
+APPS=[('yachas','prep_ratio','יחס','יחס'),('pilug','prep_pilug','חוק הפילוג','פילוג'),('achuzim','prep_percent','אחוזים','אחוזים'),('maagal','prep_circle','מעגל ועיגול','מעגל'),('zaviot','prep_angles','זוויות מתאימות ומתחלפות','זוויות'),('kimia','prep_kimia','שפת הכימאים','כימיה','הכנה למבחן בכימיה'),('func1','prep_func1','פונקציות והנדסה אנליטית','פונקציות','מבחן 1 – פונקציות והנדסה אנליטית')]
 e=open('engine.html').read()
 for a in APPS:
   src,slug,full,short=a[:4]
