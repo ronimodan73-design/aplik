@@ -98,3 +98,51 @@ def pf(f, x0, x1, y0, y1, w=240, h=190, pts=(), mode=None, grid=True):
             o.append(f'<text x="{X(x)+dx:.1f}" y="{Y(y)+4:.1f}" font-size="12" font-weight="bold" text-anchor="{anc}" fill="{col}">{lab}</text>')
     o.append('</svg>')
     return ''.join(o)
+
+class Cv:
+    """Animated canvas. Uses engine CSS classes: dp (drop-in), ap (fade-in), dr (draw line), pu (pulse)."""
+    def __init__(s, x0, x1, y0, y1, w=300, h=230, ticks=True):
+        s.x0, s.x1, s.y0, s.y1, s.w, s.h, s.p = x0, x1, y0, y1, w, h, 16
+        s.o = [f'<svg viewBox="0 0 {w} {h}" width="{w}" direction="ltr" style="direction:ltr;overflow:visible"><rect width="{w}" height="{h}" rx="10" fill="#fff"/>']
+        for i in range(math.ceil(x0), math.floor(x1)+1):
+            s.o.append(f'<line x1="{s.X(i):.1f}" y1="{s.p}" x2="{s.X(i):.1f}" y2="{h-s.p}" stroke="#eef0f4"/>')
+        for j in range(math.ceil(y0), math.floor(y1)+1):
+            s.o.append(f'<line x1="{s.p}" y1="{s.Y(j):.1f}" x2="{w-s.p}" y2="{s.Y(j):.1f}" stroke="#eef0f4"/>')
+        s.o.append(f'<line x1="4" y1="{s.Y(0):.1f}" x2="{w-4}" y2="{s.Y(0):.1f}" stroke="#111" stroke-width="1.5"/><line x1="{s.X(0):.1f}" y1="4" x2="{s.X(0):.1f}" y2="{h-4}" stroke="#111" stroke-width="1.5"/>')
+        s.o.append(f'<text x="{w-12}" y="{s.Y(0)-5:.1f}" font-size="12" font-style="italic">x</text><text x="{s.X(0)+5:.1f}" y="13" font-size="12" font-style="italic">y</text>')
+        if ticks:
+            for i in range(math.ceil(x0), math.floor(x1)+1):
+                if i: s.o.append(f'<text x="{s.X(i):.1f}" y="{s.Y(0)+13:.1f}" font-size="9" fill="#9ca3af" text-anchor="middle">{i}</text>')
+    def X(s, x): return s.p + (x-s.x0)/(s.x1-s.x0)*(s.w-2*s.p)
+    def Y(s, y): return s.p + (s.y1-y)/(s.y1-s.y0)*(s.h-2*s.p)
+    def pt(s, x, y, col, d, lab=None, side=1, pulse=False):
+        lx = s.X(x) + 8*side; anc = 'start' if side > 0 else 'end'
+        t = f'<text x="{lx:.1f}" y="{s.Y(y)-6:.1f}" font-size="12" font-weight="bold" fill="{col}" text-anchor="{anc}">{lab}</text>' if lab else ''
+        c = f'<circle cx="{s.X(x):.1f}" cy="{s.Y(y):.1f}" r="5.5" fill="{col}" stroke="#111"' + (f' class="pu" style="animation-delay:{d+.8}s"' if pulse else '') + '/>'
+        s.o.append(f'<g class="dp" style="animation-delay:{d}s">{c}{t}</g>')
+    def curve(s, f, d, dur=2.2, col='#6d28d9'):
+        pts = []
+        for i in range(201):
+            x = s.x0 + (s.x1-s.x0)*i/200; y = f(x)
+            if s.y0 - .3 <= y <= s.y1 + .3: pts.append('%.1f,%.1f' % (s.X(x), s.Y(max(s.y0, min(s.y1, y)))))
+        s.o.append(f'<polyline pathLength="1" class="dr" points="{" ".join(pts)}" fill="none" stroke="{col}" stroke-width="3.5" style="animation-delay:{d}s;animation-duration:{dur}s"/>')
+    def shade(s, f, d):
+        xs = [s.x0 + (s.x1-s.x0)*i/160 for i in range(161)]
+        for sg, col in ((1, '#22c55e'), (-1, '#ef4444')):
+            pts = ['%.1f,%.1f' % (s.X(x), s.Y(max(s.y0, min(s.y1, max(0, f(x)) if sg > 0 else min(0, f(x)))))) for x in xs]
+            s.o.append(f'<polygon class="ap" style="animation-delay:{d}s" points="{" ".join(pts)} {s.X(s.x1):.1f},{s.Y(0):.1f} {s.X(s.x0):.1f},{s.Y(0):.1f}" fill="{col}" fill-opacity=".38"/>')
+    def xaxis_hl(s, d):
+        s.o.append(f'<line class="ap" style="animation-delay:{d}s" x1="4" y1="{s.Y(0):.1f}" x2="{s.w-4}" y2="{s.Y(0):.1f}" stroke="#f59e0b" stroke-width="7" stroke-opacity=".55"/>')
+    def text(s, x, y, t, col, d, size=13):
+        s.o.append(f'<text class="ap" style="animation-delay:{d}s" x="{s.X(x):.1f}" y="{s.Y(y):.1f}" font-size="{size}" font-weight="bold" fill="{col}" text-anchor="middle">{t}</text>')
+    def svg(s): return ''.join(s.o) + '</svg>'
+
+def _cv_mv(s, x, y, x2, y2, col, d, lab=None, lab2=None, side=1):
+    """point that appears at (x,y) then slides to (x2,y2) with a dashed guide line."""
+    dx, dy = s.X(x2)-s.X(x), s.Y(y2)-s.Y(y)
+    s.o.append(f'<line class="ap" style="animation-delay:{d}s" x1="{s.X(x):.1f}" y1="{s.Y(y):.1f}" x2="{s.X(x2):.1f}" y2="{s.Y(y2):.1f}" stroke="{col}" stroke-width="2" stroke-dasharray="5 4"/>')
+    s.o.append(f'<g class="ap" style="animation-delay:{d}s"><circle class="mv" style="--dx:{dx:.1f}px;--dy:{dy:.1f}px;animation-delay:{d+.4}s" cx="{s.X(x):.1f}" cy="{s.Y(y):.1f}" r="5.5" fill="{col}" stroke="#111"/></g>')
+    if lab2:
+        anc = 'start' if side > 0 else 'end'
+        s.o.append(f'<text class="ap" style="animation-delay:{d+1.5}s" x="{s.X(x2)+8*side:.1f}" y="{s.Y(y2)+4:.1f}" font-size="12" font-weight="bold" fill="{col}" text-anchor="{anc}">{lab2}</text>')
+Cv.mv = _cv_mv
