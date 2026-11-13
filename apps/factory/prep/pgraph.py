@@ -58,3 +58,43 @@ def pg(a, b, c, shade=False, w=240, h=180, vlabel=True, ylabel=False):
         o.append(f'<text x="{X(xv)+6:.1f}" y="{vy:.1f}" font-size="12" fill="#0e7490">({_fmt(xv)}, {_fmt(yv)})</text>')
     o.append('</svg>')
     return ''.join(o)
+
+def pf(f, x0, x1, y0, y1, w=240, h=190, pts=(), mode=None, grid=True):
+    """General function sketch. pts: list of (x,label,color) points marked on curve.
+    mode='mirror' highlights y-axis as a mirror + horizontal dashed links between paired points;
+    mode='rotate' highlights origin + dashed link through origin."""
+    pad = 14
+    X = lambda x: pad + (x-x0)/(x1-x0)*(w-2*pad)
+    Y = lambda y: pad + (y1-y)/(y1-y0)*(h-2*pad)
+    o = [f'<svg viewBox="0 0 {w} {h}" width="{w}" direction="ltr" style="direction:ltr"><rect width="{w}" height="{h}" rx="10" fill="#fff"/>']
+    if grid:
+        for i in range(math.ceil(x0), math.floor(x1)+1):
+            o.append(f'<line x1="{X(i):.1f}" y1="{pad}" x2="{X(i):.1f}" y2="{h-pad}" stroke="#eef0f4"/>')
+        for j in range(math.ceil(y0), math.floor(y1)+1):
+            o.append(f'<line x1="{pad}" y1="{Y(j):.1f}" x2="{w-pad}" y2="{Y(j):.1f}" stroke="#eef0f4"/>')
+    o.append(f'<line x1="4" y1="{Y(0):.1f}" x2="{w-4}" y2="{Y(0):.1f}" stroke="#111" stroke-width="1.5"/>')
+    if mode == 'mirror':
+        o.append(f'<line x1="{X(0):.1f}" y1="4" x2="{X(0):.1f}" y2="{h-4}" stroke="#ec4899" stroke-width="5" stroke-opacity=".45"/>')
+    o.append(f'<line x1="{X(0):.1f}" y1="4" x2="{X(0):.1f}" y2="{h-4}" stroke="#111" stroke-width="1.5"/>')
+    o.append(f'<text x="{w-12}" y="{Y(0)-5:.1f}" font-size="12" font-style="italic">x</text><text x="{X(0)+5:.1f}" y="14" font-size="12" font-style="italic">y</text>')
+    seg, segs = [], []
+    for i in range(241):
+        x = x0 + (x1-x0)*i/240; y = f(x)
+        if y0-0.5 <= y <= y1+0.5: seg.append('%.1f,%.1f' % (X(x), Y(max(y0, min(y1, y)))))
+        elif seg: segs.append(seg); seg = []
+    if seg: segs.append(seg)
+    for s in segs: o.append(f'<polyline points="{" ".join(s)}" fill="none" stroke="#6d28d9" stroke-width="3"/>')
+    P = [(x, f(x), lab, col) for x, lab, col in pts]
+    if mode and len(P) >= 2:
+        for k in range(0, len(P)-1, 2):
+            a, b = P[k], P[k+1]
+            o.append(f'<line x1="{X(a[0]):.1f}" y1="{Y(a[1]):.1f}" x2="{X(b[0]):.1f}" y2="{Y(b[1]):.1f}" stroke="{a[3]}" stroke-width="2" stroke-dasharray="5 4"/>')
+    if mode == 'rotate':
+        o.append(f'<circle cx="{X(0):.1f}" cy="{Y(0):.1f}" r="7" fill="none" stroke="#ec4899" stroke-width="3"/>')
+    for x, y, lab, col in P:
+        o.append(f'<circle cx="{X(x):.1f}" cy="{Y(y):.1f}" r="5" fill="{col}" stroke="#111"/>')
+        if lab:
+            anc = 'end' if x < 0 else 'start'; dx = -7 if x < 0 else 7
+            o.append(f'<text x="{X(x)+dx:.1f}" y="{Y(y)+4:.1f}" font-size="12" font-weight="bold" text-anchor="{anc}" fill="{col}">{lab}</text>')
+    o.append('</svg>')
+    return ''.join(o)

@@ -185,7 +185,7 @@ function match(){MB=[];for(var k=0;k<D.match.length;k+=4)MB.push(D.match.slice(k
 function mnew(){MS=null;MD={};MO=sh(MB[MI].map(function(_,k){return k;}));mdraw('');}
 function mdraw(fb){
  var set=MB[MI],n=0,h='<div class="top"><button class="back" onclick="home()">→ תפריט</button><span>לוח '+(MI+1)+' / '+MB.length+' · שלב '+(MR+1)+' / 2 · ❌ '+ME+'</span></div>';
- h+='<div class="card"><div class="q" style="font-size:17px">'+(MR==0?'🧩 שלב 1: איזו <b>משוואה</b> מתאימה לכל גרף?':'🧩 שלב 2: באיזה <b>תחום</b> כל גרף חיובי ובאיזה שלילי?')+'<br><small style="font-weight:normal;color:#6b7280">לוחצים על גרף 👆 ואז על הכרטיס שמתאים לו</small></div><div class="mg">';
+ h+='<div class="card"><div class="q" style="font-size:17px">'+(MR==0?(set[0].q1||'🧩 שלב 1: איזו <b>משוואה</b> מתאימה לכל גרף?'):(set[0].q2||'🧩 שלב 2: באיזה <b>תחום</b> כל גרף חיובי ובאיזה שלילי?'))+'<br><small style="font-weight:normal;color:#6b7280">לוחצים על גרף 👆 ואז על הכרטיס שמתאים לו</small></div><div class="mg">';
  set.forEach(function(s,k){var d=MD[k];if(d)n++;h+='<div class="gc'+(MS===k?' sel':'')+'" style="'+(d?'border-color:'+MC[k]:'')+'" onclick="msel('+k+')">'+(d?'<span class="bd" style="background:'+MC[k]+'">✓</span>':'')+D.svg[s.g]+(MR==1||d?'<div>'+F(MR==1?s.e:'')+'</div>':'')+'</div>';});
  h+='</div><div class="mg"'+(MR==1?' style="grid-template-columns:1fr"':'')+'>';
  MO.forEach(function(k){var s=set[k],d=MD[k];h+='<button class="mc'+(d?' dn':'')+'" id="mc'+k+'" style="'+(d?'background:'+MC[k]+';border-color:'+MC[k]:'')+'" '+(d?'disabled':'onclick="mtry('+k+')"')+'>'+F(MR==0?s.e:s.r)+'</button>';});
@@ -204,6 +204,18 @@ function mtry(k){
 }
 function mgo(){if(MR==0){MR=1;mnew();}else{MR=0;MI++;if(MI<MB.length)mnew();else mend();}window.scrollTo(0,0);}
 function mend(){app.innerHTML='<div class="card" style="text-align:center"><div class="score">🧩</div><h2>סיימת את משחק ההתאמה!</h2><div class="fb '+(ME<3?'ok':'no')+'">'+(ME==0?'🏆 בלי אף טעות – מצוין!':'מספר טעויות: '+ME+(ME<3?' – יפה מאוד!':' – כדאי לשחק שוב ולשים לב לצורה ולאפסים.'))+'</div><button class="next" onclick="match()">🔁 לשחק שוב</button><button class="next" style="background:#16a34a" onclick="home()">→ לתפריט</button></div>';}
+var LI=0;
+function les(k){LI=k;var L=D.lesson[k],q=L[2],op=sh(q[1].map(function(t,j){return {t:t,c:j===0};}));
+ var h='<div class="top"><button class="back" onclick="home()">→ תפריט</button><span>שלב '+(k+1)+' / '+D.lesson.length+'</span></div><div class="bar"><div style="width:'+(k/D.lesson.length*100)+'%"></div></div>';
+ h+='<div class="card sum"><h3>'+L[0]+'</h3>'+F(L[1])+'</div><div class="card"><span class="tag">🤔 בודקים שהבנו</span><div class="q">'+F(q[0])+'</div>';
+ op.forEach(function(o){h+='<button class="opt" data-c="'+(o.c?1:0)+'" onclick="lpick(this)">'+F(o.t)+'</button>';});
+ app.innerHTML=h+'<div id="ex"></div></div>';window.scrollTo(0,0);}
+function lpick(b){var q=D.lesson[LI][2],ok=b.dataset.c==='1';
+ document.querySelectorAll('.opt').forEach(function(o){o.disabled=true;if(o.dataset.c==='1')o.classList.add('ok');});if(!ok)b.classList.add('no');
+ var last=LI==D.lesson.length-1;
+ document.getElementById('ex').innerHTML='<div class="exp '+(ok?'ok':'no')+'"><b class="h">'+(ok?'✅ נכון!':'❌ לא נורא – מסתכלים שוב על הציור:')+'</b>'+F(q[2])+'</div>'+
+ (ok?'':'<button class="next" style="background:#f59e0b" onclick="les(LI)">🔁 לנסות שוב את השלב</button>')+
+ '<button class="next" onclick="'+(last?'start(Q.filter(function(x){return x.t==D.lessonTopic;}),\'all\')':'les(LI+1)')+'">'+(last?'🧠 עכשיו לשאלות של הנושא ←':'לשלב הבא ←')+'</button>';}
 function sh(a){a=a.slice();for(var k=a.length-1;k>0;k--){var j=Math.floor(Math.random()*(k+1));var t=a[k];a[k]=a[j];a[j]=t;}return a;}
 function stars(l){return '★'.repeat(l)+'☆'.repeat(3-l);}
 function home(){
@@ -211,6 +223,7 @@ function home(){
  '<button class="btn b1" onclick="summary()">📘 סיכום מהיר<small>כל החומר בדף אחד – קרא קודם</small></button>'+
  '<button class="btn" style="background:#ea580c" onclick="tips()">⚡ טיפים לזכירה מהירה<small>טריקים ומלכודות נפוצות</small></button>'+
  '<button class="btn b2" onclick="flash()">🔤 כרטיסיות<small>'+D.flashSub+'</small></button>'+
+ (D.lesson?'<button class="btn" style="background:#be185d" onclick="les(0)">'+D.lessonTitle+'<small>שלב אחר שלב · ציור + שאלת הבנה בכל שלב</small></button>':'')+
  (D.match?'<button class="btn" style="background:#ca8a04" onclick="match()">🧩 משחק התאמה<small>'+(D.matchSub||'מתאימים כרטיסים')+'</small></button>':'')+
  '<button class="btn b3" onclick="start(Q,\'all\')">🧠 כל השאלות לפי סדר הנושאים<small>'+Q.length+' שאלות, הסבר מפורט אחרי כל תשובה</small></button>'+
  '<button class="btn b4" onclick="start(mock(),\'test\')">🏁 מבחן דמה<small>20 שאלות מעורבבות בכל הרמות · ציון ומשוב אישי</small></button>';
