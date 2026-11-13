@@ -88,10 +88,21 @@ summ = [
   "<p>4️⃣ <b>קוראים תחומים</b>: <b style='color:#15803d'>ירוק = מעל ציר x = חיובית</b>: " + out(-2,2) + "</p>"
   "<p><b style='color:#b91c1c'>אדום = מתחת לציר x = שלילית</b>: " + iv(-2,2) + "</p>"
   "<div class='tip'>💡 התחום נכתב רק לפי ערכי x – הגבולות הם האפסים, לא הקודקוד.</div>"],
- ["⚖️ זהירות: שני ביטויים שנראים דומים",
-  "<table><tr><th>[[(x - 4)^2]]</th><th>[[x^2 - 4]]</th></tr><tr><td>" + SV['s_x4sq'] + "</td><td>" + SV['s_x24b'] + "</td></tr>"
-  "<tr><td>הזזה ימינה 4<br>נוגעת ב-[[x = 4]]</td><td>הזזה למטה 4<br>חותכת ב-[[±2]]</td></tr>"
-  "<tr><td>אף פעם לא שלילית</td><td>שלילית ב-" + iv(-2,2) + "</td></tr></table>"],
+ ["⚖️ שלושה ביטויים שנראים דומים – איפה ה-4 יושב?",
+  "".join("<div style='display:flex;gap:8px;align-items:center;border:2px solid "+c+";border-radius:12px;padding:6px;margin:8px 0'>"
+   "<div style='flex:0 0 150px'>"+pg(*k, shade=True, w=150, h=125)+"</div><div style='font-size:15px;line-height:1.7'>"
+   "<div style='font-size:19px'>"+t+"</div>"+d+"</div></div>"
+   for k,c,t,d in [
+    ((1,0,-4),'#dc2626',"[[x^2 - <span style='color:#dc2626'>4</span>]]","🔻 ה-4 <b>לבד בחוץ</b> ← למטה 4<br>✂️ [[(x - 2)(x + 2)]] ← [[x = ±2]]<br>⛰️ קודקוד [[(0, -4)]]<br>➖ שלילית: "+iv(-2,2)),
+    ((1,-4,0),'#ea580c',"[[x^2 - <span style='color:#ea580c'>4x</span>]]","🔸 ה-4 <b>צמוד ל-x</b> ← גורם משותף<br>✂️ [[x(x - 4)]] ← [[x = 0, 4]]<br>⛰️ קודקוד [[(2, -4)]]<br>➖ שלילית: "+iv(0,4)),
+    ((1,-8,16),'#2563eb',"[[(x - <span style='color:#2563eb'>4</span>)^2]]","🔹 ה-4 <b>בתוך הסוגריים</b> ← ימינה 4<br>✂️ נוגעת רק ב-[[x = 4]]<br>⛰️ קודקוד [[(4, 0)]]<br>➖ שלילית: אף פעם"),
+   ])+
+  "<table><tr><th></th><th>[[x^2 - 4]]</th><th>[[x^2 - 4x]]</th><th>[[(x - 4)^2]]</th></tr>"
+  "<tr><td>אפסים</td><td>[[±2]]</td><td>[[0, 4]]</td><td>4 בלבד</td></tr>"
+  "<tr><td>קודקוד</td><td>[[(0, -4)]]</td><td>[[(2, -4)]]</td><td>[[(4, 0)]]</td></tr>"
+  "<tr><td>חיובית</td><td>[[x &lt; -2]] או [[x > 2]]</td><td>[[x &lt; 0]] או [[x > 4]]</td><td>[[x ≠ 4]]</td></tr>"
+  "<tr><td>שלילית</td><td>"+iv(-2,2)+"</td><td>"+iv(0,4)+"</td><td>אף פעם</td></tr></table>"
+  "<div class='tip'>💡 שואלים: איפה ה-4? <b>לבד</b> ← למטה · <b>עם x</b> ← מוציאים x · <b>בסוגריים</b> ← ימינה.</div>"],
 ]
 
 # ================= even / odd – remedial graduated lesson =================
