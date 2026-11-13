@@ -77,6 +77,29 @@ Q = [
  [T,3,'[[f(x) = x^2 + 2]]. כמה נקודות חיתוך עם ציר x, ומתי היא חיובית?',['אין חיתוך; חיובית לכל x','שתיים; חיובית ב-[[x > 2]]','אחת; חיובית ב-[[x ≠ 0]]','אין חיתוך; שלילית לכל x'],
   "1️⃣ [[x^2 + 2 = 0]] ← [[x^2 = -2]] ← אין פתרון.<br>2️⃣ מחייכת, וקודקוד [[(0, 2)]] מעל הציר.<br>"+S('q_x2p2')+"✅ אין חיתוך – כולה ירוקה: חיובית לכל x."],
 ]
+
+# ---- board 0: the three look-alikes (+ (x+4)^2)
+M3 = [
+ (1,0,-4,"[[x^2 - <span style='color:#dc2626'>4</span>]]","🔻 ה-4 <b>לבד</b> ← למטה 4<br>חותכת ב-[[±2]]","😊 חותכת ב-[[-2]] וב-2 ← ה-4 לבד בחוץ.","ה-4 לבד ← הקודקוד ירד ל-[[(0, -4)]], ולכן יש שני אפסים [[±2]]."),
+ (1,-4,0,"[[x^2 - <span style='color:#ea580c'>4x</span>]]","🔸 ה-4 <b>עם x</b> ← [[x(x - 4)]]<br>חותכת ב-0 וב-4","חותכת ב-0 וב-4 ← [[x(x - 4) = 0]].","עם x ← מוציאים x: האפסים 0 ו-4."),
+ (1,-8,16,"[[(x - <span style='color:#2563eb'>4</span>)^2]]","🔹 [[(x - 4)]] בסוגריים ← <b>ימינה</b> 4<br>נוגעת ב-4","נוגעת בציר רק ב-4 (ימין) ← [[(x - 4)^2]].","בתוך הסוגריים מינוס ← ימינה. נוגעת רק ב-4."),
+ (1,8,16,"[[(x + <span style='color:#2563eb'>4</span>)^2]]","🔹 [[(x + 4)]] בסוגריים ← <b>שמאלה</b> 4<br>נוגעת ב-[[-4]]","נוגעת בציר רק ב-[[-4]] (שמאל) ← [[(x + 4)^2]].","בתוך הסוגריים פלוס ← שמאלה. נוגעת רק ב-[[-4]]."),
+]
+match3 = []
+for k,(a,b,c,e,r,h1,h2) in enumerate(M3):
+    match3.append({'g': g(f'k{k}',a,b,c,w=170,h=130,vlabel=False),'e':e,'r':r,'h1':h1,'h2':h2,
+                   'q1':'🧩 שלב 1: איזו משוואה מתאימה לכל גרף? (שימו לב איפה ה-4!)','q2':'🧩 שלב 2: מה עשה ה-4 לכל גרף?'})
+match = match3 + match
+# ---- two more "which graph" questions with the same 4 drawings
+Q += [
+ [T,2,'איזה גרף מתאים ל-[[f(x) = x^2 - 4x]]?',[o4,o1,o2,o3],
+  "1️⃣ ה-4 צמוד ל-x ← מוציאים x: [[x(x - 4) = 0]].<br>2️⃣ אפסים: 0 ו-4.<br>✅ הפרבולה שחותכת ב-0 וב-4.<br>⚖️ [[x^2 - 4]] חותכת ב-[[±2]]; [[(x - 4)^2]] רק נוגעת ב-4."],
+ [T,2,'איזה גרף מתאים ל-[[f(x) = (x - 4)^2]]?',[o2,o1,o4,o3],
+  "1️⃣ ה-4 בתוך הסוגריים ← הזזה ימינה 4.<br>2️⃣ [[(x - 4)^2 = 0]] רק ב-[[x = 4]] ← נוגעת, לא חותכת.<br>✅ הפרבולה שהקודקוד שלה [[(4, 0)]] על ציר x.<br>⚖️ הגרף שחותך ב-0 וב-4 הוא [[x^2 - 4x]]."],
+]
+FC = lambda k: "<div style='display:flex;justify-content:center'>"+SM(k)+"</div>"
+FL3 = [[FC((1,0,-4))+"איזו פונקציה בציור?","[[x^2 - 4]] (ה-4 לבד ← למטה)"],[FC((1,-4,0))+"איזו פונקציה בציור?","[[x^2 - 4x]] (ה-4 עם x)"],[FC((1,-8,16))+"איזו פונקציה בציור?","[[(x - 4)^2]] (ה-4 בסוגריים ← ימינה)"]]
+
 def fill(s): return re.sub('§(\\w+)§', lambda m: SV[m.group(1)], s)
 for q in Q: q[4] = fill(q[4])
 
@@ -193,7 +216,7 @@ QZ = [
   "⚠️ נראה כמו S, אבל הוא <b>הורם ב-1</b> – לא עובר ב-[[(0, 0)]].<br>🧪 [[f(1) = 2]], [[f(-1) = 0]]<br>🎨 [["+od('x^3')+" + "+ev('1')+"]] – מעורבב<br>✅ אף אחת", zq('zq4', lambda x: x**3+1, -2, 2, -3, 4)],
 ]
 
-blk = ('/*GEN*/\nD.svg=Object.assign(D.svg||{},' + json.dumps({k:v for k,v in SV.items() if k.startswith(('m','q_'))}, ensure_ascii=False) + ');\n'
+blk = ('/*GEN*/\nD.svg=Object.assign(D.svg||{},' + json.dumps({k:v for k,v in SV.items() if k.startswith(('m','q_','k'))}, ensure_ascii=False) + ');\n'
        'Array.prototype.splice.apply(D.summary,[4,0].concat(' + json.dumps(summ, ensure_ascii=False) + '));\n'
        'D.svg=Object.assign(D.svg,' + json.dumps(ZSV, ensure_ascii=False) + ');\n'
        'D.match=' + json.dumps(match + MZ, ensure_ascii=False) + ';\n'
@@ -203,7 +226,7 @@ blk = ('/*GEN*/\nD.svg=Object.assign(D.svg||{},' + json.dumps({k:v for k,v in SV
        'D.matchSub="גרף ↔ משוואה ↔ תחום / זוגיות";\n'
        'R=R.concat(' + json.dumps(Q, ensure_ascii=False) + ');\n'
        'D.know["' + T + '"]="צורה (מחייכת/בוכה) ← אפסים ← ציור ← ירוק מעל ציר x = חיובית, אדום מתחת = שלילית.";\n'
-       'D.flash=D.flash.concat(' + json.dumps([["[[x^2 - 4]] – מתי שלילית?", iv(-2,2)],["[[4 - x^2]] – מתי חיובית?", iv(-2,2)],["[[(x - 4)^2]] – מתי שלילית?","אף פעם (נוגעת ב-4)"],["מחייכת עם אפסים 1 ו-5 – מתי שלילית?", iv(1,5)]], ensure_ascii=False) + ');\n/*/GEN*/')
+       'D.flash=D.flash.concat(' + json.dumps([["[[x^2 - 4]] – מתי שלילית?", iv(-2,2)],["[[4 - x^2]] – מתי חיובית?", iv(-2,2)],["[[(x - 4)^2]] – מתי שלילית?","אף פעם (נוגעת ב-4)"],["מחייכת עם אפסים 1 ו-5 – מתי שלילית?", iv(1,5)]]+FL3, ensure_ascii=False) + ');\n/*/GEN*/')
 p = 'func1.js'; s = open(p).read()
 s = re.sub(r'/\*GEN\*/.*?/\*/GEN\*/', lambda m: blk, s, flags=re.S) if '/*GEN*/' in s else s + '\n' + blk
 open(p, 'w').write(s); print('ok', len(Q), len(match))
