@@ -339,3 +339,5 @@ const RECAP=[
 RECAP[5].chk=[()=>{let q;for(let i=0;i<30;i++){q=gDiff();if(q.kind==='פותחים ומפשטים'&&q.rc===5)break;}return q;},gErrFix];
 RECAP[4].chk=[gArea,gTFk];
 RECAP[0].chk=[()=>{let q;for(let i=0;i<40;i++){q=gCmp();if(q.rc===0)break;}return q;}];
+/* 35 שאלות בכל שלב */
+APP.total=35;LEVELS.forEach(l=>{if(!l.ladder)return;const t=l.ladder.reduce((a,e)=>a+e.n,0);let left=35;l.ladder.forEach((e,i)=>{e.n=i===l.ladder.length-1?left:Math.max(1,Math.round(e.n*35/t));left-=e.n;});});
