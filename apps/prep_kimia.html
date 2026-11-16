@@ -370,6 +370,7 @@ function end(){
  app.innerHTML=h+'<button class="next" onclick="home()">חזרה לתפריט</button></div>';
  window.scrollTo(0,0);
 }
+if(/quick/.test(location.hash))setTimeout(blitz,0);
 home();
 if('serviceWorker' in navigator){navigator.serviceWorker.register('../sw.js',{scope:'../'}).catch(()=>{});}
 </script>
