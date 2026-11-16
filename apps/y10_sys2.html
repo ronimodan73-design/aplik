@@ -583,7 +583,7 @@ function scenePlay(box,sc,done){clearTimeout(SCT);box.innerHTML='<div class="scn
 const sceneDur=sc=>sc.states.reduce((a,F)=>a+Math.min(F.dur||3,3)*.8,0);
 function chapStates(ch){const SC=ch.scene,out=SC?SC.states.slice():[],last=SC?SC.states[SC.states.length-1].lines:[[['sys',ch.ex.sys||'']]];
  const head=last.length,cap=(st,red)=>`<b${red?' style="color:var(--red)"':''}>${st.n||st.what}</b>${st.why?`<div style="font-size:16px;font-weight:400;margin-top:4px">💡 ${st.why}</div>`:''}`;
- if(!SC)out.push({lines:last,cap:'מה נתון? <b>מערכת של שתי משוואות.</b> בואו נראה את הטריק.',dur:2.5});
+ if(!SC)out.push({lines:last,cap:ch.ex.intro||'מה נתון? <b>מערכת של שתי משוואות.</b> בואו נראה את הטריק.',dur:2.5});
  const ex=ch.ex.steps.slice(SC?SC.skip||0:0);const still=h=>String(h).replace(/class="fly"/g,'class="flys"').replace(/class="st"/g,'class="sts"').replace(/class="bx"/g,'class="bxs"');
  ex.forEach((st,k)=>out.push({lines:[...last,...ex.slice(0,k+1).map((x,j)=>[['e'+j,j<k?still(x.l):x.l,'sm']])],dim:[...Array(head+k).keys()],cap:cap(st),dur:3}));
  if(ch.mine){const ms=ch.mine.steps;ms.forEach((st,k)=>out.push({lines:ms.slice(0,k+1).map((x,j)=>[['m'+j,j<k?still(x.l):x.l,'sm']]),dim:[...Array(k).keys()],cap:'💣 '+cap(st,1),dur:3}));}
