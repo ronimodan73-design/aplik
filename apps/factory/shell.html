@@ -172,6 +172,8 @@ const rcBtn=q=>{const k=rcOf(q);return k!=null&&RECAP[k]?`<button type="button" 
 function bindRc(){V.querySelectorAll('[data-rc]').forEach(b=>b.onclick=()=>recap(+b.dataset.rc,true));}
 /* ===== screens ===== */
 
+/* בחן את עצמך: 30 שאלות לפי רמות */
+const TN=[8,8,7,7],TT=30;
 /* ===== ⚡ שאלות ותשובות בזק: QUICK=[[שאלה, תשובה], ...] ===== */
 function quick(list){const L=list||shuf(QUICK.map((_,i)=>i));let i=0,know=0;const miss=[];$('#sc').textContent='';
  const card=()=>{if(i>=L.length)return endQ();const [q,a]=QUICK[L[i]];
@@ -189,8 +191,8 @@ function quick(list){const L=list||shuf(QUICK.map((_,i)=>i));let i=0,know=0;cons
  card();}
 function menu(){clearTimeout(SCT);$('#sc').textContent='';const tl=store.get('test');
  V.innerHTML=`<div class="card"><h1>${APP.topic}</h1><div class="hello">💛 ילדים יקרים, הכנתי לכם אפליקציה שתסייע לכם ללמוד ולהבין את החומר בצורה נוספת. <b>בהצלחה! רוני</b></div><p>${APP.sub} טעיתם? לוחצים על <b>"הראו לי"</b>.</p>
- <div class="hero">${typeof QUICK!=='undefined'?`<button type="button" id="go-quick"><span class="ic">⚡</span><span><b>שאלות ותשובות בזק</b><small>${QUICK.length} שאלות הבנה · חושבים ← מגלים את התשובה</small></span></button>`:''}<button type="button" id="go-recap"><span class="ic">▶</span><span><b>מתחילים כאן</b><small>הסבר מונפש + חימום קל</small></span></button><button type="button" id="go-test"><span class="ic">📝</span><span><b>בחן את עצמך</b><small>מבחן מדורג · 16 שאלות · 4 רמות · ציון ודוח</small></span></button></div>
- ${tl?`<div class="last">המבחן האחרון שלי: ציון ${Math.round(tl.sc/16*100)} · ${tl.d}</div>`:''}
+ <div class="hero">${typeof QUICK!=='undefined'?`<button type="button" id="go-quick"><span class="ic">⚡</span><span><b>שאלות ותשובות בזק</b><small>${QUICK.length} שאלות הבנה · חושבים ← מגלים את התשובה</small></span></button>`:''}<button type="button" id="go-recap"><span class="ic">▶</span><span><b>מתחילים כאן</b><small>הסבר מונפש + חימום קל</small></span></button><button type="button" id="go-test"><span class="ic">📝</span><span><b>בחן את עצמך</b><small>מבחן מדורג · ${TT} שאלות · 4 רמות · ציון ודוח</small></span></button></div>
+ ${tl?`<div class="last">המבחן האחרון שלי: ציון ${Math.round(tl.sc/(tl.tt||16)*100)} · ${tl.d}</div>`:''}
  ${INST?`<div class="inst">📲 <b>לעבוד גם בלי אינטרנט:</b> לחצו על כפתור השיתוף ⬆️ בתחתית ספארי, ואז על <b>"הוספה למסך הבית"</b>. פותחים מהאייקון פעם אחת כשיש אינטרנט, ומאז זה עובד גם בלי.</div>`:''}
  ${typeof CHAPTERS!=='undefined'?`<h2 style="margin-top:18px">📚 לומדים פרק אחרי פרק</h2><p style="font-size:16px;color:var(--muted)">בכל פרק: תרגיל פתור מונפש ← המוקש ← עכשיו אתה ← 10 תרגילים</p><div class="chaps">${CHAPTERS.map((c,i)=>{const b=store.get('ch'+i),rec=CHAPTERS.findIndex((_,j)=>(store.get('ch'+j)||0)<8);return `<button type="button" data-ch="${i}" class="${i===rec?'rec':''}"><span class="t">${i===rec?'👈 ':''}פרק ${i+1}: ${c.t}</span><span class="d">${c.d||''}${b!=null?` · השיא שלי: ${b} מתוך ${chList(i).length}${b>=8?' ✅':''}`:''}</span></button>`}).join('')}</div><h2 style="margin-top:18px">תרגול מעורב בשלבים</h2>`:'<h2 style="margin-top:18px">תרגול בשלבים: מתקדמים מרמה לרמה</h2>'}<p style="font-size:16px;color:var(--muted)">עוברים שלב עם ${PASS} נכונות מתוך ${TOTAL} ✅</p>
  <div class="levels">${LEVELS.map((l,i)=>{const b=store.get('best'+i),rec=LEVELS.findIndex((_,j)=>(store.get('best'+j)||0)<PASS);return `<button type="button" data-l="${i}" class="${i===rec?'rec':''}">${b>=PASS?'<span class="badge ok">✅ עברתי</span>':i===rec?'<span class="badge">👈 מומלץ עכשיו</span>':''}<span class="st">${'★'.repeat(l.n)}</span><span class="t">${l.t}</span><span class="d">${l.d}</span>${b!=null?`<span class="best">השיא שלי: ${b} מתוך ${TOTAL}</span>`:''}</button>`}).join('')}</div></div>`;
@@ -388,24 +390,24 @@ function endWarm(){$('#sc').textContent='';
  $('#a1').onclick=()=>start(0);$('#a2').onclick=warm;$('#a3').onclick=()=>recap(0);}
 /* ===== graded test ===== */
 function testIntro(){$('#sc').textContent='';const nm=store.get('name')||'';
- V.innerHTML=`<div class="card pop"><h1>בחן את עצמך</h1><p>16 שאלות · 4 רמות חשיבה. מתחילים קל ועולים לאט. אין זמן, אין לחץ.<br>במבחן אין "הראו לי". בסוף מקבלים <b>דוח אישי</b>: ציון, מה אני יודע/ת, מה חסר, ומה לעשות.</p>
- <div class="levels" style="grid-template-columns:1fr;gap:8px">${TL.map((t,i)=>`<div style="border-right:5px solid ${TCOL[i]};padding:6px 10px;background:var(--chip);border-radius:10px">${t} · 4 שאלות</div>`).join('')}</div>
+ V.innerHTML=`<div class="card pop"><h1>בחן את עצמך</h1><p>${TT} שאלות · 4 רמות חשיבה. מתחילים קל ועולים לאט. אין זמן, אין לחץ.<br>במבחן אין "הראו לי". בסוף מקבלים <b>דוח אישי</b>: ציון, מה אני יודע/ת, מה חסר, ומה לעשות.</p>
+ <div class="levels" style="grid-template-columns:1fr;gap:8px">${TL.map((t,i)=>`<div style="border-right:5px solid ${TCOL[i]};padding:6px 10px;background:var(--chip);border-radius:10px">${t} · ${TN[i]} שאלות</div>`).join('')}</div>
  <p style="margin-top:16px">השם שלי:</p><input class="nameIn" id="nm" value="${nm.replace(/"/g,'')}" aria-label="השם שלי">
  <div class="btns"><button class="btn main" id="go" type="button">מתחילים</button><button class="btn sec" id="bk" type="button">חזרה</button></div></div>`;
  $('#bk').onclick=menu;$('#go').onclick=()=>{const n=$('#nm').value.trim();if(!n){$('#nm').focus();$('#nm').style.borderColor='var(--red)';return;}store.set('name',n);
-  const list=[],lv=[];TEST.forEach((g,i)=>shuf(g).forEach(fn=>{list.push(fn);lv.push(i);}));S={mode:'test',i:0,score:0,n:16,list,lv,res:[],name:n};next();};}
+  const list=[],lv=[];TEST.forEach((g,i)=>{const L=LEVELS.find(l=>l.n===i+1),pool=[...new Set([...g,...(L&&L.ladder?L.ladder.map(e=>e.g):[])])],rest=shuf(pool.filter(f=>!g.includes(f)));let pick=[...shuf(g),...rest];while(pick.length<TN[i])pick=pick.concat(shuf(pool));pick.slice(0,TN[i]).forEach(fn=>{list.push(fn);lv.push(i);});});S={mode:'test',i:0,score:0,n:TT,list,lv,res:[],name:n};next();};}
 function ansText(q){const a=[];if(q.ans)a.push(q.ans.map(x=>x.label==='x ='||x.lt?M(x.label+' '+String(x.val).replace('-','−')+(x.unit?' '+x.unit:'')):x.label+' '+M(x.val+(x.unit!=null?(x.unit&&x.unit!=='°'?' '+x.unit:x.unit):deg))).join(' · '));if(q.choice)a.push(q.choice[q.correct]);return a.join(' · ');}
-function endTest(){const per=[0,0,0,0];S.res.forEach(r=>{if(r.ok)per[r.lv]++;});const sc=per.reduce((a,b)=>a+b,0),grade=Math.round(sc/16*100);
- const up=sc>=14&&per.every(x=>x>=3),weak=per.findIndex(x=>x<3),d=new Date().toLocaleDateString('he-IL');store.set('test',{sc,d,per});
- const v=up?{c:'var(--ok)',t:'מוכן/ה לעלות הקבצה! 🎉 שלטת בכל ארבע הרמות.'}:sc>=10?{c:'var(--acc)',t:weak<0?'קרוב מאוד! יש הצלחה בכל הרמות. עוד קצת דיוק, ומנסים שוב.':`קרוב מאוד! כדי לעלות הקבצה צריך לחזק את רמה ${TL[weak]}.`}:{c:'var(--red)',t:'בונים יסודות: עוברים על ההסבר, מתרגלים ★ ו־★★, ואז מנסים שוב. כל ניסיון מקרב!'};
+function endTest(){const per=[0,0,0,0];S.res.forEach(r=>{if(r.ok)per[r.lv]++;});const sc=per.reduce((a,b)=>a+b,0),grade=Math.round(sc/TT*100),P=i=>per[i]/TN[i];
+ const up=sc>=26&&per.every((x,i)=>P(i)>=.75),weak=per.findIndex((x,i)=>P(i)<.75),d=new Date().toLocaleDateString('he-IL');store.set('test',{sc,d,per,tt:TT});
+ const v=up?{c:'var(--ok)',t:'מוכן/ה לעלות הקבצה! 🎉 שלטת בכל ארבע הרמות.'}:sc>=18?{c:'var(--acc)',t:weak<0?'קרוב מאוד! יש הצלחה בכל הרמות. עוד קצת דיוק, ומנסים שוב.':`קרוב מאוד! כדי לעלות הקבצה צריך לחזק את רמה ${TL[weak]}.`}:{c:'var(--red)',t:'בונים יסודות: עוברים על ההסבר, מתרגלים ★ ו־★★, ואז מנסים שוב. כל ניסיון מקרב!'};
  const u1={},u2={},miss=S.res.filter(r=>!r.ok&&!u1[r.q.kind]&&(u1[r.q.kind]=1)),good=S.res.filter(r=>r.ok&&!u2[r.q.kind]&&(u2[r.q.kind]=1));
- const todo=[];if(per[0]<3)todo.push('לעבור שוב על <b>ההסבר המונפש והחימום</b> (כפתור "מתחילים כאן").');
- per.forEach((x,i)=>{if(x<3)todo.push(`לתרגל את שלב <b>${TL[i]}</b> (${TOTAL} שאלות). טעיתם? לוחצים על "הראו לי".`);});
- if(!up&&weak<0)todo.push('לעבור על <b>מה עוד חסר לי</b> למעלה (כפתור 📖), ולתרגל את שלב <b>'+TL[per.indexOf(Math.min(...per))]+'</b>.');
+ const todo=[];if(P(0)<.75)todo.push('לעבור שוב על <b>ההסבר המונפש והחימום</b> (כפתור "מתחילים כאן").');
+ per.forEach((x,i)=>{if(P(i)<.75)todo.push(`לתרגל את שלב <b>${TL[i]}</b> (${TOTAL} שאלות). טעיתם? לוחצים על "הראו לי".`);});
+ if(!up&&weak<0)todo.push('לעבור על <b>מה עוד חסר לי</b> למעלה (כפתור 📖), ולתרגל את שלב <b>'+TL[per.map((x,i)=>P(i)).indexOf(Math.min(...per.map((x,i)=>P(i))))]+'</b>.');
  todo.push(up?'לנסות שוב את שלב ★★★★, כדי להישאר חזקים.':'אחרי התרגול: <b>מבחן חוזר</b>, ולבדוק אם הציון עלה.');
  V.innerHTML=`<div class="card pop"><h2>הדוח של ${S.name.replace(/[<>&"]/g,'')}</h2><div class="meta"><span>מבחן מדורג · ${APP.topic}</span><span>${d}</span></div>
- <div class="big">ציון: ${grade}</div><div style="text-align:center;color:var(--muted)">${sc} תשובות נכונות מתוך 16</div>
- ${TL.map((t,i)=>`<div class="lvrow"><span class="nm">${t}</span><span class="bar"><i style="width:${per[i]/4*100}%;background:${TCOL[i]}"></i></span><span class="sc">${per[i]}/4</span></div>`).join('')}
+ <div class="big">ציון: ${grade}</div><div style="text-align:center;color:var(--muted)">${sc} תשובות נכונות מתוך ${TT}</div>
+ ${TL.map((t,i)=>`<div class="lvrow"><span class="nm">${t}</span><span class="bar"><i style="width:${P(i)*100}%;background:${TCOL[i]}"></i></span><span class="sc">${per[i]}/${TN[i]}</span></div>`).join('')}
  <div class="verdict" style="border:2px solid ${v.c};background:color-mix(in srgb,${v.c} 14%,transparent)">${v.t}</div>
  ${good.length?`<h2>✅ מה אני כבר יודע/ת</h2><div class="chips">${good.map(r=>`<span>${TL[r.lv].split(' ')[0]} ${r.q.kind}</span>`).join('')}</div>`:''}
  ${miss.length?`<h2 style="margin-top:14px">🔧 מה עוד חסר לי כדי להבין</h2>${miss.map(r=>`<div class="miss"><span class="k">${TL[r.lv].split(' ')[0]} ${r.q.kind}</span><br>${r.q.rule}<br><span style="color:var(--muted)">התשובה הנכונה הייתה: ${ansText(r.q)}</span>${rcBtn(r.q)?'<br>'+rcBtn(r.q):''}</div>`).join('')}`:'<p>אין טעויות בכלל. כל הכבוד!</p>'}
