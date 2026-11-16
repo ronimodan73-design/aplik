@@ -69,7 +69,7 @@ async def main():
             await pg.click('#chk'); await pg.wait_for_timeout(250); await pg.click('#show'); await pg.wait_for_timeout(4500)
             await pg.screenshot(path=f'{OUT}/L{L+1}.png', full_page=True)
         await pg.click('#home'); await pg.click('#go-test'); await pg.fill('#nm', 'בדיקה'); await pg.click('#go')
-        for i in range(16):
+        for i in range(await pg.evaluate('S.n')):
             await pg.wait_for_timeout(120); right = i not in (5, 9, 13)
             q = await pg.evaluate('({c:S.q.choice?S.q.correct:null,n:S.q.choice?S.q.choice.length:0,v:S.q.ans?S.q.ans.map(a=>a.val):null})')
             if q['v']:
