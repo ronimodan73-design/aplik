@@ -315,7 +315,7 @@ const LEVELS=[
  {n:3,t:'★★★ הבנה ונימוק',d:'שורה שגויה, חידות, פיתגורס, טענה ונימוק',ladder:[{g:gDiff,n:3,h:1},{g:gErrLine,n:3,h:1},{g:gErrFix,n:2,h:0},{g:gPuzzle,n:3,h:1},{g:gPyth,n:3,h:1},{g:gReason,n:2,h:1},{g:gOrder,n:2,h:1},{g:gTimes,n:2,h:1}]},
  {n:4,t:'★★★★ חשיבה ואוריינות',d:'מי גדול יותר, כל האפשרויות, מה קורה לשטח',ladder:[{g:gCmp,n:5,h:1},{g:gTFk,n:3,h:0},{g:gTwoOpt,n:4,h:1},{g:gScale,n:4,h:1},{g:gTFi,n:2,h:0},{g:gPyth,n:2,h:0}]}];
 const TEST=[[gArea,gMatch,gPartsR,gBaseEq],[gExpand,gMissing,gBase,gEqSolve],[gDiff,gPuzzle,gPyth,gReason],[gCmp,gTwoOpt,gScale,gTimes]];
-const WARM=[gAreaPart,gMatch,gPartsR,gBaseEq,gAreaPart,gMatch,gPartsR,gBase];
+const WARM=[gAreaPart,gMatch,gDS1,gPartsR,gBase,gEqWhich,gHead,gWhich];
 
 /* ===== animated explanation ===== */
 const T0=()=>isoT(40,['A','B','C']);
@@ -338,7 +338,7 @@ const RECAP=[
    return svgT(t,pg([t.a,A1,A2],BL,.3)+pg([A1,t.l,A3],OR,.8)+pg([A2,A3,t.r],GR,1.3)+pg([A1,A2,A3],PU,1.8),{noV:1});},says:['בסיס פי 2 וגובה פי 2 ← <b>4</b> משולשים קטנים.',`${M('2 · 2 = 4')}, ${M('3 · 3 = 9')}`],what:'שניהם גדלים ← כופלים את ההגדלות.'}];
 RECAP[5].chk=[()=>{let q;for(let i=0;i<30;i++){q=gDiff();if(q.kind==='פותחים ומפשטים'&&q.rc===5)break;}return q;},gErrFix];
 RECAP[4].chk=[gArea,gTFk];
-RECAP[0].chk=[()=>{let q;for(let i=0;i<40;i++){q=gCmp();if(q.rc===0)break;}return q;}];
+RECAP[0].chk=[gAreaPart,gMatch];
 /* 35 שאלות בכל שלב */
 /* ================= הפרש ריבועים: סכום כפול הפרש (35 שאלות) ================= */
 const DSW=b=>({t:'אותם מספרים, פעם פלוס ופעם מינוס. איזו נוסחה?',choice:FORMS.map(M),correct:2,why:'סכום כפול הפרש ← '+M('a² − b²')+'. אין איבר אמצעי.'});
@@ -401,4 +401,40 @@ function gDS9(){const [e,ok,why]=pick(TFDS);return {kind:'הפרש ריבועי�
   work:[{t:'מציבים מספר בשני הצדדים. האם יוצא שווה?',choice:['כן','לא'],correct:ok?0:1,why}],lines:[`<b>${ok?'נכון':'לא נכון'}</b>: ${why}`],rule:RK.mul,trick:'מספיקה דוגמה אחת שלא מתאימה ← לא נכון.',diag:()=>'הציבו x = 1 בשני הצדדים והשוו.'};}
 gDS1=NU(gDS1);gDS3=NU(gDS3);gDS4=NU(gDS4);gDS5=NU(gDS5);gDS6=NU(gDS6);gDS7=NU(gDS7);gDS8=NU(gDS8);
 LEVELS.push({n:0,t:'🎯 הפרש ריבועים: סכום כפול הפרש',d:'מ־★ עד ★★★★: פותחים, משלימים, מפרקים, חשבון בראש',ladder:[{g:gDS1,n:4,h:2},{g:gDS2,n:4,h:1},{g:gDS3,n:5,h:1},{g:gDS4,n:4,h:1},{g:gDS5,n:5,h:1},{g:gDS6,n:3,h:1},{g:gDS7,n:4,h:1},{g:gDS8,n:3,h:0},{g:gDS9,n:3,h:0}]});
+/* ================= 🧭 איזו נוסחה מתאימה? ================= */
+const WO=['ריבוע של סכום · '+M('a² + 2ab + b²'),'ריבוע של הפרש · '+M('a² − 2ab + b²'),'סכום כפול הפרש = הפרש ריבועים · '+M('a² − b²'),'אף נוסחה לא מתאימה'];
+const WREASON=['יש <b>3 איברים</b>, ושני הקצוות ריבועים.','יש <b>2 איברים</b> וביניהם <b>מינוס</b>.','יש <b>2 איברים</b> וביניהם <b>פלוס</b>.','שני הסוגריים <b>זהים</b>.','אותם מספרים, פעם <b>פלוס</b> ופעם <b>מינוס</b>.','המספרים בסוגריים <b>שונים</b>.'];
+function whCase(){const b=nz(2,9,[]),k=pick(['E1','E2','E3','E4','F1','F2','F3','F4','F5','F3','F1','F2']);let c;
+ switch(k){case 'E1':return {k,b,E:`(x + ${b})²`,f:0,r:3,res:PL(1,2*b,b*b),why:'שני סוגריים זהים בריבוע, עם פלוס.'};
+  case 'E2':return {k,b,E:`(x − ${b})²`,f:1,r:3,res:PL(1,-2*b,b*b),why:'שני סוגריים זהים בריבוע, עם מינוס.'};
+  case 'E3':return Math.random()<.5?{k,b,E:`(x + ${b})(x − ${b})`,f:2,r:4,res:PL(1,0,-b*b),why:'אותו מספר, פעם פלוס ופעם מינוס.'}:{k,b,E:`(${b} − x)(${b} + x)`,f:2,r:4,res:b*b+' − x²',why:'אותם איברים, פעם פלוס ופעם מינוס.'};
+  case 'E4':c=nz(2,9,[b]);return {k,b,E:`(x + ${b})(x − ${c})`,f:3,r:5,res:PL(1,b-c,-b*c),why:'המספרים בסוגריים שונים ← פותחים רגיל, כל איבר כפול כל איבר.'};
+  case 'F1':return {k,b,E:PL(1,2*b,b*b),f:0,r:0,res:`(x + ${b})²`,why:`3 איברים: ${M('x²')} ו־${M(b*b+' = '+b+'²')} ריבועים, והאמצעי ${M('2 · x · '+b+' = '+2*b+'x')} ← טרינום ריבועי.`};
+  case 'F2':return {k,b,E:PL(1,-2*b,b*b),f:1,r:0,res:`(x − ${b})²`,why:`3 איברים, האמצעי ${M('−2 · x · '+b+' = −'+2*b+'x')} ← טרינום ריבועי עם מינוס.`};
+  case 'F3':return {k,b,E:PL(1,0,-b*b),f:2,r:1,res:`(x + ${b})(x − ${b})`,why:`2 ריבועים ומינוס ביניהם: ${M('x² − '+b+'²')} ← הפרש ריבועים.`};
+  case 'F4':return {k,b,E:PL(1,0,b*b),f:3,r:2,res:'לא מתפרק בכפל מקוצר',why:'פלוס בין שני ריבועים ← <b>סכום</b> ריבועים. אין לו נוסחה בכפל מקוצר.'};
+  default:return {k,b,E:PL(1,b,b*b),f:3,r:0,res:'לא טרינום ריבועי',why:`הקצוות ריבועים, אבל האמצעי צריך להיות ${M(2*b+'x')}, ולא ${M(b+'x')}.`};}}
+function whWork(z){const F=z.k[0]==='F';return [{t:F?'מה רואים בביטוי?':'מה רואים בסוגריים?',choice:F?WREASON.slice(0,3):WREASON.slice(3),correct:F?z.r:z.r-3,why:z.why},...(z.k==='F1'||z.k==='F2'||z.k==='F5'?[{t:`האם האיבר האמצעי הוא ${M('2 · x · '+z.b)}?`,choice:['כן','לא'],correct:z.k==='F5'?1:0,why:M('2 · x · '+z.b+' = '+2*z.b+'x')+'.'}]:[])];}
+/* ★★ זיהוי הנוסחה */
+function gWhich(){const z=whCase(),F=z.k[0]==='F';
+ return {kind:F?'איזו נוסחה? · מפרקים':'איזו נוסחה? · פותחים',rc:12,text:`${F?'רוצים לכתוב כמכפלה':'רוצים לפתוח סוגריים'}: ${M(z.E)}. באיזו נוסחה משתמשים?`,choice:WO,correct:z.f,work:whWork(z),
+  lines:[z.why,`${M(z.E)} ← ${z.f<3||z.k==='E4'?M(z.res):z.res}`],rule:'2 איברים עם מינוס ← הפרש ריבועים. 3 איברים עם אמצעי 2ab ← טרינום ריבועי. סוגריים זהים ← ריבוע.',trick:'קודם סופרים איברים, אחר כך בודקים סימנים.',
+  diag:({sel})=>sel===2&&z.f<2?'הפרש ריבועים הוא <b>2 איברים</b>. כאן '+(F?'יש 3':'הסוגריים זהים')+'.':sel<2&&z.f===2?'טרינום ריבועי הוא <b>3 איברים</b>. כאן יש '+(F?'2 איברים עם מינוס':'פלוס ומינוס בסוגריים')+'.':sel<3&&z.f===3?z.why:sel===3?'בדקו שוב: '+z.why:'בדקו את הסימן: פלוס או מינוס?'};}
+/* ★★★ זיהוי + כתיבת התוצאה */
+function gWhichF(){let z;do{z=whCase();}while(z.k[0]!=='F');const b=z.b;
+ const pool={F1:[`(x + ${b})²`,`(x − ${b})²`,`(x + ${b})(x − ${b})`,`(x + ${2*b})²`],F2:[`(x − ${b})²`,`(x + ${b})²`,`(x + ${b})(x − ${b})`,`(x − ${2*b})²`],F3:[`(x + ${b})(x − ${b})`,`(x − ${b})²`,`(x + ${b})²`,`(x + ${b*b})(x − ${b*b})`],
+  F4:['לא מתפרק בכפל מקוצר',`(x + ${b})²`,`(x + ${b})(x − ${b})`,`(x − ${b})²`],F5:['לא טרינום ריבועי',`(x + ${b})²`,`(x + ${b})(x − ${b})`,`(x + ${2*b})²`]}[z.k];
+ const o=shuf(pool.slice()),lab=s=>/[x(]/.test(s)?M(s):s;
+ return {kind:'איזו נוסחה? · כותבים כמכפלה',rc:12,text:`כתבו כמכפלה, אם אפשר: ${M(z.E)}`,choice:o.map(lab),correct:o.indexOf(pool[0]),work:whWork(z),
+  lines:[z.why,`${M(z.E)} = ${lab(pool[0])}`],rule:'בודקים: כמה איברים? איזה סימן? האם האמצעי 2ab?',trick:'בדיקה: פותחים את התשובה וחוזרים לביטוי.',
+  diag:({sel})=>{const s=o[sel];return s===`(x + ${b})²`&&z.k==='F3'?'פתחו: '+M(`(x + ${b})² = ${PL(1,2*b,b*b)}`)+'. יש בו איבר אמצעי.':s===`(x + ${b})(x − ${b})`&&z.k!=='F3'?'פתחו: '+M(`(x + ${b})(x − ${b}) = x² − ${b*b}`)+'. אין בו איבר אמצעי.':/2/.test(s)&&s.includes(''+2*b)?'בסוגריים שמים את '+M(b)+', המספר שבריבוע נותן '+M(b*b)+'.':s.includes(''+b*b+')')?'בסוגריים שמים את '+M(b)+', לא את '+M(b*b)+'.':'פתחו את התשובה שבחרתם ובדקו אם חוזרים ל־'+M(z.E)+'.';}};}
+/* כרטיס הסבר: איך יודעים איזו נוסחה */
+function whSvg(){const R0=[['(a + b)²','a² + 2ab + b²','ריבוע של סכום',BL],['(a − b)²','a² − 2ab + b²','ריבוע של הפרש',OR],['(a + b)(a − b)','a² − b²','הפרש ריבועים',GR]];
+ return `<svg viewBox="0 0 400 250" style="max-width:380px;direction:ltr" role="img" aria-label="טבלת נוסחאות"><text x="95" y="24" text-anchor="middle" font-size="15" fill="#9fb3cc" font-weight="700" style="font-family:Rubik">מכפלה</text><text x="300" y="24" text-anchor="middle" font-size="15" fill="#9fb3cc" font-weight="700" style="font-family:Rubik">ביטוי פתוח</text>
+ <text x="198" y="244" text-anchor="middle" font-size="15" fill="#9fb3cc" direction="rtl" style="font-family:Rubik">פותחים ← · → מפרקים</text>`+R0.map((r,i)=>{const y=40+i*66;return `<g class="rv" style="--d:${.3+i*.6}s"><rect x="10" y="${y}" width="170" height="52" rx="12" fill="${r[3]}" fill-opacity=".2" stroke="${r[3]}" stroke-width="2.5"/><rect x="220" y="${y}" width="170" height="52" rx="12" fill="${r[3]}" fill-opacity=".2" stroke="${r[3]}" stroke-width="2.5"/>
+ <text x="95" y="${y+33}" text-anchor="middle" font-size="19" font-weight="800" fill="#dfe8f5" style="font-family:Rubik">${r[0]}</text><text x="305" y="${y+24}" text-anchor="middle" font-size="18" font-weight="800" fill="#dfe8f5" style="font-family:Rubik">${r[1]}</text><text x="305" y="${y+44}" text-anchor="middle" font-size="13" fill="${r[3]}" direction="rtl" font-weight="700" style="font-family:Rubik">${r[2]}</text><text x="200" y="${y+32}" text-anchor="middle" font-size="20" fill="#dfe8f5">⇄</text></g>`;}).join('')+'</svg>';}
+RECAP.push({h:'איך יודעים איזו נוסחה?',d:2.4,svg:whSvg,says:['<b>3 איברים</b>, אמצעי '+M('2ab')+' ← טרינום ריבועי.','<b>2 איברים</b> ומינוס ← הפרש ריבועים.'],what:'סופרים איברים ← בודקים סימן.'});
+RECAP[12].chk=[gWhich,gWhichF];
+WARM[2]=gDS1;
+LEVELS.push({n:0,t:'🧭 איזו נוסחה מתאימה?',d:'טרינום ריבועי, הפרש ריבועים, או אף נוסחה – מזהים לפני שפותרים',ladder:[{g:gWhich,n:18,h:1},{g:gWhichF,n:17,h:1}]});
 APP.total=35;LEVELS.forEach(l=>{if(!l.ladder)return;const t=l.ladder.reduce((a,e)=>a+e.n,0);let left=35;l.ladder.forEach((e,i)=>{e.n=i===l.ladder.length-1?left:Math.max(1,Math.round(e.n*35/t));left-=e.n;});});
