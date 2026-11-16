@@ -322,14 +322,28 @@ const rcOf=q=>{if(q.rc!=null)return q.rc;if(APP.rcFn){const v=APP.rcFn(q);if(v!=
 const rcBtn=q=>{const k=rcOf(q);return k!=null&&RECAP[k]?`<button type="button" class="btn sec mini" data-rc="${k}">📖 להסבר: ${RECAP[k].h}</button>`:'';};
 function bindRc(){V.querySelectorAll('[data-rc]').forEach(b=>b.onclick=()=>recap(+b.dataset.rc,true));}
 /* ===== screens ===== */
+
+/* ===== ⚡ שאלות ותשובות בזק: QUICK=[[שאלה, תשובה], ...] ===== */
+function quick(list){const L=list||shuf(QUICK.map((_,i)=>i));let i=0,know=0;const miss=[];$('#sc').textContent='';
+ const card=()=>{if(i>=L.length)return endQ();const [q,a]=QUICK[L[i]];
+  V.innerHTML=`<div class="meta"><span>⚡ שאלות בזק · ${i+1} מתוך ${L.length}</span><span>ידעתי: ${know}</span></div><div class="prog"><i style="width:${i/L.length*100}%"></i></div>
+  <div class="card pop"><span class="kind">⚡ חושבים רגע… ואז מגלים</span><div class="qtext" style="font-size:22px">${q}</div><div id="qa"></div>
+  <div class="btns" id="qb"><button class="btn main" id="qshow" type="button">👀 הראו לי את התשובה</button><button class="btn sec" id="qhome" type="button">לתפריט</button></div></div>`;
+  $('#qhome').onclick=menu;$('#qshow').onclick=()=>{$('#qa').innerHTML=`<div class="fb ok pop" style="font-size:19px">✅ ${a}</div>`;
+   $('#qb').innerHTML='<button class="btn main" id="qy" type="button">ידעתי ✓</button><button class="btn sec" id="qn" type="button">עוד לא ✗</button>';
+   $('#qy').onclick=()=>{know++;i++;card();};$('#qn').onclick=()=>{miss.push(L[i]);i++;card();};};window.scrollTo(0,0);};
+ const endQ=()=>{V.innerHTML=`<div class="card pop" style="text-align:center"><h2>סיימתם את שאלות הבזק! ⚡</h2><div class="big">${know} / ${L.length}</div><p>${miss.length?'יש עוד כמה שכדאי לחזור עליהן.':'ידעתם הכול! 🎉'}</p>
+  <div class="btns" style="justify-content:center">${miss.length?'<button class="btn main" id="qm" type="button">חוזרים רק על מה שלא ידעתי</button>':''}<button class="btn sec" id="qa2" type="button">שוב מההתחלה</button><button class="btn sec" id="qh" type="button">לתפריט</button></div></div>`;
+  if($('#qm'))$('#qm').onclick=()=>quick(miss.slice());$('#qa2').onclick=()=>quick();$('#qh').onclick=menu;};
+ card();}
 function menu(){clearTimeout(SCT);$('#sc').textContent='';const tl=store.get('test');
  V.innerHTML=`<div class="card"><h1>${APP.topic}</h1><div class="hello">💛 ילדים יקרים, הכנתי לכם אפליקציה שתסייע לכם ללמוד ולהבין את החומר בצורה נוספת. <b>בהצלחה! רוני</b></div><p>${APP.sub} טעיתם? לוחצים על <b>"הראו לי"</b>.</p>
- <div class="hero"><button type="button" id="go-recap"><span class="ic">▶</span><span><b>מתחילים כאן</b><small>הסבר מונפש + חימום קל</small></span></button><button type="button" id="go-test"><span class="ic">📝</span><span><b>בחן את עצמך</b><small>מבחן מדורג · 16 שאלות · 4 רמות · ציון ודוח</small></span></button></div>
+ <div class="hero"><button type="button" id="go-recap"><span class="ic">▶</span><span><b>מתחילים כאן</b><small>הסבר מונפש + חימום קל</small></span></button><button type="button" id="go-test"><span class="ic">📝</span><span><b>בחן את עצמך</b><small>מבחן מדורג · 16 שאלות · 4 רמות · ציון ודוח</small></span></button>${typeof QUICK!=='undefined'?`<button type="button" id="go-quick"><span class="ic">⚡</span><span><b>שאלות ותשובות בזק</b><small>${QUICK.length} שאלות הבנה · חושבים ← מגלים את התשובה</small></span></button>`:''}</div>
  ${tl?`<div class="last">המבחן האחרון שלי: ציון ${Math.round(tl.sc/16*100)} · ${tl.d}</div>`:''}
  ${INST?`<div class="inst">📲 <b>לעבוד גם בלי אינטרנט:</b> לחצו על כפתור השיתוף ⬆️ בתחתית ספארי, ואז על <b>"הוספה למסך הבית"</b>. פותחים מהאייקון פעם אחת כשיש אינטרנט, ומאז זה עובד גם בלי.</div>`:''}
  ${typeof CHAPTERS!=='undefined'?`<h2 style="margin-top:18px">📚 לומדים פרק אחרי פרק</h2><p style="font-size:16px;color:var(--muted)">בכל פרק: תרגיל פתור מונפש ← המוקש ← עכשיו אתה ← 10 תרגילים</p><div class="chaps">${CHAPTERS.map((c,i)=>{const b=store.get('ch'+i),rec=CHAPTERS.findIndex((_,j)=>(store.get('ch'+j)||0)<8);return `<button type="button" data-ch="${i}" class="${i===rec?'rec':''}"><span class="t">${i===rec?'👈 ':''}פרק ${i+1}: ${c.t}</span><span class="d">${c.d||''}${b!=null?` · השיא שלי: ${b} מתוך ${chList(i).length}${b>=8?' ✅':''}`:''}</span></button>`}).join('')}</div><h2 style="margin-top:18px">תרגול מעורב בשלבים</h2>`:'<h2 style="margin-top:18px">תרגול בשלבים: מתקדמים מרמה לרמה</h2>'}<p style="font-size:16px;color:var(--muted)">עוברים שלב עם ${PASS} נכונות מתוך ${TOTAL} ✅</p>
  <div class="levels">${LEVELS.map((l,i)=>{const b=store.get('best'+i),rec=LEVELS.findIndex((_,j)=>(store.get('best'+j)||0)<PASS);return `<button type="button" data-l="${i}" class="${i===rec?'rec':''}">${b>=PASS?'<span class="badge ok">✅ עברתי</span>':i===rec?'<span class="badge">👈 מומלץ עכשיו</span>':''}<span class="st">${'★'.repeat(l.n)}</span><span class="t">${l.t}</span><span class="d">${l.d}</span>${b!=null?`<span class="best">השיא שלי: ${b} מתוך ${TOTAL}</span>`:''}</button>`}).join('')}</div></div>`;
- $('#go-recap').onclick=()=>recap(0);$('#go-test').onclick=testIntro;V.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>start(+b.dataset.l));V.querySelectorAll('[data-ch]').forEach(b=>b.onclick=()=>chap(+b.dataset.ch));}
+ $('#go-recap').onclick=()=>recap(0);if($('#go-quick'))$('#go-quick').onclick=()=>quick();$('#go-test').onclick=testIntro;V.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>start(+b.dataset.l));V.querySelectorAll('[data-ch]').forEach(b=>b.onclick=()=>chap(+b.dataset.ch));}
 function start(l){const L=LEVELS[l];S={mode:'lv',l,i:0,score:0,n:TOTAL,streak:0};
  if(L.ladder){const list=[],meta=[];L.ladder.forEach(e=>{for(let k=0;k<e.n;k++){list.push(e.g);meta.push(e);}});S.list=list;S.meta=meta;S.n=list.length;}next();}
 function next(){if(S.q)S.i++;if(S.i>=S.n)return S.mode==='test'?endTest():S.mode==='warm'?endWarm():S.mode==='chk'?endChk():S.mode==='guide'?endGuide():S.mode==='chp'?endChp():end();S.q=S.list?S.list[S.i]():LEVELS[S.l].g();S.tries=0;S.done=false;S.si=0;S.wkOpen=false;S.stepNext=false;S.chainBad=false;S.askTries=0;
@@ -486,7 +500,7 @@ function scenePlay(box,sc,done){clearTimeout(SCT);box.innerHTML='<div class="scn
 const sceneDur=sc=>sc.states.reduce((a,F)=>a+Math.min(F.dur||3,3)*.8,0);
 function chapStates(ch){const SC=ch.scene,out=SC?SC.states.slice():[],last=SC?SC.states[SC.states.length-1].lines:[[['sys',ch.ex.sys||'']]];
  const head=last.length,cap=(st,red)=>`<b${red?' style="color:var(--red)"':''}>${st.n||st.what}</b>${st.why?`<div style="font-size:16px;font-weight:400;margin-top:4px">💡 ${st.why}</div>`:''}`;
- if(!SC)out.push({lines:last,cap:'מה נתון? <b>מערכת של שתי משוואות.</b> בואו נראה את הטריק.',dur:2.5});
+ if(!SC)out.push({lines:last,cap:ch.ex.intro||'מה נתון? <b>מערכת של שתי משוואות.</b> בואו נראה את הטריק.',dur:2.5});
  const ex=ch.ex.steps.slice(SC?SC.skip||0:0);const still=h=>String(h).replace(/class="fly"/g,'class="flys"').replace(/class="st"/g,'class="sts"').replace(/class="bx"/g,'class="bxs"');
  ex.forEach((st,k)=>out.push({lines:[...last,...ex.slice(0,k+1).map((x,j)=>[['e'+j,j<k?still(x.l):x.l,'sm']])],dim:[...Array(head+k).keys()],cap:cap(st),dur:3}));
  if(ch.mine){const ms=ch.mine.steps;ms.forEach((st,k)=>out.push({lines:ms.slice(0,k+1).map((x,j)=>[['m'+j,j<k?still(x.l):x.l,'sm']]),dim:[...Array(k).keys()],cap:'💣 '+cap(st,1),dur:3}));}
