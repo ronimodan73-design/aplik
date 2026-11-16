@@ -72,6 +72,13 @@ svg{display:block;max-width:100%;margin:6px auto}
 .gc .bd{position:absolute;top:4px;right:6px;color:#fff;border-radius:50%;width:24px;height:24px;line-height:24px;font-weight:bold;font-size:14px}
 .mc{background:#f5f3ff;border:2px solid #ddd6fe;border-radius:12px;padding:10px 6px;font-size:15px;line-height:1.7;cursor:pointer;color:#1f2937;text-align:center}
 .mc.dn{color:#fff;cursor:default}.mc.dn .f,.mc.dn b{color:#fff!important}
+.bz-t{height:12px;background:#e5e7eb;border-radius:8px;overflow:hidden;margin:6px 0 10px}.bz-t i{display:block;height:100%;background:linear-gradient(90deg,#16a34a,#f59e0b,#dc2626);width:100%}
+.bz-h{display:flex;justify-content:space-between;align-items:center;font-weight:bold;font-size:17px;color:#fff;margin:4px 0}
+.bz-s{font-size:26px;color:#facc15}.bz-f{animation:pu .5s ease-in-out 2 alternate;display:inline-block}
+.pop{animation:pop .45s cubic-bezier(.3,1.8,.5,1)}@keyframes pop{0%{transform:scale(.8)}100%{transform:scale(1)}}
+.flt{position:fixed;left:50%;top:40%;font-size:34px;font-weight:bold;color:#16a34a;pointer-events:none;animation:flt 1s ease forwards;z-index:9}@keyframes flt{from{opacity:1;transform:translate(-50%,0)}to{opacity:0;transform:translate(-50%,-90px)}}
+.cf{position:fixed;top:-20px;width:10px;height:14px;z-index:9;pointer-events:none;animation:cf 2.4s linear forwards}@keyframes cf{to{transform:translateY(110vh) rotate(720deg)}}
+.qin{animation:dp .5s cubic-bezier(.3,1.6,.6,1)}
 .shake{animation:shk .4s}@keyframes shk{25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
 .ap{opacity:0;animation:fi .6s ease forwards}@keyframes fi{to{opacity:1}}
 .dp{opacity:0;animation:dp .7s cubic-bezier(.3,1.6,.6,1) forwards}@keyframes dp{from{opacity:0;transform:translateY(-40px)}to{opacity:1;transform:none}}
@@ -253,6 +260,7 @@ function home(){
  '<button class="btn b2" onclick="flash()">🔤 כרטיסיות<small>'+D.flashSub+'</small></button>'+
  LESS.map(function(L,n){return '<button class="btn" style="background:'+(L.c||'#be185d')+'" onclick="LS=LESS['+n+'];les(0)">'+L.t+'<small>'+(L.sub||'שלב אחר שלב · ציור + שאלת הבנה בכל שלב')+'</small></button>';}).join('')+
  (D.match?'<button class="btn" style="background:#ca8a04" onclick="match()">🧩 משחק התאמה<small>'+(D.matchSub||'מתאימים כרטיסים')+'</small></button>':'')+
+'<button class="btn" style="background:linear-gradient(90deg,#f59e0b,#dc2626)" onclick="blitz()">⚡ מבחן בזק מונפש<small>10 שאלות · שעון לכל שאלה · נקודות ורצפים 🔥</small></button>'+
  '<button class="btn b3" onclick="start(Q,\'all\')">🧠 כל השאלות לפי סדר הנושאים<small>'+Q.length+' שאלות, הסבר מפורט אחרי כל תשובה</small></button>'+
  '<button class="btn b4" onclick="start(mock(),\'test\')">🏁 מבחן דמה<small>20 שאלות מעורבבות בכל הרמות · ציון ומשוב אישי</small></button>';
  window.scrollTo(0,0);
@@ -304,6 +312,47 @@ function mock(){
  });
  while(out.length<20&&out.length<Q.length){var r=Q[Math.floor(Math.random()*Q.length)];if(out.indexOf(r)<0)out.push(r);}
  return sh(out);
+}
+
+var BZ={n:0,pts:0,st:0,best:0,tm:null,t0:0,T:20};
+function blitz(){
+ var out=[],used={};[[1,5],[2,4],[3,1]].forEach(function(p){sh(Q.filter(function(q){return q.l==p[0];})).forEach(function(q){if(p[1]>0&&!used[q.t+p[0]]){out.push(q);used[q.t+p[0]]=1;p[1]--;}});
+  sh(Q.filter(function(q){return q.l==p[0]&&out.indexOf(q)<0;})).slice(0,p[1]).forEach(function(q){out.push(q);});});
+ list=out.slice(0,10);mode='blitz';i=0;good=0;wrong=[];BZ.pts=0;BZ.st=0;BZ.best=0;
+ app.innerHTML='<div class="card" style="text-align:center"><h2>⚡ מבחן בזק</h2><p>10 שאלות · 20 שניות לכל שאלה<br>תשובה מהירה = יותר נקודות · רצף נכון = 🔥 בונוס</p><div class="score" id="cd">3</div></div>';
+ var c=3,iv=setInterval(function(){c--;var d=document.getElementById('cd');if(!d){clearInterval(iv);return;}if(c>0){d.textContent=c;d.className='score pop';}else{clearInterval(iv);bask();}},800);
+}
+function bhead(){return '<div class="top"><button class="back" onclick="clearInterval(BZ.tm);home()">→ תפריט</button><span>שאלה '+(i+1)+' / '+list.length+'</span></div><div class="bz-h"><span>⭐ <span class="bz-s" id="bzp">'+BZ.pts+'</span></span><span id="bzst">'+(BZ.st>1?'<span class="bz-f">🔥 רצף '+BZ.st+'</span>':'')+'</span><span>⏱️ <b id="bzc">'+BZ.T+'</b></span></div><div class="bz-t"><i id="bzt"></i></div>';}
+function bask(){
+ var x=list[i],opts=sh(x.o.map(function(t,k){return {t:t,c:k===0};}));
+ var h=bhead()+'<div class="card qin"><span class="tag">'+x.t+'</span><span class="lvl">'+stars(x.l)+'</span><div class="q">'+F(x.q)+'</div>'+(x.d?D.svg[x.d]:'');
+ opts.forEach(function(o){h+='<button class="opt" data-c="'+(o.c?1:0)+'" onclick="bpick(this)">'+F(o.t)+'</button>';});
+ app.innerHTML=h+'<div id="ex"></div></div>';window.scrollTo(0,0);
+ BZ.t0=Date.now();var bar=document.getElementById('bzt');bar.style.transition='width '+BZ.T+'s linear';requestAnimationFrame(function(){requestAnimationFrame(function(){bar.style.width='0%';});});
+ clearInterval(BZ.tm);BZ.tm=setInterval(function(){var l=Math.max(0,BZ.T-Math.floor((Date.now()-BZ.t0)/1000)),c=document.getElementById('bzc');if(c)c.textContent=l;if(l<=0)bpick(null);},250);
+}
+function bpick(b){
+ clearInterval(BZ.tm);var bar=document.getElementById('bzt');var x=list[i],ok=!!b&&b.dataset.c==='1',left=Math.max(0,BZ.T-(Date.now()-BZ.t0)/1000);
+ if(bar){bar.style.transition='none';bar.style.width=(left/BZ.T*100)+'%';}
+ document.querySelectorAll('.opt').forEach(function(o){o.disabled=true;if(o.dataset.c==='1')o.classList.add('ok','pop');});
+ if(ok){good++;BZ.st++;BZ.best=Math.max(BZ.best,BZ.st);var g=100+Math.round(left*5)+(BZ.st>1?20*(BZ.st-1):0);BZ.pts+=g;
+  var f=document.createElement('div');f.className='flt';f.dir='ltr';f.textContent='+'+g;document.body.appendChild(f);setTimeout(function(){f.remove();},1000);
+  document.getElementById('bzp').textContent=BZ.pts;document.getElementById('bzst').innerHTML=BZ.st>1?'<span class="bz-f">🔥 רצף '+BZ.st+'</span>':'';
+  document.getElementById('ex').innerHTML='<div class="fb ok pop">✅ נכון! '+(left>12?'⚡ ובמהירות!':'')+'</div>';
+  setTimeout(bnext,1300);return;}
+ BZ.st=0;wrong.push(x);if(b){b.classList.add('no','shake');}
+ document.getElementById('ex').innerHTML='<div class="exp no"><b class="h">'+(b?'❌ לא נורא! הנה איפה טעינו:':'⏰ נגמר הזמן! הנה הפתרון:')+'</b><div class="qr">🎯 <b>התשובה הנכונה:</b> '+F(x.o[0])+'</div>'+EX(x.e)+'</div><button class="next" onclick="bnext()">'+(i<list.length-1?'לשאלה הבאה ←':'לתוצאות 🏁')+'</button>';
+}
+function bnext(){if(mode!='blitz')return;i++;if(i<list.length)bask();else bend();}
+function bend(){
+ mode='w';var p=good/list.length,s=p>=.9?3:p>=.7?2:p>=.5?1:0;
+ var h='<div class="card" style="text-align:center"><h2>⚡ סיום מבחן הבזק!</h2><div style="font-size:44px;letter-spacing:6px">'+[1,2,3].map(function(k){return '<span class="dp" style="animation-delay:'+(k*.35)+'s;'+(k>s?'filter:grayscale(1);opacity:.35':'')+'">⭐</span>';}).join('')+'</div><div class="score" id="bzf">0</div><div>נקודות</div><div style="font-size:18px;margin:10px 0">'+good+' מתוך '+list.length+' נכונות · 🔥 הרצף הכי ארוך: '+BZ.best+'</div>'+
+ '<div class="fb '+(p>=.7?'ok':'no')+'">'+(p>=.9?'🏆 אלופים! מהירים ומדויקים.':p>=.7?'💪 יפה מאוד! עוד סיבוב ואתם שם.':p>=.5?'👍 בדרך הנכונה – כדאי לעבור על הטעויות למטה.':'📘 כדאי לקרוא את הסיכום ואת הטיפים, ואז לנסות שוב.')+'</div>';
+ if(wrong.length){h+='<button class="next" style="background:#db2777" onclick="start(wrong.slice(),\'w\')">🔁 לתרגל רק את '+wrong.length+' הטעויות (בלי שעון)</button><h3 style="color:#6d28d9;text-align:right">איפה טעיתי:</h3>';
+  wrong.forEach(function(w){h+='<div class="rev" style="text-align:right">📝 '+F(w.q)+(w.d?D.svg[w.d]:'')+'<br>🎯 <b>'+F(w.o[0])+'</b><div class="exp ok" style="margin-top:6px">'+EX(w.e)+'</div></div>';});}
+ app.innerHTML=h+'<button class="next" style="background:#f59e0b" onclick="blitz()">⚡ עוד סיבוב בזק</button><button class="next" onclick="home()">חזרה לתפריט</button></div>';window.scrollTo(0,0);
+ var n=0,el=document.getElementById('bzf'),iv=setInterval(function(){n=Math.min(BZ.pts,n+Math.ceil(BZ.pts/40)+1);if(el)el.textContent=n;if(n>=BZ.pts)clearInterval(iv);},30);
+ if(p>=.7)for(var k=0;k<40;k++){var c=document.createElement('div');c.className='cf';c.style.left=Math.random()*100+'vw';c.style.background=MC[k%4];c.style.animationDelay=Math.random()*.8+'s';document.body.appendChild(c);setTimeout(function(c){return function(){c.remove();};}(c),3400);}
 }
 function end(){
  var p=Math.round(good/list.length*100),msg=p>=90?'🏆 מצוין! מוכנים למבחן!':p>=75?'💪 טוב מאוד! עוד קצת חיזוק ומגיעים':p>=55?'👍 בדרך הנכונה – כדאי לחזק את הנושאים למטה':'📘 כדאי לקרוא שוב את הסיכום והטיפים, ואז לנסות שוב';
