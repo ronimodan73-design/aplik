@@ -1,0 +1,1 @@
+{"name": "קנה מידה", "short_name": "קנה מידה", "lang": "he", "dir": "rtl", "start_url": "h8_scale.html", "scope": "./", "display": "standalone", "background_color": "#0f1b2d", "theme_color": "#0f1b2d", "icons": [{"src": "icon-h8_scale-192.png", "sizes": "192x192", "type": "image/png"}, {"src": "icon-h8_scale-512.png", "sizes": "512x512", "type": "image/png"}]}
