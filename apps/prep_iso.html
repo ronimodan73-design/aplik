@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>משולש שווה שוקיים – הכנה למבחן</title>
+<link rel="manifest" href="prep_iso.webmanifest">
+<link rel="apple-touch-icon" href="icon-prep_iso-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="שווה שוקיים">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1e1b4b">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,"Segoe UI",sans-serif;background:linear-gradient(160deg,#1e1b4b,#4c1d95);min-height:100vh;color:#1f2937;padding:14px}
+.wrap{max-width:640px;margin:0 auto}
+h1{color:#fff;text-align:center;font-size:26px;margin:6px 0 2px}
+.sub{color:#ddd6fe;text-align:center;font-size:15px;margin-bottom:14px}
+.card{background:#fff;border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.btn{display:block;width:100%;border:0;border-radius:14px;padding:16px;font-size:18px;font-weight:bold;margin:10px 0;cursor:pointer;color:#fff;text-align:right}
+.b1{background:#7c3aed}.b2{background:#0891b2}.b3{background:#db2777}.b4{background:#16a34a}
+.btn small{display:block;font-weight:normal;font-size:14px;opacity:.9;margin-top:3px}
+.f{direction:ltr;unicode-bidi:isolate;display:inline-block;font-weight:bold;color:#6d28d9;font-family:Arial,sans-serif;white-space:nowrap}
+.f sub{font-size:.7em}
+.top{display:flex;justify-content:space-between;align-items:center;color:#fff;margin-bottom:8px;font-size:15px}
+.back{background:rgba(255,255,255,.2);color:#fff;border:0;border-radius:10px;padding:8px 12px;font-size:15px;cursor:pointer}
+.bar{height:8px;background:rgba(255,255,255,.25);border-radius:6px;overflow:hidden;margin-bottom:12px}
+.bar div{height:100%;background:#facc15;transition:width .3s}
+.tag{display:inline-block;background:#ede9fe;color:#6d28d9;border-radius:8px;padding:3px 9px;font-size:13px;margin-bottom:8px}
+.lvl{float:left;font-size:13px;color:#b45309}
+.q{font-size:20px;font-weight:bold;line-height:1.5;margin-bottom:14px}
+.opt{display:block;width:100%;text-align:right;background:#f5f3ff;border:2px solid #ddd6fe;border-radius:12px;padding:13px;font-size:17px;margin:8px 0;cursor:pointer;color:#1f2937}
+.opt.ok{background:#dcfce7;border-color:#16a34a}
+.opt.no{background:#fee2e2;border-color:#dc2626}
+.exp{border-radius:12px;padding:14px;margin-top:12px;font-size:16px;line-height:1.65}
+.exp.ok{background:#f0fdf4;border-right:6px solid #16a34a}
+.exp.no{background:#fef2f2;border-right:6px solid #dc2626}
+.exp b.h{display:block;font-size:17px;margin-bottom:4px}
+.next{background:#7c3aed;color:#fff;border:0;border-radius:12px;padding:14px;font-size:18px;font-weight:bold;width:100%;margin-top:12px;cursor:pointer}
+.sum h3{color:#6d28d9;font-size:19px;margin-bottom:6px}
+.sum p{font-size:16px;line-height:1.65;margin-bottom:6px}
+.tip{background:#fef9c3;border-radius:10px;padding:9px 11px;font-size:15px;margin-top:6px}
+table{width:100%;border-collapse:collapse;font-size:16px}
+td,th{border:1px solid #ddd6fe;padding:7px;text-align:center}
+th{background:#ede9fe}
+.flash{text-align:center;padding:30px 10px}
+.flash .big{font-size:56px;font-weight:bold;color:#6d28d9;direction:ltr}
+.flash .heb{font-size:32px;font-weight:bold}
+.pt{display:grid;grid-template-columns:repeat(18,1fr);gap:2px;direction:ltr;margin:8px 0}
+.pt div{height:16px;border-radius:2px}
+.m{background:#93c5fd}.n{background:#fca5a5}.g{background:#fde68a}
+.score{font-size:46px;font-weight:bold;text-align:center;color:#6d28d9}
+.foot{color:#c4b5fd;text-align:center;font-size:13px;margin-top:10px}
+.rev{border-bottom:1px solid #eee;padding:10px 0;font-size:15px;line-height:1.6}
+.f sup{font-size:.7em}
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 3px;font-size:.9em}
+.fr span:first-child{border-bottom:2px solid currentColor;padding:0 3px}
+.flash .ans{font-size:24px;font-weight:bold;color:#6d28d9;line-height:1.5}
+.flash .heb{font-size:22px;line-height:1.5}
+svg{display:block;max-width:100%;margin:6px auto}
+.qr{background:#fff;border:2px dashed #c4b5fd;border-radius:10px;padding:9px;margin:6px 0 10px;font-size:15px}
+.exp{font-size:17px;line-height:1.8}
+.stg{display:grid;grid-template-columns:auto auto auto auto;justify-content:start;column-gap:6px;row-gap:2px;align-items:center;margin:2px 0}.stg .sl{white-space:nowrap}.stg .sw{grid-column:1/-1}.stg .sb{text-align:left}.stg .sa{text-align:right}.stg .se{font-weight:bold;color:#6d28d9;text-align:center}
+
+.k{display:inline-block;background:#374151;color:#fff;border-radius:6px;padding:1px 7px;margin:2px 1px;font-size:.9em;box-shadow:0 2px 0 #111;font-weight:bold}
+.calc{background:#ecfeff;border-right:5px solid #0891b2;border-radius:10px;padding:8px 10px;margin-top:10px;line-height:2}
+.lvl-row{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:15px}.lvl-row span:first-child{width:120px}.lvb{flex:1;height:12px;background:#eee;border-radius:6px;overflow:hidden}.lvb i{display:block;height:100%}
+.fb{background:#f5f3ff;border-radius:10px;padding:10px;margin:8px 0;font-size:16px;line-height:1.7}.fb.ok{background:#f0fdf4}.fb.no{background:#fff7ed;border-right:5px solid #f59e0b}
+.mg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+.gc{background:#fff;border:3px solid #e5e7eb;border-radius:12px;padding:4px;text-align:center;cursor:pointer;font-size:14px;position:relative}
+.gc.sel{border-color:#f59e0b;box-shadow:0 0 0 4px #fde68a}
+.gc .bd{position:absolute;top:4px;right:6px;color:#fff;border-radius:50%;width:24px;height:24px;line-height:24px;font-weight:bold;font-size:14px}
+.mc{background:#f5f3ff;border:2px solid #ddd6fe;border-radius:12px;padding:10px 6px;font-size:15px;line-height:1.7;cursor:pointer;color:#1f2937;text-align:center}
+.mc.dn{color:#fff;cursor:default}.mc.dn .f,.mc.dn b{color:#fff!important}
+.bz-t{height:12px;background:#e5e7eb;border-radius:8px;overflow:hidden;margin:6px 0 10px}.bz-t i{display:block;height:100%;background:linear-gradient(90deg,#16a34a,#f59e0b,#dc2626);width:100%}
+.bz-h{display:flex;justify-content:space-between;align-items:center;font-weight:bold;font-size:17px;color:#fff;margin:4px 0}
+.bz-s{font-size:26px;color:#facc15}.bz-f{animation:pu .5s ease-in-out 2 alternate;display:inline-block}
+.pop{animation:pop .45s cubic-bezier(.3,1.8,.5,1)}@keyframes pop{0%{transform:scale(.8)}100%{transform:scale(1)}}
+.flt{position:fixed;left:50%;top:40%;font-size:34px;font-weight:bold;color:#16a34a;pointer-events:none;animation:flt 1s ease forwards;z-index:9}@keyframes flt{from{opacity:1;transform:translate(-50%,0)}to{opacity:0;transform:translate(-50%,-90px)}}
+.cf{position:fixed;top:-20px;width:10px;height:14px;z-index:9;pointer-events:none;animation:cf 2.4s linear forwards}@keyframes cf{to{transform:translateY(110vh) rotate(720deg)}}
+.qin{animation:dp .5s cubic-bezier(.3,1.6,.6,1)}
+.shake{animation:shk .4s}@keyframes shk{25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+.ap{opacity:0;animation:fi .6s ease forwards}@keyframes fi{to{opacity:1}}
+.dp{opacity:0;animation:dp .7s cubic-bezier(.3,1.6,.6,1) forwards}@keyframes dp{from{opacity:0;transform:translateY(-40px)}to{opacity:1;transform:none}}
+.dr{stroke-dasharray:1;stroke-dashoffset:1;animation:dr 2s ease forwards}@keyframes dr{to{stroke-dashoffset:0}}
+.pu{transform-box:fill-box;transform-origin:center;animation:pu .7s ease-in-out 4 alternate}@keyframes pu{to{transform:scale(1.7)}}
+.mv{animation:mv 1.1s ease-in-out forwards}@keyframes mv{to{transform:translate(var(--dx),var(--dy))}}
+.anim p{margin-bottom:6px}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<div class="foot">ערכה: רוני מודן · שחקים</div>
+<script>
+var D={title:"משולש שווה שוקיים",icon:"🔺",flashSub:"מושג / שאלה ← תשובה"};
+function TR(o){o=o||{};var A=[160,30],B=[50,200],C=[270,200],Dd=[160,200];
+ function t(x,y,s,c,z){return '<text x="'+x+'" y="'+y+'" font-size="'+(z||15)+'" font-weight="bold" fill="'+(c||'#111')+'" text-anchor="middle">'+s+'</text>';}
+ var h='<svg viewBox="0 0 320 235" width="290" style="max-width:100%"><polygon points="160,30 50,200 270,200" fill="#fef3c7" stroke="#111" stroke-width="2.5"/>';
+ if(o.legs){h+='<line x1="98" y1="111" x2="112" y2="119" stroke="#dc2626" stroke-width="3"/><line x1="208" y1="119" x2="222" y2="111" stroke="#dc2626" stroke-width="3"/>';}
+ if(o.ad){h+='<line x1="160" y1="30" x2="160" y2="200" stroke="#7c3aed" stroke-width="2.5"/>'+t(160,222,'D');
+  if(o.ad.indexOf('h')>=0)h+='<polyline points="160,186 174,186 174,200" fill="none" stroke="#7c3aed" stroke-width="2"/>';
+  if(o.ad.indexOf('m')>=0)h+='<line x1="103" y1="193" x2="103" y2="207" stroke="#2563eb" stroke-width="3"/><line x1="217" y1="193" x2="217" y2="207" stroke="#2563eb" stroke-width="3"/>';}
+ h+=t(160,22,'A')+t(38,212,'B')+t(282,212,'C');
+ if(o.a)h+=t(160,66,o.a,'#7c3aed',14);if(o.b)h+=t(88,192,o.b,'#16a34a',14);if(o.c)h+=t(232,192,o.c,'#16a34a',14);
+ if(o.w)h+=t(o.w[0],o.w[1],o.w[2],o.w[3]||'#555',13);if(o.w2)h+=t(o.w2[0],o.w2[1],o.w2[2],o.w2[3]||'#555',13);
+ return h+'<text x="160" y="232" font-size="11" fill="#666" text-anchor="middle">השרטוט אינו בקנה מידה</text></svg>';}
+D.svg={
+t0:TR({legs:1,a:'ראש',w:[82,105,'שוק','#dc2626'],w2:[238,105,'שוק','#dc2626'],b:'',c:''})+'',
+a40:TR({legs:1,a:'40°',b:'?',c:'?'}),
+a80:TR({legs:1,a:'80°',b:'?',c:'?'}),
+b70:TR({legs:1,a:'?',b:'70°',c:'70°'}),
+x:TR({legs:1,b:'2x + 20',c:'3x − 5'}),
+eq:TR({b:'65°',c:'65°'}),
+h:TR({legs:1,ad:'h'}),
+h50:TR({legs:1,ad:'h',a:'50°'}),
+h70:TR({legs:1,ad:'h',b:'70°'}),
+hm:TR({ad:'hm'})
+};
+D.svg.t0=TR({legs:1,a:'ראש',w:[160,218,'בסיס','#2563eb'],w2:[86,104,'שוק','#dc2626']});
+D.summary=[
+["🔺 המושגים","<p>במשולש <b>שווה שוקיים</b> יש שתי צלעות שוות – הן ה<b>שוקיים</b>.</p>"+D.svg.t0+"<p>[[AB = AC]] ← שוקיים · [[BC]] ← בסיס · [[∢BAC]] ← זווית הראש.</p><div class='tip'>💡 הקודקוד תמיד באמצע: הזווית ליד [[B]] היא [[∢ABC]].</div>"],
+["⭐ המשפט","<p>שוקיים שוות ← <b>זוויות הבסיס שוות</b>: [[∢ABC = ∢ACB]].</p><p>זווית הראש 40° ← [[(180° − 40°) : 2 = 70°]].</p><div class='tip'>⚠️ רק זוויות הבסיס שוות זו לזו. זווית הראש שונה!</div>"],
+["🔁 המשפט ההפוך","<p>שתי זוויות שוות ← <b>הצלעות שמולן שוות</b> ← המשולש שווה שוקיים.</p>"+D.svg.eq+"<p>[[∢B = ∢C]] ← [[AB = AC]].</p>"],
+["📏 שלושה באחד","<p>בשווה שוקיים, הקטע מהראש אל הבסיס הוא <b>גובה = תיכון = חוצה זווית</b>.</p>"+D.svg.h+"<p>גובה ← גם [[BD = DC]] וגם [[∢BAD = ∢CAD]].</p><div class='tip'>🔁 ולהפך: קטע שהוא <b>2 מתוך 3</b> ← המשולש שווה שוקיים.</div>"],
+["✏️ עם x","<p>זוויות הבסיס שוות ← משווים:</p><p>[[2x + 20 = 3x − 5]] ← [[x = 25]]</p><p>מציבים: [[2 · 25 + 20 = 70°]]</p>"],
+["🧾 נימוקים","<p>[[AB = AC]] ← [[∢B = ∢C]]: <b>במשולש שווה שוקיים זוויות הבסיס שוות.</b></p><p>[[∢B = ∢C]] ← [[AB = AC]]: <b>מול זוויות שוות מונחות צלעות שוות.</b></p>"]
+];
+D.tips=[
+["🔤 מילים",["<b>שוקיים</b> = שתי הצלעות השוות.","<b>בסיס</b> = הצלע השלישית.","<b>זווית ראש</b> = בין השוקיים, מול הבסיס."]],
+["🧮 שני חישובים",["יש ראש? ← מורידים אותו מ-[[180°]] ומחלקים ב-2 = כל זווית בסיס.","יש בסיס? ← מורידים מ-[[180°]] פעמיים את זווית הבסיס = הראש.","בדיקה: שלוש הזוויות ביחד = [[180°]]."]],
+["⚠️ מלכודות",["זווית הראש <b>לא</b> שווה לזוויות הבסיס.","זווית בסיס תמיד <b>קטנה מ-90°</b>.","שלושה באחד – רק לקטע מהראש אל <b>הבסיס</b>, לא אל שוק."]],
+["🔁 הפוך",["2 זוויות שוות ← שווה שוקיים.","2 מתוך 3 (גובה, תיכון, חוצה) ← שווה שוקיים."]]
+];
+D.flash=[["מה הן השוקיים?","שתי הצלעות השוות"],["מה היא זווית הראש?","הזווית שבין השוקיים"],["המשפט","שוקיים שוות ← זוויות הבסיס שוות"],["המשפט ההפוך","2 זוויות שוות ← הצלעות שמולן שוות"],["ראש [[40°]] ← כל זווית בסיס?","[[70°]]"],["בסיס [[70°]] ← הראש?","[[40°]]"],["גובה לבסיס הוא גם…","תיכון וחוצה זווית"],["2 מתוך 3 ← ?","המשולש שווה שוקיים"],["האם זווית בסיס יכולה להיות [[90°]]?","לא"],["ראש [[60°]] ← איזה משולש?","שווה צלעות (כל הזוויות 60°)"]];
+var R=[
+["מושגים",1,"מהן ה<b>שוקיים</b> במשולש שווה שוקיים?",["שתי הצלעות השוות","הצלע הארוכה ביותר","הצלע שמול זווית הראש","כל שלוש הצלעות"],"🔺 \"שווה שוקיים\" = יש לו שתי צלעות שוות.<br>1️⃣ בשרטוט: הצלעות עם הקו האדום.<br>✅ השוקיים הן שתי הצלעות השוות.<br>⚖️ הצלע שמול זווית הראש היא הבסיס.","t0"],
+["מושגים",1,"מהי <b>זווית הראש</b>?",["הזווית שבין שתי השוקיים","הזווית הגדולה ביותר","זווית שליד הבסיס","זווית של [[90°]]"],"🔺 הראש = הקודקוד שבו נפגשות השוקיים.<br>✅ זווית הראש = הזווית שבין השוקיים.<br>⚖️ היא לא תמיד הגדולה ביותר.","t0"],
+["מושגים",1,"איך כותבים את הזווית שהקודקוד שלה [[B]]?",["[[∢ABC]]","[[∢BAC]]","[[∢ACB]]","[[∢CAB]]"],"✍️ 3 אותיות, והקודקוד <b>באמצע</b>.<br>1️⃣ הקודקוד [[B]] ← באמצע.<br>✅ [[∢ABC]]<br>⚖️ [[∢BAC]] זו הזווית שליד [[A]]."],
+["מושגים",2,"במשולש [[ABC]] נתון [[AB = AC]]. מהו הבסיס?",["[[BC]]","[[AB]]","[[AC]]","אין לו בסיס"],"🔺 [[AB]] ו-[[AC]] שוות ← הן השוקיים.<br>1️⃣ הצלע השלישית היא הבסיס.<br>✅ [[BC]]"],
+["מושגים",1,"במשולש שווה שוקיים, כמה זוויות שוות יש לפחות?",["2","3","1","0"],"🔺 שוקיים שוות ← זוויות הבסיס שוות.<br>✅ לפחות 2.<br>💡 אם כל 3 שוות – זה משולש שווה צלעות."],
+["חישוב זוויות",1,"מה סכום הזוויות במשולש?",["[[180°]]","[[360°]]","[[90°]]","[[270°]]"],"🔺 בכל משולש, שלוש הזוויות ביחד = [[180°]].<br>✅ [[180°]]<br>⚖️ [[360°]] זה במרובע."],
+["חישוב זוויות",1,"זווית הראש [[40°]]. כמה כל זווית בסיס?",["[[70°]]","[[40°]]","[[140°]]","[[50°]]"],"🍕 מה שנשאר מתחלק <b>שווה</b> בין שתי זוויות הבסיס.<br>1️⃣ [[180° − 40° = 140°]]<br>2️⃣ [[140° : 2 = 70°]]<br>✅ [[70°]]<br>🔁 בדיקה: [[40° + 70° + 70° = 180°]] ✔️<br>⚖️ [[40°]] – רק זוויות הבסיס שוות, לא הראש.","a40"],
+["חישוב זוויות",1,"זווית הראש [[80°]]. כמה כל זווית בסיס?",["[[50°]]","[[80°]]","[[100°]]","[[40°]]"],"🍕 1️⃣ [[180° − 80° = 100°]]<br>2️⃣ [[100° : 2 = 50°]]<br>✅ [[50°]]<br>⚖️ [[100°]] – שכחו לחלק ב-2.","a80"],
+["חישוב זוויות",2,"זווית בסיס [[70°]]. כמה זווית הראש?",["[[40°]]","[[70°]]","[[110°]]","[[20°]]"],"🔺 יש שתי זוויות בסיס של [[70°]].<br>1️⃣ [[70° + 70° = 140°]]<br>2️⃣ [[180° − 140° = 40°]]<br>✅ [[40°]]<br>⚖️ [[110°]] – הורידו רק זווית בסיס אחת.","b70"],
+["חישוב זוויות",2,"זווית הראש [[100°]]. כמה כל זווית בסיס?",["[[40°]]","[[80°]]","[[100°]]","[[50°]]"],"🍕 1️⃣ [[180° − 100° = 80°]]<br>2️⃣ [[80° : 2 = 40°]]<br>✅ [[40°]]"],
+["חישוב זוויות",2,"כל זווית בסיס [[35°]]. כמה זווית הראש?",["[[110°]]","[[70°]]","[[145°]]","[[35°]]"],"🔺 1️⃣ [[35° + 35° = 70°]]<br>2️⃣ [[180° − 70° = 110°]]<br>✅ [[110°]]<br>⚖️ [[145°]] – הורידו רק זווית אחת."],
+["חישוב זוויות",3,"זווית בסיס [[45°]]. איזה משולש זה?",["שווה שוקיים וישר זווית","שווה צלעות","קהה זווית","חד זווית"],"🔺 1️⃣ [[45° + 45° = 90°]]<br>2️⃣ הראש: [[180° − 90° = 90°]]<br>✅ זווית הראש ישרה ← שווה שוקיים <b>וגם</b> ישר זווית."],
+["חישוב זוויות",3,"האם זווית בסיס יכולה להיות [[95°]]?",["לא – שתי זוויות הבסיס ביחד יותר מ-[[180°]]","כן","כן, אם זווית הראש קטנה","רק במשולש ישר זווית"],"🔺 יש <b>שתי</b> זוויות בסיס.<br>1️⃣ [[95° + 95° = 190°]]<br>2️⃣ זה כבר יותר מ-[[180°]]!<br>✅ לא. זווית בסיס תמיד קטנה מ-[[90°]]."],
+["המשפט ההפוך",1,"במשולש יש שתי זוויות של [[65°]]. מה אפשר להסיק?",["המשולש שווה שוקיים","המשולש ישר זווית","כל הצלעות שוות","אי אפשר להסיק כלום"],"🔁 שתי זוויות שוות ← הצלעות <b>שמולן</b> שוות.<br>✅ המשולש שווה שוקיים.<br>⚖️ הזווית השלישית [[50°]], לכן לא כל הצלעות שוות.","eq"],
+["המשפט ההפוך",2,"נתון [[∢ABC = ∢ACB]]. אילו צלעות שוות?",["[[AB = AC]]","[[AB = BC]]","[[AC = BC]]","אף צלע"],"🔁 כל צלע נמצאת <b>מול</b> זווית.<br>1️⃣ מול [[∢B]] ← הצלע [[AC]].<br>2️⃣ מול [[∢C]] ← הצלע [[AB]].<br>✅ [[AB = AC]]","eq"],
+["המשפט ההפוך",2,"במשולש שתי זוויות: [[50°]] ו-[[80°]]. האם הוא שווה שוקיים?",["כן – הזווית השלישית גם [[50°]]","לא – אין שתי זוויות שוות","לא – [[80°]] שונה מ-[[50°]]","אי אפשר לדעת"],"🔺 קודם מוצאים את הזווית השלישית!<br>1️⃣ [[180° − 50° − 80° = 50°]]<br>2️⃣ יש שתי זוויות של [[50°]].<br>✅ כן, שווה שוקיים."],
+["המשפט ההפוך",3,"במשולש שתי זוויות: [[30°]] ו-[[70°]]. האם הוא שווה שוקיים?",["לא – הזוויות [[30°]], [[70°]], [[80°]] שונות","כן","כן – כי [[30° + 70° = 100°]]","אי אפשר לדעת"],"🔺 1️⃣ הזווית השלישית: [[180° − 30° − 70° = 80°]]<br>2️⃣ [[30°]], [[70°]], [[80°]] – אין שתיים שוות.<br>✅ לא שווה שוקיים."],
+["גובה, תיכון וחוצה",1,"[[AD]] הוא הגובה לבסיס במשולש שווה שוקיים. מה עוד הוא?",["גם תיכון וגם חוצה זווית","רק תיכון","רק חוצה זווית","שום דבר נוסף"],"📏 שלושה באחד!<br>1️⃣ בשווה שוקיים, מהראש אל הבסיס: גובה = תיכון = חוצה זווית.<br>✅ גם תיכון וגם חוצה זווית.","h"],
+["גובה, תיכון וחוצה",2,"[[AB = AC]], [[AD]] גובה לבסיס, ו-[[BC = 12]] ס״מ. כמה [[BD]]?",["6 ס״מ","12 ס״מ","24 ס״מ","3 ס״מ"],"📏 הגובה הוא גם <b>תיכון</b> ← מחלק את הבסיס לשניים.<br>1️⃣ [[12 : 2 = 6]]<br>✅ 6 ס״מ.","h"],
+["גובה, תיכון וחוצה",2,"[[AB = AC]], [[AD]] גובה לבסיס, ו-[[∢BAC = 50°]]. כמה [[∢BAD]]?",["[[25°]]","[[50°]]","[[65°]]","[[90°]]"],"📏 הגובה הוא גם <b>חוצה זווית</b> ← חוצה את זווית הראש לשניים.<br>1️⃣ [[50° : 2 = 25°]]<br>✅ [[25°]]","h50"],
+["גובה, תיכון וחוצה",2,"[[AB = AC]], [[AD]] גובה לבסיס, ו-[[∢ABC = 70°]]. כמה [[∢BAD]]?",["[[20°]]","[[70°]]","[[40°]]","[[10°]]"],"🔺 מסתכלים על המשולש הקטן [[ABD]].<br>1️⃣ [[∢ADB = 90°]] (גובה)<br>2️⃣ [[180° − 90° − 70° = 20°]]<br>✅ [[20°]]<br>🔁 דרך אחרת: הראש [[40°]], וחצי ממנו [[20°]] ✔️","h70"],
+["גובה, תיכון וחוצה",3,"במשולש [[ABC]], הקטע [[AD]] הוא גם גובה וגם תיכון לצלע [[BC]]. מה אפשר להסיק?",["המשולש שווה שוקיים: [[AB = AC]]","[[AD = BC]]","המשולש ישר זווית","אי אפשר להסיק כלום"],"🔁 2 מתוך 3 ← שווה שוקיים.<br>1️⃣ גובה ✔️ · תיכון ✔️<br>✅ [[AB = AC]]","hm"],
+["גובה, תיכון וחוצה",3,"נכון או לא: \"במשולש שווה שוקיים, התיכון ל<b>שוק</b> הוא גם גובה לשוק.\"",["לא נכון – רק הקטע מהראש אל הבסיס","נכון","נכון – זה שלושה באחד","נכון רק אם הבסיס קצר"],"📏 שלושה באחד – רק לקטע מהראש אל <b>הבסיס</b>.<br>1️⃣ תיכון לשוק לא יוצא מהראש.<br>✅ לא נכון (חוץ ממשולש שווה צלעות)."],
+["משוואות",2,"זוויות הבסיס הן [[2x + 20]] ו-[[3x − 5]]. מה [[x]]?",["25","15","5","35"],"🔺 זוויות הבסיס שוות ← משווים.<br>1️⃣ [[2x + 20 = 3x − 5]]<br>2️⃣ [[20 + 5 = 3x − 2x]]<br>3️⃣ [[x = 25]]<br>✅ 25<br>🔁 בדיקה: [[2 · 25 + 20 = 70]], [[3 · 25 − 5 = 70]] ✔️","x"],
+["משוואות",2,"[[x = 25]], וזווית בסיס היא [[2x + 20]]. כמה היא?",["[[70°]]","[[45°]]","[[50°]]","[[25°]]"],"✏️ מציבים 25 במקום [[x]].<br>1️⃣ [[2 · 25 = 50]]<br>2️⃣ [[50 + 20 = 70]]<br>✅ [[70°]]<br>⚖️ 25 זה [[x]], לא הזווית!"],
+["משוואות",3,"זווית הראש [[x]], וכל זווית בסיס [[2x]]. מה [[x]]?",["[[36°]]","[[60°]]","[[45°]]","[[30°]]"],"🔺 שלוש הזוויות ביחד = [[180°]].<br>1️⃣ [[x + 2x + 2x = 180]]<br>2️⃣ [[5x = 180]]<br>3️⃣ [[x = 36]]<br>✅ [[36°]] (והבסיס [[72°]])<br>⚖️ [[60°]] – ספרו רק זווית בסיס אחת."],
+["משוואות",3,"זווית הראש [[x]], וכל זווית בסיס [[x + 30]]. מה [[x]]?",["[[40°]]","[[50°]]","[[30°]]","[[60°]]"],"🔺 1️⃣ [[x + (x + 30) + (x + 30) = 180]]<br>2️⃣ [[3x + 60 = 180]]<br>3️⃣ [[3x = 120]] ← [[x = 40]]<br>✅ [[40°]]<br>🔁 [[40° + 70° + 70° = 180°]] ✔️"],
+["משוואות",3,"השוקיים: [[AB = 3x − 4]] ו-[[AC = x + 10]]. מה [[x]]?",["7","3","14","17"],"🔺 השוקיים שוות ← משווים.<br>1️⃣ [[3x − 4 = x + 10]]<br>2️⃣ [[2x = 14]]<br>3️⃣ [[x = 7]]<br>✅ 7 (וכל שוק [[17]] ס״מ)<br>⚖️ 17 זה אורך השוק, לא [[x]]."],
+["היקף",2,"שוק 7 ס״מ ובסיס 5 ס״מ. מה ההיקף?",["19 ס״מ","17 ס״מ","12 ס״מ","24 ס״מ"],"🔺 יש <b>שתי</b> שוקיים!<br>1️⃣ [[7 + 7 + 5 = 19]]<br>✅ 19 ס״מ<br>⚖️ 12 – ספרו רק שוק אחת."],
+["היקף",3,"ההיקף 30 ס״מ והבסיס 8 ס״מ. מה אורך שוק?",["11 ס״מ","22 ס״מ","15 ס״מ","8 ס״מ"],"🔺 1️⃣ בלי הבסיס: [[30 − 8 = 22]]<br>2️⃣ שתי שוקיים שוות: [[22 : 2 = 11]]<br>✅ 11 ס״מ<br>⚖️ 22 – שכחו לחלק ב-2."],
+["נימוקים",2,"נתון [[AB = AC]], ולכן [[∢B = ∢C]]. מה הנימוק?",["במשולש שווה שוקיים זוויות הבסיס שוות","סכום הזוויות במשולש [[180°]]","זוויות קודקודיות שוות","זוויות מתחלפות שוות"],"🧾 עוברים מ<b>צלעות</b> שוות ל<b>זוויות</b> שוות.<br>✅ המשפט: במשולש שווה שוקיים זוויות הבסיס שוות."],
+["נימוקים",2,"נתון [[∢B = ∢C]], ולכן [[AB = AC]]. מה הנימוק?",["מול זוויות שוות מונחות צלעות שוות","במשולש שווה שוקיים זוויות הבסיס שוות","סכום הזוויות במשולש [[180°]]","שוקיים שוות"],"🧾 עוברים מ<b>זוויות</b> שוות ל<b>צלעות</b> שוות ← המשפט ההפוך.<br>✅ מול זוויות שוות מונחות צלעות שוות."],
+["נימוקים",1,"נכון או לא: \"במשולש שווה שוקיים, זווית הראש שווה תמיד לזוויות הבסיס.\"",["לא נכון – רק זוויות הבסיס שוות זו לזו","נכון","נכון – כל הזוויות שוות","נכון רק כשהראש [[40°]]"],"🔺 ראש [[40°]] ← בסיס [[70°]] ו-[[70°]].<br>✅ לא נכון. רק זוויות הבסיס שוות זו לזו."],
+["נימוקים",3,"נכון או לא: \"אם זווית הראש [[60°]], המשולש שווה צלעות.\"",["נכון – כל הזוויות [[60°]]","לא נכון","לא נכון – יש רק 2 צלעות שוות","אי אפשר לדעת"],"🔺 1️⃣ [[(180° − 60°) : 2 = 60°]]<br>2️⃣ כל שלוש הזוויות [[60°]].<br>3️⃣ זוויות שוות ← צלעות שוות.<br>✅ נכון – שווה צלעות."],
+["נימוקים",3,"דנה כתבה: \"זווית הראש [[70°]], ולכן כל זווית בסיס [[70°]].\" מה הטעות שלה?",["רק זוויות הבסיס שוות. כל אחת [[55°]]","אין טעות","כל זווית בסיס [[110°]]","כל זווית בסיס [[35°]]"],"🔺 הראש לא שווה לבסיס!<br>1️⃣ [[180° − 70° = 110°]]<br>2️⃣ [[110° : 2 = 55°]]<br>✅ כל זווית בסיס [[55°]].<br>⚖️ [[35°]] – חילקו את 70 ב-2 במקום את 110."]
+];
+D.know={"מושגים":"שוקיים = שתי הצלעות השוות. בסיס = הצלע השלישית. זווית ראש = בין השוקיים.","חישוב זוויות":"יש ראש? מורידים אותו מ-[[180°]] ומחלקים ב-2. יש בסיס? מורידים מ-[[180°]] פעמיים את זווית הבסיס.","המשפט ההפוך":"2 זוויות שוות ← הצלעות שמולן שוות ← שווה שוקיים. קודם מוצאים את הזווית השלישית!","גובה, תיכון וחוצה":"מהראש אל הבסיס: גובה = תיכון = חוצה זווית. 2 מתוך 3 ← שווה שוקיים.","משוואות":"שני דברים שווים (זוויות בסיס או שוקיים) ← משווים ופותרים. אחר כך מציבים.","היקף":"היקף = שוק + שוק + בסיס.","נימוקים":"צלעות ← זוויות: זוויות הבסיס שוות. זוויות ← צלעות: מול זוויות שוות צלעות שוות."};
+
+D.Q=R.map(function(r){return {t:r[0],l:r[1],q:r[2],o:r[3],e:r[4],d:r[5]};});
+if(!D.svg)D.svg={};
+
+
+function EX(s){var c='',k=s.indexOf('<div class="calc">');if(k>=0){c=s.slice(k);s=s.slice(0,k);}
+ var L=s.split('<br>'),h='',g=[];
+ function fl(){if(g.length){h+='<div class="stg">'+g.join('')+'</div>';g=[];}}
+ L.forEach(function(l){var m=l.match(/^\s*(\S+)\s*([^\[]*?)\s*\[\[([^\]]+?) = ([^\]]+)\]\]\s*$/);
+  function ln(t){return t.replace(/\{\{(.+?)\|(.+?)\}\}/g,function(_,a,b){return a.length>b.length?a:b;}).replace(/⌈|⌉|\^\d+/g,'').length;}
+  if(m&&m[3].indexOf(' = ')<0&&ln(m[3])+ln(m[4])+(m[2].length>10?0:m[2].length)<=26){
+   var lab=m[1]+' '+m[2];
+   if(m[2].length>10){g.push('<span class="sw">'+F(lab)+'</span>');lab='';}
+   g.push('<span class="sl">'+F(lab)+'</span><span class="sb">'+F('[['+m[4]+']]')+'</span><span class="se">=</span><span class="sa">'+F('[['+m[3]+']]')+'</span>');}
+  else{fl();if(l.trim())h+='<div>'+F(l)+'</div>';}});
+ fl();return h+F(c);}
+function F(s){
+ s=s.replace(/((?:🔵|🔴)[🔵🔴 ]*(?:🔵|🔴))|(🔵|🔴)/gu,function(m){return '<span dir="ltr" style="unicode-bidi:isolate">'+m+'</span>';});
+ return s.replace(/\[\[(.+?)\]\]/g,function(_,x){
+  x=x.replace(/\{\{(.+?)\|(.+?)\}\}/g,'<span class="fr"><span>$1</span><span>$2</span></span>');
+  x=x.replace(/⌈(.+?)⌉/g,'<span class="k">$1</span>');
+  return '<span class="f">'+x.replace(/\^(\d+)/g,'<sup>$1</sup>')+'</span>';});}
+var Q=D.Q,SYM=D.flash,TIPS=D.tips;
+var app=document.getElementById('app'),list=[],i=0,good=0,wrong=[],mode='';
+var MB=[],MI=0,MR=0,MS=null,MD={},MO=[],ME=0,MC=['#16a34a','#0891b2','#db2777','#ea580c'];
+function match(){MB=[];for(var k=0;k<D.match.length;k+=4)MB.push(D.match.slice(k,k+4));MI=0;MR=0;ME=0;mnew();}
+function mnew(){MS=null;MD={};MO=sh(MB[MI].map(function(_,k){return k;}));mdraw('');}
+function mdraw(fb){
+ var set=MB[MI],n=0,h='<div class="top"><button class="back" onclick="home()">→ תפריט</button><span>לוח '+(MI+1)+' / '+MB.length+' · שלב '+(MR+1)+' / 2 · ❌ '+ME+'</span></div>';
+ h+='<div class="card"><div class="q" style="font-size:17px">'+(MR==0?(set[0].q1||'🧩 שלב 1: איזו <b>משוואה</b> מתאימה לכל גרף?'):(set[0].q2||'🧩 שלב 2: באיזה <b>תחום</b> כל גרף חיובי ובאיזה שלילי?'))+'<br><small style="font-weight:normal;color:#6b7280">לוחצים על גרף 👆 ואז על הכרטיס שמתאים לו</small></div><div class="mg">';
+ set.forEach(function(s,k){var d=MD[k];if(d)n++;h+='<div class="gc'+(MS===k?' sel':'')+'" style="'+(d?'border-color:'+MC[k]:'')+'" onclick="msel('+k+')">'+(d?'<span class="bd" style="background:'+MC[k]+'">✓</span>':'')+D.svg[s.g]+(MR==1||d?'<div>'+F(MR==1?s.e:'')+'</div>':'')+'</div>';});
+ h+='</div><div class="mg"'+(MR==1?' style="grid-template-columns:1fr"':'')+'>';
+ MO.forEach(function(k){var s=set[k],d=MD[k];h+='<button class="mc'+(d?' dn':'')+'" id="mc'+k+'" style="'+(d?'background:'+MC[k]+';border-color:'+MC[k]:'')+'" '+(d?'disabled':'onclick="mtry('+k+')"')+'>'+F(MR==0?s.e:s.r)+'</button>';});
+ h+='</div><div id="mfb">'+fb+'</div>';
+ if(n==set.length)h+='<div class="fb ok">🎉 כל הכבוד! כל הזוגות נכונים.</div><button class="next" onclick="mgo()">'+(MR==0?'לשלב 2: התאמת תחומים ←':MI<MB.length-1?'ללוח הבא ←':'לסיכום 🏁')+'</button>';
+ app.innerHTML=h+'</div>';
+}
+function msel(k){if(MD[k])return;MS=k;mdraw('');}
+function mtry(k){
+ if(MS===null){document.getElementById('mfb').innerHTML='<div class="fb">👆 קודם לוחצים על גרף, ואז על הכרטיס.</div>';return;}
+ var s=MB[MI][MS];
+ if(k===MS){MD[k]=1;MS=null;mdraw('');return;}
+ ME++;var b=document.getElementById('mc'+k);b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');
+ document.getElementById('mfb').innerHTML='<div class="fb no">❌ לא מתאים לגרף שבחרת. רמז:<br>💡 '+F(MR==0?s.h1:s.h2)+'</div>';
+ document.querySelector('.top span').innerHTML='לוח '+(MI+1)+' / '+MB.length+' · שלב '+(MR+1)+' / 2 · ❌ '+ME;
+}
+function mgo(){if(MR==0){MR=1;mnew();}else{MR=0;MI++;if(MI<MB.length)mnew();else mend();}window.scrollTo(0,0);}
+function mend(){app.innerHTML='<div class="card" style="text-align:center"><div class="score">🧩</div><h2>סיימת את משחק ההתאמה!</h2><div class="fb '+(ME<3?'ok':'no')+'">'+(ME==0?'🏆 בלי אף טעות – מצוין!':'מספר טעויות: '+ME+(ME<3?' – יפה מאוד!':' – כדאי לשחק שוב ולשים לב לצורה ולאפסים.'))+'</div><button class="next" onclick="match()">🔁 לשחק שוב</button><button class="next" style="background:#16a34a" onclick="home()">→ לתפריט</button></div>';}
+var LI=0,LESS=D.lessons||(D.lesson?[{t:D.lessonTitle,topic:D.lessonTopic,s:D.lesson}]:[]),LS=LESS[0];
+function les(k){LI=k;var L=LS.s[k],q=L[2],op=sh(q[1].map(function(t,j){return {t:t,c:j===0};}));
+ var h='<div class="top"><button class="back" onclick="home()">→ תפריט</button><span>שלב '+(k+1)+' / '+LS.s.length+'</span></div><div class="bar"><div style="width:'+(k/LS.s.length*100)+'%"></div></div>';
+ h+='<div class="card sum anim"><h3>'+F(L[0])+'</h3>'+F(L[1])+(/class=.(ap|dr|dp)/.test(L[1])?'<button class="next" style="background:#0891b2" onclick="les(LI)">🔁 לראות שוב את האנימציה</button>':'')+'</div><div class="card"><span class="tag">🤔 בודקים שהבנו</span><div class="q">'+F(q[0])+'</div>';
+ op.forEach(function(o){h+='<button class="opt" data-c="'+(o.c?1:0)+'" onclick="lpick(this)">'+F(o.t)+'</button>';});
+ app.innerHTML=h+'<div id="ex"></div></div>';window.scrollTo(0,0);}
+function lpick(b){var q=LS.s[LI][2],ok=b.dataset.c==='1';
+ document.querySelectorAll('.opt').forEach(function(o){o.disabled=true;if(o.dataset.c==='1')o.classList.add('ok');});if(!ok)b.classList.add('no');
+ var last=LI==LS.s.length-1;
+ document.getElementById('ex').innerHTML='<div class="exp '+(ok?'ok':'no')+'"><b class="h">'+(ok?'✅ נכון!':'❌ לא נורא – מסתכלים שוב על הציור:')+'</b>'+F(q[2])+'</div>'+
+ (ok?'':'<button class="next" style="background:#f59e0b" onclick="les(LI)">🔁 לנסות שוב את השלב</button>')+
+ '<button class="next" onclick="'+(last?'start(Q.filter(function(x){return x.t==LS.topic;}),\'all\')':'les(LI+1)')+'">'+(last?'🧠 עכשיו לשאלות של הנושא ←':'לשלב הבא ←')+'</button>';}
+function sh(a){a=a.slice();for(var k=a.length-1;k>0;k--){var j=Math.floor(Math.random()*(k+1));var t=a[k];a[k]=a[j];a[j]=t;}return a;}
+function stars(l){return '★'.repeat(l)+'☆'.repeat(3-l);}
+function home(){
+ app.innerHTML='<h1>'+D.icon+' '+D.title+'</h1><div class="sub">הכנה למבחן – משולש שווה שוקיים</div>'+
+ '<button class="btn b1" onclick="summary()">📘 סיכום מהיר<small>כל החומר בדף אחד – קרא קודם</small></button>'+
+ '<button class="btn" style="background:#ea580c" onclick="tips()">⚡ טיפים לזכירה מהירה<small>טריקים ומלכודות נפוצות</small></button>'+
+ '<button class="btn b2" onclick="flash()">🔤 כרטיסיות<small>'+D.flashSub+'</small></button>'+
+ LESS.map(function(L,n){return '<button class="btn" style="background:'+(L.c||'#be185d')+'" onclick="LS=LESS['+n+'];les(0)">'+L.t+'<small>'+(L.sub||'שלב אחר שלב · ציור + שאלת הבנה בכל שלב')+'</small></button>';}).join('')+
+ (D.match?'<button class="btn" style="background:#ca8a04" onclick="match()">🧩 משחק התאמה<small>'+(D.matchSub||'מתאימים כרטיסים')+'</small></button>':'')+
+'<button class="btn" style="background:linear-gradient(90deg,#f59e0b,#dc2626)" onclick="blitz()">⚡ מבחן בזק מונפש<small>10 שאלות · שעון לכל שאלה · נקודות ורצפים 🔥</small></button>'+
+ '<button class="btn b3" onclick="start(Q,\'all\')">🧠 כל השאלות לפי סדר הנושאים<small>'+Q.length+' שאלות, הסבר מפורט אחרי כל תשובה</small></button>'+
+ '<button class="btn b4" onclick="start(mock(),\'test\')">🏁 מבחן דמה<small>20 שאלות מעורבבות בכל הרמות · ציון ומשוב אישי</small></button>';
+ window.scrollTo(0,0);
+}
+function summary(){
+ var h='<div class="top"><button class="back" onclick="home()">→ חזרה</button><span>סיכום</span></div>';
+ D.summary.forEach(function(c){h+='<div class="card sum"><h3>'+c[0]+'</h3>'+F(c[1])+'</div>';});
+ app.innerHTML=h+'<button class="btn b4" onclick="start(Q,\'all\')">✅ קראתי – לשאלות!</button>';window.scrollTo(0,0);
+}
+function tips(){
+ var h='<div class="top"><button class="back" onclick="home()">→ חזרה</button><span>טיפים לזכירה</span></div>';
+ TIPS.forEach(function(b){h+='<div class="card sum"><h3>'+b[0]+'</h3>';b[1].forEach(function(t){h+='<p>• '+F(t)+'</p>';});h+='</div>';});
+ app.innerHTML=h+'<button class="btn b4" onclick="start(mock(),\'test\')">🏁 עכשיו למבחן דמה!</button>';window.scrollTo(0,0);
+}
+var fl=[],fi=0;
+function flash(){fl=sh(SYM);fi=0;showFlash(false);}
+function showFlash(open){
+ var s=fl[fi];
+ app.innerHTML='<div class="top"><button class="back" onclick="home()">→ חזרה</button><span>'+(fi+1)+' / '+fl.length+'</span></div>'+
+ '<div class="card flash"><div class="heb">'+F(s[0])+'</div><div style="margin:14px 0;color:#888">מה התשובה?</div>'+
+ (open?'<div class="ans">'+F(s[1])+'</div>':'<button class="next" onclick="showFlash(true)">👀 הצג תשובה</button>')+'</div>'+
+ (open?'<button class="next" onclick="'+(fi<fl.length-1?'fi++;showFlash(false)':'home()')+'">'+(fi<fl.length-1?'הבא ←':'סיום ✔')+'</button>':'');
+}
+function start(arr,m){list=arr;mode=m;i=0;good=0;wrong=[];ask();}
+function ask(){
+ var x=list[i],opts=sh(x.o.map(function(t,k){return {t:t,c:k===0};}));
+ var h='<div class="top"><button class="back" onclick="home()">→ תפריט</button><span>שאלה '+(i+1)+' / '+list.length+' · ✅ '+good+'</span></div>'+
+ '<div class="bar"><div style="width:'+(i/list.length*100)+'%"></div></div>'+
+ '<div class="card"><span class="tag">'+x.t+'</span><span class="lvl">'+stars(x.l)+'</span><div class="q">'+F(x.q)+'</div>'+(x.d?D.svg[x.d]:'');
+ opts.forEach(function(o,k){h+='<button class="opt" data-c="'+(o.c?1:0)+'" onclick="pick(this)">'+F(o.t)+'</button>';});
+ app.innerHTML=h+'<div id="ex"></div></div>';
+ window.scrollTo(0,0);
+}
+function pick(b){
+ var all=document.querySelectorAll('.opt'),ok=b.dataset.c==='1',x=list[i];
+ all.forEach(function(o){o.disabled=true;if(o.dataset.c==='1')o.classList.add('ok');});
+ if(ok)good++;else{b.classList.add('no');wrong.push(x);}
+ document.getElementById('ex').innerHTML='<div class="exp '+(ok?'ok':'no')+'"><b class="h">'+(ok?'✅ נכון! בואו נבין למה:':'❌ לא נורא! בואו נפתור ביחד:')+'</b><div class="qr">📝 <b>התרגיל:</b> '+F(x.q)+'<br>🎯 <b>התשובה הנכונה:</b> '+F(x.o[0])+'</div><b>👣 הפתרון צעד אחר צעד:</b>'+EX(x.e)+'</div>'+
+ '<button class="next" onclick="nxt()">'+(i<list.length-1?'לשאלה הבאה ←':'לתוצאות 🏁')+'</button>';
+}
+function nxt(){i++;if(i<list.length)ask();else end();}
+function mock(){
+ var want={1:6,2:8,3:6},out=[];
+ [1,2,3].forEach(function(l){
+  var pool=sh(Q.filter(function(q){return q.l==l;})),by={},keys=[];
+  pool.forEach(function(q){if(!by[q.t]){by[q.t]=[];keys.push(q.t);}by[q.t].push(q);});
+  keys=sh(keys);var k=0,n=0;
+  while(n<want[l]&&pool.length>n){var t=keys[k%keys.length];if(by[t].length){out.push(by[t].shift());n++;}k++;if(k>500)break;}
+ });
+ while(out.length<20&&out.length<Q.length){var r=Q[Math.floor(Math.random()*Q.length)];if(out.indexOf(r)<0)out.push(r);}
+ return sh(out);
+}
+
+var BZ={n:0,pts:0,st:0,best:0,tm:null,t0:0,T:20};
+function blitz(){
+ var out=[],used={};[[1,5],[2,4],[3,1]].forEach(function(p){sh(Q.filter(function(q){return q.l==p[0];})).forEach(function(q){if(p[1]>0&&!used[q.t+p[0]]){out.push(q);used[q.t+p[0]]=1;p[1]--;}});
+  sh(Q.filter(function(q){return q.l==p[0]&&out.indexOf(q)<0;})).slice(0,p[1]).forEach(function(q){out.push(q);});});
+ list=out.slice(0,10);mode='blitz';i=0;good=0;wrong=[];BZ.pts=0;BZ.st=0;BZ.best=0;
+ app.innerHTML='<div class="card" style="text-align:center"><h2>⚡ מבחן בזק</h2><p>10 שאלות · 20 שניות לכל שאלה<br>תשובה מהירה = יותר נקודות · רצף נכון = 🔥 בונוס</p><div class="score" id="cd">3</div></div>';
+ var c=3,iv=setInterval(function(){c--;var d=document.getElementById('cd');if(!d){clearInterval(iv);return;}if(c>0){d.textContent=c;d.className='score pop';}else{clearInterval(iv);bask();}},800);
+}
+function bhead(){return '<div class="top"><button class="back" onclick="clearInterval(BZ.tm);home()">→ תפריט</button><span>שאלה '+(i+1)+' / '+list.length+'</span></div><div class="bz-h"><span>⭐ <span class="bz-s" id="bzp">'+BZ.pts+'</span></span><span id="bzst">'+(BZ.st>1?'<span class="bz-f">🔥 רצף '+BZ.st+'</span>':'')+'</span><span>⏱️ <b id="bzc">'+BZ.T+'</b></span></div><div class="bz-t"><i id="bzt"></i></div>';}
+function bask(){
+ var x=list[i],opts=sh(x.o.map(function(t,k){return {t:t,c:k===0};}));
+ var h=bhead()+'<div class="card qin"><span class="tag">'+x.t+'</span><span class="lvl">'+stars(x.l)+'</span><div class="q">'+F(x.q)+'</div>'+(x.d?D.svg[x.d]:'');
+ opts.forEach(function(o){h+='<button class="opt" data-c="'+(o.c?1:0)+'" onclick="bpick(this)">'+F(o.t)+'</button>';});
+ app.innerHTML=h+'<div id="ex"></div></div>';window.scrollTo(0,0);
+ BZ.t0=Date.now();var bar=document.getElementById('bzt');bar.style.transition='width '+BZ.T+'s linear';requestAnimationFrame(function(){requestAnimationFrame(function(){bar.style.width='0%';});});
+ clearInterval(BZ.tm);BZ.tm=setInterval(function(){var l=Math.max(0,BZ.T-Math.floor((Date.now()-BZ.t0)/1000)),c=document.getElementById('bzc');if(c)c.textContent=l;if(l<=0)bpick(null);},250);
+}
+function bpick(b){
+ clearInterval(BZ.tm);var bar=document.getElementById('bzt');var x=list[i],ok=!!b&&b.dataset.c==='1',left=Math.max(0,BZ.T-(Date.now()-BZ.t0)/1000);
+ if(bar){bar.style.transition='none';bar.style.width=(left/BZ.T*100)+'%';}
+ document.querySelectorAll('.opt').forEach(function(o){o.disabled=true;if(o.dataset.c==='1')o.classList.add('ok','pop');});
+ if(ok){good++;BZ.st++;BZ.best=Math.max(BZ.best,BZ.st);var g=100+Math.round(left*5)+(BZ.st>1?20*(BZ.st-1):0);BZ.pts+=g;
+  var f=document.createElement('div');f.className='flt';f.dir='ltr';f.textContent='+'+g;document.body.appendChild(f);setTimeout(function(){f.remove();},1000);
+  document.getElementById('bzp').textContent=BZ.pts;document.getElementById('bzst').innerHTML=BZ.st>1?'<span class="bz-f">🔥 רצף '+BZ.st+'</span>':'';
+  document.getElementById('ex').innerHTML='<div class="fb ok pop">✅ נכון! '+(left>12?'⚡ ובמהירות!':'')+'</div>';
+  setTimeout(bnext,1300);return;}
+ BZ.st=0;wrong.push(x);if(b){b.classList.add('no','shake');}
+ document.getElementById('ex').innerHTML='<div class="exp no"><b class="h">'+(b?'❌ לא נורא! הנה איפה טעינו:':'⏰ נגמר הזמן! הנה הפתרון:')+'</b><div class="qr">🎯 <b>התשובה הנכונה:</b> '+F(x.o[0])+'</div>'+EX(x.e)+'</div><button class="next" onclick="bnext()">'+(i<list.length-1?'לשאלה הבאה ←':'לתוצאות 🏁')+'</button>';
+}
+function bnext(){if(mode!='blitz')return;i++;if(i<list.length)bask();else bend();}
+function bend(){
+ mode='w';var p=good/list.length,s=p>=.9?3:p>=.7?2:p>=.5?1:0;
+ var h='<div class="card" style="text-align:center"><h2>⚡ סיום מבחן הבזק!</h2><div style="font-size:44px;letter-spacing:6px">'+[1,2,3].map(function(k){return '<span class="dp" style="animation-delay:'+(k*.35)+'s;'+(k>s?'filter:grayscale(1);opacity:.35':'')+'">⭐</span>';}).join('')+'</div><div class="score" id="bzf">0</div><div>נקודות</div><div style="font-size:18px;margin:10px 0">'+good+' מתוך '+list.length+' נכונות · 🔥 הרצף הכי ארוך: '+BZ.best+'</div>'+
+ '<div class="fb '+(p>=.7?'ok':'no')+'">'+(p>=.9?'🏆 אלופים! מהירים ומדויקים.':p>=.7?'💪 יפה מאוד! עוד סיבוב ואתם שם.':p>=.5?'👍 בדרך הנכונה – כדאי לעבור על הטעויות למטה.':'📘 כדאי לקרוא את הסיכום ואת הטיפים, ואז לנסות שוב.')+'</div>';
+ if(wrong.length){h+='<button class="next" style="background:#db2777" onclick="start(wrong.slice(),\'w\')">🔁 לתרגל רק את '+wrong.length+' הטעויות (בלי שעון)</button><h3 style="color:#6d28d9;text-align:right">איפה טעיתי:</h3>';
+  wrong.forEach(function(w){h+='<div class="rev" style="text-align:right">📝 '+F(w.q)+(w.d?D.svg[w.d]:'')+'<br>🎯 <b>'+F(w.o[0])+'</b><div class="exp ok" style="margin-top:6px">'+EX(w.e)+'</div></div>';});}
+ app.innerHTML=h+'<button class="next" style="background:#f59e0b" onclick="blitz()">⚡ עוד סיבוב בזק</button><button class="next" onclick="home()">חזרה לתפריט</button></div>';window.scrollTo(0,0);
+ var n=0,el=document.getElementById('bzf'),iv=setInterval(function(){n=Math.min(BZ.pts,n+Math.ceil(BZ.pts/40)+1);if(el)el.textContent=n;if(n>=BZ.pts)clearInterval(iv);},30);
+ if(p>=.7)for(var k=0;k<40;k++){var c=document.createElement('div');c.className='cf';c.style.left=Math.random()*100+'vw';c.style.background=MC[k%4];c.style.animationDelay=Math.random()*.8+'s';document.body.appendChild(c);setTimeout(function(c){return function(){c.remove();};}(c),3400);}
+}
+function end(){
+ var p=Math.round(good/list.length*100),msg=p>=90?'🏆 מצוין! מוכנים למבחן!':p>=75?'💪 טוב מאוד! עוד קצת חיזוק ומגיעים':p>=55?'👍 בדרך הנכונה – כדאי לחזק את הנושאים למטה':'📘 כדאי לקרוא שוב את הסיכום והטיפים, ואז לנסות שוב';
+ var h='<div class="card"><div style="text-align:center;font-size:16px;color:#666">'+(mode=='test'?'הציון שלך במבחן הדמה':'התוצאה שלך')+'</div><div class="score">'+p+'</div><div style="text-align:center;font-size:18px;margin:6px 0 14px">'+good+' מתוך '+list.length+' נכונות<br>'+msg+'</div>';
+ if(mode=='test'){
+  var lv={1:[0,0],2:[0,0],3:[0,0]},tp={},order=[];
+  list.forEach(function(q){var ok=wrong.indexOf(q)<0;lv[q.l][1]++;if(ok)lv[q.l][0]++;if(!tp[q.t]){tp[q.t]=[0,0];order.push(q.t);}tp[q.t][1]++;if(ok)tp[q.t][0]++;});
+  var nm={1:'★ בסיס',2:'★★ הבנה',3:'★★★ חשיבה גבוהה'};
+  h+='<h3 style="color:#6d28d9">📊 לפי רמות חשיבה</h3>';
+  [1,2,3].forEach(function(l){if(!lv[l][1])return;var r=lv[l][0]/lv[l][1];h+='<div class="lvl-row"><span>'+nm[l]+'</span><span class="lvb"><i style="width:'+Math.round(r*100)+'%;background:'+(r>=0.8?'#16a34a':r>=0.5?'#f59e0b':'#dc2626')+'"></i></span><b>'+lv[l][0]+'/'+lv[l][1]+'</b></div>';});
+  var weak=order.filter(function(t){return tp[t][0]<tp[t][1];}),strong=order.filter(function(t){return tp[t][0]==tp[t][1];});
+  h+='<h3 style="color:#6d28d9;margin-top:12px">📝 משוב – מה צריך לדעת</h3>';
+  if(strong.length)h+='<div class="fb ok">✅ <b>יודעים טוב:</b> '+strong.join(' · ')+'</div>';
+  weak.forEach(function(t){h+='<div class="fb no">📘 <b>לחזק: '+t+'</b> ('+tp[t][0]+'/'+tp[t][1]+')<br>💡 '+F((D.know&&D.know[t])||'כדאי לקרוא שוב את הסיכום של הנושא הזה.')+'</div>';});
+  if(!weak.length)h+='<div class="fb ok">🌟 לא היו טעויות – כל הכבוד!</div>';
+  else if(lv[3][1]&&lv[3][0]<lv[3][1]&&lv[1][0]==lv[1][1])h+='<div class="fb">🎯 הבסיס חזק! עכשיו כדאי לתרגל שאלות ★★★ – לקרוא את השאלה לאט ולצייר.</div>';
+  else if(lv[1][0]<lv[1][1])h+='<div class="fb">🎯 כדאי להתחיל מהבסיס: לקרוא את הסיכום, ואז לתרגל את הטעויות.</div>';
+ }
+ if(wrong.length){
+  h+='<button class="next" style="background:#db2777" onclick="start(wrong.slice(),\'w\')">🔁 תרגל שוב רק את '+wrong.length+' הטעויות</button><h3 style="margin-top:14px;color:#6d28d9">איפה טעיתי:</h3>';
+  wrong.forEach(function(w){h+='<div class="rev">📝 '+F(w.q)+(w.d?D.svg[w.d]:'')+'<br>🎯 <b>'+F(w.o[0])+'</b><div class="exp ok" style="margin-top:6px">'+EX(w.e)+'</div></div>';});
+ }
+ if(mode=='test')h+='<button class="next" style="background:#16a34a" onclick="start(mock(),\'test\')">🏁 מבחן דמה חדש (שאלות אחרות)</button>';
+ app.innerHTML=h+'<button class="next" onclick="home()">חזרה לתפריט</button></div>';
+ window.scrollTo(0,0);
+}
+if(/quick/.test(location.hash))setTimeout(blitz,0);
+home();
+if('serviceWorker' in navigator){navigator.serviceWorker.register('../sw.js',{scope:'../'}).catch(()=>{});}
+</script>
+</body>
+</html>
