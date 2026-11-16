@@ -733,6 +733,6 @@ if(ONSITE&&'serviceWorker' in navigator){navigator.serviceWorker.register('../sw
  $('#spfile').onchange=e=>{const f=e.target.files[0];if(!f)return;const im=new Image();im.onload=()=>{const k=Math.min(1,1400/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=im.width*k;c.height=im.height*k;c.getContext('2d').drawImage(im,0,0,c.width,c.height);send(c.toDataURL('image/jpeg',.85).split(',')[1],'image/jpeg');URL.revokeObjectURL(im.src);};im.src=URL.createObjectURL(f);e.target.value='';};
  aiOn();
  addEventListener('resize',()=>{if(!P.hidden)size();});})();
-$('#home').onclick=menu;menu();
+$('#home').onclick=menu;menu();if(/quick/.test(location.hash)&&typeof QUICK!=='undefined')quick();
 </script>
 </body></html>
