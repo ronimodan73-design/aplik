@@ -504,7 +504,7 @@ const RECAP=[
  {h:'פיתגורס בשווה שוקיים',d:2,svg:()=>{const B=degOf(Math.atan(12/5)),t=tri(B,B,['A','B','C']);return svgT(t,legsT(t)+segAD(t,{h:1,cls:'rv',d:.3})+sideLab(t,'al','13',OR,{cls:'rv',d:.8})+TX((t.l.x*3+t.r.x)/4,t.l.y+28,'5',BL,{cls:'rv',d:1.2})+TX(t.a.x-20,t.a.y*.3+t.l.y*.7,'12',PU,{cls:'rv',d:1.7}));},
   says:[`חצי בסיס ${M('5')}, שוק ${M('13')} (היתר)`,`${M('h² = 13² − 5² = 144')} ← ${M('h = 12')}`],what:'שטח = בסיס · גובה : 2.'},
  {h:'מה קורה לשטח?',d:2,svg:()=>{const t=isoT(50,['A','B','C']),m=(p,q)=>P2((p.x+q.x)/2,(p.y+q.y)/2),A1=m(t.a,t.l),A2=m(t.a,t.r),A3=m(t.l,t.r),pg=(p,c,d)=>`<polygon class="rv" style="--d:${d}s" points="${[p[0],p[1],p[2]].map(z=>f(z.x)+','+f(z.y)).join(' ')}" fill="${c}" fill-opacity=".45" stroke="#13233a" stroke-width="2"/>`;
-   return svgT(t,pg([t.a,A1,A2],BL,.3)+pg([A1,t.l,A3],OR,.8)+pg([A2,A3,t.r],GR,1.3)+pg([A1,A2,A3],PU,1.8),{noV:1});},says:['בסיס ×2 וגובה ×2 ← <b>4</b> משולשים קטנים.',`${M('2 · 2 = 4')}, ${M('3 · 3 = 9')}`],what:'שניהם גדלים ← כופלים את ההגדלות.'}];
+   return svgT(t,pg([t.a,A1,A2],BL,.3)+pg([A1,t.l,A3],OR,.8)+pg([A2,A3,t.r],GR,1.3)+pg([A1,A2,A3],PU,1.8),{noV:1});},says:['בסיס פי 2 וגובה פי 2 ← <b>4</b> משולשים קטנים.',`${M('2 · 2 = 4')}, ${M('3 · 3 = 9')}`],what:'שניהם גדלים ← כופלים את ההגדלות.'}];
 RECAP[5].chk=[()=>{let q;for(let i=0;i<30;i++){q=gDiff();if(q.kind==='פותחים ומפשטים'&&q.rc===5)break;}return q;},gErrFix];
 RECAP[4].chk=[gArea,gTFk];
 RECAP[0].chk=[()=>{let q;for(let i=0;i<40;i++){q=gCmp();if(q.rc===0)break;}return q;}];
