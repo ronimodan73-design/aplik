@@ -508,17 +508,18 @@ function bindRc(){V.querySelectorAll('[data-rc]').forEach(b=>b.onclick=()=>recap
 /* בחן את עצמך: 30 שאלות לפי רמות */
 const TN=[8,8,7,7],TT=30;
 /* ===== ⚡ שאלות ותשובות בזק: QUICK=[[שאלה, תשובה], ...] ===== */
-function quick(list){const L=list||shuf(QUICK.map((_,i)=>i));let i=0,know=0;const miss=[];$('#sc').textContent='';
+function quick(list){const L=list||shuf(QUICK.map((_,i)=>i));let i=0;const res=[];const KN=()=>res.filter(x=>x==='y').length;$('#sc').textContent='';
  const card=()=>{if(i>=L.length)return endQ();const [q,a]=QUICK[L[i]];
-  V.innerHTML=`<div class="meta"><span>⚡ שאלות בזק · ${i+1} מתוך ${L.length}</span><span>ידעתי: ${know}</span></div><div class="prog"><i style="width:${i/L.length*100}%"></i></div>
+  V.innerHTML=`<div class="meta"><span>⚡ שאלות בזק · ${i+1} מתוך ${L.length}</span><span>ידעתי: ${KN()}</span></div><div class="prog"><i style="width:${i/L.length*100}%"></i></div>
   <div class="card pop"><span class="kind">⚡ חושבים רגע… ואז מגלים</span><div class="qtext" style="font-size:22px">${q}</div>
-  <div class="btns" id="qb"><button class="btn main" id="qshow" type="button">👀 הראו לי את התשובה</button><button class="btn sec" id="qskip" type="button">לשאלה הבאה ⬅</button></div><div id="qa"></div></div>`;
-  $('#qskip').onclick=()=>{miss.push(L[i]);i++;card();};$('#qshow').onclick=()=>{const ex=QUICK[L[i]][2],cd=typeof ex==='number'?RECAP[ex]:null;
+  <div class="btns" id="qb"><button class="btn main" id="qshow" type="button">👀 הראו לי את התשובה</button><button class="btn sec" id="qskip" type="button">לשאלה הבאה ⬅</button>${PB()}</div><div id="qa"></div></div>`;BP();
+  $('#qskip').onclick=()=>{res[i]='n';i++;card();};$('#qshow').onclick=()=>{const ex=QUICK[L[i]][2],cd=typeof ex==='number'?RECAP[ex]:null;
    $('#qa').innerHTML=`<div class="fb ok pop" style="font-size:19px">✅ ${String(a).replace(/(<\/[a-z]+>)\s*\.\s*$/,'$1')}</div>`+(cd?`<div class="qex"><div class="qexh">🎬 ככה זה נראה: ${cd.h}</div>${cd.svg?`<div class="dia">${cd.svg()}</div>`:''}${(cd.says||[]).map(t=>`<div class="sline">${t}</div>`).join('')}${cd.what?`<div class="sline what">💡 ${cd.what}</div>`:''}</div>`:typeof ex==='string'?`<div class="qex"><div class="sline what">💡 ${ex}</div></div>`:'');
    [...V.querySelectorAll('#qa .sline')].forEach((el,k)=>setTimeout(()=>el.classList.add('show'),(cd&&cd.svg?(cd.d||1.5)*700:300)+k*900));
-   $('#qb').innerHTML='<button class="btn main" id="qy" type="button">ידעתי ✓ · לשאלה הבאה</button><button class="btn sec" id="qn" type="button">עוד לא ✗ · לשאלה הבאה</button>';
-   $('#qy').onclick=()=>{know++;i++;card();};$('#qn').onclick=()=>{miss.push(L[i]);i++;card();};};window.scrollTo(0,0);};
- const endQ=()=>{V.innerHTML=`<div class="card pop" style="text-align:center"><h2>סיימתם את שאלות הבזק! ⚡</h2><div class="big">${know} / ${L.length}</div><p>${miss.length?'יש עוד כמה שכדאי לחזור עליהן.':'ידעתם הכול! 🎉'}</p>
+   $('#qb').innerHTML='<button class="btn main" id="qy" type="button">ידעתי ✓ · לשאלה הבאה</button><button class="btn sec" id="qn" type="button">עוד לא ✗ · לשאלה הבאה</button>'+PB();BP();
+   $('#qy').onclick=()=>{res[i]='y';i++;card();};$('#qn').onclick=()=>{res[i]='n';i++;card();};};window.scrollTo(0,0);};
+ const PB=()=>i>0?'<button class="btn sec" id="qprev" type="button">➡ לשאלה הקודמת</button>':'',BP=()=>{if($('#qprev'))$('#qprev').onclick=()=>{i--;res.length=i;card();};};
+ const endQ=()=>{const know=KN(),miss=L.filter((_,k)=>res[k]!=='y');V.innerHTML=`<div class="card pop" style="text-align:center"><h2>סיימתם את שאלות הבזק! ⚡</h2><div class="big">${know} / ${L.length}</div><p>${miss.length?'יש עוד כמה שכדאי לחזור עליהן.':'ידעתם הכול! 🎉'}</p>
   <div class="btns" style="justify-content:center">${miss.length?'<button class="btn main" id="qm" type="button">חוזרים רק על מה שלא ידעתי</button>':''}<button class="btn sec" id="qa2" type="button">שוב מההתחלה</button><button class="btn sec" id="qh" type="button">לתפריט</button></div></div>`;
   if($('#qm'))$('#qm').onclick=()=>quick(miss.slice());$('#qa2').onclick=()=>quick();$('#qh').onclick=menu;};
  card();}
