@@ -60,6 +60,8 @@ th{background:#ede9fe}
 svg{display:block;max-width:100%;margin:6px auto}
 .qr{background:#fff;border:2px dashed #c4b5fd;border-radius:10px;padding:9px;margin:6px 0 10px;font-size:15px}
 .exp{font-size:17px;line-height:1.8}
+.stg{display:grid;grid-template-columns:auto auto auto auto;justify-content:start;column-gap:6px;row-gap:2px;align-items:center;margin:2px 0}.stg .sl{white-space:nowrap}.stg .sw{grid-column:1/-1}.stg .sb{text-align:left}.stg .sa{text-align:right}.stg .se{font-weight:bold;color:#6d28d9;text-align:center}
+
 .k{display:inline-block;background:#374151;color:#fff;border-radius:6px;padding:1px 7px;margin:2px 1px;font-size:.9em;box-shadow:0 2px 0 #111;font-weight:bold}
 .calc{background:#ecfeff;border-right:5px solid #0891b2;border-radius:10px;padding:8px 10px;margin-top:10px;line-height:2}
 .lvl-row{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:15px}.lvl-row span:first-child{width:120px}.lvb{flex:1;height:12px;background:#eee;border-radius:6px;overflow:hidden}.lvb i{display:block;height:100%}
@@ -180,6 +182,17 @@ D.Q=R.map(function(r){return {t:r[0],l:r[1],q:r[2],o:r[3],e:r[4],d:r[5]};});
 if(!D.svg)D.svg={};
 
 
+function EX(s){var c='',k=s.indexOf('<div class="calc">');if(k>=0){c=s.slice(k);s=s.slice(0,k);}
+ var L=s.split('<br>'),h='',g=[];
+ function fl(){if(g.length){h+='<div class="stg">'+g.join('')+'</div>';g=[];}}
+ L.forEach(function(l){var m=l.match(/^\s*(\S+)\s*([^\[]*?)\s*\[\[([^\]]+?) = ([^\]]+)\]\]\s*$/);
+  function ln(t){return t.replace(/\{\{(.+?)\|(.+?)\}\}/g,function(_,a,b){return a.length>b.length?a:b;}).replace(/⌈|⌉|\^\d+/g,'').length;}
+  if(m&&m[3].indexOf(' = ')<0&&ln(m[3])+ln(m[4])+(m[2].length>10?0:m[2].length)<=26){
+   var lab=m[1]+' '+m[2];
+   if(m[2].length>10){g.push('<span class="sw">'+F(lab)+'</span>');lab='';}
+   g.push('<span class="sl">'+F(lab)+'</span><span class="sb">'+F('[['+m[4]+']]')+'</span><span class="se">=</span><span class="sa">'+F('[['+m[3]+']]')+'</span>');}
+  else{fl();if(l.trim())h+='<div>'+F(l)+'</div>';}});
+ fl();return h+F(c);}
 function F(s){
  s=s.replace(/((?:🔵|🔴)[🔵🔴 ]*(?:🔵|🔴))|(🔵|🔴)/gu,function(m){return '<span dir="ltr" style="unicode-bidi:isolate">'+m+'</span>';});
  return s.replace(/\[\[(.+?)\]\]/g,function(_,x){
@@ -270,7 +283,7 @@ function pick(b){
  var all=document.querySelectorAll('.opt'),ok=b.dataset.c==='1',x=list[i];
  all.forEach(function(o){o.disabled=true;if(o.dataset.c==='1')o.classList.add('ok');});
  if(ok)good++;else{b.classList.add('no');wrong.push(x);}
- document.getElementById('ex').innerHTML='<div class="exp '+(ok?'ok':'no')+'"><b class="h">'+(ok?'✅ נכון! בואו נבין למה:':'❌ לא נורא! בואו נפתור ביחד:')+'</b><div class="qr">📝 <b>התרגיל:</b> '+F(x.q)+'<br>🎯 <b>התשובה הנכונה:</b> '+F(x.o[0])+'</div><b>👣 הפתרון צעד אחר צעד:</b><br>'+F(x.e)+'</div>'+
+ document.getElementById('ex').innerHTML='<div class="exp '+(ok?'ok':'no')+'"><b class="h">'+(ok?'✅ נכון! בואו נבין למה:':'❌ לא נורא! בואו נפתור ביחד:')+'</b><div class="qr">📝 <b>התרגיל:</b> '+F(x.q)+'<br>🎯 <b>התשובה הנכונה:</b> '+F(x.o[0])+'</div><b>👣 הפתרון צעד אחר צעד:</b>'+EX(x.e)+'</div>'+
  '<button class="next" onclick="nxt()">'+(i<list.length-1?'לשאלה הבאה ←':'לתוצאות 🏁')+'</button>';
 }
 function nxt(){i++;if(i<list.length)ask();else end();}
@@ -304,7 +317,7 @@ function end(){
  }
  if(wrong.length){
   h+='<button class="next" style="background:#db2777" onclick="start(wrong.slice(),\'w\')">🔁 תרגל שוב רק את '+wrong.length+' הטעויות</button><h3 style="margin-top:14px;color:#6d28d9">איפה טעיתי:</h3>';
-  wrong.forEach(function(w){h+='<div class="rev">📝 '+F(w.q)+(w.d?D.svg[w.d]:'')+'<br>🎯 <b>'+F(w.o[0])+'</b><div class="exp ok" style="margin-top:6px">'+F(w.e)+'</div></div>';});
+  wrong.forEach(function(w){h+='<div class="rev">📝 '+F(w.q)+(w.d?D.svg[w.d]:'')+'<br>🎯 <b>'+F(w.o[0])+'</b><div class="exp ok" style="margin-top:6px">'+EX(w.e)+'</div></div>';});
  }
  if(mode=='test')h+='<button class="next" style="background:#16a34a" onclick="start(mock(),\'test\')">🏁 מבחן דמה חדש (שאלות אחרות)</button>';
  app.innerHTML=h+'<button class="next" onclick="home()">חזרה לתפריט</button></div>';
