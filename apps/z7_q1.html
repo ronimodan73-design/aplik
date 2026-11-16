@@ -144,7 +144,7 @@ body.spopen .app{padding-bottom:62vh}
 .trick b{color:var(--red)}.demo .sline{text-align:right;margin:5px 0;font-size:19px}
 .demo .btn.main{font-size:20px;padding:13px 26px}
 .tscore{margin:6px 0;font-size:15px;opacity:.9}
-.wstep{border-right:4px solid var(--acc);background:#ffffff08;border-radius:10px;padding:8px 10px;margin:8px 0;text-align:right}.wstep .wq{font-size:17px}.wstep .wa{font-size:19px;font-weight:800;color:#4ade80;margin:4px 0}.wstep .ww{font-size:15px;background:#c084fc14;border-right:3px solid #c084fc;border-radius:6px;padding:4px 8px}.wfin{font-size:19px;text-align:center;margin-top:8px}</style></head>
+.wstep{border-right:4px solid var(--acc);background:#ffffff08;border-radius:10px;padding:8px 10px;margin:8px 0;text-align:right}.wstep .wq{font-size:17px}.wstep .wa{font-size:19px;font-weight:800;color:#4ade80;margin:4px 0}.wstep .ww{font-size:15px;background:#c084fc14;border-right:3px solid #c084fc;border-radius:6px;padding:4px 8px}.wfin{font-size:19px;text-align:center;margin-top:8px}.qex{margin-top:12px;border:2px dashed #5ec8ff55;border-radius:14px;padding:10px}.qexh{font-weight:800;color:var(--acc);margin-bottom:6px}</style></head>
 <body>
 <div class="app">
  <div class="top"><b>מערכת צירים: הרביע הראשון<small class="cr" style="display:block;font-weight:400;font-size:12px;opacity:.85">ערכה: רוני מודן · שחקים</small></b><span id="sc"></span><button id="spb" class="spbtn" type="button" aria-label="פתיחת דף טיוטה">✏️ טיוטה</button><button id="home" type="button">תפריט</button></div>
@@ -329,7 +329,9 @@ function quick(list){const L=list||shuf(QUICK.map((_,i)=>i));let i=0,know=0;cons
   V.innerHTML=`<div class="meta"><span>⚡ שאלות בזק · ${i+1} מתוך ${L.length}</span><span>ידעתי: ${know}</span></div><div class="prog"><i style="width:${i/L.length*100}%"></i></div>
   <div class="card pop"><span class="kind">⚡ חושבים רגע… ואז מגלים</span><div class="qtext" style="font-size:22px">${q}</div><div id="qa"></div>
   <div class="btns" id="qb"><button class="btn main" id="qshow" type="button">👀 הראו לי את התשובה</button><button class="btn sec" id="qhome" type="button">לתפריט</button></div></div>`;
-  $('#qhome').onclick=menu;$('#qshow').onclick=()=>{$('#qa').innerHTML=`<div class="fb ok pop" style="font-size:19px">✅ ${a}</div>`;
+  $('#qhome').onclick=menu;$('#qshow').onclick=()=>{const ex=QUICK[L[i]][2],cd=typeof ex==='number'?RECAP[ex]:null;
+   $('#qa').innerHTML=`<div class="fb ok pop" style="font-size:19px">✅ ${a}</div>`+(cd?`<div class="qex"><div class="qexh">🎬 ככה זה נראה: ${cd.h}</div>${cd.svg?`<div class="dia">${cd.svg()}</div>`:''}${(cd.says||[]).map(t=>`<div class="sline">${t}</div>`).join('')}${cd.what?`<div class="sline what">💡 ${cd.what}</div>`:''}</div>`:typeof ex==='string'?`<div class="qex"><div class="sline what">💡 ${ex}</div></div>`:'');
+   [...V.querySelectorAll('#qa .sline')].forEach((el,k)=>setTimeout(()=>el.classList.add('show'),(cd&&cd.svg?(cd.d||1.5)*700:300)+k*900));
    $('#qb').innerHTML='<button class="btn main" id="qy" type="button">ידעתי ✓</button><button class="btn sec" id="qn" type="button">עוד לא ✗</button>';
    $('#qy').onclick=()=>{know++;i++;card();};$('#qn').onclick=()=>{miss.push(L[i]);i++;card();};};window.scrollTo(0,0);};
  const endQ=()=>{V.innerHTML=`<div class="card pop" style="text-align:center"><h2>סיימתם את שאלות הבזק! ⚡</h2><div class="big">${know} / ${L.length}</div><p>${miss.length?'יש עוד כמה שכדאי לחזור עליהן.':'ידעתם הכול! 🎉'}</p>
