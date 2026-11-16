@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>שכיחות ושכיחות יחסית – הכנה למבחן</title>
+<link rel="manifest" href="prep_freq.webmanifest">
+<link rel="apple-touch-icon" href="icon-prep_freq-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="שכיחות">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1e1b4b">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,"Segoe UI",sans-serif;background:linear-gradient(160deg,#1e1b4b,#4c1d95);min-height:100vh;color:#1f2937;padding:14px}
+.wrap{max-width:640px;margin:0 auto}
+h1{color:#fff;text-align:center;font-size:26px;margin:6px 0 2px}
+.sub{color:#ddd6fe;text-align:center;font-size:15px;margin-bottom:14px}
+.card{background:#fff;border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.btn{display:block;width:100%;border:0;border-radius:14px;padding:16px;font-size:18px;font-weight:bold;margin:10px 0;cursor:pointer;color:#fff;text-align:right}
+.b1{background:#7c3aed}.b2{background:#0891b2}.b3{background:#db2777}.b4{background:#16a34a}
+.btn small{display:block;font-weight:normal;font-size:14px;opacity:.9;margin-top:3px}
+.f{direction:ltr;unicode-bidi:isolate;display:inline-block;font-weight:bold;color:#6d28d9;font-family:Arial,sans-serif;white-space:nowrap}
+.f sub{font-size:.7em}
+.top{display:flex;justify-content:space-between;align-items:center;color:#fff;margin-bottom:8px;font-size:15px}
+.back{background:rgba(255,255,255,.2);color:#fff;border:0;border-radius:10px;padding:8px 12px;font-size:15px;cursor:pointer}
+.bar{height:8px;background:rgba(255,255,255,.25);border-radius:6px;overflow:hidden;margin-bottom:12px}
+.bar div{height:100%;background:#facc15;transition:width .3s}
+.tag{display:inline-block;background:#ede9fe;color:#6d28d9;border-radius:8px;padding:3px 9px;font-size:13px;margin-bottom:8px}
+.lvl{float:left;font-size:13px;color:#b45309}
+.q{font-size:20px;font-weight:bold;line-height:1.5;margin-bottom:14px}
+.opt{display:block;width:100%;text-align:right;background:#f5f3ff;border:2px solid #ddd6fe;border-radius:12px;padding:13px;font-size:17px;margin:8px 0;cursor:pointer;color:#1f2937}
+.opt.ok{background:#dcfce7;border-color:#16a34a}
+.opt.no{background:#fee2e2;border-color:#dc2626}
+.exp{border-radius:12px;padding:14px;margin-top:12px;font-size:16px;line-height:1.65}
+.exp.ok{background:#f0fdf4;border-right:6px solid #16a34a}
+.exp.no{background:#fef2f2;border-right:6px solid #dc2626}
+.exp b.h{display:block;font-size:17px;margin-bottom:4px}
+.next{background:#7c3aed;color:#fff;border:0;border-radius:12px;padding:14px;font-size:18px;font-weight:bold;width:100%;margin-top:12px;cursor:pointer}
+.sum h3{color:#6d28d9;font-size:19px;margin-bottom:6px}
+.sum p{font-size:16px;line-height:1.65;margin-bottom:6px}
+.tip{background:#fef9c3;border-radius:10px;padding:9px 11px;font-size:15px;margin-top:6px}
+table{width:100%;border-collapse:collapse;font-size:16px}
+td,th{border:1px solid #ddd6fe;padding:7px;text-align:center}
+th{background:#ede9fe}
+.flash{text-align:center;padding:30px 10px}
+.flash .big{font-size:56px;font-weight:bold;color:#6d28d9;direction:ltr}
+.flash .heb{font-size:32px;font-weight:bold}
+.pt{display:grid;grid-template-columns:repeat(18,1fr);gap:2px;direction:ltr;margin:8px 0}
+.pt div{height:16px;border-radius:2px}
+.m{background:#93c5fd}.n{background:#fca5a5}.g{background:#fde68a}
+.score{font-size:46px;font-weight:bold;text-align:center;color:#6d28d9}
+.foot{color:#c4b5fd;text-align:center;font-size:13px;margin-top:10px}
+.rev{border-bottom:1px solid #eee;padding:10px 0;font-size:15px;line-height:1.6}
+.f sup{font-size:.7em}
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 3px;font-size:.9em}
+.fr span:first-child{border-bottom:2px solid currentColor;padding:0 3px}
+.flash .ans{font-size:24px;font-weight:bold;color:#6d28d9;line-height:1.5}
+.flash .heb{font-size:22px;line-height:1.5}
+svg{display:block;max-width:100%;margin:6px auto}
+.qr{background:#fff;border:2px dashed #c4b5fd;border-radius:10px;padding:9px;margin:6px 0 10px;font-size:15px}
+.exp{font-size:17px;line-height:1.8}
+.k{display:inline-block;background:#374151;color:#fff;border-radius:6px;padding:1px 7px;margin:2px 1px;font-size:.9em;box-shadow:0 2px 0 #111;font-weight:bold}
+.calc{background:#ecfeff;border-right:5px solid #0891b2;border-radius:10px;padding:8px 10px;margin-top:10px;line-height:2}
+.lvl-row{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:15px}.lvl-row span:first-child{width:120px}.lvb{flex:1;height:12px;background:#eee;border-radius:6px;overflow:hidden}.lvb i{display:block;height:100%}
+.fb{background:#f5f3ff;border-radius:10px;padding:10px;margin:8px 0;font-size:16px;line-height:1.7}.fb.ok{background:#f0fdf4}.fb.no{background:#fff7ed;border-right:5px solid #f59e0b}
+.mg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+.gc{background:#fff;border:3px solid #e5e7eb;border-radius:12px;padding:4px;text-align:center;cursor:pointer;font-size:14px;position:relative}
+.gc.sel{border-color:#f59e0b;box-shadow:0 0 0 4px #fde68a}
+.gc .bd{position:absolute;top:4px;right:6px;color:#fff;border-radius:50%;width:24px;height:24px;line-height:24px;font-weight:bold;font-size:14px}
+.mc{background:#f5f3ff;border:2px solid #ddd6fe;border-radius:12px;padding:10px 6px;font-size:15px;line-height:1.7;cursor:pointer;color:#1f2937;text-align:center}
+.mc.dn{color:#fff;cursor:default}.mc.dn .f,.mc.dn b{color:#fff!important}
+.shake{animation:shk .4s}@keyframes shk{25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+.ap{opacity:0;animation:fi .6s ease forwards}@keyframes fi{to{opacity:1}}
+.dp{opacity:0;animation:dp .7s cubic-bezier(.3,1.6,.6,1) forwards}@keyframes dp{from{opacity:0;transform:translateY(-40px)}to{opacity:1;transform:none}}
+.dr{stroke-dasharray:1;stroke-dashoffset:1;animation:dr 2s ease forwards}@keyframes dr{to{stroke-dashoffset:0}}
+.pu{transform-box:fill-box;transform-origin:center;animation:pu .7s ease-in-out 4 alternate}@keyframes pu{to{transform:scale(1.7)}}
+.mv{animation:mv 1.1s ease-in-out forwards}@keyframes mv{to{transform:translate(var(--dx),var(--dy))}}
+.anim p{margin-bottom:6px}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<div class="foot">ערכה: רוני מודן · שחקים</div>
+<script>
+var D={title:"שכיחות ושכיחות יחסית",icon:"📊",flashSub:"מושג / שאלה ← תשובה"};
+function K(s){return '[['+s.split(' ').map(function(t){return '⌈'+t+'⌉';}).join(' ')+']]';}
+function CA(k,r,n){return '<div class="calc">🧮 <b>במחשבון:</b> '+K(k)+' ← <b>'+r+'</b>'+(n?'<br>'+n:'')+'</div>';}
+D.svg={
+a:'<table><tr><th>מספר אחים</th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td></tr><tr><th>שכיחות (תלמידים)</th><td>3</td><td>8</td><td>9</td><td>4</td><td>1</td></tr></table>',
+b:'<svg viewBox="0 0 290 205" width="290" direction="ltr" style="max-width:100%"><g font-size="11" fill="#555">'+[0,2,4,6,8,10,12,14,16].map(function(v){var y=170-v*9;return '<line x1="34" y1="'+y+'" x2="280" y2="'+y+'" stroke="#e5e7eb"/><text x="28" y="'+(y+4)+'" text-anchor="end">'+v+'</text>';}).join('')+'</g><line x1="34" y1="170" x2="280" y2="170" stroke="#111" stroke-width="2"/><line x1="34" y1="170" x2="34" y2="20" stroke="#111" stroke-width="2"/>'+[[222,12,'#dc2626','תפוח'],[167,8,'#eab308','בננה'],[112,14,'#7c3aed','ענבים'],[57,6,'#16a34a','אבטיח']].map(function(b){return '<rect x="'+b[0]+'" y="'+(170-b[1]*9)+'" width="36" height="'+(b[1]*9)+'" fill="'+b[2]+'" rx="3"/><text x="'+(b[0]+18)+'" y="188" font-size="13" text-anchor="middle" font-weight="bold">'+b[3]+'</text>';}).join('')+'<text x="157" y="203" font-size="11" text-anchor="middle" fill="#555">הפרי האהוב – 40 תלמידים</text></svg>'
+};
+D.summary=[
+["🔢 שכיחות","<p><b>שכיחות</b> = כמה פעמים משהו הופיע.</p><p>👀 שאלנו 25 תלמידים כמה אחים יש להם:</p>"+D.svg.a+"<p>ל-9 תלמידים יש 2 אחים ← השכיחות של 2 היא <b>9</b>.</p><div class='tip'>💡 מחברים את כל השכיחויות ← מקבלים את מספר המשתתפים: [[3 + 8 + 9 + 4 + 1 = 25]]</div>"],
+["🍕 שכיחות יחסית","<p><b>שכיחות יחסית</b> = איזה <b>חלק</b> מכל המשתתפים.</p><p>[[שכיחות יחסית = {{השכיחות|סך הכול}}]]</p><p>2 אחים: 9 מתוך 25 ← [[{{9|25}} = 0.36 = 36%]]</p><div class='tip'>💡 אפשר לכתוב בשלוש דרכים: שבר [[{{9|25}}]], עשרוני [[0.36]], אחוזים [[36%]]. כולן אותו דבר!</div>"],
+["✅ שני חוקים שתמיד נכונים","<p>1️⃣ שכיחות יחסית היא תמיד בין 0 ל-1 (בין 0% ל-100%).</p><p>2️⃣ סכום כל השכיחויות היחסיות = 1 (= 100%).</p><div class='tip'>⚠️ יצא לך סכום של 110%? יש טעות בחישוב!</div>"],
+["🔁 מהשכיחות היחסית בחזרה לשכיחות","<p>200 תלמידים, שכיחות יחסית 0.4 ← [[200 · 0.4 = 80]] תלמידים.</p><p>מחפשים את <b>סך הכול</b>? 12 תלמידים הם 0.3 ← [[12 : 0.3 = 40]]</p>"],
+["📊 דיאגרמת עמודות","<p>הגובה של כל עמודה = השכיחות.</p>"+D.svg.b+"<p>תפוח 12, בננה 8, ענבים 14, אבטיח 6 ← ביחד 40.</p>"],
+["⚖️ משווים קבוצות בגודל שונה","<p>כיתה א: 9 מתוך 20 אוהבים מתמטיקה. כיתה ב: 12 מתוך 30.</p><p>בכיתה ב יותר תלמידים, אבל משווים <b>חלקים</b>:</p><p>א: [[{{9|20}} = 45%]] · ב: [[{{12|30}} = 40%]] ← בכיתה א אוהבים <b>יותר</b>.</p><div class='tip'>💡 קבוצות בגודל שונה ← משווים שכיחות יחסית, לא שכיחות.</div>"],
+["🧮 במחשבון","<p>שכיחות יחסית: "+K("9 ÷ 25 =")+" ← 0.36</p><p>באחוזים: "+K("9 ÷ 25 × 100 =")+" ← 36</p><p>שכיחות מתוך השכיחות היחסית: "+K("200 × 0.4 =")+" ← 80</p>"]
+];
+D.tips=[
+["🔤 שכיחות או שכיחות יחסית?",["<b>שכיחות</b> = <b>כמה</b> (מספר שלם: 9 תלמידים).","<b>שכיחות יחסית</b> = <b>איזה חלק</b> (שבר, עשרוני או אחוז).","\"יחסית\" = ביחס לכולם ← תמיד מחלקים בסך הכול."]],
+["🍕 משבר לאחוזים בלי מחשבון",["מתוך 25 ← כופלים למעלה ולמטה פי 4: [[{{8|25}} = {{32|100}} = 32%]].","מתוך 20 ← פי 5. מתוך 50 ← פי 2.","[[{{1|4}} = 25%]] · [[{{1|2}} = 50%]] · [[{{3|4}} = 75%]] · [[{{1|5}} = 20%]]"]],
+["⚠️ מלכודות",["שוכחים לחשב את <b>סך הכול</b> – קודם מחברים את כל השכיחויות!","\"יותר תלמידים\" זה לא \"חלק גדול יותר\". קבוצות שונות ← משווים אחוזים.","\"לפחות 3\" = 3 ומעלה. \"פחות מ-2\" = 0 ו-1 בלבד."]],
+["✅ בדיקה",["סכום השכיחויות = מספר המשתתפים.","סכום השכיחויות היחסיות = 1 (100%).","שכיחות יחסית גדולה מ-1? בטוח יש טעות."]]
+];
+D.flash=[["מה זו שכיחות?","כמה פעמים משהו הופיע"],["מה זו שכיחות יחסית?","[[{{השכיחות|סך הכול}}]] – איזה חלק מכולם"],["סכום כל השכיחויות היחסיות","1 (= 100%)"],["9 מתוך 25 – כמספר עשרוני","[[0.36]]"],["8 מתוך 25 – באחוזים","[[32%]]"],["12 מתוך 40 – כמספר עשרוני","[[0.3]]"],["[[{{3|5}}]] באחוזים","[[60%]]"],["200 משתתפים, שכיחות יחסית 0.4. השכיחות?","80"],["12 הם 0.3 מהכול. כמה בסך הכול?","40"],["שכיחות יחסית 0.5 פירושה…","חצי מהמשתתפים"],["האם שכיחות יחסית יכולה להיות 1.2?","לא! תמיד בין 0 ל-1"],["משווים קבוצות בגודל שונה בעזרת…","שכיחות יחסית (אחוזים)"]];
+var R=[
+["טבלת שכיחויות",1,"לפי הטבלה: לכמה תלמידים יש 2 אחים?",["9","2","25","4"],"👀 מחפשים בשורה העליונה את 2, ויורדים לשורה של השכיחות.<br>1️⃣ מתחת ל-2 כתוב 9.<br>✅ ל-9 תלמידים יש 2 אחים.<br>⚖️ 2 זה מספר האחים, לא מספר התלמידים.","a"],
+["טבלת שכיחויות",1,"לפי הטבלה: כמה תלמידים השתתפו בסקר?",["25","5","10","16"],"👀 כל תלמיד נמצא בטבלה פעם אחת.<br>1️⃣ מחברים את כל השכיחויות: [[3 + 8 + 9 + 4 + 1]]<br>2️⃣ [[= 25]]<br>✅ 25 תלמידים.<br>⚖️ 10 זה סכום מספרי האחים (0+1+2+3+4) – לא נכון.","a"],
+["טבלת שכיחויות",1,"מהי <b>שכיחות</b>?",["מספר הפעמים שמשהו הופיע","איזה חלק הוא מכל המשתתפים","הערך הגדול ביותר בטבלה","סכום כל הערכים"],"👀 בכיתה 9 תלמידים עם 2 אחים ← \"2 אחים\" הופיע 9 פעמים.<br>✅ שכיחות = כמה פעמים משהו הופיע.<br>⚖️ \"איזה חלק\" זו שכיחות <b>יחסית</b>."],
+["טבלת שכיחויות",2,"לפי הטבלה: לכמה תלמידים יש <b>לפחות</b> 3 אחים?",["5","4","1","12"],"👀 \"לפחות 3\" = 3 או יותר ← 3 אחים וגם 4 אחים.<br>1️⃣ 3 אחים: 4 תלמידים<br>2️⃣ 4 אחים: תלמיד 1<br>3️⃣ [[4 + 1 = 5]]<br>✅ 5 תלמידים.","a"],
+["טבלת שכיחויות",2,"לפי הטבלה: לכמה תלמידים יש <b>פחות מ-2</b> אחים?",["11","9","8","20"],"👀 \"פחות מ-2\" = 0 או 1 (בלי 2!).<br>1️⃣ 0 אחים: 3 תלמידים<br>2️⃣ אח אחד: 8 תלמידים<br>3️⃣ [[3 + 8 = 11]]<br>✅ 11 תלמידים.","a"],
+["טבלת שכיחויות",2,"בכיתה 30 תלמידים. במבחן: 12 קיבלו \"טוב\", 10 קיבלו \"טוב מאוד\", והשאר \"מצוין\". כמה קיבלו \"מצוין\"?",["8","18","22","10"],"👀 כל הכיתה = 30. מורידים את מי שכבר ספרנו.<br>1️⃣ [[12 + 10 = 22]]<br>2️⃣ [[30 − 22 = 8]]<br>✅ 8 תלמידים.<br>🔁 בדיקה: [[12 + 10 + 8 = 30]] ✔️"],
+["טבלת שכיחויות",3,"לפי הטבלה: כמה אחים יש <b>בסך הכול</b> לכל 25 התלמידים ביחד?",["42","25","10","36"],"👀 3 תלמידים עם 0 אחים, 8 תלמידים עם אח אחד…<br>1️⃣ [[3 · 0 = 0]]<br>2️⃣ [[8 · 1 = 8]]<br>3️⃣ [[9 · 2 = 18]]<br>4️⃣ [[4 · 3 = 12]]<br>5️⃣ [[1 · 4 = 4]]<br>6️⃣ [[0 + 8 + 18 + 12 + 4 = 42]]<br>✅ 42 אחים.<br>⚖️ 25 זה מספר <b>התלמידים</b>, לא מספר האחים.","a"],
+["שכיחות יחסית",1,"מהי <b>שכיחות יחסית</b>?",["השכיחות חלקי סך כל המשתתפים","מספר הפעמים שמשהו הופיע","השכיחות כפול סך הכול","ההפרש בין שתי שכיחויות"],"🍕 \"יחסית\" = ביחס לכולם.<br>1️⃣ לוקחים את השכיחות (למשל 9).<br>2️⃣ מחלקים בכולם (25): [[{{9|25}}]]<br>✅ שכיחות יחסית = השכיחות חלקי סך הכול."],
+["שכיחות יחסית",1,"לפי הטבלה: מהי השכיחות היחסית של \"0 אחים\" (כשבר)?",["[[{{3|25}}]]","[[{{3|5}}]]","[[{{25|3}}]]","3"],"🍕 3 תלמידים מתוך 25.<br>1️⃣ השכיחות (3) למעלה.<br>2️⃣ סך הכול (25) למטה.<br>✅ [[{{3|25}}]]<br>⚖️ 3 לבד זו שכיחות רגילה, לא יחסית.","a"],
+["שכיחות יחסית",1,"12 מתוך 40 תלמידים בחרו תפוח. מהי השכיחות היחסית כמספר עשרוני?",["[[0.3]]","[[0.12]]","3","[[0.4]]"],"🍕 12 מתוך 40 ← [[{{12|40}}]]<br>1️⃣ מצמצמים ב-4: [[{{3|10}}]]<br>2️⃣ שלוש עשיריות = [[0.3]]<br>✅ [[0.3]]"+CA("12 ÷ 40 =","0.3")],
+["שכיחות יחסית",2,"לפי הטבלה: מהי השכיחות היחסית של \"אח אחד\" באחוזים?",["[[32%]]","[[8%]]","[[25%]]","[[3.2%]]"],"🍕 8 מתוך 25 ← [[{{8|25}}]]<br>1️⃣ רוצים 100 למטה ← מ-25 ל-100 זה פי 4.<br>2️⃣ כופלים למעלה ולמטה פי 4: [[{{8|25}} = {{32|100}}]]<br>✅ [[32%]]"+CA("8 ÷ 25 × 100 =","32"),"a"],
+["שכיחות יחסית",2,"לפי הדיאגרמה: מהי השכיחות היחסית של ענבים באחוזים?",["[[35%]]","[[14%]]","[[40%]]","[[3.5%]]"],"🍕 14 מתוך 40.<br>1️⃣ [[{{14|40}}]] ← מצמצמים ב-2: [[{{7|20}}]]<br>2️⃣ מ-20 ל-100 זה פי 5: [[{{35|100}}]]<br>✅ [[35%]]"+CA("14 ÷ 40 × 100 =","35"),"b"],
+["שכיחות יחסית",2,"בכל טבלת שכיחויות, סכום כל השכיחויות היחסיות שווה ל:",["1 (= 100%)","מספר המשתתפים","0","זה תלוי בטבלה"],"🍕 כל החלקים ביחד = כל הפיצה.<br>1️⃣ בטבלת האחים: [[0.12 + 0.32 + 0.36 + 0.16 + 0.04 = 1]]<br>✅ תמיד 1, כלומר 100%.<br>⚖️ מספר המשתתפים זה סכום השכיחויות הרגילות."],
+["שכיחות יחסית",2,"השכיחות היחסית היא [[{{3|5}}]]. כמה זה באחוזים?",["[[60%]]","[[35%]]","[[3.5%]]","[[53%]]"],"🍕 רוצים 100 למטה.<br>1️⃣ מ-5 ל-100 זה פי 20.<br>2️⃣ [[{{3|5}} = {{60|100}}]]<br>✅ [[60%]]"+CA("3 ÷ 5 × 100 =","60")],
+["שכיחות יחסית",3,"בטבלה שלוש תשובות: \"כן\" [[0.2]], \"לא\" [[0.45]], ו\"לא יודע\" – חסר. מה השכיחות היחסית של \"לא יודע\"?",["[[0.35]]","[[0.55]]","[[0.25]]","[[0.65]]"],"🍕 כל החלקים ביחד = 1.<br>1️⃣ [[0.2 + 0.45 = 0.65]]<br>2️⃣ [[1 − 0.65 = 0.35]]<br>✅ [[0.35]]<br>🔁 בדיקה: [[0.2 + 0.45 + 0.35 = 1]] ✔️"],
+["שכיחות יחסית",3,"כל השכיחויות בטבלה הוכפלו פי 2 (גם סך הכול גדל פי 2). מה קורה לשכיחויות היחסיות?",["לא משתנות","גדלות פי 2","קטנות פי 2","גדלות פי 4"],"🍕 [[{{9|25}}]] הופך ל-[[{{18|50}}]].<br>1️⃣ גם למעלה וגם למטה פי 2 ← זה אותו שבר (הרחבה).<br>2️⃣ [[{{18|50}} = 0.36 = {{9|25}}]]<br>✅ השכיחויות היחסיות לא משתנות."],
+["מציאת השכיחות",1,"200 תלמידים נשאלו. השכיחות היחסית של \"כדורגל\" היא [[0.4]]. כמה תלמידים בחרו כדורגל?",["80","40","160","500"],"👀 [[0.4]] = 4 חלקים מתוך 10.<br>1️⃣ חלק אחד (10%) מ-200 = 20<br>2️⃣ 4 חלקים: [[4 · 20 = 80]]<br>✅ 80 תלמידים."+CA("200 × 0.4 =","80")],
+["מציאת השכיחות",2,"50 משפחות נשאלו, ול-18% מהן יש כלב. לכמה משפחות יש כלב?",["9","18","32","5"],"👀 1% מ-50 = חצי.<br>1️⃣ 18% = 18 חצאים<br>2️⃣ [[18 : 2 = 9]]<br>✅ 9 משפחות."+CA("50 × 0.18 =","9")],
+["מציאת השכיחות",2,"בכיתה 60 תלמידים. השכיחות היחסית של \"מגיעים ברגל\" היא [[{{1|4}}]]. כמה תלמידים מגיעים ברגל?",["15","4","24","240"],"🍕 רבע מהכיתה.<br>1️⃣ מחלקים את 60 ל-4 קבוצות שוות.<br>2️⃣ [[60 : 4 = 15]]<br>✅ 15 תלמידים."+CA("60 × 1 ÷ 4 =","15")],
+["מציאת השכיחות",3,"שכיחות של 12 היא [[0.3]] מכל המשתתפים. כמה משתתפים יש בסך הכול?",["40","36","4","120"],"📦 [[0.3]] = 3 חלקים מתוך 10.<br>1️⃣ 3 חלקים = 12 ← חלק אחד = 4<br>2️⃣ הכול = 10 חלקים: [[10 · 4 = 40]]<br>✅ 40 משתתפים.<br>🔁 בדיקה: [[{{12|40}} = 0.3]] ✔️"+CA("12 ÷ 0.3 =","40","💡 מחפשים את <b>סך הכול</b>? מחלקים בשכיחות היחסית.")],
+["מציאת השכיחות",3,"נמכרו 200 פיצות: 80 זיתים, 65 פטריות, לטונה שכיחות יחסית [[0.1]], והשאר גבינה. כמה פיצות גבינה?",["35","55","20","15"],"👀 קודם מוצאים כמה טונה.<br>1️⃣ טונה: [[200 · 0.1 = 20]]<br>2️⃣ ספרנו: [[80 + 65 + 20 = 165]]<br>3️⃣ גבינה: [[200 − 165 = 35]]<br>✅ 35 פיצות.<br>⚖️ 55 – שכחו להוריד את הטונה."],
+["דיאגרמות",1,"לפי הדיאגרמה: איזה פרי בחרו הכי הרבה תלמידים?",["ענבים","תפוח","בננה","אבטיח"],"📊 העמודה הכי גבוהה = השכיחות הכי גדולה.<br>1️⃣ העמודה של ענבים מגיעה ל-14.<br>✅ ענבים.","b"],
+["דיאגרמות",1,"לפי הדיאגרמה: כמה תלמידים בחרו בננה?",["8","6","10","4"],"📊 מסתכלים על ראש העמודה הצהובה.<br>1️⃣ הולכים ממנה ישר שמאלה לציר המספרים.<br>2️⃣ מגיעים ל-8.<br>✅ 8 תלמידים.","b"],
+["דיאגרמות",2,"לפי הדיאגרמה: בכמה תלמידים <b>יותר</b> בחרו תפוח מאשר אבטיח?",["6","2","18","12"],"📊 \"בכמה יותר\" = הפרש ← חיסור.<br>1️⃣ תפוח: 12, אבטיח: 6<br>2️⃣ [[12 − 6 = 6]]<br>✅ 6 תלמידים.","b"],
+["דיאגרמות",2,"לפי הדיאגרמה: <b>פי כמה</b> יותר תלמידים בחרו תפוח מאשר אבטיח?",["2","6","3","18"],"📊 \"פי כמה\" = חילוק.<br>1️⃣ תפוח 12, אבטיח 6<br>2️⃣ [[12 : 6 = 2]]<br>✅ פי 2.<br>⚖️ 6 זו התשובה ל\"בכמה יותר\", לא ל\"פי כמה\".","b"],
+["דיאגרמות",3,"לפי הדיאגרמה: הצטרפו עוד 10 תלמידים, וכולם בחרו אבטיח. מה השכיחות היחסית של אבטיח עכשיו?",["[[32%]]","[[16%]]","[[25%]]","[[15%]]"],"👀 משתנים <b>שני</b> דברים: גם האבטיח וגם סך הכול!<br>1️⃣ אבטיח: [[6 + 10 = 16]]<br>2️⃣ סך הכול: [[40 + 10 = 50]]<br>3️⃣ [[{{16|50}} = {{32|100}}]] (פי 2)<br>✅ [[32%]]<br>⚖️ 16% – שכחו שגם סך הכול גדל."+CA("16 ÷ 50 × 100 =","32"),"b"],
+["השוואת קבוצות",2,"בכיתה א 9 מתוך 20 תלמידים אוהבים מתמטיקה. בכיתה ב 12 מתוך 30. באיזו כיתה <b>חלק גדול יותר</b> אוהב מתמטיקה?",["כיתה א","כיתה ב","אותו חלק","אי אפשר לדעת"],"⚖️ הכיתות בגודל שונה ← משווים אחוזים.<br>1️⃣ א: [[{{9|20}} = {{45|100}} = 45%]] (פי 5)<br>2️⃣ ב: [[{{12|30}} = {{4|10}} = 40%]]<br>✅ כיתה א (45% זה יותר מ-40%).<br>⚖️ בכיתה ב יותר <b>תלמידים</b>, אבל חלק <b>קטן</b> יותר."],
+["השוואת קבוצות",2,"יואב אמר: \"בכיתה ב 12 תלמידים אוהבים מתמטיקה ובכיתה א רק 9, לכן בכיתה ב אוהבים יותר.\" (בכיתה א 20 תלמידים, בכיתה ב 30.) האם הוא צודק?",["לא – צריך להשוות שכיחות יחסית","כן – 12 גדול מ-9","כן – כי בכיתה ב יותר תלמידים","לא – צריך לחבר את שתי הכיתות"],"🍕 חצי פיצה גדולה יכולה להיות יותר מחצי פיצה קטנה.<br>1️⃣ הכיתות בגודל שונה.<br>2️⃣ לכן משווים <b>חלקים</b>: א 45%, ב 40%.<br>✅ יואב לא צודק – צריך להשוות שכיחות יחסית."],
+["השוואת קבוצות",3,"בבית ספר א 30 מתוך 120 תלמידים מגיעים באופניים. בבית ספר ב 24 מתוך 80. באיזה בית ספר החלק גדול יותר?",["בית ספר ב","בית ספר א","אותו חלק","אי אפשר לדעת"],"⚖️ משווים אחוזים.<br>1️⃣ א: [[{{30|120}} = {{1|4}} = 25%]]<br>2️⃣ ב: [[{{24|80}} = {{3|10}} = 30%]]<br>✅ בית ספר ב (30% זה יותר מ-25%), למרות שבא' יותר רוכבים."+CA("24 ÷ 80 × 100 =","30")],
+["השוואת קבוצות",3,"בסקר: 45 מתוך 60 מבוגרים בעד, ו-32 מתוך 40 ילדים בעד. איזו קבוצה תומכת יותר (באחוזים)?",["הילדים","המבוגרים","שתיהן באותה מידה","אי אפשר לדעת"],"⚖️ משווים אחוזים.<br>1️⃣ מבוגרים: [[{{45|60}} = {{3|4}} = 75%]]<br>2️⃣ ילדים: [[{{32|40}} = {{4|5}} = 80%]]<br>✅ הילדים (80% זה יותר מ-75%).<br>⚖️ 45 יותר מ-32, אבל הקבוצות בגודל שונה."+CA("32 ÷ 40 × 100 =","80")],
+["יחס בסקר",1,"בכיתה 12 בנים ו-18 בנות. מה היחס בנים : בנות במספרים הכי קטנים?",["[[2 : 3]]","[[3 : 2]]","[[12 : 30]]","[[2 : 5]]"],"🧱 מחלקים את שני המספרים באותו מספר (6).<br>1️⃣ [[12 : 6 = 2]] · [[18 : 6 = 3]]<br>2️⃣ קבוצה אחת: 🔵🔵 🔴🔴🔴 (כחול = בנים, אדום = בנות)<br>✅ [[2 : 3]]<br>⚖️ הסדר חשוב: קודם בנים, אחר כך בנות."],
+["יחס בסקר",2,"היחס בנים : בנות בכיתה הוא [[2 : 3]]. מה השכיחות היחסית של הבנות?",["[[0.6]]","[[0.4]]","3","[[0.3]]"],"🧱 קבוצה אחת: 🔵🔵 🔴🔴🔴 ← 5 ילדים בקבוצה.<br>1️⃣ בנות: 3 מתוך 5 ← [[{{3|5}}]]<br>2️⃣ [[{{3|5}} = {{6|10}} = 0.6]]<br>✅ [[0.6]]<br>⚖️ [[0.4]] זה החלק של הבנים."],
+["יחס בסקר",2,"לפי הדיאגרמה: מה היחס תפוח : בננה?",["[[3 : 2]]","[[2 : 3]]","[[12 : 20]]","[[4 : 3]]"],"🧱 תפוח 12, בננה 8.<br>1️⃣ [[12 : 8]] ← מחלקים את שניהם ב-4<br>2️⃣ [[3 : 2]]<br>✅ [[3 : 2]] (קודם תפוח, אחר כך בננה).","b"],
+["יחס בסקר",3,"בסקר, השכיחות היחסית של \"כן\" היא [[0.75]], ושל \"לא\" – כל השאר. מה היחס כן : לא?",["[[3 : 1]]","[[1 : 3]]","[[3 : 4]]","[[75 : 100]]"],"🍕 [[0.75]] = שלושה רבעים.<br>1️⃣ \"כן\": 3 רבעים · \"לא\": רבע אחד<br>2️⃣ 🔵🔵🔵 🔴<br>✅ [[3 : 1]]<br>⚖️ [[3 : 4]] זה \"כן\" לעומת <b>כולם</b>, לא לעומת \"לא\"."],
+["יחס בסקר",3,"בסקר בעלי חיות, היחס כלבים : חתולים הוא [[5 : 3]]. בסקר 40 בעלי חיות (רק כלבים וחתולים). כמה חתולים?",["15","25","8","24"],"🧱 קבוצה אחת: 🔵🔵🔵🔵🔵 🔴🔴🔴 ← 8 בקבוצה.<br>1️⃣ כמה קבוצות? [[40 : 8 = 5]]<br>2️⃣ חתולים: 3 בכל קבוצה ← [[5 · 3 = 15]]<br>✅ 15 חתולים.<br>🔁 בדיקה: כלבים [[5 · 5 = 25]], ו-[[25 + 15 = 40]] ✔️"],
+["נכון או לא נכון",1,"השכיחות היחסית של \"כן\" היא [[0.5]]. מה זה אומר?",["חצי מהמשתתפים ענו \"כן\"","5 משתתפים ענו \"כן\"","50 משתתפים ענו \"כן\"","כולם ענו \"כן\""],"🍕 [[0.5 = {{1|2}}]] = חצי.<br>✅ חצי מהמשתתפים ענו \"כן\".<br>⚖️ שכיחות יחסית מספרת <b>איזה חלק</b>, לא כמה אנשים."],
+["נכון או לא נכון",2,"נכון או לא נכון: \"שכיחות יחסית יכולה להיות [[1.2]]\".",["לא נכון – היא תמיד בין 0 ל-1","נכון","נכון – אם יש הרבה משתתפים","לא נכון – היא תמיד מספר שלם"],"🍕 חלק מהפיצה לא יכול להיות גדול מכל הפיצה.<br>1️⃣ השכיחות אף פעם לא גדולה מסך הכול.<br>2️⃣ לכן [[{{שכיחות|סך הכול}}]] הוא לכל היותר 1.<br>✅ לא נכון."],
+["נכון או לא נכון",2,"בכיתה 25 תלמידים, ותלמיד אחד נעדר. מהי השכיחות היחסית של הנעדרים באחוזים?",["[[4%]]","[[1%]]","[[25%]]","[[0.4%]]"],"🍕 1 מתוך 25 ← [[{{1|25}}]]<br>1️⃣ מ-25 ל-100 זה פי 4.<br>2️⃣ [[{{1|25}} = {{4|100}}]]<br>✅ [[4%]]"+CA("1 ÷ 25 × 100 =","4")],
+["נכון או לא נכון",3,"דנה אמרה: \"בשתי כיתות השכיחות היחסית של אוהבי ספורט היא [[0.5]], לכן בשתיהן אותו מספר תלמידים אוהב ספורט.\" האם היא צודקת?",["לא בהכרח – זה תלוי בגודל הכיתות","כן, תמיד","לא – אף פעם לא","כן – כי [[0.5]] זה חצי"],"🍕 חצי מכיתה של 20 = 10. חצי מכיתה של 30 = 15.<br>1️⃣ אותו חלק (חצי)…<br>2️⃣ …אבל מספר תלמידים שונה.<br>✅ לא בהכרח – רק אם הכיתות באותו גודל."],
+["נכון או לא נכון",3,"תלמיד חישב את כל השכיחויות היחסיות בטבלה, וחיבר: יצא לו [[110%]]. מה המסקנה?",["יש טעות בחישוב","הכול בסדר","יש יותר משתתפים מהרגיל","צריך לחלק ב-110"],"🍕 כל החלקים ביחד = פיצה אחת שלמה = 100%.<br>1️⃣ 110% זה יותר מכל הפיצה – לא ייתכן.<br>✅ יש טעות בחישוב. כדאי לבדוק שחילקו בסך הכול הנכון."]
+];
+D.know={"טבלת שכיחויות":"שכיחות = כמה פעמים. סכום השכיחויות = מספר המשתתפים. \"לפחות 3\" = 3 ומעלה.","שכיחות יחסית":"[[{{השכיחות|סך הכול}}]]. באחוזים: מרחיבים ל-100, למשל מתוך 25 ← פי 4. סכום כל השכיחויות היחסיות = 1.","מציאת השכיחות":"מחפשים שכיחות? כופלים: [[200 · 0.4 = 80]]. מחפשים את סך הכול? מחלקים: [[12 : 0.3 = 40]].","דיאגרמות":"גובה העמודה = השכיחות. \"בכמה יותר\" = חיסור, \"פי כמה\" = חילוק.","השוואת קבוצות":"קבוצות בגודל שונה ← משווים אחוזים (שכיחות יחסית), לא מספרים.","יחס בסקר":"מציירים קבוצה אחת (🔵🔵 🔴🔴🔴), סופרים כמה בקבוצה, ומוצאים כמה קבוצות.","נכון או לא נכון":"שכיחות יחסית תמיד בין 0 ל-1, וסכום כולן = 1 (100%)."};
+
+D.Q=R.map(function(r){return {t:r[0],l:r[1],q:r[2],o:r[3],e:r[4],d:r[5]};});
+if(!D.svg)D.svg={};
+
+
+function F(s){
+ s=s.replace(/((?:🔵|🔴)[🔵🔴 ]*(?:🔵|🔴))|(🔵|🔴)/gu,function(m){return '<span dir="ltr" style="unicode-bidi:isolate">'+m+'</span>';});
+ return s.replace(/\[\[(.+?)\]\]/g,function(_,x){
+  x=x.replace(/\{\{(.+?)\|(.+?)\}\}/g,'<span class="fr"><span>$1</span><span>$2</span></span>');
+  x=x.replace(/⌈(.+?)⌉/g,'<span class="k">$1</span>');
+  return '<span class="f">'+x.replace(/\^(\d+)/g,'<sup>$1</sup>')+'</span>';});}
+var Q=D.Q,SYM=D.flash,TIPS=D.tips;
+var app=document.getElementById('app'),list=[],i=0,good=0,wrong=[],mode='';
+var MB=[],MI=0,MR=0,MS=null,MD={},MO=[],ME=0,MC=['#16a34a','#0891b2','#db2777','#ea580c'];
+function match(){MB=[];for(var k=0;k<D.match.length;k+=4)MB.push(D.match.slice(k,k+4));MI=0;MR=0;ME=0;mnew();}
+function mnew(){MS=null;MD={};MO=sh(MB[MI].map(function(_,k){return k;}));mdraw('');}
+function mdraw(fb){
+ var set=MB[MI],n=0,h='<div class="top"><button class="back" onclick="home()">→ תפריט</button><span>לוח '+(MI+1)+' / '+MB.length+' · שלב '+(MR+1)+' / 2 · ❌ '+ME+'</span></div>';
+ h+='<div class="card"><div class="q" style="font-size:17px">'+(MR==0?(set[0].q1||'🧩 שלב 1: איזו <b>משוואה</b> מתאימה לכל גרף?'):(set[0].q2||'🧩 שלב 2: באיזה <b>תחום</b> כל גרף חיובי ובאיזה שלילי?'))+'<br><small style="font-weight:normal;color:#6b7280">לוחצים על גרף 👆 ואז על הכרטיס שמתאים לו</small></div><div class="mg">';
+ set.forEach(function(s,k){var d=MD[k];if(d)n++;h+='<div class="gc'+(MS===k?' sel':'')+'" style="'+(d?'border-color:'+MC[k]:'')+'" onclick="msel('+k+')">'+(d?'<span class="bd" style="background:'+MC[k]+'">✓</span>':'')+D.svg[s.g]+(MR==1||d?'<div>'+F(MR==1?s.e:'')+'</div>':'')+'</div>';});
+ h+='</div><div class="mg"'+(MR==1?' style="grid-template-columns:1fr"':'')+'>';
+ MO.forEach(function(k){var s=set[k],d=MD[k];h+='<button class="mc'+(d?' dn':'')+'" id="mc'+k+'" style="'+(d?'background:'+MC[k]+';border-color:'+MC[k]:'')+'" '+(d?'disabled':'onclick="mtry('+k+')"')+'>'+F(MR==0?s.e:s.r)+'</button>';});
+ h+='</div><div id="mfb">'+fb+'</div>';
+ if(n==set.length)h+='<div class="fb ok">🎉 כל הכבוד! כל הזוגות נכונים.</div><button class="next" onclick="mgo()">'+(MR==0?'לשלב 2: התאמת תחומים ←':MI<MB.length-1?'ללוח הבא ←':'לסיכום 🏁')+'</button>';
+ app.innerHTML=h+'</div>';
+}
+function msel(k){if(MD[k])return;MS=k;mdraw('');}
+function mtry(k){
+ if(MS===null){document.getElementById('mfb').innerHTML='<div class="fb">👆 קודם לוחצים על גרף, ואז על הכרטיס.</div>';return;}
+ var s=MB[MI][MS];
+ if(k===MS){MD[k]=1;MS=null;mdraw('');return;}
+ ME++;var b=document.getElementById('mc'+k);b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');
+ document.getElementById('mfb').innerHTML='<div class="fb no">❌ לא מתאים לגרף שבחרת. רמז:<br>💡 '+F(MR==0?s.h1:s.h2)+'</div>';
+ document.querySelector('.top span').innerHTML='לוח '+(MI+1)+' / '+MB.length+' · שלב '+(MR+1)+' / 2 · ❌ '+ME;
+}
+function mgo(){if(MR==0){MR=1;mnew();}else{MR=0;MI++;if(MI<MB.length)mnew();else mend();}window.scrollTo(0,0);}
+function mend(){app.innerHTML='<div class="card" style="text-align:center"><div class="score">🧩</div><h2>סיימת את משחק ההתאמה!</h2><div class="fb '+(ME<3?'ok':'no')+'">'+(ME==0?'🏆 בלי אף טעות – מצוין!':'מספר טעויות: '+ME+(ME<3?' – יפה מאוד!':' – כדאי לשחק שוב ולשים לב לצורה ולאפסים.'))+'</div><button class="next" onclick="match()">🔁 לשחק שוב</button><button class="next" style="background:#16a34a" onclick="home()">→ לתפריט</button></div>';}
+var LI=0,LESS=D.lessons||(D.lesson?[{t:D.lessonTitle,topic:D.lessonTopic,s:D.lesson}]:[]),LS=LESS[0];
+function les(k){LI=k;var L=LS.s[k],q=L[2],op=sh(q[1].map(function(t,j){return {t:t,c:j===0};}));
+ var h='<div class="top"><button class="back" onclick="home()">→ תפריט</button><span>שלב '+(k+1)+' / '+LS.s.length+'</span></div><div class="bar"><div style="width:'+(k/LS.s.length*100)+'%"></div></div>';
+ h+='<div class="card sum anim"><h3>'+F(L[0])+'</h3>'+F(L[1])+(/class=.(ap|dr|dp)/.test(L[1])?'<button class="next" style="background:#0891b2" onclick="les(LI)">🔁 לראות שוב את האנימציה</button>':'')+'</div><div class="card"><span class="tag">🤔 בודקים שהבנו</span><div class="q">'+F(q[0])+'</div>';
+ op.forEach(function(o){h+='<button class="opt" data-c="'+(o.c?1:0)+'" onclick="lpick(this)">'+F(o.t)+'</button>';});
+ app.innerHTML=h+'<div id="ex"></div></div>';window.scrollTo(0,0);}
+function lpick(b){var q=LS.s[LI][2],ok=b.dataset.c==='1';
+ document.querySelectorAll('.opt').forEach(function(o){o.disabled=true;if(o.dataset.c==='1')o.classList.add('ok');});if(!ok)b.classList.add('no');
+ var last=LI==LS.s.length-1;
+ document.getElementById('ex').innerHTML='<div class="exp '+(ok?'ok':'no')+'"><b class="h">'+(ok?'✅ נכון!':'❌ לא נורא – מסתכלים שוב על הציור:')+'</b>'+F(q[2])+'</div>'+
+ (ok?'':'<button class="next" style="background:#f59e0b" onclick="les(LI)">🔁 לנסות שוב את השלב</button>')+
+ '<button class="next" onclick="'+(last?'start(Q.filter(function(x){return x.t==LS.topic;}),\'all\')':'les(LI+1)')+'">'+(last?'🧠 עכשיו לשאלות של הנושא ←':'לשלב הבא ←')+'</button>';}
+function sh(a){a=a.slice();for(var k=a.length-1;k>0;k--){var j=Math.floor(Math.random()*(k+1));var t=a[k];a[k]=a[j];a[j]=t;}return a;}
+function stars(l){return '★'.repeat(l)+'☆'.repeat(3-l);}
+function home(){
+ app.innerHTML='<h1>'+D.icon+' '+D.title+'</h1><div class="sub">הכנה למבחן – כיתה ח׳ א1</div>'+
+ '<button class="btn b1" onclick="summary()">📘 סיכום מהיר<small>כל החומר בדף אחד – קרא קודם</small></button>'+
+ '<button class="btn" style="background:#ea580c" onclick="tips()">⚡ טיפים לזכירה מהירה<small>טריקים ומלכודות נפוצות</small></button>'+
+ '<button class="btn b2" onclick="flash()">🔤 כרטיסיות<small>'+D.flashSub+'</small></button>'+
+ LESS.map(function(L,n){return '<button class="btn" style="background:'+(L.c||'#be185d')+'" onclick="LS=LESS['+n+'];les(0)">'+L.t+'<small>'+(L.sub||'שלב אחר שלב · ציור + שאלת הבנה בכל שלב')+'</small></button>';}).join('')+
+ (D.match?'<button class="btn" style="background:#ca8a04" onclick="match()">🧩 משחק התאמה<small>'+(D.matchSub||'מתאימים כרטיסים')+'</small></button>':'')+
+ '<button class="btn b3" onclick="start(Q,\'all\')">🧠 כל השאלות לפי סדר הנושאים<small>'+Q.length+' שאלות, הסבר מפורט אחרי כל תשובה</small></button>'+
+ '<button class="btn b4" onclick="start(mock(),\'test\')">🏁 מבחן דמה<small>20 שאלות מעורבבות בכל הרמות · ציון ומשוב אישי</small></button>';
+ window.scrollTo(0,0);
+}
+function summary(){
+ var h='<div class="top"><button class="back" onclick="home()">→ חזרה</button><span>סיכום</span></div>';
+ D.summary.forEach(function(c){h+='<div class="card sum"><h3>'+c[0]+'</h3>'+F(c[1])+'</div>';});
+ app.innerHTML=h+'<button class="btn b4" onclick="start(Q,\'all\')">✅ קראתי – לשאלות!</button>';window.scrollTo(0,0);
+}
+function tips(){
+ var h='<div class="top"><button class="back" onclick="home()">→ חזרה</button><span>טיפים לזכירה</span></div>';
+ TIPS.forEach(function(b){h+='<div class="card sum"><h3>'+b[0]+'</h3>';b[1].forEach(function(t){h+='<p>• '+F(t)+'</p>';});h+='</div>';});
+ app.innerHTML=h+'<button class="btn b4" onclick="start(mock(),\'test\')">🏁 עכשיו למבחן דמה!</button>';window.scrollTo(0,0);
+}
+var fl=[],fi=0;
+function flash(){fl=sh(SYM);fi=0;showFlash(false);}
+function showFlash(open){
+ var s=fl[fi];
+ app.innerHTML='<div class="top"><button class="back" onclick="home()">→ חזרה</button><span>'+(fi+1)+' / '+fl.length+'</span></div>'+
+ '<div class="card flash"><div class="heb">'+F(s[0])+'</div><div style="margin:14px 0;color:#888">מה התשובה?</div>'+
+ (open?'<div class="ans">'+F(s[1])+'</div>':'<button class="next" onclick="showFlash(true)">👀 הצג תשובה</button>')+'</div>'+
+ (open?'<button class="next" onclick="'+(fi<fl.length-1?'fi++;showFlash(false)':'home()')+'">'+(fi<fl.length-1?'הבא ←':'סיום ✔')+'</button>':'');
+}
+function start(arr,m){list=arr;mode=m;i=0;good=0;wrong=[];ask();}
+function ask(){
+ var x=list[i],opts=sh(x.o.map(function(t,k){return {t:t,c:k===0};}));
+ var h='<div class="top"><button class="back" onclick="home()">→ תפריט</button><span>שאלה '+(i+1)+' / '+list.length+' · ✅ '+good+'</span></div>'+
+ '<div class="bar"><div style="width:'+(i/list.length*100)+'%"></div></div>'+
+ '<div class="card"><span class="tag">'+x.t+'</span><span class="lvl">'+stars(x.l)+'</span><div class="q">'+F(x.q)+'</div>'+(x.d?D.svg[x.d]:'');
+ opts.forEach(function(o,k){h+='<button class="opt" data-c="'+(o.c?1:0)+'" onclick="pick(this)">'+F(o.t)+'</button>';});
+ app.innerHTML=h+'<div id="ex"></div></div>';
+ window.scrollTo(0,0);
+}
+function pick(b){
+ var all=document.querySelectorAll('.opt'),ok=b.dataset.c==='1',x=list[i];
+ all.forEach(function(o){o.disabled=true;if(o.dataset.c==='1')o.classList.add('ok');});
+ if(ok)good++;else{b.classList.add('no');wrong.push(x);}
+ document.getElementById('ex').innerHTML='<div class="exp '+(ok?'ok':'no')+'"><b class="h">'+(ok?'✅ נכון! בואו נבין למה:':'❌ לא נורא! בואו נפתור ביחד:')+'</b><div class="qr">📝 <b>התרגיל:</b> '+F(x.q)+'<br>🎯 <b>התשובה הנכונה:</b> '+F(x.o[0])+'</div><b>👣 הפתרון צעד אחר צעד:</b><br>'+F(x.e)+'</div>'+
+ '<button class="next" onclick="nxt()">'+(i<list.length-1?'לשאלה הבאה ←':'לתוצאות 🏁')+'</button>';
+}
+function nxt(){i++;if(i<list.length)ask();else end();}
+function mock(){
+ var want={1:6,2:8,3:6},out=[];
+ [1,2,3].forEach(function(l){
+  var pool=sh(Q.filter(function(q){return q.l==l;})),by={},keys=[];
+  pool.forEach(function(q){if(!by[q.t]){by[q.t]=[];keys.push(q.t);}by[q.t].push(q);});
+  keys=sh(keys);var k=0,n=0;
+  while(n<want[l]&&pool.length>n){var t=keys[k%keys.length];if(by[t].length){out.push(by[t].shift());n++;}k++;if(k>500)break;}
+ });
+ while(out.length<20&&out.length<Q.length){var r=Q[Math.floor(Math.random()*Q.length)];if(out.indexOf(r)<0)out.push(r);}
+ return sh(out);
+}
+function end(){
+ var p=Math.round(good/list.length*100),msg=p>=90?'🏆 מצוין! מוכנים למבחן!':p>=75?'💪 טוב מאוד! עוד קצת חיזוק ומגיעים':p>=55?'👍 בדרך הנכונה – כדאי לחזק את הנושאים למטה':'📘 כדאי לקרוא שוב את הסיכום והטיפים, ואז לנסות שוב';
+ var h='<div class="card"><div style="text-align:center;font-size:16px;color:#666">'+(mode=='test'?'הציון שלך במבחן הדמה':'התוצאה שלך')+'</div><div class="score">'+p+'</div><div style="text-align:center;font-size:18px;margin:6px 0 14px">'+good+' מתוך '+list.length+' נכונות<br>'+msg+'</div>';
+ if(mode=='test'){
+  var lv={1:[0,0],2:[0,0],3:[0,0]},tp={},order=[];
+  list.forEach(function(q){var ok=wrong.indexOf(q)<0;lv[q.l][1]++;if(ok)lv[q.l][0]++;if(!tp[q.t]){tp[q.t]=[0,0];order.push(q.t);}tp[q.t][1]++;if(ok)tp[q.t][0]++;});
+  var nm={1:'★ בסיס',2:'★★ הבנה',3:'★★★ חשיבה גבוהה'};
+  h+='<h3 style="color:#6d28d9">📊 לפי רמות חשיבה</h3>';
+  [1,2,3].forEach(function(l){if(!lv[l][1])return;var r=lv[l][0]/lv[l][1];h+='<div class="lvl-row"><span>'+nm[l]+'</span><span class="lvb"><i style="width:'+Math.round(r*100)+'%;background:'+(r>=0.8?'#16a34a':r>=0.5?'#f59e0b':'#dc2626')+'"></i></span><b>'+lv[l][0]+'/'+lv[l][1]+'</b></div>';});
+  var weak=order.filter(function(t){return tp[t][0]<tp[t][1];}),strong=order.filter(function(t){return tp[t][0]==tp[t][1];});
+  h+='<h3 style="color:#6d28d9;margin-top:12px">📝 משוב – מה צריך לדעת</h3>';
+  if(strong.length)h+='<div class="fb ok">✅ <b>יודעים טוב:</b> '+strong.join(' · ')+'</div>';
+  weak.forEach(function(t){h+='<div class="fb no">📘 <b>לחזק: '+t+'</b> ('+tp[t][0]+'/'+tp[t][1]+')<br>💡 '+F((D.know&&D.know[t])||'כדאי לקרוא שוב את הסיכום של הנושא הזה.')+'</div>';});
+  if(!weak.length)h+='<div class="fb ok">🌟 לא היו טעויות – כל הכבוד!</div>';
+  else if(lv[3][1]&&lv[3][0]<lv[3][1]&&lv[1][0]==lv[1][1])h+='<div class="fb">🎯 הבסיס חזק! עכשיו כדאי לתרגל שאלות ★★★ – לקרוא את השאלה לאט ולצייר.</div>';
+  else if(lv[1][0]<lv[1][1])h+='<div class="fb">🎯 כדאי להתחיל מהבסיס: לקרוא את הסיכום, ואז לתרגל את הטעויות.</div>';
+ }
+ if(wrong.length){
+  h+='<button class="next" style="background:#db2777" onclick="start(wrong.slice(),\'w\')">🔁 תרגל שוב רק את '+wrong.length+' הטעויות</button><h3 style="margin-top:14px;color:#6d28d9">איפה טעיתי:</h3>';
+  wrong.forEach(function(w){h+='<div class="rev">📝 '+F(w.q)+(w.d?D.svg[w.d]:'')+'<br>🎯 <b>'+F(w.o[0])+'</b><div class="exp ok" style="margin-top:6px">'+F(w.e)+'</div></div>';});
+ }
+ if(mode=='test')h+='<button class="next" style="background:#16a34a" onclick="start(mock(),\'test\')">🏁 מבחן דמה חדש (שאלות אחרות)</button>';
+ app.innerHTML=h+'<button class="next" onclick="home()">חזרה לתפריט</button></div>';
+ window.scrollTo(0,0);
+}
+home();
+if('serviceWorker' in navigator){navigator.serviceWorker.register('../sw.js',{scope:'../'}).catch(()=>{});}
+</script>
+</body>
+</html>
