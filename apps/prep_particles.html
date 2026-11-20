@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>המודל החלקיקי – הכנה למבחן</title>
+<link rel="manifest" href="prep_particles.webmanifest">
+<link rel="apple-touch-icon" href="icon-prep_particles-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="מודל חלקיקי">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1e1b4b">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,"Segoe UI",sans-serif;background:linear-gradient(160deg,#1e1b4b,#4c1d95);min-height:100vh;color:#1f2937;padding:14px}
+.wrap{max-width:640px;margin:0 auto}
+h1{color:#fff;text-align:center;font-size:26px;margin:6px 0 2px}
+.sub{color:#ddd6fe;text-align:center;font-size:15px;margin-bottom:14px}
+.card{background:#fff;border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.btn{display:block;width:100%;border:0;border-radius:14px;padding:16px;font-size:18px;font-weight:bold;margin:10px 0;cursor:pointer;color:#fff;text-align:right}
+.b1{background:#7c3aed}.b2{background:#0891b2}.b3{background:#db2777}.b4{background:#16a34a}
+.btn small{display:block;font-weight:normal;font-size:14px;opacity:.9;margin-top:3px}
+.f{direction:ltr;unicode-bidi:isolate;display:inline-block;font-weight:bold;color:#6d28d9;font-family:Arial,sans-serif;white-space:nowrap}
+.f sub{font-size:.7em}
+.top{display:flex;justify-content:space-between;align-items:center;color:#fff;margin-bottom:8px;font-size:15px}
+.back{background:rgba(255,255,255,.2);color:#fff;border:0;border-radius:10px;padding:8px 12px;font-size:15px;cursor:pointer}
+.bar{height:8px;background:rgba(255,255,255,.25);border-radius:6px;overflow:hidden;margin-bottom:12px}
+.bar div{height:100%;background:#facc15;transition:width .3s}
+.tag{display:inline-block;background:#ede9fe;color:#6d28d9;border-radius:8px;padding:3px 9px;font-size:13px;margin-bottom:8px}
+.lvl{float:left;font-size:13px;color:#b45309}
+.q{font-size:20px;font-weight:bold;line-height:1.5;margin-bottom:14px}
+.opt{display:block;width:100%;text-align:right;background:#f5f3ff;border:2px solid #ddd6fe;border-radius:12px;padding:13px;font-size:17px;margin:8px 0;cursor:pointer;color:#1f2937}
+.opt.ok{background:#dcfce7;border-color:#16a34a}
+.opt.no{background:#fee2e2;border-color:#dc2626}
+.exp{border-radius:12px;padding:14px;margin-top:12px;font-size:16px;line-height:1.65}
+.exp.ok{background:#f0fdf4;border-right:6px solid #16a34a}
+.exp.no{background:#fef2f2;border-right:6px solid #dc2626}
+.exp b.h{display:block;font-size:17px;margin-bottom:4px}
+.next{background:#7c3aed;color:#fff;border:0;border-radius:12px;padding:14px;font-size:18px;font-weight:bold;width:100%;margin-top:12px;cursor:pointer}
+.sum h3{color:#6d28d9;font-size:19px;margin-bottom:6px}
+.sum p{font-size:16px;line-height:1.65;margin-bottom:6px}
+.tip{background:#fef9c3;border-radius:10px;padding:9px 11px;font-size:15px;margin-top:6px}
+table{width:100%;border-collapse:collapse;font-size:16px}
+td,th{border:1px solid #ddd6fe;padding:7px;text-align:center}
+th{background:#ede9fe}
+.flash{text-align:center;padding:30px 10px}
+.flash .big{font-size:56px;font-weight:bold;color:#6d28d9;direction:ltr}
+.flash .heb{font-size:32px;font-weight:bold}
+.pt{display:grid;grid-template-columns:repeat(18,1fr);gap:2px;direction:ltr;margin:8px 0}
+.pt div{height:16px;border-radius:2px}
+.m{background:#93c5fd}.n{background:#fca5a5}.g{background:#fde68a}
+.score{font-size:46px;font-weight:bold;text-align:center;color:#6d28d9}
+.foot{color:#c4b5fd;text-align:center;font-size:13px;margin-top:10px}
+.rev{border-bottom:1px solid #eee;padding:10px 0;font-size:15px;line-height:1.6}
+.f sup{font-size:.7em}
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 3px;font-size:.9em}
+.fr span:first-child{border-bottom:2px solid currentColor;padding:0 3px}
+.flash .ans{font-size:24px;font-weight:bold;color:#6d28d9;line-height:1.5}
+.flash .heb{font-size:22px;line-height:1.5}
+svg{display:block;max-width:100%;margin:6px auto}
+.qr{background:#fff;border:2px dashed #c4b5fd;border-radius:10px;padding:9px;margin:6px 0 10px;font-size:15px}
+.exp{font-size:17px;line-height:1.8}
+.stg{display:grid;grid-template-columns:auto auto auto auto;justify-content:start;column-gap:6px;row-gap:2px;align-items:center;margin:2px 0}.stg .sl{white-space:nowrap}.stg .sw{grid-column:1/-1}.stg .sb{text-align:left}.stg .sa{text-align:right}.stg .se{font-weight:bold;color:#6d28d9;text-align:center}
+
+.k{display:inline-block;background:#374151;color:#fff;border-radius:6px;padding:1px 7px;margin:2px 1px;font-size:.9em;box-shadow:0 2px 0 #111;font-weight:bold}
+.calc{background:#ecfeff;border-right:5px solid #0891b2;border-radius:10px;padding:8px 10px;margin-top:10px;line-height:2}
+.lvl-row{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:15px}.lvl-row span:first-child{width:120px}.lvb{flex:1;height:12px;background:#eee;border-radius:6px;overflow:hidden}.lvb i{display:block;height:100%}
+.fb{background:#f5f3ff;border-radius:10px;padding:10px;margin:8px 0;font-size:16px;line-height:1.7}.fb.ok{background:#f0fdf4}.fb.no{background:#fff7ed;border-right:5px solid #f59e0b}
+.mg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+.gc{background:#fff;border:3px solid #e5e7eb;border-radius:12px;padding:4px;text-align:center;cursor:pointer;font-size:14px;position:relative}
+.gc.sel{border-color:#f59e0b;box-shadow:0 0 0 4px #fde68a}
+.gc .bd{position:absolute;top:4px;right:6px;color:#fff;border-radius:50%;width:24px;height:24px;line-height:24px;font-weight:bold;font-size:14px}
+.mc{background:#f5f3ff;border:2px solid #ddd6fe;border-radius:12px;padding:10px 6px;font-size:15px;line-height:1.7;cursor:pointer;color:#1f2937;text-align:center}
+.mc.dn{color:#fff;cursor:default}.mc.dn .f,.mc.dn b{color:#fff!important}
+.bz-t{height:12px;background:#e5e7eb;border-radius:8px;overflow:hidden;margin:6px 0 10px}.bz-t i{display:block;height:100%;background:linear-gradient(90deg,#16a34a,#f59e0b,#dc2626);width:100%}
+.bz-h{display:flex;justify-content:space-between;align-items:center;font-weight:bold;font-size:17px;color:#fff;margin:4px 0}
+.bz-s{font-size:26px;color:#facc15}.bz-f{animation:pu .5s ease-in-out 2 alternate;display:inline-block}
+.pop{animation:pop .45s cubic-bezier(.3,1.8,.5,1)}@keyframes pop{0%{transform:scale(.8)}100%{transform:scale(1)}}
+.flt{position:fixed;left:50%;top:40%;font-size:34px;font-weight:bold;color:#16a34a;pointer-events:none;animation:flt 1s ease forwards;z-index:9}@keyframes flt{from{opacity:1;transform:translate(-50%,0)}to{opacity:0;transform:translate(-50%,-90px)}}
+.cf{position:fixed;top:-20px;width:10px;height:14px;z-index:9;pointer-events:none;animation:cf 2.4s linear forwards}@keyframes cf{to{transform:translateY(110vh) rotate(720deg)}}
+.qin{animation:dp .5s cubic-bezier(.3,1.6,.6,1)}
+.shake{animation:shk .4s}@keyframes shk{25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+.ap{opacity:0;animation:fi .6s ease forwards}@keyframes fi{to{opacity:1}}
+.dp{opacity:0;animation:dp .7s cubic-bezier(.3,1.6,.6,1) forwards}@keyframes dp{from{opacity:0;transform:translateY(-40px)}to{opacity:1;transform:none}}
+.dr{stroke-dasharray:1;stroke-dashoffset:1;animation:dr 2s ease forwards}@keyframes dr{to{stroke-dashoffset:0}}
+.pu{transform-box:fill-box;transform-origin:center;animation:pu .7s ease-in-out 4 alternate}@keyframes pu{to{transform:scale(1.7)}}
+.mv{animation:mv 1.1s ease-in-out forwards}@keyframes mv{to{transform:translate(var(--dx),var(--dy))}}
+.anim p{margin-bottom:6px}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<div class="foot">ערכה: רוני מודן · שחקים</div>
+<script>
+var D={title:"המודל החלקיקי – סיכום למבחן",icon:"🔬",flashSub:"מושג ← הסבר קצר"};
+D.svg={
+states:'<svg viewBox="0 0 330 150" width="320"><g fill="none" stroke="#475569" stroke-width="2"><rect x="8" y="10" width="96" height="96" rx="6"/><rect x="117" y="10" width="96" height="96" rx="6"/><rect x="226" y="10" width="96" height="96" rx="6"/></g><g fill="#2563eb">'+(function(){var s="";for(var r=0;r<4;r++)for(var c=0;c<4;c++)s+='<circle cx="'+(26+c*20)+'" cy="'+(28+r*20)+'" r="8"/>';return s;})()+'</g><g fill="#0891b2"><circle cx="136" cy="88" r="8"/><circle cx="154" cy="91" r="8"/><circle cx="172" cy="87" r="8"/><circle cx="190" cy="90" r="8"/><circle cx="145" cy="72" r="8"/><circle cx="163" cy="73" r="8"/><circle cx="181" cy="71" r="8"/><circle cx="198" cy="74" r="8"/><circle cx="154" cy="56" r="8"/><circle cx="172" cy="55" r="8"/></g><g fill="#db2777"><circle cx="242" cy="26" r="8"/><circle cx="300" cy="34" r="8"/><circle cx="262" cy="70" r="8"/><circle cx="306" cy="88" r="8"/><circle cx="240" cy="92" r="8"/></g><g font-size="15" font-weight="bold" text-anchor="middle" fill="#1f2937"><text x="56" y="128">מוצק</text><text x="165" y="128">נוזל</text><text x="274" y="128">גז</text></g><g font-size="11" text-anchor="middle" fill="#475569"><text x="56" y="144">צפוף · רועד במקום</text><text x="165" y="144">צפוף · מחליק</text><text x="274" y="144">רחוק · עף לכל מקום</text></g></svg>',
+press:'<svg viewBox="0 0 300 160" width="290"><rect x="10" y="10" width="120" height="100" rx="6" fill="#fff" stroke="#475569" stroke-width="3"/><rect x="170" y="10" width="120" height="100" rx="6" fill="#fff" stroke="#475569" stroke-width="3"/><g fill="#db2777"><circle cx="40" cy="40" r="7"/><circle cx="95" cy="75" r="7"/><circle cx="60" cy="90" r="7"/><circle cx="190" cy="30" r="7"/><circle cx="230" cy="45" r="7"/><circle cx="265" cy="30" r="7"/><circle cx="200" cy="70" r="7"/><circle cx="250" cy="75" r="7"/><circle cx="272" cy="92" r="7"/><circle cx="215" cy="92" r="7"/></g><g font-size="16"><text x="116" y="48">💥</text><text x="276" y="62">💥</text><text x="176" y="56">💥</text><text x="276" y="100">💥</text></g><g font-size="14" text-anchor="middle" font-weight="bold" fill="#1f2937"><text x="70" y="132">מעט חלקיקים</text><text x="70" y="152">לחץ נמוך</text><text x="230" y="132">הרבה חלקיקים</text><text x="230" y="152">לחץ גבוה</text></g></svg>'
+};
+D.summary=[
+["⚫ ממה בנוי כל חומר?","<p>כל חומר בנוי מ<mark><b>חלקיקים זעירים</b></mark>. אי אפשר לראות אותם בעין.</p><p>החלקיקים <mark><b>נעים כל הזמן</b></mark>, בכל מצב צבירה.</p><p>בין החלקיקים יש <mark><b>ריק</b></mark>, כלומר מקום שאין בו שום חומר. גם לא אוויר!</p><div class='tip'>💡 אוויר הוא בעצמו חלקיקים. לכן <b>בין</b> חלקיקי האוויר אין אוויר – יש ריק.</div>"],
+["⚖️ מסה ונפח","<table><tr><th>מסה</th><th>נפח</th></tr><tr><td>כמה <b>חומר</b> יש</td><td>כמה <b>מקום</b> החומר תופס</td></tr><tr><td>גרם, קילוגרם</td><td>מיליליטר, ליטר</td></tr></table><div class='tip'>💡 אם לא נוספו חלקיקים ולא יצאו חלקיקים ← <b>המסה לא משתנה</b>. גם כשהחומר מתאדה, נדחס או מתחמם.</div>"],
+["🧊💧💨 שלושת מצבי הצבירה","/*S*/<table><tr><th></th><th>מרחק</th><th>תנועה</th></tr><tr><td><b>מוצק</b></td><td>צפוף</td><td>רועדים סביב מקום קבוע</td></tr><tr><td><b>נוזל</b></td><td>צפוף</td><td>מחליקים ומחליפים מקום ← <mark>זורם</mark></td></tr><tr><td><b>גז</b></td><td>רחוק מאוד</td><td>עפים חופשי ← <mark>ממלא את כל הכלי</mark></td></tr></table><p><b>כוחות משיכה</b> בין חלקיקים פועלים <mark>בכל שלושת המצבים</mark>. בגז ההשפעה שלהם קטנה.</p>"],
+["💥 לחץ של גז","/*P*/<p>חלקיקי הגז <b>פוגעים בדופן</b> שוב ושוב. הפגיעות האלה הן <mark><b>הלחץ</b></mark>.</p><p>⬆️ <b>יותר חלקיקים</b> באותו מכל ← יותר פגיעות ← <mark>לחץ גבוה יותר</mark>.</p><p>🔥 <b>מחממים</b> מכל קשיח ← החלקיקים מהירים יותר ← <mark>לחץ גבוה יותר</mark>.</p>"],
+["🗜️ דחיסה ואידוי","<p><b>דוחסים גז</b> ← החלקיקים <mark>מתקרבים</mark>. המרווחים קטנים. החלקיקים עצמם לא מתכווצים.</p><p><b>נוזל כמעט לא נדחס</b> ← החלקיקים בו כבר צפופים.</p><p><b>אידוי</b> (נוזל ← גז) ← החלקיקים <mark>מתרחקים</mark> מאוד, ולכן שקית אטומה מתנפחת. מספר החלקיקים והמסה <b>לא משתנים</b>.</p><div class='tip'>⚠️ מלכודת: החלקיקים <b>לא גדלים</b> ולא קטנים. רק <b>המרחקים</b> ביניהם משתנים.</div>"],
+["🌸 פעפוע","<p><mark><b>פעפוע</b></mark> = חלקיקים מתפזרים ומתערבבים בגלל שהם <b>זזים כל הזמן</b>. למשל ריח בושם שמגיע לכל החדר.</p><p>🔥 <b>חם יותר</b> ← הפעפוע <mark>מהיר יותר</mark>.</p><p>📏 <b>מרחק קצר יותר</b> ← הריח מגיע <mark>מוקדם יותר</mark>.</p><p>📦 אותו מספר חלקיקים ב<b>מקום גדול יותר</b> ← <mark>המרווחים ביניהם גדולים יותר</mark>.</p>"],
+["🌡️ טמפרטורה ותנועה","<p>טמפרטורה <b>גבוהה</b> ← החלקיקים נעים <mark><b>מהר יותר</b></mark> בממוצע.</p><p>טמפרטורה <b>נמוכה</b> ← נעים <b>לאט יותר</b> (אבל לא עוצרים).</p><div class='tip'>💡 מוט ברזל מתארך כשמחממים אותו, כי החלקיקים <b>רועדים חזק יותר</b> והמרחקים ביניהם גדלים מעט. החלקיקים עצמם לא מתנפחים!</div>"]
+];
+D.summary[2][1]=D.summary[2][1].replace('/*S*/',D.svg.states);
+D.summary[3][1]=D.summary[3][1].replace('/*P*/',D.svg.press);
+D.tips=[
+["⚫ ריק",["בין חלקיקים יש <b>ריק</b> – אפילו לא אוויר.","שאלה עם \"מה יש ביניהם?\" ← התשובה כמעט תמיד: <b>ריק</b>."]],
+["🧊💧💨 מצבי צבירה בשלוש מילים",["מוצק = <b>רועד במקום</b> 🧍","נוזל = <b>צפוף אבל מחליק</b> 🐟","גז = <b>רחוק ועף לכל מקום</b> 🐝","⚠️ מלכודת: גם במוצק החלקיקים זזים (רועדים)!"]],
+["💥 לחץ = פגיעות",["לחץ = כמה פעמים החלקיקים <b>דופקים</b> על הדופן.","יותר חלקיקים או יותר חום ← יותר דפיקות ← יותר לחץ."]],
+["🎈 החלקיקים לא משנים גודל",["חיממו? אידו? דחסו? ← החלקיקים <b>אותו גודל</b>.","מה משתנה? רק <b>המרחקים</b> ו<b>המהירות</b>."]],
+["⚖️ מסה נשמרת",["שקית סגורה = <b>אף חלקיק לא יוצא</b> ← המסה אותו דבר.","גז תמיד ממלא את <b>כל</b> המכל ← נפח הגז = נפח המכל."]],
+["🌸 פעפוע מהר יותר כש...",["🔥 חם יותר","📏 המרחק קצר יותר","💨 בגז מהר יותר מאשר בנוזל"]],
+["🔄 שאלות הפוכות",["מתחילים מה<b>תוצאה</b> ושואלים: מה גרם לזה?","לחץ עלה בלי להוסיף גז? ← <b>חיממו</b>.","חלקיקים מהירים יותר? ← <b>טמפרטורה גבוהה יותר</b>."]]
+];
+D.flash=[["חלקיק","יחידה זעירה שממנה בנוי כל חומר"],["ריק","מקום שאין בו שום חומר – זה מה שיש בין החלקיקים"],["מסה","כמות החומר (גרם, קילוגרם)"],["נפח","המקום שהחומר תופס (מיליליטר, ליטר)"],["מוצק","חלקיקים צפופים שרועדים סביב מקום קבוע"],["נוזל","חלקיקים צפופים שמחליקים ומחליפים מקום – לכן זורם"],["גז","חלקיקים רחוקים שנעים חופשי וממלאים את כל הכלי"],["כוחות משיכה","פועלים בכל מצבי הצבירה; בגז ההשפעה קטנה"],["לחץ של גז","פגיעות של חלקיקי הגז בדופן"],["יותר חלקיקים במכל קשיח","יותר פגיעות ← לחץ גבוה יותר"],["חימום מכל קשיח","חלקיקים מהירים יותר ← לחץ גבוה יותר"],["דחיסה","מקטינים את המרווחים בין החלקיקים"],["אידוי","נוזל הופך לגז – החלקיקים מתרחקים מאוד"],["פעפוע","התפזרות והתערבבות של חלקיקים בגלל התנועה שלהם"],["טמפרטורה גבוהה","החלקיקים נעים מהר יותר בממוצע"],["מה לא משתנה בחימום?","גודל החלקיקים ומספר החלקיקים"]];
+var R=[
+["חלקיקים וריק",1,"ממה בנוי כל חומר לפי המודל החלקיקי?",["מחלקיקים זעירים שנעים כל הזמן","מחומר רציף אחד בלי רווחים","רק מוצקים בנויים מחלקיקים","מחלקיקים שעומדים במקום ולא זזים"],"🏖️ דמיינו חוף: מרחוק רואים משטח חלק, ומקרוב רואים גרגרי חול.<br>1️⃣ גם כל חומר בנוי מ<b>חלקיקים זעירים</b>.<br>2️⃣ החלקיקים <b>זזים כל הזמן</b>, בכל מצב צבירה.<br>✅ חלקיקים זעירים שנעים כל הזמן."],
+["חלקיקים וריק",1,"מה יש בין החלקיקים של גז?",["ריק – אין שם שום חומר","אוויר","אדי מים","חלקיקים קטנים יותר"],"🫥 בין החלקיקים אין כלום.<br>1️⃣ כל חומר, גם אוויר, בנוי מחלקיקים.<br>2️⃣ <b>בין</b> החלקיקים אין חומר בכלל.<br>✅ <b>ריק</b>.<br>⚖️ טעות נפוצה: לענות \"אוויר\". אבל אוויר הוא חלקיקים בעצמו!"],
+["חלקיקים וריק",2,"במכל ריק לגמרי הכניסו רק שני חלקיקי חמצן. מה יש ביניהם?",["ריק","אוויר","עוד חמצן","אדי מים"],"👀 במכל יש רק 2 חלקיקים ולא שום דבר אחר.<br>1️⃣ לא הכניסו אוויר ולא מים.<br>2️⃣ לכן בין שני החלקיקים אין שום חומר.<br>✅ <b>ריק</b>."],
+["חלקיקים וריק",2,"האם החלקיקים של מוצק זזים?",["כן – הם רועדים סביב מקום קבוע","לא – במוצק החלקיקים לא זזים בכלל","כן – הם עפים חופשי בכל הכלי","רק כשהמוצק נמס"],"🧍 כמו ילד שעומד במקום ומתנדנד.<br>1️⃣ במוצק החלקיקים צפופים.<br>2️⃣ הם לא עוזבים את המקום, אבל <b>רועדים</b> כל הזמן.<br>✅ כן, הם רועדים סביב מקום קבוע.<br>⚖️ טעות נפוצה: לחשוב שבמוצק אין תנועה."],
+["חלקיקים וריק",3,"תלמיד אמר: \"בין חלקיקי האוויר בחדר יש עוד אוויר\". למה זה לא נכון?",["כי האוויר עצמו הוא החלקיקים, וביניהם יש ריק","כי בין החלקיקים יש מים","כי בחדר אין חלקיקים בכלל","זה נכון – בין החלקיקים יש אוויר"],"🧩 אוויר = הרבה חלקיקים קטנים.<br>1️⃣ החלקיקים <b>הם</b> האוויר.<br>2️⃣ מה שבין החלקיקים הוא לא חלקיק, ולכן הוא לא אוויר.<br>✅ ביניהם יש <b>ריק</b>."],
+["חלקיקים וריק",3,"באיזה מצב צבירה יש ריק בין החלקיקים?",["בכל שלושת מצבי הצבירה","רק בגז","רק במוצק","באף מצב צבירה"],"📏 שאלה של מרחק.<br>1️⃣ בגז המרווחים <b>גדולים</b>.<br>2️⃣ במוצק ובנוזל המרווחים <b>קטנים</b>, אבל הם קיימים.<br>✅ ריק יש <b>בכל</b> שלושת המצבים.<br>⚖️ טעות נפוצה: \"רק בגז\". המרווחים בגז פשוט הכי גדולים."],
+
+["מסה ונפח",1,"מה מתארת המסה?",["את כמות החומר (בגרמים)","את המקום שהחומר תופס","את הטמפרטורה של החומר","את מהירות החלקיקים"],"⚖️ חושבים על משקל במטבח.<br>1️⃣ מסה = <b>כמה חומר</b> יש.<br>2️⃣ מודדים אותה בגרם או בקילוגרם.<br>✅ כמות החומר."],
+["מסה ונפח",1,"מה מתאר הנפח?",["את המקום שהחומר תופס (במיליליטרים)","את כמות החומר בגרמים","את מספר הפגיעות בדופן","את הגודל של חלקיק אחד"],"🥤 חושבים על כוס מדידה.<br>1️⃣ נפח = <b>כמה מקום</b> החומר תופס.<br>2️⃣ מודדים אותו במיליליטר או בליטר.<br>✅ המקום שהחומר תופס."],
+["מסה ונפח",2,"בשקית אטומה נוזל התאדה, והשקית התנפחה. מה קרה למסה של החומר?",["נשארה אותו דבר","גדלה, כי השקית התנפחה","קטנה, כי גז קל יותר","התאפסה"],"🔒 השקית סגורה, ואף חלקיק לא יוצא ולא נכנס.<br>1️⃣ אותם חלקיקים ← אותה <b>כמות חומר</b>.<br>2️⃣ השקית התנפחה כי החלקיקים <b>התרחקו</b>, לא כי נוסף חומר.<br>✅ המסה נשארה אותו דבר."],
+["מסה ונפח",2,"דחסו גז במזרק סגור. מה קרה למסה של הגז?",["לא השתנתה","קטנה","גדלה","התאפסה"],"💉 האצבע סוגרת את פתח המזרק.<br>1️⃣ אף חלקיק לא יצא.<br>2️⃣ רק <b>המרווחים</b> בין החלקיקים קטנו, ולכן הנפח קטן.<br>✅ המסה לא השתנתה."],
+["מסה ונפח",3,"גז הועבר ממכל קטן למכל גדול, בלי שיצאו חלקיקים. מה נכון?",["המסה זהה, ונפח הגז גדל","המסה גדלה, ונפח הגז גדל","המסה קטנה, ונפח הגז זהה","המסה והנפח לא השתנו"],"🐝 גז הוא כמו דבורים: הן עפות לכל מקום שיש.<br>1️⃣ אותם חלקיקים ← <b>אותה מסה</b>.<br>2️⃣ גז ממלא את <b>כל</b> המכל ← במכל הגדול הנפח שלו גדל.<br>✅ המסה זהה, והנפח גדל."],
+["מסה ונפח",3,"במכל א׳ יש 6 חלקיקי גז ובמכל ב׳ יש 12. המכלים זהים בגודלם. מה נכון?",["במכל ב׳ יותר חלקיקים, אבל נפח הגז שווה בשני המכלים","במכל ב׳ נפח הגז גדול פי 2","במכל א׳ הגז תופס רק חצי מכל","בשני המכלים יש אותו מספר חלקיקים"],"🐝 גם 6 דבורים וגם 12 דבורים עפות בכל החדר.<br>1️⃣ במכל ב׳ יש <b>יותר חלקיקים</b> (12 לעומת 6).<br>2️⃣ גז ממלא את <b>כל</b> המכל, והמכלים זהים.<br>✅ נפח הגז שווה בשניהם.<br>⚖️ טעות נפוצה: לחשוב שיותר חלקיקים = יותר נפח. בגז, הנפח הוא נפח המכל."],
+
+["מצבי צבירה",1,"איך מסודרים ונעים החלקיקים במוצק?",["צפופים, ורועדים סביב מקום קבוע","רחוקים זה מזה, ונעים חופשי","צפופים, ומחליקים זה על פני זה","אין במוצק חלקיקים"],"🧱 כמו לבנים בקיר.<br>1️⃣ החלקיקים <b>צפופים</b>.<br>2️⃣ כל אחד <b>רועד במקום שלו</b>.<br>✅ צפופים ורועדים סביב מקום קבוע."],
+["מצבי צבירה",1,"איזה תיאור מתאים לגז?",["החלקיקים רחוקים, נעים חופשי וממלאים את כל הכלי","החלקיקים צפופים ונמצאים במקום קבוע","החלקיקים צפופים ומחליקים זה על פני זה","החלקיקים לא זזים בכלל"],"🐝 דבורים בחדר.<br>1️⃣ החלקיקים <b>רחוקים</b> זה מזה.<br>2️⃣ הם עפים <b>לכל מקום</b> וממלאים את כל הכלי.<br>✅ רחוקים, חופשיים וממלאים את הכלי."],
+["מצבי צבירה",2,"למה נוזל זורם?",["כי החלקיקים קרובים, אבל יכולים להחליק ולהחליף מקום","כי החלקיקים רחוקים מאוד זה מזה","כי בנוזל אין חלקיקים","כי החלקיקים בנוזל לא זזים"],"🐟 דגים בתוך להקה צפופה.<br>1️⃣ החלקיקים <b>קרובים</b> זה לזה.<br>2️⃣ הם יכולים <b>להחליק</b> ולהחליף מקום.<br>✅ לכן הנוזל זורם."],
+["מצבי צבירה",2,"באילו מצבי צבירה פועלים כוחות משיכה בין החלקיקים?",["בכל שלושת המצבים (בגז ההשפעה קטנה)","רק במוצק","רק בנוזל","באף מצב צבירה"],"🧲 כמו מגנטים חלשים בין החלקיקים.<br>1️⃣ כוחות המשיכה קיימים <b>בכל</b> מצבי הצבירה.<br>2️⃣ בגז החלקיקים רחוקים, ולכן ההשפעה <b>קטנה</b>.<br>✅ בכל שלושת המצבים."],
+["מצבי צבירה",3,"🔄 שאלה הפוכה: החלקיקים של חומר קרובים זה לזה ויכולים להחליק זה על פני זה. מה מצב הצבירה?",["נוזל","מוצק","גז","אי אפשר לדעת"],"🔄 מתחילים מהתיאור ומחפשים את המצב.<br>1️⃣ \"קרובים\" ← מוצק או נוזל (לא גז).<br>2️⃣ \"מחליקים\" ← לא מוצק, כי מוצק רק רועד במקום.<br>✅ <b>נוזל</b>."],
+["מצבי צבירה",3,"🔄 שאלה הפוכה: חומר ממלא את כל הכלי, לא משנה כמה הכלי גדול. מה מצב הצבירה?",["גז","נוזל","מוצק","נוזל או מוצק"],"🔄 מי ממלא <b>כל</b> כלי?<br>1️⃣ מוצק שומר על צורה משלו.<br>2️⃣ נוזל ממלא רק את התחתית, לפי הכמות שלו.<br>3️⃣ רק גז מתפשט בכל הכלי.<br>✅ <b>גז</b>."],
+
+["לחץ של גז",1,"מה גורם ללחץ של גז על הדופן של מכל?",["החלקיקים פוגעים בדופן שוב ושוב","החלקיקים נדבקים לדופן","הגז כבד ושוקע למטה","הריק דוחף את הדופן"],"⚽ כמו כדורים שנזרקים על קיר.<br>1️⃣ חלקיקי הגז <b>זזים כל הזמן</b>.<br>2️⃣ הם <b>פוגעים בדופן</b> שוב ושוב.<br>✅ הפגיעות האלה יוצרות את הלחץ."],
+["לחץ של גז",1,"הוסיפו עוד גז למכל קשיח, בלי לחמם. מה קרה ללחץ?",["עלה","ירד","לא השתנה","התאפס"],"⚽ יותר כדורים ← יותר מכות בקיר.<br>1️⃣ נוספו <b>חלקיקים</b>.<br>2️⃣ יותר חלקיקים ← <b>יותר פגיעות</b> בדופן.<br>✅ הלחץ <b>עלה</b>."],
+["לחץ של גז",2,"יש שני מכלים קשיחים זהים, עם אותו גז ובאותה טמפרטורה. באחד יש פחות חלקיקים. מה שונה בו?",["הלחץ נמוך יותר","הגז תופס פחות נפח","החלקיקים קטנים יותר","הלחץ גבוה יותר"],"⚽ פחות כדורים ← פחות מכות.<br>1️⃣ פחות חלקיקים ← <b>פחות פגיעות</b> בדופן.<br>2️⃣ הגז עדיין ממלא את כל המכל, ולכן הנפח שווה.<br>✅ הלחץ <b>נמוך יותר</b>."],
+["לחץ של גז",2,"מחממים מכל קשיח וסגור שיש בו גז. מה קורה ללחץ?",["עולה, כי החלקיקים נעים מהר יותר ופוגעים יותר","יורד, כי החלקיקים מתרחקים","לא משתנה, כי לא נוספו חלקיקים","עולה, כי נוספו חלקיקים"],"🔥 חום = חלקיקים מהירים.<br>1️⃣ חימום ← החלקיקים נעים <b>מהר יותר</b>.<br>2️⃣ מהר יותר ← הם פוגעים בדופן <b>יותר פעמים ובחוזקה</b>.<br>✅ הלחץ <b>עולה</b>. מספר החלקיקים לא השתנה."],
+["לחץ של גז",3,"🔄 שאלה הפוכה: במכל קשיח הלחץ עלה. כמות הגז וסוג הגז לא השתנו. מה הסיבה הסבירה?",["חיממו את המכל","קיררו את המכל","הוסיפו חלקיקים","החלקיקים גדלו"],"🔄 מתחילים מהתוצאה: הלחץ עלה.<br>1️⃣ לא נוספו חלקיקים, אז זו לא הסיבה.<br>2️⃣ מה עוד מגדיל את מספר הפגיעות? <b>מהירות</b> גבוהה יותר.<br>3️⃣ מהירות גבוהה יותר ← <b>חום</b>.<br>✅ חיממו את המכל."],
+["לחץ של גז",3,"🔄 שאלה הפוכה: שני מכלים זהים, עם אותו גז ובאותה טמפרטורה. במכל א׳ הלחץ נמוך יותר. מה מסיקים?",["במכל א׳ יש פחות חלקיקים","במכל א׳ יש יותר חלקיקים","במכל א׳ החלקיקים מהירים יותר","במכל א׳ הגז לא ממלא את כל המכל"],"🔄 לחץ נמוך = פחות פגיעות.<br>1️⃣ הטמפרטורה שווה ← המהירות שווה.<br>2️⃣ אז הסיבה היחידה לפחות פגיעות היא <b>פחות חלקיקים</b>.<br>✅ במכל א׳ יש פחות חלקיקים."],
+
+["דחיסה ואידוי",1,"למה אפשר לדחוס גז במזרק סגור?",["כי יש מרווחים גדולים בין החלקיקים","כי החלקיקים מתכווצים","כי חלק מהחלקיקים נעלמים","כי החלקיקים נדבקים ונהיים חלקיק אחד"],"🚌 אוטובוס כמעט ריק: אפשר להכניס עוד הרבה אנשים.<br>1️⃣ בגז יש <b>מרווחים גדולים</b>.<br>2️⃣ כשדוחסים, החלקיקים <b>מתקרבים</b>. הם לא מתכווצים.<br>✅ בגלל המרווחים הגדולים."],
+["דחיסה ואידוי",1,"איך אפשר להכניס עוד גז למכל קשיח שכבר יש בו גז?",["החלקיקים מתקרבים, והמרווח הממוצע ביניהם קטן","החלקיקים הקיימים מתכווצים","אי אפשר בשום אופן","חלק מהחלקיקים הישנים נעלמים"],"🚌 מוסיפים אנשים לאוטובוס, וכולם עומדים קרוב יותר.<br>1️⃣ בין חלקיקי הגז יש <b>מרווחים</b>.<br>2️⃣ חלקיקים חדשים נכנסים ← <b>המרווח הממוצע קטן</b>.<br>✅ החלקיקים מתקרבים."],
+["דחיסה ואידוי",2,"נוזל התאדה בשקית אטומה, והשקית התנפחה. מה השתנה בחומר שהתאדה?",["המרחקים בין החלקיקים גדלו","החלקיקים עצמם גדלו","נוספו חלקיקים חדשים","המסה של החומר גדלה"],"🎈 השקית התנפחה, אבל החלקיקים לא התנפחו.<br>1️⃣ נוזל ← גז: החלקיקים <b>מתרחקים</b> מאוד.<br>2️⃣ השקית סגורה ← אותם חלקיקים ואותה מסה.<br>✅ המרחקים גדלו.<br>⚖️ טעות נפוצה: \"החלקיקים גדלו\". הם תמיד באותו גודל."],
+["דחיסה ואידוי",2,"למה קשה מאוד לדחוס נוזל?",["כי החלקיקים בו כבר קרובים מאוד זה לזה","כי אין בנוזל חלקיקים","כי החלקיקים בנוזל רחוקים מאוד","כי החלקיקים בנוזל לא זזים"],"🚌 אוטובוס מלא: אין לאן להידחק.<br>1️⃣ בנוזל החלקיקים <b>צפופים</b>.<br>2️⃣ אין מרווחים גדולים שאפשר לצמצם.<br>✅ לכן קשה לדחוס אותו."],
+["דחיסה ואידוי",3,"🔄 שאלה הפוכה: קל לדחוס גז במזרק אטום, וקשה לדחוס נוזל. מה אפשר להסיק על המרווחים?",["בגז המרווחים גדולים, ובנוזל הם קטנים מאוד","בנוזל המרווחים גדולים יותר מאשר בגז","בגז ובנוזל אין מרווחים בכלל","המרווחים בגז ובנוזל שווים"],"🔄 מתחילים מהתוצאה.<br>1️⃣ קל לדחוס ← יש מקום לצמצם ← <b>מרווחים גדולים</b> (גז).<br>2️⃣ קשה לדחוס ← אין מקום ← <b>מרווחים קטנים</b> (נוזל).<br>✅ בגז המרווחים גדולים, ובנוזל הם קטנים מאוד."],
+["דחיסה ואידוי",3,"🔄 שאלה הפוכה: אותם חלקיקים תופסים עכשיו נפח גדול בהרבה בתוך שקית אטומה. מה המעבר הסביר?",["מנוזל לגז (אידוי)","מגז לנוזל (עיבוי)","מנוזל למוצק (קיפאון)","ממוצק לנוזל (התכה)"],"🔄 נפח גדל <b>בהרבה</b> ← החלקיקים התרחקו מאוד.<br>1️⃣ במוצק ובנוזל החלקיקים צפופים.<br>2️⃣ רק בגז הם רחוקים מאוד.<br>✅ המעבר הוא מנוזל לגז (אידוי)."],
+
+["פעפוע",1,"מהו פעפוע?",["התפזרות והתערבבות של חלקיקים בגלל התנועה שלהם","המסה של מוצק","דחיסה של גז","הפיכה של נוזל למוצק"],"🌸 ריח של בושם מגיע לכל החדר.<br>1️⃣ החלקיקים <b>זזים כל הזמן</b>.<br>2️⃣ לכן הם <b>מתפזרים ומתערבבים</b> בחומר אחר.<br>✅ זה פעפוע."],
+["פעפוע",1,"גז אמוניה שוחרר בחלק העליון של מבחנה, ונייר בוחן בתחתית שינה את צבעו. איך הגז הגיע לנייר?",["חלקיקי הגז נעו והתערבבו באוויר עד שהגיעו לנייר","הנייר משך אליו את הגז","הגז שקע למטה כי הוא כבד","האוויר נעלם מהמבחנה"],"🌸 כמו הבושם שמגיע לכל החדר.<br>1️⃣ חלקיקי האמוניה <b>זזים</b>.<br>2️⃣ הם התערבבו בחלקיקי האוויר והגיעו עד הנייר.<br>✅ זה <b>פעפוע</b>."],
+["פעפוע",2,"יש שתי מכוניות זהות: אחת חמה ואחת קרירה. בשתיהן שוחררה אותה כמות של בושם. היכן הריח יתפזר מהר יותר?",["במכונית החמה","במכונית הקרירה","באותה מהירות בשתיהן","בשום מכונית הוא לא יתפזר"],"🔥 חום = חלקיקים מהירים.<br>1️⃣ במכונית החמה החלקיקים נעים <b>מהר יותר</b>.<br>2️⃣ חלקיקים מהירים ← <b>פעפוע מהיר יותר</b>.<br>✅ במכונית החמה."],
+["פעפוע",2,"אותו מספר חלקיקי ריח התפזר במכונית קטנה ובמכונית גדולה. היכן המרווח הממוצע בין חלקיקי הריח גדול יותר?",["במכונית הגדולה","במכונית הקטנה","המרווח שווה בשתיהן","אין מרווחים בין חלקיקי ריח"],"🍬 10 סוכריות על שולחן קטן או על שולחן גדול.<br>1️⃣ אותו מספר חלקיקים.<br>2️⃣ במקום <b>גדול יותר</b> הם מתפזרים על יותר שטח.<br>✅ במכונית הגדולה המרווח גדול יותר."],
+["פעפוע",3,"הריח משתחרר מאותה נקודה בשתי מכוניות סגורות, קטנה וגדולה, באותה טמפרטורה ובלי אוורור. באיזו מכונית הריח יגיע לקצה הרחוק מוקדם יותר?",["בקטנה – המרחק קצר יותר","בגדולה – יש יותר מקום לזוז","באותו זמן בשתיהן","בגדולה – החלקיקים מהירים יותר"],"🏃 שני ילדים רצים באותה מהירות, אחד למרחק קצר ואחד למרחק ארוך.<br>1️⃣ הטמפרטורה שווה ← <b>המהירות שווה</b>.<br>2️⃣ בקטנה <b>המרחק קצר יותר</b>.<br>✅ הריח מגיע מוקדם יותר במכונית הקטנה."],
+["פעפוע",3,"🔄 שאלה הפוכה: התשובה היא \"כיוון שחלקיקים נעים ומתפזרים, חומרים מתערבבים\". מה הייתה השאלה?",["למה ריח של בושם מגיע לכל החדר?","למה קרח נמס בשמש?","למה קשה לדחוס נוזל?","מה ההבדל בין מסה לנפח?"],"🔄 מחפשים שאלה על <b>התפזרות והתערבבות</b>.<br>1️⃣ התשובה מתארת <b>פעפוע</b>.<br>2️⃣ ריח שמתפשט בחדר הוא דוגמה לפעפוע.<br>✅ למה ריח של בושם מגיע לכל החדר?"],
+
+["טמפרטורה ותנועה",1,"מה קורה לחלקיקים כשמחממים חומר?",["הם נעים מהר יותר","הם נעים לאט יותר","הם עוצרים","הם גדלים"],"🔥 חום נותן לחלקיקים אנרגיה.<br>1️⃣ מחממים ← החלקיקים נעים <b>מהר יותר</b>.<br>2️⃣ הגודל שלהם לא משתנה.<br>✅ נעים מהר יותר."],
+["טמפרטורה ותנועה",1,"מקררים גז. מה קורה למהירות הממוצעת של החלקיקים?",["יורדת","עולה","לא משתנה","החלקיקים עוצרים לגמרי"],"❄️ קור = חלקיקים איטיים.<br>1️⃣ מקררים ← החלקיקים נעים <b>לאט יותר</b>.<br>2️⃣ הם לא עוצרים לגמרי.<br>✅ המהירות הממוצעת יורדת."],
+["טמפרטורה ותנועה",2,"נמדדו שתי מהירויות של חלקיקי חמצן: 480 ו־650 מטר לשנייה. איזו מהירות מתאימה לטמפרטורה גבוהה יותר?",["650 מטר לשנייה","480 מטר לשנייה","שתיהן מתאימות לאותה טמפרטורה","אי אפשר לדעת"],"🔥 חם יותר = מהיר יותר.<br>1️⃣ אותו גז (חמצן), כך שאפשר להשוות.<br>2️⃣ 650 גדול מ־480 ← מהיר יותר.<br>✅ <b>650</b> מתאים לטמפרטורה הגבוהה יותר."],
+["טמפרטורה ותנועה",2,"מחממים מכל קשיח וסגור עם גז. האם מספר החלקיקים משתנה?",["לא – רק המהירות שלהם עולה","כן – נוספים חלקיקים","כן – יש פחות חלקיקים","כן – החלקיקים מתפצלים"],"🔒 המכל סגור.<br>1️⃣ אף חלקיק לא נכנס ולא יוצא ← <b>אותו מספר</b>.<br>2️⃣ החום משנה רק את <b>המהירות</b>.<br>✅ לא, רק המהירות עולה."],
+["טמפרטורה ותנועה",3,"🔄 שאלה הפוכה: חלקיקים של אותו גז נעים במכל א׳ מהר יותר, בממוצע, מאשר במכל ב׳. מה אפשר להסיק?",["הטמפרטורה במכל א׳ גבוהה יותר","הטמפרטורה במכל א׳ נמוכה יותר","במכל א׳ יש יותר חלקיקים","במכל א׳ החלקיקים גדולים יותר"],"🔄 מתחילים מהתוצאה: חלקיקים מהירים יותר.<br>1️⃣ מה גורם לחלקיקים לנוע מהר? <b>חום</b>.<br>2️⃣ זה אותו גז, ולכן אפשר להשוות.<br>✅ הטמפרטורה במכל א׳ גבוהה יותר."],
+["טמפרטורה ותנועה",3,"מחממים מוט ברזל, והוא מתארך מעט. מה קרה לחלקיקים של הברזל?",["הם רועדים חזק יותר, והמרחקים ביניהם גדלו מעט","כל חלקיק התנפח וגדל","נוספו חלקיקי ברזל חדשים","החלקיקים הפסיקו לזוז"],"🧍 ילדים בשורה שמתחילים לקפוץ צריכים יותר מקום.<br>1️⃣ חימום ← החלקיקים <b>רועדים חזק יותר</b>.<br>2️⃣ לכן הם מתרחקים <b>מעט</b> זה מזה ← המוט מתארך.<br>✅ המרחקים גדלו. החלקיקים עצמם לא גדלו.<br>⚖️ טעות נפוצה: \"החלקיקים התנפחו\"."]
+];
+D.know={"חלקיקים וריק":"כל חומר בנוי מחלקיקים שזזים כל הזמן. ביניהם יש ריק – אפילו לא אוויר.","מסה ונפח":"מסה = כמה חומר. נפח = כמה מקום. אף חלקיק לא יצא ← המסה לא משתנה. גז ממלא את כל המכל.","מצבי צבירה":"מוצק – צפוף ורועד במקום. נוזל – צפוף ומחליק. גז – רחוק וממלא את הכלי. כוחות משיכה – בכל המצבים.","לחץ של גז":"לחץ = פגיעות בדופן. יותר חלקיקים או יותר חום ← לחץ גבוה יותר.","דחיסה ואידוי":"דחיסה ← החלקיקים מתקרבים. אידוי ← מתרחקים. החלקיקים לא משנים גודל.","פעפוע":"פעפוע = התערבבות בגלל תנועה. חם יותר או מרחק קצר יותר ← מהיר יותר.","טמפרטורה ותנועה":"חם יותר ← החלקיקים מהירים יותר. מספר החלקיקים והגודל שלהם לא משתנים."};
+
+D.Q=R.map(function(r){return {t:r[0],l:r[1],q:r[2],o:r[3],e:r[4],d:r[5]};});
+if(!D.svg)D.svg={};
+
+
+function EX(s){var c='',k=s.indexOf('<div class="calc">');if(k>=0){c=s.slice(k);s=s.slice(0,k);}
+ var L=s.split('<br>'),h='',g=[];
+ function fl(){if(g.length){h+='<div class="stg">'+g.join('')+'</div>';g=[];}}
+ L.forEach(function(l){var m=l.match(/^\s*(\S+)\s*([^\[]*?)\s*\[\[([^\]]+?) = ([^\]]+)\]\]\s*$/);
+  function ln(t){return t.replace(/\{\{(.+?)\|(.+?)\}\}/g,function(_,a,b){return a.length>b.length?a:b;}).replace(/⌈|⌉|\^\d+/g,'').length;}
+  if(m&&m[3].indexOf(' = ')<0&&ln(m[3])+ln(m[4])+(m[2].length>10?0:m[2].length)<=26){
+   var lab=m[1]+' '+m[2];
+   if(m[2].length>10){g.push('<span class="sw">'+F(lab)+'</span>');lab='';}
+   g.push('<span class="sl">'+F(lab)+'</span><span class="sb">'+F('[['+m[4]+']]')+'</span><span class="se">=</span><span class="sa">'+F('[['+m[3]+']]')+'</span>');}
+  else{fl();if(l.trim())h+='<div>'+F(l)+'</div>';}});
+ fl();return h+F(c);}
+function F(s){
+ s=s.replace(/((?:🔵|🔴)[🔵🔴 ]*(?:🔵|🔴))|(🔵|🔴)/gu,function(m){return '<span dir="ltr" style="unicode-bidi:isolate">'+m+'</span>';});
+ return s.replace(/\[\[(.+?)\]\]/g,function(_,x){
+  x=x.replace(/\{\{(.+?)\|(.+?)\}\}/g,'<span class="fr"><span>$1</span><span>$2</span></span>');
+  x=x.replace(/⌈(.+?)⌉/g,'<span class="k">$1</span>');
+  return '<span class="f">'+x.replace(/\^(\d+)/g,'<sup>$1</sup>')+'</span>';});}
+var Q=D.Q,SYM=D.flash,TIPS=D.tips;
+var app=document.getElementById('app'),list=[],i=0,good=0,wrong=[],mode='';
+var MB=[],MI=0,MR=0,MS=null,MD={},MO=[],ME=0,MC=['#16a34a','#0891b2','#db2777','#ea580c'];
+function match(){MB=[];for(var k=0;k<D.match.length;k+=4)MB.push(D.match.slice(k,k+4));MI=0;MR=0;ME=0;mnew();}
+function mnew(){MS=null;MD={};MO=sh(MB[MI].map(function(_,k){return k;}));mdraw('');}
+function mdraw(fb){
+ var set=MB[MI],n=0,h='<div class="top"><button class="back" onclick="home()">→ תפריט</button><span>לוח '+(MI+1)+' / '+MB.length+' · שלב '+(MR+1)+' / 2 · ❌ '+ME+'</span></div>';
+ h+='<div class="card"><div class="q" style="font-size:17px">'+(MR==0?(set[0].q1||'🧩 שלב 1: איזו <b>משוואה</b> מתאימה לכל גרף?'):(set[0].q2||'🧩 שלב 2: באיזה <b>תחום</b> כל גרף חיובי ובאיזה שלילי?'))+'<br><small style="font-weight:normal;color:#6b7280">לוחצים על גרף 👆 ואז על הכרטיס שמתאים לו</small></div><div class="mg">';
+ set.forEach(function(s,k){var d=MD[k];if(d)n++;h+='<div class="gc'+(MS===k?' sel':'')+'" style="'+(d?'border-color:'+MC[k]:'')+'" onclick="msel('+k+')">'+(d?'<span class="bd" style="background:'+MC[k]+'">✓</span>':'')+D.svg[s.g]+(MR==1||d?'<div>'+F(MR==1?s.e:'')+'</div>':'')+'</div>';});
+ h+='</div><div class="mg"'+(MR==1?' style="grid-template-columns:1fr"':'')+'>';
+ MO.forEach(function(k){var s=set[k],d=MD[k];h+='<button class="mc'+(d?' dn':'')+'" id="mc'+k+'" style="'+(d?'background:'+MC[k]+';border-color:'+MC[k]:'')+'" '+(d?'disabled':'onclick="mtry('+k+')"')+'>'+F(MR==0?s.e:s.r)+'</button>';});
+ h+='</div><div id="mfb">'+fb+'</div>';
+ if(n==set.length)h+='<div class="fb ok">🎉 כל הכבוד! כל הזוגות נכונים.</div><button class="next" onclick="mgo()">'+(MR==0?'לשלב 2: התאמת תחומים ←':MI<MB.length-1?'ללוח הבא ←':'לסיכום 🏁')+'</button>';
+ app.innerHTML=h+'</div>';
+}
+function msel(k){if(MD[k])return;MS=k;mdraw('');}
+function mtry(k){
+ if(MS===null){document.getElementById('mfb').innerHTML='<div class="fb">👆 קודם לוחצים על גרף, ואז על הכרטיס.</div>';return;}
+ var s=MB[MI][MS];
+ if(k===MS){MD[k]=1;MS=null;mdraw('');return;}
+ ME++;var b=document.getElementById('mc'+k);b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');
+ document.getElementById('mfb').innerHTML='<div class="fb no">❌ לא מתאים לגרף שבחרת. רמז:<br>💡 '+F(MR==0?s.h1:s.h2)+'</div>';
+ document.querySelector('.top span').innerHTML='לוח '+(MI+1)+' / '+MB.length+' · שלב '+(MR+1)+' / 2 · ❌ '+ME;
+}
+function mgo(){if(MR==0){MR=1;mnew();}else{MR=0;MI++;if(MI<MB.length)mnew();else mend();}window.scrollTo(0,0);}
+function mend(){app.innerHTML='<div class="card" style="text-align:center"><div class="score">🧩</div><h2>סיימת את משחק ההתאמה!</h2><div class="fb '+(ME<3?'ok':'no')+'">'+(ME==0?'🏆 בלי אף טעות – מצוין!':'מספר טעויות: '+ME+(ME<3?' – יפה מאוד!':' – כדאי לשחק שוב ולשים לב לצורה ולאפסים.'))+'</div><button class="next" onclick="match()">🔁 לשחק שוב</button><button class="next" style="background:#16a34a" onclick="home()">→ לתפריט</button></div>';}
+var LI=0,LESS=D.lessons||(D.lesson?[{t:D.lessonTitle,topic:D.lessonTopic,s:D.lesson}]:[]),LS=LESS[0];
+function les(k){LI=k;var L=LS.s[k],q=L[2],op=sh(q[1].map(function(t,j){return {t:t,c:j===0};}));
+ var h='<div class="top"><button class="back" onclick="home()">→ תפריט</button><span>שלב '+(k+1)+' / '+LS.s.length+'</span></div><div class="bar"><div style="width:'+(k/LS.s.length*100)+'%"></div></div>';
+ h+='<div class="card sum anim"><h3>'+F(L[0])+'</h3>'+F(L[1])+(/class=.(ap|dr|dp)/.test(L[1])?'<button class="next" style="background:#0891b2" onclick="les(LI)">🔁 לראות שוב את האנימציה</button>':'')+'</div><div class="card"><span class="tag">🤔 בודקים שהבנו</span><div class="q">'+F(q[0])+'</div>';
+ op.forEach(function(o){h+='<button class="opt" data-c="'+(o.c?1:0)+'" onclick="lpick(this)">'+F(o.t)+'</button>';});
+ app.innerHTML=h+'<div id="ex"></div></div>';window.scrollTo(0,0);}
+function lpick(b){var q=LS.s[LI][2],ok=b.dataset.c==='1';
+ document.querySelectorAll('.opt').forEach(function(o){o.disabled=true;if(o.dataset.c==='1')o.classList.add('ok');});if(!ok)b.classList.add('no');
+ var last=LI==LS.s.length-1;
+ document.getElementById('ex').innerHTML='<div class="exp '+(ok?'ok':'no')+'"><b class="h">'+(ok?'✅ נכון!':'❌ לא נורא – מסתכלים שוב על הציור:')+'</b>'+F(q[2])+'</div>'+
+ (ok?'':'<button class="next" style="background:#f59e0b" onclick="les(LI)">🔁 לנסות שוב את השלב</button>')+
+ '<button class="next" onclick="'+(last?'start(Q.filter(function(x){return x.t==LS.topic;}),\'all\')':'les(LI+1)')+'">'+(last?'🧠 עכשיו לשאלות של הנושא ←':'לשלב הבא ←')+'</button>';}
+function sh(a){a=a.slice();for(var k=a.length-1;k>0;k--){var j=Math.floor(Math.random()*(k+1));var t=a[k];a[k]=a[j];a[j]=t;}return a;}
+function stars(l){return '★'.repeat(l)+'☆'.repeat(3-l);}
+function home(){
+ app.innerHTML='<h1>'+D.icon+' '+D.title+'</h1><div class="sub">מדעים – כיתה ח׳ · הכנה למבחן</div>'+
+ '<button class="btn b1" onclick="summary()">📘 סיכום מהיר<small>כל החומר בדף אחד – קרא קודם</small></button>'+
+ '<button class="btn" style="background:#ea580c" onclick="tips()">⚡ טיפים לזכירה מהירה<small>טריקים ומלכודות נפוצות</small></button>'+
+ '<button class="btn b2" onclick="flash()">🔤 כרטיסיות<small>'+D.flashSub+'</small></button>'+
+ LESS.map(function(L,n){return '<button class="btn" style="background:'+(L.c||'#be185d')+'" onclick="LS=LESS['+n+'];les(0)">'+L.t+'<small>'+(L.sub||'שלב אחר שלב · ציור + שאלת הבנה בכל שלב')+'</small></button>';}).join('')+
+ (D.match?'<button class="btn" style="background:#ca8a04" onclick="match()">🧩 משחק התאמה<small>'+(D.matchSub||'מתאימים כרטיסים')+'</small></button>':'')+
+'<button class="btn" style="background:linear-gradient(90deg,#f59e0b,#dc2626)" onclick="blitz()">⚡ מבחן בזק מונפש<small>10 שאלות · שעון לכל שאלה · נקודות ורצפים 🔥</small></button>'+
+ '<button class="btn b3" onclick="start(Q,\'all\')">🧠 כל השאלות לפי סדר הנושאים<small>'+Q.length+' שאלות, הסבר מפורט אחרי כל תשובה</small></button>'+
+ '<button class="btn b4" onclick="start(mock(),\'test\')">🏁 מבחן דמה<small>20 שאלות מעורבבות בכל הרמות · ציון ומשוב אישי</small></button>';
+ window.scrollTo(0,0);
+}
+function summary(){
+ var h='<div class="top"><button class="back" onclick="home()">→ חזרה</button><span>סיכום</span></div>';
+ D.summary.forEach(function(c){h+='<div class="card sum"><h3>'+c[0]+'</h3>'+F(c[1])+'</div>';});
+ app.innerHTML=h+'<button class="btn b4" onclick="start(Q,\'all\')">✅ קראתי – לשאלות!</button>';window.scrollTo(0,0);
+}
+function tips(){
+ var h='<div class="top"><button class="back" onclick="home()">→ חזרה</button><span>טיפים לזכירה</span></div>';
+ TIPS.forEach(function(b){h+='<div class="card sum"><h3>'+b[0]+'</h3>';b[1].forEach(function(t){h+='<p>• '+F(t)+'</p>';});h+='</div>';});
+ app.innerHTML=h+'<button class="btn b4" onclick="start(mock(),\'test\')">🏁 עכשיו למבחן דמה!</button>';window.scrollTo(0,0);
+}
+var fl=[],fi=0;
+function flash(){fl=sh(SYM);fi=0;showFlash(false);}
+function showFlash(open){
+ var s=fl[fi];
+ app.innerHTML='<div class="top"><button class="back" onclick="home()">→ חזרה</button><span>'+(fi+1)+' / '+fl.length+'</span></div>'+
+ '<div class="card flash"><div class="heb">'+F(s[0])+'</div><div style="margin:14px 0;color:#888">מה התשובה?</div>'+
+ (open?'<div class="ans">'+F(s[1])+'</div>':'<button class="next" onclick="showFlash(true)">👀 הצג תשובה</button>')+'</div>'+
+ (open?'<button class="next" onclick="'+(fi<fl.length-1?'fi++;showFlash(false)':'home()')+'">'+(fi<fl.length-1?'הבא ←':'סיום ✔')+'</button>':'');
+}
+function start(arr,m){list=arr;mode=m;i=0;good=0;wrong=[];ask();}
+function ask(){
+ var x=list[i],opts=sh(x.o.map(function(t,k){return {t:t,c:k===0};}));
+ var h='<div class="top"><button class="back" onclick="home()">→ תפריט</button><span>שאלה '+(i+1)+' / '+list.length+' · ✅ '+good+'</span></div>'+
+ '<div class="bar"><div style="width:'+(i/list.length*100)+'%"></div></div>'+
+ '<div class="card"><span class="tag">'+x.t+'</span><span class="lvl">'+stars(x.l)+'</span><div class="q">'+F(x.q)+'</div>'+(x.d?D.svg[x.d]:'');
+ opts.forEach(function(o,k){h+='<button class="opt" data-c="'+(o.c?1:0)+'" onclick="pick(this)">'+F(o.t)+'</button>';});
+ app.innerHTML=h+'<div id="ex"></div></div>';
+ window.scrollTo(0,0);
+}
+function pick(b){
+ var all=document.querySelectorAll('.opt'),ok=b.dataset.c==='1',x=list[i];
+ all.forEach(function(o){o.disabled=true;if(o.dataset.c==='1')o.classList.add('ok');});
+ if(ok)good++;else{b.classList.add('no');wrong.push(x);}
+ document.getElementById('ex').innerHTML='<div class="exp '+(ok?'ok':'no')+'"><b class="h">'+(ok?'✅ נכון! בואו נבין למה:':'❌ לא נורא! בואו נפתור ביחד:')+'</b><div class="qr">📝 <b>התרגיל:</b> '+F(x.q)+'<br>🎯 <b>התשובה הנכונה:</b> '+F(x.o[0])+'</div><b>👣 הפתרון צעד אחר צעד:</b>'+EX(x.e)+'</div>'+
+ '<button class="next" onclick="nxt()">'+(i<list.length-1?'לשאלה הבאה ←':'לתוצאות 🏁')+'</button>';
+}
+function nxt(){i++;if(i<list.length)ask();else end();}
+function mock(){
+ var want={1:6,2:8,3:6},out=[];
+ [1,2,3].forEach(function(l){
+  var pool=sh(Q.filter(function(q){return q.l==l;})),by={},keys=[];
+  pool.forEach(function(q){if(!by[q.t]){by[q.t]=[];keys.push(q.t);}by[q.t].push(q);});
+  keys=sh(keys);var k=0,n=0;
+  while(n<want[l]&&pool.length>n){var t=keys[k%keys.length];if(by[t].length){out.push(by[t].shift());n++;}k++;if(k>500)break;}
+ });
+ while(out.length<20&&out.length<Q.length){var r=Q[Math.floor(Math.random()*Q.length)];if(out.indexOf(r)<0)out.push(r);}
+ return sh(out);
+}
+
+var BZ={n:0,pts:0,st:0,best:0,tm:null,t0:0,T:20};
+function blitz(){
+ var out=[],used={};[[1,5],[2,4],[3,1]].forEach(function(p){sh(Q.filter(function(q){return q.l==p[0];})).forEach(function(q){if(p[1]>0&&!used[q.t+p[0]]){out.push(q);used[q.t+p[0]]=1;p[1]--;}});
+  sh(Q.filter(function(q){return q.l==p[0]&&out.indexOf(q)<0;})).slice(0,p[1]).forEach(function(q){out.push(q);});});
+ list=out.slice(0,10);mode='blitz';i=0;good=0;wrong=[];BZ.pts=0;BZ.st=0;BZ.best=0;
+ app.innerHTML='<div class="card" style="text-align:center"><h2>⚡ מבחן בזק</h2><p>10 שאלות · 20 שניות לכל שאלה<br>תשובה מהירה = יותר נקודות · רצף נכון = 🔥 בונוס</p><div class="score" id="cd">3</div></div>';
+ var c=3,iv=setInterval(function(){c--;var d=document.getElementById('cd');if(!d){clearInterval(iv);return;}if(c>0){d.textContent=c;d.className='score pop';}else{clearInterval(iv);bask();}},800);
+}
+function bhead(){return '<div class="top"><button class="back" onclick="clearInterval(BZ.tm);home()">→ תפריט</button><span>שאלה '+(i+1)+' / '+list.length+'</span></div><div class="bz-h"><span>⭐ <span class="bz-s" id="bzp">'+BZ.pts+'</span></span><span id="bzst">'+(BZ.st>1?'<span class="bz-f">🔥 רצף '+BZ.st+'</span>':'')+'</span><span>⏱️ <b id="bzc">'+BZ.T+'</b></span></div><div class="bz-t"><i id="bzt"></i></div>';}
+function bask(){
+ var x=list[i],opts=sh(x.o.map(function(t,k){return {t:t,c:k===0};}));
+ var h=bhead()+'<div class="card qin"><span class="tag">'+x.t+'</span><span class="lvl">'+stars(x.l)+'</span><div class="q">'+F(x.q)+'</div>'+(x.d?D.svg[x.d]:'');
+ opts.forEach(function(o){h+='<button class="opt" data-c="'+(o.c?1:0)+'" onclick="bpick(this)">'+F(o.t)+'</button>';});
+ app.innerHTML=h+'<div id="ex"></div></div>';window.scrollTo(0,0);
+ BZ.t0=Date.now();var bar=document.getElementById('bzt');bar.style.transition='width '+BZ.T+'s linear';requestAnimationFrame(function(){requestAnimationFrame(function(){bar.style.width='0%';});});
+ clearInterval(BZ.tm);BZ.tm=setInterval(function(){var l=Math.max(0,BZ.T-Math.floor((Date.now()-BZ.t0)/1000)),c=document.getElementById('bzc');if(c)c.textContent=l;if(l<=0)bpick(null);},250);
+}
+function bpick(b){
+ clearInterval(BZ.tm);var bar=document.getElementById('bzt');var x=list[i],ok=!!b&&b.dataset.c==='1',left=Math.max(0,BZ.T-(Date.now()-BZ.t0)/1000);
+ if(bar){bar.style.transition='none';bar.style.width=(left/BZ.T*100)+'%';}
+ document.querySelectorAll('.opt').forEach(function(o){o.disabled=true;if(o.dataset.c==='1')o.classList.add('ok','pop');});
+ if(ok){good++;BZ.st++;BZ.best=Math.max(BZ.best,BZ.st);var g=100+Math.round(left*5)+(BZ.st>1?20*(BZ.st-1):0);BZ.pts+=g;
+  var f=document.createElement('div');f.className='flt';f.dir='ltr';f.textContent='+'+g;document.body.appendChild(f);setTimeout(function(){f.remove();},1000);
+  document.getElementById('bzp').textContent=BZ.pts;document.getElementById('bzst').innerHTML=BZ.st>1?'<span class="bz-f">🔥 רצף '+BZ.st+'</span>':'';
+  document.getElementById('ex').innerHTML='<div class="fb ok pop">✅ נכון! '+(left>12?'⚡ ובמהירות!':'')+'</div>';
+  setTimeout(bnext,1300);return;}
+ BZ.st=0;wrong.push(x);if(b){b.classList.add('no','shake');}
+ document.getElementById('ex').innerHTML='<div class="exp no"><b class="h">'+(b?'❌ לא נורא! הנה איפה טעינו:':'⏰ נגמר הזמן! הנה הפתרון:')+'</b><div class="qr">🎯 <b>התשובה הנכונה:</b> '+F(x.o[0])+'</div>'+EX(x.e)+'</div><button class="next" onclick="bnext()">'+(i<list.length-1?'לשאלה הבאה ←':'לתוצאות 🏁')+'</button>';
+}
+function bnext(){if(mode!='blitz')return;i++;if(i<list.length)bask();else bend();}
+function bend(){
+ mode='w';var p=good/list.length,s=p>=.9?3:p>=.7?2:p>=.5?1:0;
+ var h='<div class="card" style="text-align:center"><h2>⚡ סיום מבחן הבזק!</h2><div style="font-size:44px;letter-spacing:6px">'+[1,2,3].map(function(k){return '<span class="dp" style="animation-delay:'+(k*.35)+'s;'+(k>s?'filter:grayscale(1);opacity:.35':'')+'">⭐</span>';}).join('')+'</div><div class="score" id="bzf">0</div><div>נקודות</div><div style="font-size:18px;margin:10px 0">'+good+' מתוך '+list.length+' נכונות · 🔥 הרצף הכי ארוך: '+BZ.best+'</div>'+
+ '<div class="fb '+(p>=.7?'ok':'no')+'">'+(p>=.9?'🏆 אלופים! מהירים ומדויקים.':p>=.7?'💪 יפה מאוד! עוד סיבוב ואתם שם.':p>=.5?'👍 בדרך הנכונה – כדאי לעבור על הטעויות למטה.':'📘 כדאי לקרוא את הסיכום ואת הטיפים, ואז לנסות שוב.')+'</div>';
+ if(wrong.length){h+='<button class="next" style="background:#db2777" onclick="start(wrong.slice(),\'w\')">🔁 לתרגל רק את '+wrong.length+' הטעויות (בלי שעון)</button><h3 style="color:#6d28d9;text-align:right">איפה טעיתי:</h3>';
+  wrong.forEach(function(w){h+='<div class="rev" style="text-align:right">📝 '+F(w.q)+(w.d?D.svg[w.d]:'')+'<br>🎯 <b>'+F(w.o[0])+'</b><div class="exp ok" style="margin-top:6px">'+EX(w.e)+'</div></div>';});}
+ app.innerHTML=h+'<button class="next" style="background:#f59e0b" onclick="blitz()">⚡ עוד סיבוב בזק</button><button class="next" onclick="home()">חזרה לתפריט</button></div>';window.scrollTo(0,0);
+ var n=0,el=document.getElementById('bzf'),iv=setInterval(function(){n=Math.min(BZ.pts,n+Math.ceil(BZ.pts/40)+1);if(el)el.textContent=n;if(n>=BZ.pts)clearInterval(iv);},30);
+ if(p>=.7)for(var k=0;k<40;k++){var c=document.createElement('div');c.className='cf';c.style.left=Math.random()*100+'vw';c.style.background=MC[k%4];c.style.animationDelay=Math.random()*.8+'s';document.body.appendChild(c);setTimeout(function(c){return function(){c.remove();};}(c),3400);}
+}
+function end(){
+ var p=Math.round(good/list.length*100),msg=p>=90?'🏆 מצוין! מוכנים למבחן!':p>=75?'💪 טוב מאוד! עוד קצת חיזוק ומגיעים':p>=55?'👍 בדרך הנכונה – כדאי לחזק את הנושאים למטה':'📘 כדאי לקרוא שוב את הסיכום והטיפים, ואז לנסות שוב';
+ var h='<div class="card"><div style="text-align:center;font-size:16px;color:#666">'+(mode=='test'?'הציון שלך במבחן הדמה':'התוצאה שלך')+'</div><div class="score">'+p+'</div><div style="text-align:center;font-size:18px;margin:6px 0 14px">'+good+' מתוך '+list.length+' נכונות<br>'+msg+'</div>';
+ if(mode=='test'){
+  var lv={1:[0,0],2:[0,0],3:[0,0]},tp={},order=[];
+  list.forEach(function(q){var ok=wrong.indexOf(q)<0;lv[q.l][1]++;if(ok)lv[q.l][0]++;if(!tp[q.t]){tp[q.t]=[0,0];order.push(q.t);}tp[q.t][1]++;if(ok)tp[q.t][0]++;});
+  var nm={1:'★ בסיס',2:'★★ הבנה',3:'★★★ חשיבה גבוהה'};
+  h+='<h3 style="color:#6d28d9">📊 לפי רמות חשיבה</h3>';
+  [1,2,3].forEach(function(l){if(!lv[l][1])return;var r=lv[l][0]/lv[l][1];h+='<div class="lvl-row"><span>'+nm[l]+'</span><span class="lvb"><i style="width:'+Math.round(r*100)+'%;background:'+(r>=0.8?'#16a34a':r>=0.5?'#f59e0b':'#dc2626')+'"></i></span><b>'+lv[l][0]+'/'+lv[l][1]+'</b></div>';});
+  var weak=order.filter(function(t){return tp[t][0]<tp[t][1];}),strong=order.filter(function(t){return tp[t][0]==tp[t][1];});
+  h+='<h3 style="color:#6d28d9;margin-top:12px">📝 משוב – מה צריך לדעת</h3>';
+  if(strong.length)h+='<div class="fb ok">✅ <b>יודעים טוב:</b> '+strong.join(' · ')+'</div>';
+  weak.forEach(function(t){h+='<div class="fb no">📘 <b>לחזק: '+t+'</b> ('+tp[t][0]+'/'+tp[t][1]+')<br>💡 '+F((D.know&&D.know[t])||'כדאי לקרוא שוב את הסיכום של הנושא הזה.')+'</div>';});
+  if(!weak.length)h+='<div class="fb ok">🌟 לא היו טעויות – כל הכבוד!</div>';
+  else if(lv[3][1]&&lv[3][0]<lv[3][1]&&lv[1][0]==lv[1][1])h+='<div class="fb">🎯 הבסיס חזק! עכשיו כדאי לתרגל שאלות ★★★ – לקרוא את השאלה לאט ולצייר.</div>';
+  else if(lv[1][0]<lv[1][1])h+='<div class="fb">🎯 כדאי להתחיל מהבסיס: לקרוא את הסיכום, ואז לתרגל את הטעויות.</div>';
+ }
+ if(wrong.length){
+  h+='<button class="next" style="background:#db2777" onclick="start(wrong.slice(),\'w\')">🔁 תרגל שוב רק את '+wrong.length+' הטעויות</button><h3 style="margin-top:14px;color:#6d28d9">איפה טעיתי:</h3>';
+  wrong.forEach(function(w){h+='<div class="rev">📝 '+F(w.q)+(w.d?D.svg[w.d]:'')+'<br>🎯 <b>'+F(w.o[0])+'</b><div class="exp ok" style="margin-top:6px">'+EX(w.e)+'</div></div>';});
+ }
+ if(mode=='test')h+='<button class="next" style="background:#16a34a" onclick="start(mock(),\'test\')">🏁 מבחן דמה חדש (שאלות אחרות)</button>';
+ app.innerHTML=h+'<button class="next" onclick="home()">חזרה לתפריט</button></div>';
+ window.scrollTo(0,0);
+}
+if(/quick/.test(location.hash))setTimeout(blitz,0);
+home();
+if('serviceWorker' in navigator){navigator.serviceWorker.register('../sw.js',{scope:'../'}).catch(()=>{});}
+</script>
+</body>
+</html>
