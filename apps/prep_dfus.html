@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>הדפוס – המצאה ששינתה את העולם – הכנה למבחן</title>
+<link rel="manifest" href="prep_dfus.webmanifest">
+<link rel="apple-touch-icon" href="icon-prep_dfus-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="דפוס">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1e1b4b">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,"Segoe UI",sans-serif;background:linear-gradient(160deg,#1e1b4b,#4c1d95);min-height:100vh;color:#1f2937;padding:14px}
+.wrap{max-width:640px;margin:0 auto}
+h1{color:#fff;text-align:center;font-size:26px;margin:6px 0 2px}
+.sub{color:#ddd6fe;text-align:center;font-size:15px;margin-bottom:14px}
+.card{background:#fff;border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.btn{display:block;width:100%;border:0;border-radius:14px;padding:16px;font-size:18px;font-weight:bold;margin:10px 0;cursor:pointer;color:#fff;text-align:right}
+.b1{background:#7c3aed}.b2{background:#0891b2}.b3{background:#db2777}.b4{background:#16a34a}
+.btn small{display:block;font-weight:normal;font-size:14px;opacity:.9;margin-top:3px}
+.f{direction:ltr;unicode-bidi:isolate;display:inline-block;font-weight:bold;color:#6d28d9;font-family:Arial,sans-serif;white-space:nowrap}
+.f sub{font-size:.7em}
+.top{display:flex;justify-content:space-between;align-items:center;color:#fff;margin-bottom:8px;font-size:15px}
+.back{background:rgba(255,255,255,.2);color:#fff;border:0;border-radius:10px;padding:8px 12px;font-size:15px;cursor:pointer}
+.bar{height:8px;background:rgba(255,255,255,.25);border-radius:6px;overflow:hidden;margin-bottom:12px}
+.bar div{height:100%;background:#facc15;transition:width .3s}
+.tag{display:inline-block;background:#ede9fe;color:#6d28d9;border-radius:8px;padding:3px 9px;font-size:13px;margin-bottom:8px}
+.lvl{float:left;font-size:13px;color:#b45309}
+.q{font-size:20px;font-weight:bold;line-height:1.5;margin-bottom:14px}
+.opt{display:block;width:100%;text-align:right;background:#f5f3ff;border:2px solid #ddd6fe;border-radius:12px;padding:13px;font-size:17px;margin:8px 0;cursor:pointer;color:#1f2937}
+.opt.ok{background:#dcfce7;border-color:#16a34a}
+.opt.no{background:#fee2e2;border-color:#dc2626}
+.exp{border-radius:12px;padding:14px;margin-top:12px;font-size:16px;line-height:1.65}
+.exp.ok{background:#f0fdf4;border-right:6px solid #16a34a}
+.exp.no{background:#fef2f2;border-right:6px solid #dc2626}
+.exp b.h{display:block;font-size:17px;margin-bottom:4px}
+.next{background:#7c3aed;color:#fff;border:0;border-radius:12px;padding:14px;font-size:18px;font-weight:bold;width:100%;margin-top:12px;cursor:pointer}
+.sum h3{color:#6d28d9;font-size:19px;margin-bottom:6px}
+.sum p{font-size:16px;line-height:1.65;margin-bottom:6px}
+.tip{background:#fef9c3;border-radius:10px;padding:9px 11px;font-size:15px;margin-top:6px}
+table{width:100%;border-collapse:collapse;font-size:16px}
+td,th{border:1px solid #ddd6fe;padding:7px;text-align:center}
+th{background:#ede9fe}
+.flash{text-align:center;padding:30px 10px}
+.flash .big{font-size:56px;font-weight:bold;color:#6d28d9;direction:ltr}
+.flash .heb{font-size:32px;font-weight:bold}
+.pt{display:grid;grid-template-columns:repeat(18,1fr);gap:2px;direction:ltr;margin:8px 0}
+.pt div{height:16px;border-radius:2px}
+.m{background:#93c5fd}.n{background:#fca5a5}.g{background:#fde68a}
+.score{font-size:46px;font-weight:bold;text-align:center;color:#6d28d9}
+.foot{color:#c4b5fd;text-align:center;font-size:13px;margin-top:10px}
+.rev{border-bottom:1px solid #eee;padding:10px 0;font-size:15px;line-height:1.6}
+.f sup{font-size:.7em}
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 3px;font-size:.9em}
+.fr span:first-child{border-bottom:2px solid currentColor;padding:0 3px}
+.flash .ans{font-size:24px;font-weight:bold;color:#6d28d9;line-height:1.5}
+.flash .heb{font-size:22px;line-height:1.5}
+svg{display:block;max-width:100%;margin:6px auto}
+.qr{background:#fff;border:2px dashed #c4b5fd;border-radius:10px;padding:9px;margin:6px 0 10px;font-size:15px}
+.exp{font-size:17px;line-height:1.8}
+.stg{display:grid;grid-template-columns:auto auto auto auto;justify-content:start;column-gap:6px;row-gap:2px;align-items:center;margin:2px 0}.stg .sl{white-space:nowrap}.stg .sw{grid-column:1/-1}.stg .sb{text-align:left}.stg .sa{text-align:right}.stg .se{font-weight:bold;color:#6d28d9;text-align:center}
+
+.k{display:inline-block;background:#374151;color:#fff;border-radius:6px;padding:1px 7px;margin:2px 1px;font-size:.9em;box-shadow:0 2px 0 #111;font-weight:bold}
+.calc{background:#ecfeff;border-right:5px solid #0891b2;border-radius:10px;padding:8px 10px;margin-top:10px;line-height:2}
+.lvl-row{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:15px}.lvl-row span:first-child{width:120px}.lvb{flex:1;height:12px;background:#eee;border-radius:6px;overflow:hidden}.lvb i{display:block;height:100%}
+.fb{background:#f5f3ff;border-radius:10px;padding:10px;margin:8px 0;font-size:16px;line-height:1.7}.fb.ok{background:#f0fdf4}.fb.no{background:#fff7ed;border-right:5px solid #f59e0b}
+.mg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+.gc{background:#fff;border:3px solid #e5e7eb;border-radius:12px;padding:4px;text-align:center;cursor:pointer;font-size:14px;position:relative}
+.gc.sel{border-color:#f59e0b;box-shadow:0 0 0 4px #fde68a}
+.gc .bd{position:absolute;top:4px;right:6px;color:#fff;border-radius:50%;width:24px;height:24px;line-height:24px;font-weight:bold;font-size:14px}
+.mc{background:#f5f3ff;border:2px solid #ddd6fe;border-radius:12px;padding:10px 6px;font-size:15px;line-height:1.7;cursor:pointer;color:#1f2937;text-align:center}
+.mc.dn{color:#fff;cursor:default}.mc.dn .f,.mc.dn b{color:#fff!important}
+.bz-t{height:12px;background:#e5e7eb;border-radius:8px;overflow:hidden;margin:6px 0 10px}.bz-t i{display:block;height:100%;background:linear-gradient(90deg,#16a34a,#f59e0b,#dc2626);width:100%}
+.bz-h{display:flex;justify-content:space-between;align-items:center;font-weight:bold;font-size:17px;color:#fff;margin:4px 0}
+.bz-s{font-size:26px;color:#facc15}.bz-f{animation:pu .5s ease-in-out 2 alternate;display:inline-block}
+.pop{animation:pop .45s cubic-bezier(.3,1.8,.5,1)}@keyframes pop{0%{transform:scale(.8)}100%{transform:scale(1)}}
+.flt{position:fixed;left:50%;top:40%;font-size:34px;font-weight:bold;color:#16a34a;pointer-events:none;animation:flt 1s ease forwards;z-index:9}@keyframes flt{from{opacity:1;transform:translate(-50%,0)}to{opacity:0;transform:translate(-50%,-90px)}}
+.cf{position:fixed;top:-20px;width:10px;height:14px;z-index:9;pointer-events:none;animation:cf 2.4s linear forwards}@keyframes cf{to{transform:translateY(110vh) rotate(720deg)}}
+.qin{animation:dp .5s cubic-bezier(.3,1.6,.6,1)}
+.shake{animation:shk .4s}@keyframes shk{25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+.ap{opacity:0;animation:fi .6s ease forwards}@keyframes fi{to{opacity:1}}
+.dp{opacity:0;animation:dp .7s cubic-bezier(.3,1.6,.6,1) forwards}@keyframes dp{from{opacity:0;transform:translateY(-40px)}to{opacity:1;transform:none}}
+.dr{stroke-dasharray:1;stroke-dashoffset:1;animation:dr 2s ease forwards}@keyframes dr{to{stroke-dashoffset:0}}
+.pu{transform-box:fill-box;transform-origin:center;animation:pu .7s ease-in-out 4 alternate}@keyframes pu{to{transform:scale(1.7)}}
+.mv{animation:mv 1.1s ease-in-out forwards}@keyframes mv{to{transform:translate(var(--dx),var(--dy))}}
+.anim p{margin-bottom:6px}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<div class="foot">ערכה: רוני מודן · שחקים</div>
+<script>
+var D={title:"דפוס – המצאה ששינתה את העולם",icon:"📜",flashSub:"מושג ← הסבר · שנה ← אירוע · אדם ← מה עשה"};
+D.svg={
+time:'<svg viewBox="0 0 320 170" width="300"><line x1="12" y1="85" x2="308" y2="85" stroke="#475569" stroke-width="3"/>'+
+[[298,"105","נייר בסין",0,"#64748b"],[250,"1455","תנ״ך גוטנברג",1,"#7c3aed"],[208,"1468","מות גוטנברג",0,"#7c3aed"],[164,"1517","95 התזות",1,"#dc2626"],[120,"1543","קופרניקוס",0,"#0891b2"],[76,"1546","מות לותר",1,"#dc2626"],[28,"1687","ניוטון",0,"#0891b2"]].map(function(p){var up=p[3]==1,y1=up?50:120;return '<circle cx="'+p[0]+'" cy="85" r="7" fill="'+p[4]+'"/><line x1="'+p[0]+'" y1="85" x2="'+p[0]+'" y2="'+(up?62:108)+'" stroke="'+p[4]+'" stroke-width="2"/><text x="'+p[0]+'" y="'+(up?y1:y1+6)+'" font-size="14" font-weight="bold" fill="'+p[4]+'" text-anchor="middle">'+p[1]+'</text><text x="'+p[0]+'" y="'+(up?y1-18:y1+24)+'" font-size="11" fill="#334155" text-anchor="middle">'+p[2]+'</text>';}).join('')+'</svg>',
+three:'<svg viewBox="0 0 300 120" width="290"><rect x="204" y="10" width="88" height="100" rx="12" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/><text x="248" y="52" font-size="30" text-anchor="middle">🔠</text><text x="248" y="80" font-size="12" font-weight="bold" fill="#5b21b6" text-anchor="middle">אותיות נפרדות</text><text x="248" y="97" font-size="11" fill="#5b21b6" text-anchor="middle">ממתכת</text><rect x="106" y="10" width="88" height="100" rx="12" fill="#fef3c7" stroke="#d97706" stroke-width="2"/><text x="150" y="52" font-size="30" text-anchor="middle">🍇</text><text x="150" y="80" font-size="12" font-weight="bold" fill="#92400e" text-anchor="middle">מכבש</text><text x="150" y="97" font-size="11" fill="#92400e" text-anchor="middle">(כמו של ענבים)</text><rect x="8" y="10" width="88" height="100" rx="12" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/><text x="52" y="52" font-size="30" text-anchor="middle">🖋️</text><text x="52" y="80" font-size="12" font-weight="bold" fill="#166534" text-anchor="middle">דיו על בסיס</text><text x="52" y="97" font-size="11" fill="#166534" text-anchor="middle">שמן</text></svg>',
+books:'<svg viewBox="0 0 300 150" width="290"><text x="150" y="16" font-size="12" fill="#334155" text-anchor="middle">מספר הספרים באירופה</text>'+
+[[270,"המאה ה-15","12 מיליון",4],[195,"מאה שנה אחר כך","200 מיליון",22],[120,"המאה ה-17","חצי מיליארד",55],[45,"המאה ה-18","מיליארד",105]].map(function(b){return '<rect x="'+(b[0]-22)+'" y="'+(128-b[3])+'" width="44" height="'+b[3]+'" rx="4" fill="#7c3aed"/><text x="'+b[0]+'" y="'+(122-b[3])+'" font-size="11" font-weight="bold" fill="#5b21b6" text-anchor="middle">'+b[2]+'</text><text x="'+b[0]+'" y="144" font-size="10" fill="#334155" text-anchor="middle">'+b[1]+'</text>';}).join('')+'</svg>'
+};
+D.summary=[
+["📚 למה זה חשוב?","<p>היום ספר הוא דבר רגיל, אבל <b>עד אמצע המאה ה-15</b> לא היו ספרים כמו שאנחנו מכירים: עותקים זהים שמיוצרים בסדרה. כל ספר נכתב <b>ביד</b>, ורוב האנשים לא ידעו קרוא וכתוב.</p><p>מה ששינה את זה הוא <b>מכבש הדפוס</b> של <b>יוהן גוטנברג</b>.</p>"+D.svg.time],
+["✍️ לפני הדפוס","<p><b>פפירוס</b> – הגיע ממצרים, היה רגיש ללחות ולא השתמר טוב באירופה. אחרי נפילת הקיסרות הרומית המערבית האספקה נפסקה.</p><p><b>קלף</b> – עור מעובד שהחליף את הפפירוס. יקר וקשה להשגה.</p><p><b>נייר</b> – הומצא בסין בידי <b>צאי לון</b> (בערך שנת 105). הגיע לאירופה <b>דרך העולם המוסלמי</b>. זול בהרבה מהקלף.</p><p><b>העתקה ביד</b> – נזירים העתיקו ספרים. זה היה איטי, ובכל עותק היו שגיאות, פרשנות אישית וצנזורה דתית.</p><p><b>הדפוס הסיני</b> – הדפסה מגלופות עץ. לא התאים להדפסה מהירה, למשל של עיתון יומי.</p><div class='tip'>💡 שתי בעיות לפני גוטנברג: חומר כתיבה יקר (קלף) והעתקה איטית ביד.</div>"],
+["🔠 ההמצאה של גוטנברג","<p><b>יוהן גוטנברג</b> – צורף וחרט מהעיר <b>מיינץ</b> שבגרמניה.</p>"+D.svg.three+"<p>1️⃣ <b>אותיות נפרדות ממתכת</b> – מסגסוגת (תערובת מתכות) של עופרת, אנטימון ובדיל. אלה היו <b>הגופנים הראשונים</b> בהיסטוריה.</p><p>2️⃣ <b>מכבש</b> – לקח את הרעיון של מכבש הענבים, כדי ללחוץ על הדף בכוח אחיד.</p><p>3️⃣ <b>דיו על בסיס שמן</b> – נדבק לנייר ולא דוהה (הדיו המימי נמרח).</p><p>📖 <b>תנ״ך גוטנברג (1455)</b> – כ-<b>180 עותקים</b> בלטינית. העתקה ביד של עותק אחד לקחה יותר משנה!</p><p>😢 <b>הסוף שלו:</b> המשקיע <b>יוהן פוסט</b> תבע את הכסף שלו וניצח. גוטנברג פשט את הרגל, חי בחסות הארכיבישוף <b>אדולף פון נסאו</b> ומת ב-<b>1468</b>.</p>"],
+["⛪ הרפורמציה","<p>במאות ה-14 וה-15 נחלש כוחה של <b>הכנסייה הקתולית</b> (בין השאר בגלל המגפה השחורה, צמיחת הבורגנות וחיזוק המלכים).</p><p>📌 <b>31 באוקטובר 1517</b> – <b>מרטין לותר</b> פרסם את <b>95 התזות</b> נגד מכירת <b>כתבי מחילה</b>. בזכות הדפוס הן הופצו בכל גרמניה.</p><p>🗣️ לותר כתב ב<b>גרמנית</b> (שפת העם) ולא בלטינית, ו<b>תרגם את התנ״ך לגרמנית</b>.</p><p>✂️ לותר מת ב-1546, והפיצול בנצרות באירופה כבר היה עובדה.</p><div class='tip'>💡 הדפוס = ״רמקול״: רעיון של אדם אחד הגיע מהר להמון אנשים.</div>"],
+["📖 קרוא וכתוב (אוריינות)","<p><b>אוריינות</b> = ידיעת קרוא וכתוב.</p><p>ברומא העתיקה האוריינות הייתה גבוהה יחסית, ובימי הביניים היא ירדה.</p><p>הרפורמציה דרשה מכל נוצרי <b>לקרוא את התנ״ך בעצמו</b> ← נפתחו בתי ספר והיו יותר תרגומים. האוריינות התפשטה מהר יותר בארצות <b>הפרוטסטנטיות</b>. ב<b>סקנדינביה</b> כמעט כולם ידעו לקרוא כבר במאה ה-17.</p><p>📊 בשנת <b>1820</b> רק <b>12%</b> מאנשי העולם ידעו קרוא וכתוב. בשנת <b>2016</b> כמעט <b>1 מכל 7</b> אנשים עדיין לא ידע.</p><div class='tip'>⚠️ חשוב: הדפוס <b>לבדו</b> לא הספיק! היו צריכים גם מערכות חינוך, את המהפכה התעשייתית ואת העיתונות.</div>"],
+["🎓 השכלה ומדע","<p>"+D.svg.books+"</p><p>💰 <b>מחירים:</b> תנ״ך בכתב יד עלה כמו <b>6 שנות עבודה</b> של פועל. ב-1687 הספר של <b>אייזק ניוטון</b> עלה <b>6 שילינגים</b> בלבד – מחיר שהמעמד הבינוני הגבוה יכול לשלם.</p><p>🏛️ יותר ספרים ← נפתחו <b>אוניברסיטאות</b> חדשות.</p><p>🔄 <b>שימור מול חדשנות:</b> פעם שמרו בקנאות על ספרים נדירים והעריצו את הישן. כשהספר נעשה זמין, נפתחה הדרך לחדשנות של <b>הרנסנס</b>.</p><p>🔭 <b>1543 – קופרניקוס</b> פרסם ספר שסתר את <b>המודל הגיאוצנטרי</b> (״כדור הארץ במרכז״). בלי הדפוס הרעיון היה נשאר בכתב יד במנזר ומתפשט לאט.</p>"],
+["🌍 רעיונות חדשים","<p>🏳️ <b>לאומיות:</b> ספרים הודפסו ב<b>שפות מקומיות</b> ולא רק בלטינית וביוונית ← חיזוק של זהויות לאומיות ← צמיחת <b>מדינות לאום</b> במאה ה-19.</p><p>🗳️ <b>פוליטיקה:</b> הדפוס קשור ל<b>דמוקרטיה</b> ול<b>עיתונות חופשית</b>, להפצת <b>המניפסט הקומוניסטי</b> של קרל מרקס, וגם למלך המוחלט בצרפת, שהפיץ בעזרתו את הצווים שלו.</p><div class='tip'>💡 המסקנה של המאמר: אי אפשר לייחס לדפוס <b>לבדו</b> את כל השינויים, אבל קשה לדמיין את העולם שלנו בלעדיו.</div>"]
+];
+D.tips=[
+["✍️ לפני הדפוס",["פפירוס ← <b>פ</b>חד מ<b>ל</b>חות (הורס אותו).","קלף = <b>ק</b>שה להשיג ו<b>י</b>קר.","נייר = <b>נ</b>ולד בסין, הגיע דרך העולם המוסלמי, זול.","⚠️ מלכודת: הנייר <b>לא</b> הומצא באירופה."]],
+["🔠 3 ההמצאות של גוטנברג",["תזכרו <b>א-מ-ד</b>: <b>א</b>ותיות ממתכת · <b>מ</b>כבש · <b>ד</b>יו שמן.","המכבש = רעיון שהוא <b>לקח</b> ממכבש הענבים, לא המציא מאפס.","סגסוגת = <b>תערובת מתכות</b>: עופרת, אנטימון, בדיל.","⚠️ הדפוס הסיני היה מגלופות <b>עץ</b>. גוטנברג = אותיות נפרדות ממתכת."]],
+["📅 השנים החשובות",["<b>1455</b> – תנ״ך גוטנברג (180 עותקים).","<b>1517</b> – 95 התזות של לותר. טריק: 1517 → ״לותר יצא ב-17״.","<b>1543</b> – קופרניקוס.","<b>1687</b> – ניוטון: ספר ב-6 שילינגים.","סדר: גוטנברג ← לותר ← קופרניקוס ← ניוטון (ג-ל-ק-נ)."]],
+["⛪ הרפורמציה",["לותר נלחם ב<b>כתבי המחילה</b>.","לותר עבר מלטינית ל<b>גרמנית</b> = שפת העם.","הדפוס = ״רמקול״ של הרעיונות שלו.","⚠️ מלכודת: לותר <b>לא</b> המציא את הדפוס – הוא השתמש בו."]],
+["📖 אוריינות",["אוריינות = <b>קרוא וכתוב</b>.","פרוטסטנטים קראו תנ״ך בעצמם ← יותר בתי ספר ← יותר קוראים.","סקנדינביה = האלופה (כמעט כולם קראו במאה ה-17).","1820 ← רק 12%. 2016 ← 1 מכל 7 עדיין לא יודע.","⚠️ הדפוס <b>לא לבד</b>: חינוך + מהפכה תעשייתית + עיתונות."]],
+["🎓 השכלה ומדע",["ספרים: 12 מיליון ← 200 מיליון ← חצי מיליארד ← מיליארד.","תנ״ך בכתב יד = 6 שנות עבודה. ניוטון = 6 שילינגים. (שתי שישיות!)","גיאוצנטרי = <b>גיאו</b> (אדמה) ב<b>מרכז</b>. קופרניקוס התנגד.","ספר זמין ← פחות ״לשמור על הישן״ ← יותר חדשנות (רנסנס)."]],
+["🌍 רעיונות חדשים",["שפה מקומית ← זהות לאומית ← מדינות לאום (המאה ה-19).","הדפוס עזר לכולם: לדמוקרטיה, למרקס וגם למלך המוחלט בצרפת.","⚠️ הדפוס הוא כלי – הוא מפיץ כל רעיון, טוב או רע."]]
+];
+D.flash=[["מכבש הדפוס","מכונה שלוחצת דף על אותיות עם דיו ומדפיסה עותקים זהים"],["יוהן גוטנברג","צורף מהעיר מיינץ שהמציא את הדפוס באותיות נפרדות ממתכת"],["מיינץ","העיר של גוטנברג (בגרמניה)"],["אותיות נפרדות ממתכת","אות לכל סימן, שאפשר לסדר מחדש לכל דף – הגופנים הראשונים"],["סגסוגת","תערובת של מתכות. אצל גוטנברג: עופרת, אנטימון ובדיל"],["גופן","צורה אחידה של אותיות – גוטנברג יצר את הראשונים"],["דיו על בסיס שמן","נדבק לנייר ולא דוהה (הדיו המימי נמרח)"],["מכבש הענבים","הרעיון שגוטנברג לקח כדי ללחוץ על הדף בכוח אחיד"],["1455","תנ״ך גוטנברג – כ-180 עותקים בלטינית"],["יוהן פוסט","המשקיע שתבע את גוטנברג וניצח – גוטנברג פשט את הרגל"],["1468","גוטנברג מת"],["פפירוס","חומר כתיבה ממצרים, רגיש ללחות"],["קלף","חומר כתיבה מעור – יקר וקשה להשגה"],["צאי לון","הסיני שהמצאת הנייר מיוחסת לו (בערך שנת 105)"],["גלופות עץ","שיטת הדפוס הסינית – לוח עץ חרוט לכל דף"],["מרטין לותר","פרסם את 95 התזות ותרגם את התנ״ך לגרמנית"],["1517","לותר פרסם את 95 התזות"],["כתבי מחילה","מסמכים שהכנסייה מכרה – לותר יצא נגדם"],["הרפורמציה","תנועה שיצאה נגד הכנסייה הקתולית והובילה לפיצול בנצרות"],["אוריינות","ידיעת קרוא וכתוב"],["סקנדינביה","הגיעה כמעט לאוריינות מלאה כבר במאה ה-17"],["12%","אחוז האנשים בעולם שידעו קרוא וכתוב בשנת 1820"],["6 שנות עבודה","המחיר של תנ״ך בכתב יד"],["6 שילינגים","המחיר של הספר של ניוטון ב-1687"],["הרנסנס","תקופה של חדשנות, שהדפוס פתח לה את הדרך"],["1543","קופרניקוס פרסם את ספרו"],["המודל הגיאוצנטרי","הרעיון שכדור הארץ במרכז היקום – קופרניקוס סתר אותו"],["לאומיות","הדפסה בשפות מקומיות חיזקה זהויות לאומיות"],["מדינות לאום","צמחו במאה ה-19, בין השאר בזכות הדפוס"]];
+var R=[
+["לפני הדפוס",1,"איך נוצרו ספרים לפני המצאת הדפוס?",["נכתבו ביד, עותק אחרי עותק","הודפסו במכונה","צולמו","נכתבו במחשב"],"📖 עד אמצע המאה ה-15 כל ספר נכתב <b>ביד</b>.<br>👣 לכן לא היו שני ספרים זהים לגמרי.<br>✅ התשובה: <b>נכתבו ביד</b>."],
+["לפני הדפוס",1,"מי העתיקו ספרים ביד בימי הביניים?",["נזירים","מלכים","חיילים","סוחרים"],"📖 לפי המאמר, <b>נזירים</b> העתיקו את הכתבים ביד.<br>✅ התשובה: <b>נזירים</b>."],
+["לפני הדפוס",1,"איפה הומצא הנייר?",["בסין","בגרמניה","במצרים","ברומא"],"📖 ממציא הנייר מיוחס ל<b>צאי לון</b> מ<b>סין</b>.<br>⚠️ טעות נפוצה: לבלבל עם הפפירוס, שהגיע ממצרים.<br>✅ התשובה: <b>בסין</b>."],
+["לפני הדפוס",1,"מה הבעיה העיקרית של הקלף?",["היה יקר וקשה להשגה","נמס בשמש","היה שקוף","אי אפשר היה לכתוב עליו"],"📖 אחרי שהפפירוס הפסיק להגיע, אירופה עברה לקלף.<br>👣 הקלף היה <b>יקר וקשה להשגה</b>.<br>✅ זו התשובה."],
+["לפני הדפוס",2,"למה הפפירוס לא התאים לאירופה?",["הוא היה רגיש ללחות ולא השתמר טוב","הוא היה כבד מדי","אסור היה להשתמש בו","הוא היה עשוי ממתכת"],"👣 הפפירוס הגיע ממצרים, שם האקלים יבש.<br>👣 באירופה יש יותר לחות, והפפירוס <b>רגיש ללחות</b>.<br>✅ לכן הוא לא השתמר טוב."],
+["לפני הדפוס",2,"איך הגיע הנייר לאירופה?",["דרך העולם המוסלמי","דרך אמריקה","גוטנברג הביא אותו","הרומאים המציאו אותו"],"📖 הנייר הומצא בסין והגיע לאירופה <b>דרך העולם המוסלמי</b>.<br>⚠️ גוטנברג לא הביא את הנייר – הוא השתמש בו."],
+["לפני הדפוס",2,"איזו מהאפשרויות <b>לא</b> הייתה בעיה בהעתקת ספרים ביד?",["העותקים יצאו זהים לגמרי","ההעתקה הייתה איטית","היו שגיאות בעותקים","המעתיקים הכניסו פרשנות משלהם"],"👣 בהעתקה ביד: איטי, שגיאות, פרשנות אישית וצנזורה.<br>👣 בגלל זה העותקים <b>לא</b> יצאו זהים.<br>✅ ״עותקים זהים״ זה בדיוק מה שהדפוס הביא – לכן זו לא בעיה של ההעתקה ביד.<br>⚠️ שימו לב למילה <b>לא</b> בשאלה."],
+["לפני הדפוס",3,"למה הדפוס הסיני מגלופות עץ לא התאים להדפסה של עיתון יומי?",["כי צריך לחרוט לוח עץ חדש לכל דף, וזה לוקח הרבה זמן","כי בסין לא היה נייר","כי העץ לא סופג דיו","כי אסור היה להדפיס בסין"],"👣 גלופת עץ = לוח שחורטים עליו דף <b>שלם</b>.<br>👣 לכל דף חדש צריך לחרוט לוח חדש.<br>👣 עיתון יומי משתנה כל יום – אין זמן לזה.<br>✅ אצל גוטנברג האותיות נפרדות, ואפשר לסדר אותן מחדש מהר.<br>ℹ️ ההסבר על החריטה מרחיב מעט את מה שכתוב במאמר."],
+["לפני הדפוס",3,"נזיר העתיק ספר ושינה בו משפט שלא התאים לדעות הכנסייה. איך קוראים לזה במאמר?",["צנזורה דתית","אוריינות","רפורמציה","סגסוגת"],"👣 צנזורה = מחיקה או שינוי של מה שלא מתאים לשלטון או לדת.<br>👣 המאמר מונה צנזורה דתית בין הבעיות של ההעתקה ביד.<br>✅ התשובה: <b>צנזורה דתית</b>."],
+
+["גוטנברג וההמצאה",1,"מי המציא את מכבש הדפוס באותיות נפרדות ממתכת?",["יוהן גוטנברג","מרטין לותר","אייזק ניוטון","ניקולאוס קופרניקוס"],"✅ <b>יוהן גוטנברג</b> ממיינץ.<br>⚠️ לותר, קופרניקוס וניוטון <b>השתמשו</b> בדפוס כדי להפיץ את הרעיונות שלהם."],
+["גוטנברג וההמצאה",1,"מאיזו עיר היה גוטנברג?",["מיינץ","רומא","פריז","לונדון"],"📖 גוטנברג היה צורף וחרט מ<b>מיינץ</b> (בגרמניה).<br>✅ התשובה: <b>מיינץ</b>."],
+["גוטנברג וההמצאה",1,"איזה ספר הדפיס גוטנברג ב-1455?",["התנ״ך","ספר של ניוטון","95 התזות","עיתון יומי"],"📖 ב-1455 גוטנברג סיים להדפיס כ-180 עותקים של <b>התנ״ך</b> בלטינית.<br>⚠️ 95 התזות של לותר הן מ-1517."],
+["גוטנברג וההמצאה",1,"ממה היו עשויות האותיות של גוטנברג?",["ממתכת","מעץ","מאבן","מנייר"],"📖 גוטנברג יצר <b>אותיות נפרדות ממתכת</b>.<br>⚠️ גלופות עץ – זו השיטה הסינית."],
+["גוטנברג וההמצאה",2,"מה היו 3 ההמצאות החשובות של גוטנברג?",["אותיות נפרדות ממתכת, מכבש ודיו על בסיס שמן","נייר, קלף ופפירוס","מחשב, מדפסת ומסך","גלופות עץ, דיו מימי ונוצה"],"💡 טריק <b>א-מ-ד</b>:<br>🔠 <b>א</b>ותיות ממתכת<br>🍇 <b>מ</b>כבש<br>🖋️ <b>ד</b>יו על בסיס שמן<br>✅ זו התשובה."],
+["גוטנברג וההמצאה",2,"למה גוטנברג פיתח דיו על בסיס שמן?",["כי הדיו המימי נמרח, והדיו השמני נדבק לנייר ולא דוהה","כי שמן זול יותר ממים","כי הכנסייה דרשה","כי השמן מריח טוב"],"👣 הדיו המימי של התקופה <b>נמרח</b> בהדפסה.<br>👣 הדיו על בסיס שמן <b>נדבק</b> לנייר ו<b>לא דוהה</b>.<br>✅ זו התשובה."],
+["גוטנברג וההמצאה",2,"מאיפה לקח גוטנברג את הרעיון למכבש?",["ממכבש הענבים","מטחנת קמח","מספינה","מהדפוס הסיני"],"📖 גוטנברג אימץ את <b>מכבש הענבים</b> כדי ללחוץ על הדף בכוח אחיד.<br>💡 🍇 → 📄"],
+["גוטנברג וההמצאה",2,"מה היה הגורל של גוטנברג?",["פשט את הרגל אחרי שהמשקיע תבע אותו","נעשה מלך","התעשר מאוד","נשלח לכלא בגלל לותר"],"👣 המשקיע <b>יוהן פוסט</b> תבע את הכסף שלו וניצח.<br>👣 גוטנברג <b>פשט את הרגל</b>, חי בחסות ארכיבישוף ומת ב-1468.<br>✅ הממציא לא התעשר מההמצאה."],
+["גוטנברג וההמצאה",2,"מה זו סגסוגת?",["תערובת של מתכות","סוג של נייר","ספר קדוש","מכונה ללחיצה"],"👣 גוטנברג ערבב <b>עופרת, אנטימון ובדיל</b>.<br>✅ תערובת של מתכות = <b>סגסוגת</b>."],
+["גוטנברג וההמצאה",3,"מה היתרון הגדול של אותיות <b>נפרדות</b> לעומת לוח עץ שלם?",["אפשר לסדר אותן מחדש לכל דף ולהשתמש בהן שוב ושוב","הן יפות יותר","הן לא צריכות דיו","הן מדפיסות רק בלטינית"],"👣 כל אות היא חלק נפרד.<br>👣 גומרים דף? מפרקים ומסדרים את אותן אותיות לדף הבא.<br>✅ לכן הדפוס נעשה <b>מהיר וזול</b> – לא צריך לחרוט כל דף מחדש."],
+["גוטנברג וההמצאה",3,"העתקה ביד של תנ״ך אחד לקחה יותר משנה. גוטנברג הדפיס כ-180 עותקים. מה אפשר להסיק?",["הדפוס חסך המון זמן ואפשר לייצר הרבה עותקים זהים","הדפוס היה איטי יותר מכתיבה ביד","אף אחד לא רצה לקנות את העותקים","העותקים המודפסים היו מלאים שגיאות"],"👣 ביד: עותק אחד = יותר משנה.<br>👣 180 עותקים ביד = יותר מ-180 שנות עבודה!<br>✅ הדפוס חסך <b>המון זמן</b>, והעותקים יצאו <b>זהים</b>."],
+["גוטנברג וההמצאה",3,"למה המאמר אומר שהאותיות של גוטנברג היו ״הגופנים הראשונים בהיסטוריה״?",["כי בפעם הראשונה כל אות קיבלה צורה קבועה ואחידה שחוזרת בכל עותק","כי הוא המציא את האלף-בית","כי לפניו לא כתבו בכלל","כי הוא הדפיס בשפה חדשה"],"👣 גופן = צורה אחידה של אותיות.<br>👣 ביד – כל מעתיק כתב קצת אחרת.<br>👣 באותיות מתכת – אותה אות בדיוק בכל דף ובכל עותק.<br>✅ זו התשובה.<br>⚠️ האלף-בית היה קיים הרבה לפניו."],
+
+["הרפורמציה",1,"מי פרסם את 95 התזות?",["מרטין לותר","יוהן גוטנברג","קרל מרקס","אייזק ניוטון"],"✅ <b>מרטין לותר</b>, ב-31 באוקטובר 1517.<br>💡 ״לותר יצא ב-17״."],
+["הרפורמציה",1,"באיזו שנה פורסמו 95 התזות?",["1517","1455","1543","1687"],"📅 1455 – גוטנברג · <b>1517 – לותר</b> · 1543 – קופרניקוס · 1687 – ניוטון.<br>✅ התשובה: <b>1517</b>."],
+["הרפורמציה",1,"נגד מה יצא לותר ב-95 התזות?",["נגד מכירת כתבי מחילה","נגד הדפוס","נגד המלך הצרפתי","נגד הנייר"],"📖 לותר יצא נגד <b>מכירת כתבי המחילה</b> על ידי הכנסייה.<br>⚠️ הוא לא היה נגד הדפוס – להפך, הדפוס עזר לו."],
+["הרפורמציה",2,"לאיזו שפה תרגם לותר את התנ״ך?",["גרמנית","לטינית","יוונית","צרפתית"],"👣 עד אז כתבו בעיקר ב<b>לטינית</b> – שפה שרוב העם לא הבין.<br>👣 לותר תרגם ל<b>גרמנית</b>, שפת העם.<br>✅ כך כל אחד יכול היה לקרוא."],
+["הרפורמציה",2,"איך עזר הדפוס ללותר?",["95 התזות הודפסו והופצו מהר בכל גרמניה","הדפוס החזיר את לותר לכנסייה","גוטנברג כתב בשבילו את התזות","הדפוס אסר על הכנסייה למכור כתבי מחילה"],"👣 בלי דפוס – כל עותק ביד, לאט.<br>👣 עם דפוס – אלפי עותקים מהר.<br>✅ הרעיונות של לותר <b>הופצו בכל גרמניה</b>."],
+["הרפורמציה",2,"מה <b>לא</b> מוזכר במאמר כסיבה להיחלשות הכנסייה הקתולית?",["המצאת המחשב","המגפה השחורה","צמיחת הבורגנות","חיזוק המלכים (מלוכה מרכזית)"],"📖 המאמר מזכיר: המגפה השחורה, צמיחת הבורגנות וחיזוק המלוכה המרכזית.<br>✅ <b>המחשב</b> הומצא מאות שנים אחר כך.<br>⚠️ שימו לב למילה <b>לא</b>."],
+["הרפורמציה",3,"למה המעבר של לותר מלטינית לגרמנית היה חשוב במיוחד?",["כי כך גם אנשים פשוטים יכלו לקרוא ולהבין את הטקסטים בעצמם","כי גרמנית קצרה יותר","כי בגרמנית הדיו לא נמרח","כי הכנסייה ביקשה ממנו"],"👣 לטינית = שפת אנשי הדת והמלומדים.<br>👣 גרמנית = השפה של העם.<br>👣 דפוס + שפת העם = הטקסטים הגיעו <b>לכולם</b>.<br>✅ זו התשובה."],
+["הרפורמציה",3,"מה הקשר בין הדפוס לבין הפיצול בנצרות?",["הדפוס עזר להפיץ מהר את הרעיונות של לותר, והם הובילו לפיצול","הדפוס עצמו הוא שגרם לפיצול, בלי קשר לרעיונות","אין שום קשר","גוטנברג הוביל את הפיצול"],"👣 הרעיונות – של <b>לותר</b>.<br>👣 ההפצה המהירה – בזכות <b>הדפוס</b>.<br>✅ הדפוס הוא <b>כלי</b> שעזר לרעיונות להתפשט.<br>⚠️ גוטנברג מת ב-1468, הרבה לפני לותר."],
+
+["אוריינות",1,"מה פירוש המילה ״אוריינות״?",["ידיעת קרוא וכתוב","אהבת ספרים","הדפסת ספרים","לימוד דת"],"✅ <b>אוריינות</b> = ידיעת קרוא וכתוב.<br>👣 מי שלא יודע קרוא וכתוב = אנאלפבית."],
+["אוריינות",1,"באיזה אזור הגיעו כמעט לאוריינות מלאה כבר במאה ה-17?",["סקנדינביה","סין","מצרים","רומא"],"📖 לפי המאמר, ב<b>סקנדינביה</b> כמעט כולם ידעו לקרוא כבר במאה ה-17.<br>✅ זו התשובה."],
+["אוריינות",2,"איזה חלק מאנשי העולם ידעו קרוא וכתוב בשנת 1820?",["12%","50%","90%","100%"],"📊 בשנת 1820 – רק <b>12%</b>.<br>👣 כלומר פחות מ-1 מכל 8 אנשים.<br>✅ התשובה: <b>12%</b>."],
+["אוריינות",2,"למה האוריינות התפשטה מהר יותר בארצות הפרוטסטנטיות?",["הרפורמציה דרשה מכל נוצרי לקרוא את התנ״ך בעצמו, ולכן נפתחו בתי ספר","כי שם המציאו את הנייר","כי שם לא היו כנסיות","כי גוטנברג גר שם"],"👣 הרפורמציה: ״כל אחד יקרא את התנ״ך בעצמו״.<br>👣 כדי לקרוא צריך ללמוד ← <b>בתי ספר</b> ו<b>תרגומים</b>.<br>✅ זו התשובה."],
+["אוריינות",2,"מה קרה לאוריינות בימי הביניים, בהשוואה לרומא העתיקה?",["היא ירדה","היא עלתה מאוד","היא נשארה אותו דבר","כולם ידעו לקרוא"],"📖 ברומא העתיקה האוריינות הייתה גבוהה יחסית.<br>👣 בימי הביניים היא <b>דעכה</b> (ירדה).<br>✅ זו התשובה."],
+["אוריינות",3,"תלמיד אמר: ״הדפוס לבדו גרם לכך שכולם למדו לקרוא״. מה אומר על כך המאמר?",["זה לא נכון – היו צריכים גם מערכות חינוך, את המהפכה התעשייתית ואת העיתונות","זה נכון לגמרי","הדפוס דווקא הוריד את האוריינות","רק העיתונות חשובה, הדפוס לא"],"⚠️ זו מלכודת חשובה!<br>👣 המאמר אומר שהדפוס <b>לא היה תנאי הכרחי ולא בלעדי</b>.<br>👣 היו צריכים גם: מערכות חינוך, המהפכה התעשייתית וצמיחת העיתונות.<br>✅ לכן הטענה <b>לא נכונה</b>."],
+["אוריינות",3,"בשנת 2016 כמעט 1 מכל 7 אנשים לא ידע קרוא וכתוב. מה אפשר להסיק?",["גם מאות שנים אחרי הדפוס, לא כולם יודעים לקרוא – לכן הדפוס לבדו לא מספיק","הדפוס לא הצליח בכלל","היום אף אחד לא קורא","ב-2016 המציאו את הדפוס מחדש"],"👣 הדפוס קיים כבר יותר מ-550 שנה.<br>👣 ובכל זאת – בערך 1 מכל 7 עדיין לא יודע לקרוא.<br>✅ מסקנה: צריך גם <b>חינוך</b>, לא רק ספרים."],
+
+["השכלה ומדע",1,"מה קרה למספר הספרים באירופה אחרי המצאת הדפוס?",["גדל מאוד","ירד","נשאר אותו דבר","כל הספרים נשרפו"],"📊 12 מיליון ← 200 מיליון ← חצי מיליארד ← <b>מיליארד</b>.<br>✅ מספר הספרים <b>גדל מאוד</b>."],
+["השכלה ומדע",1,"איזה מדען פרסם ב-1543 ספר שסתר את המודל הגיאוצנטרי?",["ניקולאוס קופרניקוס","יוהן גוטנברג","מרטין לותר","קרל מרקס"],"✅ <b>קופרניקוס</b>, ב-1543.<br>💡 גיאוצנטרי = כדור הארץ (גיאו) במרכז – וקופרניקוס סתר את זה."],
+["השכלה ומדע",2,"כמה עלה עותק של תנ״ך בכתב יד, לפי המאמר?",["כמו 6 שנות עבודה של פועל","6 שילינגים","מטבע אחד","היה בחינם"],"👣 תנ״ך בכתב יד = <b>6 שנות עבודה</b>.<br>👣 6 שילינגים – זה המחיר של הספר של ניוטון ב-1687.<br>💡 שתי שישיות – אל תתבלבלו!"],
+["השכלה ומדע",2,"מה היה הקשר בין הדפוס לבין פתיחת אוניברסיטאות חדשות?",["היו יותר ספרים זמינים, וזה אפשר לפתוח אוניברסיטאות","גוטנברג בנה אוניברסיטאות","האוניברסיטאות המציאו את הדפוס","הכנסייה סגרה את כל האוניברסיטאות"],"👣 כדי ללמוד באוניברסיטה צריך ספרים.<br>👣 הדפוס = <b>יותר ספרים</b>.<br>✅ לכן אפשר היה לפתוח אוניברסיטאות חדשות."],
+["השכלה ומדע",2,"מה פירוש ״המודל הגיאוצנטרי״?",["הרעיון שכדור הארץ נמצא במרכז היקום","הרעיון שהשמש קטנה מהירח","שיטת הדפסה","מפה של אירופה"],"💡 <b>גיאו</b> = אדמה, כדור הארץ. <b>צנטרי</b> = מרכז.<br>✅ גיאוצנטרי = כדור הארץ במרכז.<br>👣 קופרניקוס פרסם ספר שסתר את הרעיון הזה."],
+["השכלה ומדע",3,"לפי המאמר, מה היה קורה לרעיונות של קופרניקוס בלי הדפוס?",["הם היו מתפשטים הרבה יותר לאט, כי היו נשארים בכתב יד במנזר","הם היו מתפשטים מהר יותר","קופרניקוס היה ממציא את הדפוס","שום דבר לא היה משתנה"],"👣 כתב יד = עותקים מעטים, במנזר.<br>👣 דפוס = הרבה עותקים, לכל מי שרוצה.<br>✅ בלי הדפוס הרעיונות היו מתפשטים <b>הרבה יותר לאט</b>."],
+["השכלה ומדע",3,"איך הדפוס עזר לרוח החדשנות של הרנסנס?",["כשהספר נעשה זמין, פחות פחדו עליו ופחות העריצו רק את הישן, ונפתחה דרך לרעיונות חדשים","הדפוס אסר לקרוא ספרים ישנים","הדפוס הדפיס רק ספרי אומנות","הרנסנס המציא את הדפוס"],"👣 פעם: ספר נדיר ויקר ← שומרים עליו ומעריצים את הקלאסיקות.<br>👣 אחרי הדפוס: ספר זמין ← אפשר לקרוא, לבקר ולחדש.<br>✅ זה פתח את הדרך ל<b>חדשנות של הרנסנס</b>."],
+["השכלה ומדע",3,"ב-1687 הספר של ניוטון עלה 6 שילינגים, מחיר שהמעמד הבינוני הגבוה יכול לשלם. מה זה מלמד?",["הדפוס הוזיל מאוד את הספרים, וידע הגיע לעוד אנשים","ניוטון נתן את הספר שלו בחינם","ספרים נעשו יקרים יותר","רק מלכים יכלו לקנות ספרים"],"👣 פעם: תנ״ך = 6 <b>שנות עבודה</b>.<br>👣 עכשיו: ספר מדע = 6 <b>שילינגים</b>.<br>✅ הדפוס <b>הוזיל</b> מאוד את הספרים, והידע הגיע לעוד אנשים."],
+
+["רעיונות חדשים",1,"לפי המאמר, למה הדפוס חיזק את הלאומיות?",["כי ספרים הודפסו בשפות המקומיות של העמים","כי כל הספרים היו בלטינית","כי המלכים אסרו לקרוא","כי הספרים היו בחינם"],"👣 ספרים בשפה של העם (גרמנית, צרפתית…) ולא רק בלטינית.<br>👣 שפה משותפת ← הרגשה של עם אחד.<br>✅ כך התחזקו <b>הזהויות הלאומיות</b>."],
+["רעיונות חדשים",2,"באיזו מאה צמחו מדינות הלאום, לפי המאמר?",["המאה ה-19","המאה ה-5","המאה ה-13","המאה ה-15"],"📖 הזהויות הלאומיות שהתחזקו תרמו לצמיחת <b>מדינות הלאום</b> במאה ה-19.<br>✅ התשובה: <b>המאה ה-19</b>."],
+["רעיונות חדשים",2,"איך השתמש המלך המוחלט בצרפת בדפוס?",["כדי להפיץ את הצווים שלו","כדי לאסור את הדמוקרטיה","כדי להמציא את הנייר","הוא לא השתמש בו"],"📖 המשטר המוחלט בצרפת נזקק לדפוס כדי <b>להפיץ את צווי המלך</b>.<br>💡 הדפוס עזר גם לשליטים, לא רק למורדים."],
+["רעיונות חדשים",3,"המאמר קושר את הדפוס גם לדמוקרטיה וגם למלך המוחלט בצרפת. מה המסקנה?",["הדפוס הוא כלי שמפיץ כל רעיון – גם רעיונות מנוגדים","הדפוס תמיד עוזר רק לדמוקרטיה","הדפוס תמיד עוזר רק למלכים","המאמר טועה"],"👣 דמוקרטיה ועיתונות חופשית ← בעזרת הדפוס.<br>👣 צווים של מלך מוחלט ← גם בעזרת הדפוס.<br>✅ הדפוס הוא <b>כלי</b>. הוא מפיץ כל רעיון, לא משנה של מי."],
+["רעיונות חדשים",3,"מה המסקנה הכללית של המאמר?",["אי אפשר לייחס לדפוס לבדו את כל השינויים, אבל קשה לדמיין את העולם בלעדיו","הדפוס גרם לבדו לכל השינויים בעולם","לדפוס לא הייתה השפעה","הדפוס היה המצאה מזיקה"],"⚠️ שימו לב לשני החלקים של המסקנה:<br>1️⃣ הדפוס <b>לא לבד</b> – היו עוד גורמים.<br>2️⃣ אבל הוא <b>בסיסי</b> – קשה לתאר את עולמנו בלעדיו.<br>✅ זו התשובה."]
+];
+D.know={"לפני הדפוס":"פפירוס רגיש ללחות, קלף יקר, נייר הומצא בסין והיה זול. נזירים העתיקו ביד: איטי ועם שגיאות.","גוטנברג וההמצאה":"א-מ-ד: אותיות נפרדות ממתכת, מכבש (מכבש הענבים), דיו על בסיס שמן. 1455 – כ-180 תנ״כים. פשט את הרגל ומת ב-1468.","הרפורמציה":"1517 – לותר פרסם את 95 התזות נגד כתבי המחילה. תרגם את התנ״ך לגרמנית. הדפוס הפיץ את רעיונותיו.","אוריינות":"אוריינות = קרוא וכתוב. הרפורמציה ← בתי ספר. הדפוס לבדו לא הספיק: גם חינוך, מהפכה תעשייתית ועיתונות.","השכלה ומדע":"יותר ספרים ומחיר נמוך ← אוניברסיטאות ורנסנס. 1543 – קופרניקוס נגד המודל הגיאוצנטרי.","רעיונות חדשים":"שפות מקומיות ← לאומיות ← מדינות לאום (המאה ה-19). הדפוס עזר גם לדמוקרטיה וגם למלך המוחלט."};
+
+D.Q=R.map(function(r){return {t:r[0],l:r[1],q:r[2],o:r[3],e:r[4],d:r[5]};});
+if(!D.svg)D.svg={};
+
+
+function EX(s){var c='',k=s.indexOf('<div class="calc">');if(k>=0){c=s.slice(k);s=s.slice(0,k);}
+ var L=s.split('<br>'),h='',g=[];
+ function fl(){if(g.length){h+='<div class="stg">'+g.join('')+'</div>';g=[];}}
+ L.forEach(function(l){var m=l.match(/^\s*(\S+)\s*([^\[]*?)\s*\[\[([^\]]+?) = ([^\]]+)\]\]\s*$/);
+  function ln(t){return t.replace(/\{\{(.+?)\|(.+?)\}\}/g,function(_,a,b){return a.length>b.length?a:b;}).replace(/⌈|⌉|\^\d+/g,'').length;}
+  if(m&&m[3].indexOf(' = ')<0&&ln(m[3])+ln(m[4])+(m[2].length>10?0:m[2].length)<=26){
+   var lab=m[1]+' '+m[2];
+   if(m[2].length>10){g.push('<span class="sw">'+F(lab)+'</span>');lab='';}
+   g.push('<span class="sl">'+F(lab)+'</span><span class="sb">'+F('[['+m[4]+']]')+'</span><span class="se">=</span><span class="sa">'+F('[['+m[3]+']]')+'</span>');}
+  else{fl();if(l.trim())h+='<div>'+F(l)+'</div>';}});
+ fl();return h+F(c);}
+function F(s){
+ s=s.replace(/((?:🔵|🔴)[🔵🔴 ]*(?:🔵|🔴))|(🔵|🔴)/gu,function(m){return '<span dir="ltr" style="unicode-bidi:isolate">'+m+'</span>';});
+ return s.replace(/\[\[(.+?)\]\]/g,function(_,x){
+  x=x.replace(/\{\{(.+?)\|(.+?)\}\}/g,'<span class="fr"><span>$1</span><span>$2</span></span>');
+  x=x.replace(/⌈(.+?)⌉/g,'<span class="k">$1</span>');
+  return '<span class="f">'+x.replace(/\^(\d+)/g,'<sup>$1</sup>')+'</span>';});}
+var Q=D.Q,SYM=D.flash,TIPS=D.tips;
+var app=document.getElementById('app'),list=[],i=0,good=0,wrong=[],mode='';
+var MB=[],MI=0,MR=0,MS=null,MD={},MO=[],ME=0,MC=['#16a34a','#0891b2','#db2777','#ea580c'];
+function match(){MB=[];for(var k=0;k<D.match.length;k+=4)MB.push(D.match.slice(k,k+4));MI=0;MR=0;ME=0;mnew();}
+function mnew(){MS=null;MD={};MO=sh(MB[MI].map(function(_,k){return k;}));mdraw('');}
+function mdraw(fb){
+ var set=MB[MI],n=0,h='<div class="top"><button class="back" onclick="home()">→ תפריט</button><span>לוח '+(MI+1)+' / '+MB.length+' · שלב '+(MR+1)+' / 2 · ❌ '+ME+'</span></div>';
+ h+='<div class="card"><div class="q" style="font-size:17px">'+(MR==0?(set[0].q1||'🧩 שלב 1: איזו <b>משוואה</b> מתאימה לכל גרף?'):(set[0].q2||'🧩 שלב 2: באיזה <b>תחום</b> כל גרף חיובי ובאיזה שלילי?'))+'<br><small style="font-weight:normal;color:#6b7280">לוחצים על גרף 👆 ואז על הכרטיס שמתאים לו</small></div><div class="mg">';
+ set.forEach(function(s,k){var d=MD[k];if(d)n++;h+='<div class="gc'+(MS===k?' sel':'')+'" style="'+(d?'border-color:'+MC[k]:'')+'" onclick="msel('+k+')">'+(d?'<span class="bd" style="background:'+MC[k]+'">✓</span>':'')+D.svg[s.g]+(MR==1||d?'<div>'+F(MR==1?s.e:'')+'</div>':'')+'</div>';});
+ h+='</div><div class="mg"'+(MR==1?' style="grid-template-columns:1fr"':'')+'>';
+ MO.forEach(function(k){var s=set[k],d=MD[k];h+='<button class="mc'+(d?' dn':'')+'" id="mc'+k+'" style="'+(d?'background:'+MC[k]+';border-color:'+MC[k]:'')+'" '+(d?'disabled':'onclick="mtry('+k+')"')+'>'+F(MR==0?s.e:s.r)+'</button>';});
+ h+='</div><div id="mfb">'+fb+'</div>';
+ if(n==set.length)h+='<div class="fb ok">🎉 כל הכבוד! כל הזוגות נכונים.</div><button class="next" onclick="mgo()">'+(MR==0?'לשלב 2: התאמת תחומים ←':MI<MB.length-1?'ללוח הבא ←':'לסיכום 🏁')+'</button>';
+ app.innerHTML=h+'</div>';
+}
+function msel(k){if(MD[k])return;MS=k;mdraw('');}
+function mtry(k){
+ if(MS===null){document.getElementById('mfb').innerHTML='<div class="fb">👆 קודם לוחצים על גרף, ואז על הכרטיס.</div>';return;}
+ var s=MB[MI][MS];
+ if(k===MS){MD[k]=1;MS=null;mdraw('');return;}
+ ME++;var b=document.getElementById('mc'+k);b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');
+ document.getElementById('mfb').innerHTML='<div class="fb no">❌ לא מתאים לגרף שבחרת. רמז:<br>💡 '+F(MR==0?s.h1:s.h2)+'</div>';
+ document.querySelector('.top span').innerHTML='לוח '+(MI+1)+' / '+MB.length+' · שלב '+(MR+1)+' / 2 · ❌ '+ME;
+}
+function mgo(){if(MR==0){MR=1;mnew();}else{MR=0;MI++;if(MI<MB.length)mnew();else mend();}window.scrollTo(0,0);}
+function mend(){app.innerHTML='<div class="card" style="text-align:center"><div class="score">🧩</div><h2>סיימת את משחק ההתאמה!</h2><div class="fb '+(ME<3?'ok':'no')+'">'+(ME==0?'🏆 בלי אף טעות – מצוין!':'מספר טעויות: '+ME+(ME<3?' – יפה מאוד!':' – כדאי לשחק שוב ולשים לב לצורה ולאפסים.'))+'</div><button class="next" onclick="match()">🔁 לשחק שוב</button><button class="next" style="background:#16a34a" onclick="home()">→ לתפריט</button></div>';}
+var LI=0,LESS=D.lessons||(D.lesson?[{t:D.lessonTitle,topic:D.lessonTopic,s:D.lesson}]:[]),LS=LESS[0];
+function les(k){LI=k;var L=LS.s[k],q=L[2],op=sh(q[1].map(function(t,j){return {t:t,c:j===0};}));
+ var h='<div class="top"><button class="back" onclick="home()">→ תפריט</button><span>שלב '+(k+1)+' / '+LS.s.length+'</span></div><div class="bar"><div style="width:'+(k/LS.s.length*100)+'%"></div></div>';
+ h+='<div class="card sum anim"><h3>'+F(L[0])+'</h3>'+F(L[1])+(/class=.(ap|dr|dp)/.test(L[1])?'<button class="next" style="background:#0891b2" onclick="les(LI)">🔁 לראות שוב את האנימציה</button>':'')+'</div><div class="card"><span class="tag">🤔 בודקים שהבנו</span><div class="q">'+F(q[0])+'</div>';
+ op.forEach(function(o){h+='<button class="opt" data-c="'+(o.c?1:0)+'" onclick="lpick(this)">'+F(o.t)+'</button>';});
+ app.innerHTML=h+'<div id="ex"></div></div>';window.scrollTo(0,0);}
+function lpick(b){var q=LS.s[LI][2],ok=b.dataset.c==='1';
+ document.querySelectorAll('.opt').forEach(function(o){o.disabled=true;if(o.dataset.c==='1')o.classList.add('ok');});if(!ok)b.classList.add('no');
+ var last=LI==LS.s.length-1;
+ document.getElementById('ex').innerHTML='<div class="exp '+(ok?'ok':'no')+'"><b class="h">'+(ok?'✅ נכון!':'❌ לא נורא – מסתכלים שוב על הציור:')+'</b>'+F(q[2])+'</div>'+
+ (ok?'':'<button class="next" style="background:#f59e0b" onclick="les(LI)">🔁 לנסות שוב את השלב</button>')+
+ '<button class="next" onclick="'+(last?'start(Q.filter(function(x){return x.t==LS.topic;}),\'all\')':'les(LI+1)')+'">'+(last?'🧠 עכשיו לשאלות של הנושא ←':'לשלב הבא ←')+'</button>';}
+function sh(a){a=a.slice();for(var k=a.length-1;k>0;k--){var j=Math.floor(Math.random()*(k+1));var t=a[k];a[k]=a[j];a[j]=t;}return a;}
+function stars(l){return '★'.repeat(l)+'☆'.repeat(3-l);}
+function home(){
+ app.innerHTML='<h1>'+D.icon+' '+D.title+'</h1><div class="sub">כיתה ח׳ · הכנה למבחן – הדפוס</div>'+
+ '<button class="btn b1" onclick="summary()">📘 סיכום מהיר<small>כל החומר בדף אחד – קרא קודם</small></button>'+
+ '<button class="btn" style="background:#ea580c" onclick="tips()">⚡ טיפים לזכירה מהירה<small>טריקים ומלכודות נפוצות</small></button>'+
+ '<button class="btn b2" onclick="flash()">🔤 כרטיסיות<small>'+D.flashSub+'</small></button>'+
+ LESS.map(function(L,n){return '<button class="btn" style="background:'+(L.c||'#be185d')+'" onclick="LS=LESS['+n+'];les(0)">'+L.t+'<small>'+(L.sub||'שלב אחר שלב · ציור + שאלת הבנה בכל שלב')+'</small></button>';}).join('')+
+ (D.match?'<button class="btn" style="background:#ca8a04" onclick="match()">🧩 משחק התאמה<small>'+(D.matchSub||'מתאימים כרטיסים')+'</small></button>':'')+
+'<button class="btn" style="background:linear-gradient(90deg,#f59e0b,#dc2626)" onclick="blitz()">⚡ מבחן בזק מונפש<small>10 שאלות · שעון לכל שאלה · נקודות ורצפים 🔥</small></button>'+
+ '<button class="btn b3" onclick="start(Q,\'all\')">🧠 כל השאלות לפי סדר הנושאים<small>'+Q.length+' שאלות, הסבר מפורט אחרי כל תשובה</small></button>'+
+ '<button class="btn b4" onclick="start(mock(),\'test\')">🏁 מבחן דמה<small>20 שאלות מעורבבות בכל הרמות · ציון ומשוב אישי</small></button>';
+ window.scrollTo(0,0);
+}
+function summary(){
+ var h='<div class="top"><button class="back" onclick="home()">→ חזרה</button><span>סיכום</span></div>';
+ D.summary.forEach(function(c){h+='<div class="card sum"><h3>'+c[0]+'</h3>'+F(c[1])+'</div>';});
+ app.innerHTML=h+'<button class="btn b4" onclick="start(Q,\'all\')">✅ קראתי – לשאלות!</button>';window.scrollTo(0,0);
+}
+function tips(){
+ var h='<div class="top"><button class="back" onclick="home()">→ חזרה</button><span>טיפים לזכירה</span></div>';
+ TIPS.forEach(function(b){h+='<div class="card sum"><h3>'+b[0]+'</h3>';b[1].forEach(function(t){h+='<p>• '+F(t)+'</p>';});h+='</div>';});
+ app.innerHTML=h+'<button class="btn b4" onclick="start(mock(),\'test\')">🏁 עכשיו למבחן דמה!</button>';window.scrollTo(0,0);
+}
+var fl=[],fi=0;
+function flash(){fl=sh(SYM);fi=0;showFlash(false);}
+function showFlash(open){
+ var s=fl[fi];
+ app.innerHTML='<div class="top"><button class="back" onclick="home()">→ חזרה</button><span>'+(fi+1)+' / '+fl.length+'</span></div>'+
+ '<div class="card flash"><div class="heb">'+F(s[0])+'</div><div style="margin:14px 0;color:#888">מה התשובה?</div>'+
+ (open?'<div class="ans">'+F(s[1])+'</div>':'<button class="next" onclick="showFlash(true)">👀 הצג תשובה</button>')+'</div>'+
+ (open?'<button class="next" onclick="'+(fi<fl.length-1?'fi++;showFlash(false)':'home()')+'">'+(fi<fl.length-1?'הבא ←':'סיום ✔')+'</button>':'');
+}
+function start(arr,m){list=arr;mode=m;i=0;good=0;wrong=[];ask();}
+function ask(){
+ var x=list[i],opts=sh(x.o.map(function(t,k){return {t:t,c:k===0};}));
+ var h='<div class="top"><button class="back" onclick="home()">→ תפריט</button><span>שאלה '+(i+1)+' / '+list.length+' · ✅ '+good+'</span></div>'+
+ '<div class="bar"><div style="width:'+(i/list.length*100)+'%"></div></div>'+
+ '<div class="card"><span class="tag">'+x.t+'</span><span class="lvl">'+stars(x.l)+'</span><div class="q">'+F(x.q)+'</div>'+(x.d?D.svg[x.d]:'');
+ opts.forEach(function(o,k){h+='<button class="opt" data-c="'+(o.c?1:0)+'" onclick="pick(this)">'+F(o.t)+'</button>';});
+ app.innerHTML=h+'<div id="ex"></div></div>';
+ window.scrollTo(0,0);
+}
+function pick(b){
+ var all=document.querySelectorAll('.opt'),ok=b.dataset.c==='1',x=list[i];
+ all.forEach(function(o){o.disabled=true;if(o.dataset.c==='1')o.classList.add('ok');});
+ if(ok)good++;else{b.classList.add('no');wrong.push(x);}
+ document.getElementById('ex').innerHTML='<div class="exp '+(ok?'ok':'no')+'"><b class="h">'+(ok?'✅ נכון! בואו נבין למה:':'❌ לא נורא! בואו נפתור ביחד:')+'</b><div class="qr">📝 <b>התרגיל:</b> '+F(x.q)+'<br>🎯 <b>התשובה הנכונה:</b> '+F(x.o[0])+'</div><b>👣 הפתרון צעד אחר צעד:</b>'+EX(x.e)+'</div>'+
+ '<button class="next" onclick="nxt()">'+(i<list.length-1?'לשאלה הבאה ←':'לתוצאות 🏁')+'</button>';
+}
+function nxt(){i++;if(i<list.length)ask();else end();}
+function mock(){
+ var want={1:6,2:8,3:6},out=[];
+ [1,2,3].forEach(function(l){
+  var pool=sh(Q.filter(function(q){return q.l==l;})),by={},keys=[];
+  pool.forEach(function(q){if(!by[q.t]){by[q.t]=[];keys.push(q.t);}by[q.t].push(q);});
+  keys=sh(keys);var k=0,n=0;
+  while(n<want[l]&&pool.length>n){var t=keys[k%keys.length];if(by[t].length){out.push(by[t].shift());n++;}k++;if(k>500)break;}
+ });
+ while(out.length<20&&out.length<Q.length){var r=Q[Math.floor(Math.random()*Q.length)];if(out.indexOf(r)<0)out.push(r);}
+ return sh(out);
+}
+
+var BZ={n:0,pts:0,st:0,best:0,tm:null,t0:0,T:20};
+function blitz(){
+ var out=[],used={};[[1,5],[2,4],[3,1]].forEach(function(p){sh(Q.filter(function(q){return q.l==p[0];})).forEach(function(q){if(p[1]>0&&!used[q.t+p[0]]){out.push(q);used[q.t+p[0]]=1;p[1]--;}});
+  sh(Q.filter(function(q){return q.l==p[0]&&out.indexOf(q)<0;})).slice(0,p[1]).forEach(function(q){out.push(q);});});
+ list=out.slice(0,10);mode='blitz';i=0;good=0;wrong=[];BZ.pts=0;BZ.st=0;BZ.best=0;
+ app.innerHTML='<div class="card" style="text-align:center"><h2>⚡ מבחן בזק</h2><p>10 שאלות · 20 שניות לכל שאלה<br>תשובה מהירה = יותר נקודות · רצף נכון = 🔥 בונוס</p><div class="score" id="cd">3</div></div>';
+ var c=3,iv=setInterval(function(){c--;var d=document.getElementById('cd');if(!d){clearInterval(iv);return;}if(c>0){d.textContent=c;d.className='score pop';}else{clearInterval(iv);bask();}},800);
+}
+function bhead(){return '<div class="top"><button class="back" onclick="clearInterval(BZ.tm);home()">→ תפריט</button><span>שאלה '+(i+1)+' / '+list.length+'</span></div><div class="bz-h"><span>⭐ <span class="bz-s" id="bzp">'+BZ.pts+'</span></span><span id="bzst">'+(BZ.st>1?'<span class="bz-f">🔥 רצף '+BZ.st+'</span>':'')+'</span><span>⏱️ <b id="bzc">'+BZ.T+'</b></span></div><div class="bz-t"><i id="bzt"></i></div>';}
+function bask(){
+ var x=list[i],opts=sh(x.o.map(function(t,k){return {t:t,c:k===0};}));
+ var h=bhead()+'<div class="card qin"><span class="tag">'+x.t+'</span><span class="lvl">'+stars(x.l)+'</span><div class="q">'+F(x.q)+'</div>'+(x.d?D.svg[x.d]:'');
+ opts.forEach(function(o){h+='<button class="opt" data-c="'+(o.c?1:0)+'" onclick="bpick(this)">'+F(o.t)+'</button>';});
+ app.innerHTML=h+'<div id="ex"></div></div>';window.scrollTo(0,0);
+ BZ.t0=Date.now();var bar=document.getElementById('bzt');bar.style.transition='width '+BZ.T+'s linear';requestAnimationFrame(function(){requestAnimationFrame(function(){bar.style.width='0%';});});
+ clearInterval(BZ.tm);BZ.tm=setInterval(function(){var l=Math.max(0,BZ.T-Math.floor((Date.now()-BZ.t0)/1000)),c=document.getElementById('bzc');if(c)c.textContent=l;if(l<=0)bpick(null);},250);
+}
+function bpick(b){
+ clearInterval(BZ.tm);var bar=document.getElementById('bzt');var x=list[i],ok=!!b&&b.dataset.c==='1',left=Math.max(0,BZ.T-(Date.now()-BZ.t0)/1000);
+ if(bar){bar.style.transition='none';bar.style.width=(left/BZ.T*100)+'%';}
+ document.querySelectorAll('.opt').forEach(function(o){o.disabled=true;if(o.dataset.c==='1')o.classList.add('ok','pop');});
+ if(ok){good++;BZ.st++;BZ.best=Math.max(BZ.best,BZ.st);var g=100+Math.round(left*5)+(BZ.st>1?20*(BZ.st-1):0);BZ.pts+=g;
+  var f=document.createElement('div');f.className='flt';f.dir='ltr';f.textContent='+'+g;document.body.appendChild(f);setTimeout(function(){f.remove();},1000);
+  document.getElementById('bzp').textContent=BZ.pts;document.getElementById('bzst').innerHTML=BZ.st>1?'<span class="bz-f">🔥 רצף '+BZ.st+'</span>':'';
+  document.getElementById('ex').innerHTML='<div class="fb ok pop">✅ נכון! '+(left>12?'⚡ ובמהירות!':'')+'</div>';
+  setTimeout(bnext,1300);return;}
+ BZ.st=0;wrong.push(x);if(b){b.classList.add('no','shake');}
+ document.getElementById('ex').innerHTML='<div class="exp no"><b class="h">'+(b?'❌ לא נורא! הנה איפה טעינו:':'⏰ נגמר הזמן! הנה הפתרון:')+'</b><div class="qr">🎯 <b>התשובה הנכונה:</b> '+F(x.o[0])+'</div>'+EX(x.e)+'</div><button class="next" onclick="bnext()">'+(i<list.length-1?'לשאלה הבאה ←':'לתוצאות 🏁')+'</button>';
+}
+function bnext(){if(mode!='blitz')return;i++;if(i<list.length)bask();else bend();}
+function bend(){
+ mode='w';var p=good/list.length,s=p>=.9?3:p>=.7?2:p>=.5?1:0;
+ var h='<div class="card" style="text-align:center"><h2>⚡ סיום מבחן הבזק!</h2><div style="font-size:44px;letter-spacing:6px">'+[1,2,3].map(function(k){return '<span class="dp" style="animation-delay:'+(k*.35)+'s;'+(k>s?'filter:grayscale(1);opacity:.35':'')+'">⭐</span>';}).join('')+'</div><div class="score" id="bzf">0</div><div>נקודות</div><div style="font-size:18px;margin:10px 0">'+good+' מתוך '+list.length+' נכונות · 🔥 הרצף הכי ארוך: '+BZ.best+'</div>'+
+ '<div class="fb '+(p>=.7?'ok':'no')+'">'+(p>=.9?'🏆 אלופים! מהירים ומדויקים.':p>=.7?'💪 יפה מאוד! עוד סיבוב ואתם שם.':p>=.5?'👍 בדרך הנכונה – כדאי לעבור על הטעויות למטה.':'📘 כדאי לקרוא את הסיכום ואת הטיפים, ואז לנסות שוב.')+'</div>';
+ if(wrong.length){h+='<button class="next" style="background:#db2777" onclick="start(wrong.slice(),\'w\')">🔁 לתרגל רק את '+wrong.length+' הטעויות (בלי שעון)</button><h3 style="color:#6d28d9;text-align:right">איפה טעיתי:</h3>';
+  wrong.forEach(function(w){h+='<div class="rev" style="text-align:right">📝 '+F(w.q)+(w.d?D.svg[w.d]:'')+'<br>🎯 <b>'+F(w.o[0])+'</b><div class="exp ok" style="margin-top:6px">'+EX(w.e)+'</div></div>';});}
+ app.innerHTML=h+'<button class="next" style="background:#f59e0b" onclick="blitz()">⚡ עוד סיבוב בזק</button><button class="next" onclick="home()">חזרה לתפריט</button></div>';window.scrollTo(0,0);
+ var n=0,el=document.getElementById('bzf'),iv=setInterval(function(){n=Math.min(BZ.pts,n+Math.ceil(BZ.pts/40)+1);if(el)el.textContent=n;if(n>=BZ.pts)clearInterval(iv);},30);
+ if(p>=.7)for(var k=0;k<40;k++){var c=document.createElement('div');c.className='cf';c.style.left=Math.random()*100+'vw';c.style.background=MC[k%4];c.style.animationDelay=Math.random()*.8+'s';document.body.appendChild(c);setTimeout(function(c){return function(){c.remove();};}(c),3400);}
+}
+function end(){
+ var p=Math.round(good/list.length*100),msg=p>=90?'🏆 מצוין! מוכנים למבחן!':p>=75?'💪 טוב מאוד! עוד קצת חיזוק ומגיעים':p>=55?'👍 בדרך הנכונה – כדאי לחזק את הנושאים למטה':'📘 כדאי לקרוא שוב את הסיכום והטיפים, ואז לנסות שוב';
+ var h='<div class="card"><div style="text-align:center;font-size:16px;color:#666">'+(mode=='test'?'הציון שלך במבחן הדמה':'התוצאה שלך')+'</div><div class="score">'+p+'</div><div style="text-align:center;font-size:18px;margin:6px 0 14px">'+good+' מתוך '+list.length+' נכונות<br>'+msg+'</div>';
+ if(mode=='test'){
+  var lv={1:[0,0],2:[0,0],3:[0,0]},tp={},order=[];
+  list.forEach(function(q){var ok=wrong.indexOf(q)<0;lv[q.l][1]++;if(ok)lv[q.l][0]++;if(!tp[q.t]){tp[q.t]=[0,0];order.push(q.t);}tp[q.t][1]++;if(ok)tp[q.t][0]++;});
+  var nm={1:'★ בסיס',2:'★★ הבנה',3:'★★★ חשיבה גבוהה'};
+  h+='<h3 style="color:#6d28d9">📊 לפי רמות חשיבה</h3>';
+  [1,2,3].forEach(function(l){if(!lv[l][1])return;var r=lv[l][0]/lv[l][1];h+='<div class="lvl-row"><span>'+nm[l]+'</span><span class="lvb"><i style="width:'+Math.round(r*100)+'%;background:'+(r>=0.8?'#16a34a':r>=0.5?'#f59e0b':'#dc2626')+'"></i></span><b>'+lv[l][0]+'/'+lv[l][1]+'</b></div>';});
+  var weak=order.filter(function(t){return tp[t][0]<tp[t][1];}),strong=order.filter(function(t){return tp[t][0]==tp[t][1];});
+  h+='<h3 style="color:#6d28d9;margin-top:12px">📝 משוב – מה צריך לדעת</h3>';
+  if(strong.length)h+='<div class="fb ok">✅ <b>יודעים טוב:</b> '+strong.join(' · ')+'</div>';
+  weak.forEach(function(t){h+='<div class="fb no">📘 <b>לחזק: '+t+'</b> ('+tp[t][0]+'/'+tp[t][1]+')<br>💡 '+F((D.know&&D.know[t])||'כדאי לקרוא שוב את הסיכום של הנושא הזה.')+'</div>';});
+  if(!weak.length)h+='<div class="fb ok">🌟 לא היו טעויות – כל הכבוד!</div>';
+  else if(lv[3][1]&&lv[3][0]<lv[3][1]&&lv[1][0]==lv[1][1])h+='<div class="fb">🎯 הבסיס חזק! עכשיו כדאי לתרגל שאלות ★★★ – לקרוא את השאלה לאט ולצייר.</div>';
+  else if(lv[1][0]<lv[1][1])h+='<div class="fb">🎯 כדאי להתחיל מהבסיס: לקרוא את הסיכום, ואז לתרגל את הטעויות.</div>';
+ }
+ if(wrong.length){
+  h+='<button class="next" style="background:#db2777" onclick="start(wrong.slice(),\'w\')">🔁 תרגל שוב רק את '+wrong.length+' הטעויות</button><h3 style="margin-top:14px;color:#6d28d9">איפה טעיתי:</h3>';
+  wrong.forEach(function(w){h+='<div class="rev">📝 '+F(w.q)+(w.d?D.svg[w.d]:'')+'<br>🎯 <b>'+F(w.o[0])+'</b><div class="exp ok" style="margin-top:6px">'+EX(w.e)+'</div></div>';});
+ }
+ if(mode=='test')h+='<button class="next" style="background:#16a34a" onclick="start(mock(),\'test\')">🏁 מבחן דמה חדש (שאלות אחרות)</button>';
+ app.innerHTML=h+'<button class="next" onclick="home()">חזרה לתפריט</button></div>';
+ window.scrollTo(0,0);
+}
+if(/quick/.test(location.hash))setTimeout(blitz,0);
+home();
+if('serviceWorker' in navigator){navigator.serviceWorker.register('../sw.js',{scope:'../'}).catch(()=>{});}
+</script>
+</body>
+</html>
