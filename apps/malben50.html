@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>המלבן שגדל</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:"Rubik","Assistant","Segoe UI",Arial,sans-serif;background:#fffaf0;color:#22223b}
+.wrap{max-width:480px;margin:0 auto;padding:14px 12px 20px;text-align:center}
+h1{font-size:22px;margin:4px 0 2px;color:#3a0ca3}
+.task{font-size:15px;color:#444;margin-bottom:6px}
+.m{direction:ltr;unicode-bidi:isolate;display:inline-block}
+svg{width:100%;height:auto;display:block}
+svg text{direction:ltr}
+.sq{transform-box:fill-box;transform-origin:center;transition:opacity .2s,transform .2s;opacity:0;transform:scale(.3)}
+.sq.on{opacity:1;transform:scale(1)}
+.lb{transition:opacity .4s;opacity:0}.lb.on{opacity:1}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.4)}}
+.pulse{animation:pulse .6s ease 3}
+.count{font-size:20px;font-weight:700;margin:2px 0}
+.count b{font-size:30px;color:#3a0ca3}
+.cap{min-height:64px;font-size:19px;font-weight:700;line-height:1.5;padding:6px 4px}
+.y{color:#b8860b}.t{color:#0a9396}.p{color:#7209b7}.c{color:#e85d04}.k{color:#3a0ca3}
+.big{font-size:26px}
+button{font:inherit;font-size:18px;border:0;border-radius:14px;padding:10px 26px;background:#3a0ca3;color:#fff;cursor:pointer;visibility:hidden}
+.credit{font-size:12px;color:#888;margin-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>המלבן שגדל 📐</h1>
+<div class="task">רוחב <b>5x</b>, אורך <b>2x</b>. רוחב +<b class="t">20%</b>, אורך +<b class="p">25%</b>. בוחרים <span class="m">x = 2</span></div>
+<svg viewBox="0 0 380 180">
+<text id="L10" class="lb" x="150" y="28" text-anchor="middle" font-size="16" font-weight="700" fill="#b8860b">10</text>
+<text id="L2" class="lb" x="294" y="28" text-anchor="middle" font-size="16" font-weight="700" fill="#0a9396">+2</text>
+<text id="L4" class="lb" x="322" y="90" font-size="16" font-weight="700" fill="#b8860b">4</text>
+<text id="L1" class="lb" x="322" y="154" font-size="16" font-weight="700" fill="#7209b7">+1</text>
+<g id="grid"></g>
+</svg>
+<div class="count">ספרנו: <b id="num">0</b> ריבועים</div>
+<div class="cap" id="cap"></div>
+<button id="again">שוב ▶</button>
+<div class="credit">ערכה: רוני מודן · שחקים</div>
+</div>
+<script>
+const C=24,X0=30,Y0=40,ns='http://www.w3.org/2000/svg',$=i=>document.getElementById(i);
+const col=[['#ffd166','#c9a227'],['#94d2bd','#0a9396'],['#cdb4db','#7209b7'],['#ff9f1c','#e85d04']];
+const G=[[],[],[],[]];
+for(let r=0;r<5;r++)for(let c=0;c<12;c++){const g=r<4?(c<10?0:1):(c<10?2:3);
+ const q=document.createElementNS(ns,'rect');q.setAttribute('x',X0+c*C+1);q.setAttribute('y',Y0+r*C+1);
+ q.setAttribute('width',C-2);q.setAttribute('height',C-2);q.setAttribute('rx',3);q.setAttribute('fill',col[g][0]);q.setAttribute('stroke',col[g][1]);
+ q.setAttribute('class','sq');$('grid').appendChild(q);G[g].push(q)}
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+let n=0;
+async function add(g,ms){for(const q of G[g]){q.classList.add('on');n++;$('num').textContent=n;await wait(ms)}}
+async function play(){
+ $('again').style.visibility='hidden';n=0;$('num').textContent=0;
+ G.flat().forEach(q=>q.classList.remove('on','pulse'));['L10','L2','L4','L1'].forEach(i=>$(i).classList.remove('on'));
+ $('cap').innerHTML='מלבן <span class="m"><span class="y">10 · 4</span></span>';$('L10').classList.add('on');$('L4').classList.add('on');
+ await wait(600);await add(0,40);
+ $('cap').innerHTML='<span class="y">40</span> ריבועים';await wait(1600);
+ $('cap').innerHTML='רוחב +<span class="t">20%</span> = עוד <span class="t">2</span> עמודות';$('L2').classList.add('on');await wait(1000);await add(1,140);await wait(1000);
+ $('cap').innerHTML='אורך +<span class="p">25%</span> = עוד שורה <span class="p">1</span>';$('L1').classList.add('on');await wait(1000);await add(2,140);await wait(1000);
+ $('cap').innerHTML='רגע! הפינה ריקה 😮';await wait(1600);
+ await add(3,300);G[3].forEach(q=>q.classList.add('pulse'));
+ $('cap').innerHTML='<span class="c">+2</span> ריבועים בפינה';await wait(1800);
+ $('cap').innerHTML='<span class="y">40</span> ← <span class="k">60</span><br><span class="big k">גדל ב־50%</span>, לא 45%! 🎉';
+ $('again').style.visibility='visible';
+}
+$('again').onclick=play;play();
+</script>
+</body>
+</html>
