@@ -9,7 +9,8 @@
 body{margin:0;font-family:"Rubik","Assistant","Segoe UI",Arial,sans-serif;background:#fffaf0;color:#22223b}
 .wrap{max-width:480px;margin:0 auto;padding:14px 12px 20px;text-align:center}
 h1{font-size:22px;margin:4px 0 2px;color:#3a0ca3}
-.task{font-size:15px;color:#444;margin-bottom:6px}
+.task{font-size:15px;color:#444;margin:6px 0}
+.qbox{background:#fff;border:3px solid #f72585;border-radius:14px;padding:8px 10px;font-size:17px;line-height:1.6}
 .m{direction:ltr;unicode-bidi:isolate;display:inline-block}
 svg{width:100%;height:auto;display:block}
 svg text{direction:ltr}
@@ -30,7 +31,8 @@ button{font:inherit;font-size:18px;border:0;border-radius:14px;padding:10px 26px
 <body>
 <div class="wrap">
 <h1>המלבן שגדל 📐</h1>
-<div class="task">רוחב <b>5x</b>, אורך <b>2x</b>. רוחב +<b class="t">20%</b>, אורך +<b class="p">25%</b>. בוחרים <span class="m">x = 2</span></div>
+<div class="qbox">❓ <b>השאלה:</b> מלבן: רוחב <b>5x</b>, אורך <b>2x</b>.<br>מגדילים את הרוחב ב־<b class="t">20%</b> ואת האורך ב־<b class="p">25%</b>.<br><b class="k">בכמה אחוזים גדל השטח?</b></div>
+<div class="task">כדי לראות, נבחר <span class="m">x = 2</span>: רוחב <b class="y">10</b>, אורך <b class="y">4</b></div>
 <svg viewBox="0 0 380 180">
 <text id="L10" class="lb" x="150" y="28" text-anchor="middle" font-size="16" font-weight="700" fill="#b8860b">10</text>
 <text id="L2" class="lb" x="294" y="28" text-anchor="middle" font-size="16" font-weight="700" fill="#0a9396">+2</text>
@@ -65,7 +67,9 @@ async function play(){
  $('cap').innerHTML='רגע! הפינה ריקה 😮';await wait(1600);
  await add(3,300);G[3].forEach(q=>q.classList.add('pulse'));
  $('cap').innerHTML='<span class="c">+2</span> ריבועים בפינה';await wait(1800);
- $('cap').innerHTML='<span class="y">40</span> ← <span class="k">60</span><br><span class="big k">גדל ב־50%</span>, לא 45%! 🎉';
+ $('cap').innerHTML='היו <span class="y">40</span>, עכשיו <span class="k">60</span>. נוספו <span class="k">20</span>.';await wait(2200);
+ $('cap').innerHTML='20 מתוך 40 = <span class="k">חצי</span>';await wait(2000);
+ $('cap').innerHTML='<span class="big k">תשובה: השטח גדל ב־50%</span><br>לא 45%, כי יש גם פינה! 🎉';
  $('again').style.visibility='visible';
 }
 $('again').onclick=play;play();
