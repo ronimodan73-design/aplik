@@ -86,6 +86,10 @@ svg{display:block;max-width:100%;margin:6px auto}
 .pu{transform-box:fill-box;transform-origin:center;animation:pu .7s ease-in-out 4 alternate}@keyframes pu{to{transform:scale(1.7)}}
 .mv{animation:mv 1.1s ease-in-out forwards}@keyframes mv{to{transform:translate(var(--dx),var(--dy))}}
 .anim p{margin-bottom:6px}
+.tab{display:block;width:100%;border:0;border-radius:20px;padding:24px 18px;margin:14px 0;color:#fff;text-align:right;cursor:pointer;font-size:24px;font-weight:bold;box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.tab small{display:block;font-size:15px;font-weight:normal;opacity:.92;margin-top:6px;line-height:1.5}
+.mkl{font-size:16px;margin:6px 0;color:#4c1d95;font-weight:bold}
+
 .topic{background:#7c3aed;color:#fff;border-radius:10px;padding:7px 12px;font-size:16px;font-weight:bold;margin:-4px 0 10px;display:block}
 .why{background:#fff1f2;border:2px solid #fda4af;border-radius:12px;padding:12px;margin:12px 0 4px;font-size:17px;line-height:1.75}
 .why .ch{display:block;font-weight:bold;color:#be123c;margin-bottom:4px}
@@ -183,7 +187,7 @@ var R=[
 ];
 D.know={"מושגים":"שוקיים = שתי הצלעות השוות. בסיס = הצלע השלישית. זווית ראש = בין השוקיים.","חישוב זוויות":"יש ראש? מורידים אותו מ-[[180°]] ומחלקים ב-2. יש בסיס? מורידים מ-[[180°]] פעמיים את זווית הבסיס.","המשפט ההפוך":"2 זוויות שוות ← הצלעות שמולן שוות ← שווה שוקיים. קודם מוצאים את הזווית השלישית!","גובה, תיכון וחוצה":"מהראש אל הבסיס: גובה = תיכון = חוצה זווית. 2 מתוך 3 ← שווה שוקיים.","משוואות":"שני דברים שווים (זוויות בסיס או שוקיים) ← משווים ופותרים. אחר כך מציבים.","היקף":"היקף = שוק + שוק + בסיס.","נימוקים":"צלעות ← זוויות: זוויות הבסיס שוות. זוויות ← צלעות: מול זוויות שוות צלעות שוות."};
 
-D.Q=R.map(function(r){return {t:r[0],l:r[1],q:r[2],o:r[3],e:r[4],d:r[5],w:r[6]};});
+D.Q=R.map(function(r){return {t:r[0],l:r[1],q:r[2],o:r[3],e:r[4],d:r[5],w:r[6],m:r[7]};});
 if(!D.svg)D.svg={};
 
 
@@ -244,12 +248,44 @@ function lpick(b){var q=LS.s[LI][2],ok=b.dataset.c==='1';
  '<button class="next" onclick="'+(last?'start(Q.filter(function(x){return x.t==LS.topic;}),\'all\')':'les(LI+1)')+'">'+(last?'🧠 עכשיו לשאלות של הנושא ←':'לשלב הבא ←')+'</button>';}
 function TH(x){return D.why?'<span class="topic">📌 נושא: '+x.t+' <span style="float:left;color:#fde68a">'+stars(x.l)+'</span></span>':'<span class="tag">'+x.t+'</span><span class="lvl">'+stars(x.l)+'</span>';}
 function WHY(x,k){if(!D.why||!x.w||!k||!x.w[k-1])return '';return '<div class="why"><span class="ch">❌ בחרת: '+F(x.o[k])+'</span>'+F(x.w[k-1]).replace('⚠️','<br>⚠️').replace('🔍','<br>🔍')+'</div>';}
+function learn(){var M=D.maxL||3,nm=D.lvNames||{},h='<div class="top"><button class="back" onclick="home()">→ תפריט</button><span>📚 למד אותי</span></div>'+
+ '<button class="btn b1" onclick="summary()">📘 סיכום מהיר<small>כל החומר בדף אחד – קוראים קודם</small></button>'+
+ '<button class="btn" style="background:#ea580c" onclick="tips()">'+(D.tipsT||'⚡ טיפים')+'<small>'+(D.tipsS||'')+'</small></button>';
+ for(var l=1;l<=M;l++){var n=Q.filter(function(q){return q.l==l;}).length;h+='<button class="btn" style="background:'+['#16a34a','#0891b2','#7c3aed','#be123c'][l-1]+'" onclick="start(sh(Q.filter(function(q){return q.l=='+l+';})),\'all\')">'+(nm[l]||stars(l))+'<small>'+n+' שאלות · הסבר צעד אחר צעד אחרי כל תשובה</small></button>';}
+ h+='<button class="btn b2" onclick="flash()">🔤 כרטיסיות<small>'+D.flashSub+'</small></button>'+
+ '<button class="btn" style="background:linear-gradient(90deg,#f59e0b,#dc2626)" onclick="blitz()">'+(D.blitzT||'⚡ בוחן בזק')+'<small>'+BN()+' שאלות עם שעון · נקודות ורצפים 🔥</small></button>';
+ app.innerHTML=h;window.scrollTo(0,0);}
+var MSEL=[],MDONE=0;
+function nlS(m,res){var w=340,lo=m.lo,hi=m.hi,y=46,X=function(v){return 16+(v-lo)*(w-32)/(hi-lo);},st=(w-32)/(hi-lo),s='<svg viewBox="0 0 '+w+' 86" width="'+w+'" style="direction:ltr;touch-action:manipulation"><rect width="'+w+'" height="86" rx="10" fill="#fff"/><line x1="4" y1="'+y+'" x2="'+(w-4)+'" y2="'+y+'" stroke="#111" stroke-width="2"/>';
+ for(var v=lo;v<=hi;v++){s+='<line x1="'+X(v)+'" y1="'+(y-(v?6:9))+'" x2="'+X(v)+'" y2="'+(y+(v?6:9))+'" stroke="#111" stroke-width="'+(v?1.3:2.6)+'"/><text x="'+X(v)+'" y="'+(y+24)+'" font-size="'+(v?11:13)+'" font-weight="'+(v?'normal':'bold')+'" text-anchor="middle" fill="'+(v?'#6b7280':'#111')+'">'+(v<0?'−'+(-v):v)+'</text>';}
+ MSEL.forEach(function(v){var c=res?(m.ans.indexOf(v)>=0?'#16a34a':'#dc2626'):'#ea580c';s+='<circle cx="'+X(v)+'" cy="'+y+'" r="9" fill="'+c+'" stroke="#111" class="pop"/><text x="'+X(v)+'" y="'+(y-15)+'" font-size="14" font-weight="bold" fill="'+c+'" text-anchor="middle">'+(res?(m.ans.indexOf(v)>=0?'✓':'✗'):'▼')+'</text>';});
+ if(res)m.ans.forEach(function(v){if(MSEL.indexOf(v)<0)s+='<circle cx="'+X(v)+'" cy="'+y+'" r="10" fill="none" stroke="#16a34a" stroke-width="3" stroke-dasharray="4 3"/><text x="'+X(v)+'" y="'+(y-15)+'" font-size="13" font-weight="bold" fill="#16a34a" text-anchor="middle">כאן</text>';});
+ if(!res)for(var v=lo;v<=hi;v++)s+='<rect x="'+(X(v)-st/2)+'" y="0" width="'+st+'" height="86" fill="transparent" style="cursor:pointer" onclick="mtap('+v+')"/>';
+ return s+'</svg>';}
+function fmn(v){return '[['+(v<0?'−'+(-v):v)+']]';}
+function mdraw2(res){var x=list[i];document.getElementById('mk').innerHTML=nlS(x.m,res);document.getElementById('mkl').innerHTML=MSEL.length?'סימנתם: '+F(MSEL.slice().sort(function(a,b){return a-b;}).map(fmn).join(' , ')):'👆 הקישו על הציר כדי לסמן'+(x.m.n>1?' ('+x.m.n+' נקודות)':'');var b=document.getElementById('mkb');if(b)b.disabled=MSEL.length!=x.m.n;}
+function mtap(v){if(MDONE)return;var x=list[i],k=MSEL.indexOf(v);if(k>=0)MSEL.splice(k,1);else{if(x.m.n==1)MSEL=[v];else if(MSEL.length<x.m.n)MSEL.push(v);}mdraw2(false);}
+function askMark(x,h){MSEL=[];MDONE=0;app.innerHTML=h+'<div id="mk"></div><div class="mkl" id="mkl"></div><button class="next" id="mkb" style="background:#16a34a" onclick="mcheck()" disabled>✔️ בדיקה</button><div id="ex"></div></div>';mdraw2(false);window.scrollTo(0,0);}
+function mcheck(){var x=list[i],a=x.m.ans,ok=MSEL.length==a.length&&MSEL.every(function(v){return a.indexOf(v)>=0;});MDONE=1;
+ document.getElementById('mkb').remove();mdraw2(true);if(ok)good++;else{wrong.push(x);x._c=null;}
+ var hit=MSEL.filter(function(v){return a.indexOf(v)>=0;}).length,why='';
+ if(!ok){var r;if(a.length==1&&MSEL[0]==-a[0])r='🧠 ספרתם נכון את הצעדים, אבל לצד ההפוך של 0.<br>⚠️ חיובי = ימינה מ־0, שלילי = שמאלה מ־0.';
+  else if(a.length==2&&hit==1)r='🧠 מצאתם רק מספר אחד נכון.<br>⚠️ בודקים <b>לשני הכיוונים</b> – ימינה וגם שמאלה.';
+  else r='🧠 כנראה טעות בספירת הצעדים או בחישוב.<br>⚠️ סופרים שוב לאט מ־0, צעד אחרי צעד, ובודקים בהצבה.';
+  why='<div class="why"><span class="ch">❌ סימנתם: '+F(MSEL.slice().sort(function(a,b){return a-b;}).map(fmn).join(' , '))+'</span>'+r+'</div>';}
+ document.getElementById('ex').innerHTML='<div class="exp '+(ok?'ok':'no')+'"><b class="h">'+(ok?'✅ נכון! בואו נבין למה:':'❌ לא נורא! בואו נבין מה קרה:')+'</b>'+why+'<div class="qr">🎯 <b>התשובה הנכונה:</b> '+F(x.o[0])+'</div><b>👣 למה זו התשובה הנכונה – צעד אחר צעד:</b>'+EX(x.e)+'</div><button class="next" onclick="nxt()">'+(i<list.length-1?'לשאלה הבאה ←':'לתוצאות 🏁')+'</button>';}
 function sh(a){a=a.slice();for(var k=a.length-1;k>0;k--){var j=Math.floor(Math.random()*(k+1));var t=a[k];a[k]=a[j];a[j]=t;}return a;}
 function stars(l){var M=D.maxL||3;return '★'.repeat(l)+'☆'.repeat(Math.max(0,M-l));}
 function LB(n){var L=LESS[n];return '<button class="btn" style="background:'+(L.c||'#be185d')+'" onclick="LS=LESS['+n+'];les(0)">'+L.t+'<small>'+(L.sub||'שלב אחר שלב · ציור + שאלת הבנה בכל שלב')+'</small></button>';}
 function lmenu(){var h='<div class="top"><button class="back" onclick="home()">→ תפריט</button><span>'+(D.lessonMenu.t||'איך פותרים?')+'</span></div><div class="sub">'+(D.lessonMenu.hint||'בחרו נושא – רואים דוגמה מונפשת, ואז מנסים לבד')+'</div>';LESS.forEach(function(_,n){h+=LB(n);});app.innerHTML=h;window.scrollTo(0,0);}
 function lvmenu(){var M=D.maxL||3,nm=D.lvNames||{},h='<div class="top"><button class="back" onclick="home()">→ תפריט</button><span>תרגול לפי רמות</span></div><div class="sub">מתחילים ב־★ ועולים רמה כשמרגישים בטוחים</div>';for(var l=1;l<=M;l++){var n=Q.filter(function(q){return q.l==l;}).length;h+='<button class="btn" style="background:'+['#16a34a','#0891b2','#7c3aed','#be123c'][l-1]+'" onclick="start(sh(Q.filter(function(q){return q.l=='+l+';})),\'all\')">'+(nm[l]||stars(l))+'<small>'+n+' שאלות · הסבר צעד אחר צעד אחרי כל תשובה</small></button>';}app.innerHTML=h;window.scrollTo(0,0);}
 function home(){
+ if(D.tabs){var nq=Q.length,tn=(D.mockWant?Object.keys(D.mockWant).reduce(function(s,k){return s+D.mockWant[k];},0):20);
+  app.innerHTML='<h1>'+D.icon+' '+D.title+'</h1><div class="sub">'+(D.sub||'')+'</div>'+
+  '<button class="tab b1 b1h" style="background:linear-gradient(135deg,#db2777,#9d174d)" onclick="lmenu()">👀 הראה לי<small>דוגמאות מונפשות על ציר המספרים – רואים איך פותרים, צעד אחר צעד, ואז מנסים לבד</small></button>'+
+  '<button class="tab" style="background:linear-gradient(135deg,#0891b2,#155e75)" onclick="learn()">📚 למד אותי<small>סיכום, מה להיזהר, ותרגול בכל 4 רמות החשיבה – עם הסבר אחרי כל תשובה</small></button>'+
+  '<button class="tab" style="background:linear-gradient(135deg,#16a34a,#166534)" onclick="start(mock(),\'test\')">🏁 מבחן<small>'+tn+' שאלות בכל רמות החשיבה · בלי שעון · כולל סימון על הציר והנמקה · ציון ומשוב אישי</small></button>';
+  window.scrollTo(0,0);return;}
  app.innerHTML='<h1>'+D.icon+' '+D.title+'</h1><div class="sub">הכנה למבחן – משולש שווה שוקיים</div>'+
  (D.lessonMenu?'<button class="btn" style="background:'+(D.lessonMenu.c||'#be185d')+'" onclick="lmenu()">'+D.lessonMenu.t+'<small>'+D.lessonMenu.sub+'</small></button>':'')+
  '<button class="btn b1" onclick="summary()">📘 סיכום מהיר<small>כל החומר בדף אחד – קרא קודם</small></button>'+
@@ -289,6 +325,7 @@ function ask(){
  var h='<div class="top"><button class="back" onclick="home()">→ תפריט</button><span>שאלה '+(i+1)+' / '+list.length+' · ✅ '+good+'</span></div>'+
  '<div class="bar"><div style="width:'+(i/list.length*100)+'%"></div></div>'+
  '<div class="card">'+TH(x)+'<div class="q">'+F(x.q)+'</div>'+(x.d?D.svg[x.d]:'');
+ if(x.m)return askMark(x,h);
  opts.forEach(function(o,k){h+='<button class="opt" data-c="'+(o.c?1:0)+'" data-k="'+o.k+'" onclick="pick(this)">'+F(o.t)+'</button>';});
  app.innerHTML=h+'<div id="ex"></div></div>';
  window.scrollTo(0,0);
@@ -316,8 +353,8 @@ function mock(){
 var BZ={n:0,pts:0,st:0,best:0,tm:null,t0:0,T:20};
 function BN(){return (D.blitzPlan||[[1,5],[2,4],[3,1]]).reduce(function(a,p){return a+p[1];},0);}
 function blitz(){
- var out=[],used={};(D.blitzPlan||[[1,5],[2,4],[3,1]]).map(function(p){return p.slice();}).forEach(function(p){sh(Q.filter(function(q){return q.l==p[0];})).forEach(function(q){if(p[1]>0&&!used[q.t+p[0]]){out.push(q);used[q.t+p[0]]=1;p[1]--;}});
-  sh(Q.filter(function(q){return q.l==p[0]&&out.indexOf(q)<0;})).slice(0,p[1]).forEach(function(q){out.push(q);});});
+ var out=[],used={};(D.blitzPlan||[[1,5],[2,4],[3,1]]).map(function(p){return p.slice();}).forEach(function(p){sh(Q.filter(function(q){return !q.m&&q.l==p[0];})).forEach(function(q){if(p[1]>0&&!used[q.t+p[0]]){out.push(q);used[q.t+p[0]]=1;p[1]--;}});
+  sh(Q.filter(function(q){return !q.m&&q.l==p[0]&&out.indexOf(q)<0;})).slice(0,p[1]).forEach(function(q){out.push(q);});});
  list=sh(out.slice(0,BN()));mode='blitz';i=0;good=0;wrong=[];BZ.pts=0;BZ.st=0;BZ.best=0;
  app.innerHTML='<div class="card" style="text-align:center"><h2>'+(D.blitzT||'⚡ מבחן בזק')+'</h2><p>'+BN()+' שאלות · '+(D.blitzSecs?'זמן לפי הרמה: '+Object.keys(D.blitzSecs).map(function(l){return '★'.repeat(l)+' '+D.blitzSecs[l]+' שנ׳';}).join(' · '):'20 שניות לכל שאלה')+'<br>תשובה מהירה = יותר נקודות · רצף נכון = 🔥 בונוס</p><div class="score" id="cd">3</div></div>';
  var c=3,iv=setInterval(function(){c--;var d=document.getElementById('cd');if(!d){clearInterval(iv);return;}if(c>0){d.textContent=c;d.className='score pop';}else{clearInterval(iv);bask();}},800);
@@ -400,7 +437,7 @@ if(D.scratch){document.body.insertAdjacentHTML('beforeend','<button class="spbtn
 
 if(D.homeBtn){document.body.insertAdjacentHTML('beforeend','<button class="homeb" id="hmb" type="button" aria-label="חזרה לתפריט">🏠 תפריט</button>');
  var hmb=document.getElementById('hmb');hmb.onclick=function(){clearInterval(BZ.tm);mode='';home();};
- new MutationObserver(function(){hmb.style.display=app.querySelector('.b1')?'none':'block';}).observe(app,{childList:true});hmb.style.display='none';}
+ new MutationObserver(function(){hmb.style.display=app.querySelector('.b1h')||(!D.tabs&&app.querySelector('.b1'))?'none':'block';}).observe(app,{childList:true});hmb.style.display='none';}
 if(/quick/.test(location.hash))setTimeout(blitz,0);
 home();
 if('serviceWorker' in navigator){navigator.serviceWorker.register('../sw.js',{scope:'../'}).catch(()=>{});}

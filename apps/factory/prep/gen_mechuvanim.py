@@ -83,22 +83,28 @@ def staged_expl(items, wrong_hint=True):
     nums = reduce(items)
     ans = num(sum(nums))
     pos = [n for n in nums if n > 0]; neg = [n for n in nums if n < 0]
-    L = ['👀 זוכרים: <b>מינוס = הנגדי</b>. מינוס לפני סוגריים הופך את מה שבפנים.']
-    flips = [f'[[{M} {br(v)}]] ← [[{c(-v, sg(-v))}]]' for op, v in items[1:] if op == '-']
-    if flips: L.append('🔄 ' + ' · '.join(flips))
-    L.append(f'1️⃣ מורידים סוגריים: [[{plainc(nums)}]]')
+    L = ['👣 <b>כתיבה מדורגת</b> – משמיטים סוגריים לכל איבר:']
+    RULE = {('+', 1): '[[+ (+)]] ← [[+]]', ('+', -1): f'[[+ ({M})]] ← [[{M}]]',
+            ('-', 1): f'[[{M} (+)]] ← [[{M}]]', ('-', -1): f'[[{M} ({M})]] ← [[+]]'}
+    for k, (op, v) in enumerate(items):
+        n = v if op in ('', '+') else -v
+        before = br(v) if k == 0 else f'{"+" if op == "+" else M} {br(v)}'
+        after = fm(n) if k == 0 else (('+ ' if n >= 0 else M + ' ') + fm(abs(n)))
+        why = 'הראשון – עם הסימן שלו' if k == 0 else RULE[(op, 1 if v > 0 else -1)]
+        L.append(f'🔹 [[{before}]] ← [[{c(n, after)}]] <span style="color:#6b7280">({why})</span>')
+    L.append(f'1️⃣ <b>השמטת סוגריים:</b> [[{ex_br(items)}]]<br>[[= {plainc(nums)}]]')
     sp, sn = num(sum(pos)), num(sum(neg))
     if pos and neg:
-        jp = f'[[{plain(pos)} = {fm(sp)}]]' if len(pos) > 1 else f'[[{fm(sp)}]]'
-        jn = f'[[{plain(neg)} = {fm(sn)}]]' if len(neg) > 1 else f'[[{fm(sn)}]]'
-        L.append(f'2️⃣ <span style="color:{G}">חיוביים יחד</span>: {jp} · <span style="color:{Rd}">שליליים יחד</span>: {jn}')
-        L.append(f'3️⃣ [[{fm(sp)} {M} {fm(abs(sn))} = {fm(ans)}]]')
+        jp = f'({plain(pos)})' if len(pos) > 1 else fm(sp)
+        jn = f'({" + ".join(fm(abs(x)) for x in neg)})' if len(neg) > 1 else fm(abs(sn))
+        L.append(f'2️⃣ <b>מסדרים</b> – <span style="color:{G}">חיוביים יחד</span>, <span style="color:{Rd}">שליליים יחד</span>:<br>[[= {c(1, jp)} {M} {c(-1, jn)}]]<br>[[= {c(1, fm(sp))} {M} {c(-1, fm(abs(sn)))}]]')
+        L.append(f'3️⃣ <b>מחשבים:</b> [[= {fm(ans)}]]')
         if sp < abs(sn):
             L.append(f'💰 יש לי {fm(sp)} ₪ וחוב של {fm(abs(sn))} ₪ ← נשאר חוב של {fm(abs(ans))} ₪.')
         elif ans > 0:
             L.append(f'💰 יש לי {fm(sp)} ₪ וחוב של {fm(abs(sn))} ₪ ← מחזירים את החוב, נשארים {fm(ans)} ₪.')
     else:
-        L.append(f'2️⃣ כולם באותו סימן ← מחברים: [[{fm(ans)}]]')
+        L.append(f'2️⃣ כל האיברים {"חיוביים" if pos else "שליליים"} ← מחברים: [[= {fm(ans)}]]')
     L.append(f'✅ [[{fm(ans)}]]')
     return '<br>'.join(L), ans, nums
 
@@ -155,13 +161,14 @@ Q(T4, 1, f'איזה סימן מתאים? [[{M}1 {BOX} 0]]', cmpo('[[<]]'),
 Q(T4, 1, f'איזה סימן מתאים? [[{M}15 {BOX} {M}51]]', cmpo('[[>]]'),
   f'👀 [[{M}15]] קרוב יותר ל־0, ו־[[{M}51]] רחוק יותר שמאלה.<br>✅ [[{M}15 > {M}51]]<br>💰 חוב של 15 ₪ עדיף על חוב של 51 ₪.')
 for (a, b, op, d) in [(-8, 8, '+', 'a1'), (-6, -8, '+', 'a2'), (6, 2, '+', None)]:
-    L, ans, v = two_term_expl(a, b, op)
+    L, ans, v = two_term_expl(a, b, op); L = staged_expl([('', a), ('+', b)])[0].split('<br>')
     lo, hi = min(a, ans, 0) - 1, max(a, ans, 0) + 1
     sv = addsvg(d, nl(lo, hi, [(a, fm(a), P, None), (ans, fm(ans), G if ans > 0 else Rd, None)], [(a, ans, O, sg(v), None)], show_nums=hi - lo <= 16)) if d else None
     e = '<br>'.join(x for x in L if x)
     Q(T5, 1, f'[[{br(a)} + {br(b)} =]]', opts(ans, [-ans, a - b, abs(a) + abs(b)]), e, sv)
 for (a, b, op, q) in [(-9, 4, '+', f'{M}9 + 4'), (3, 11, '-', f'3 {M} 11'), (7, -5, '-', f'7 {M} ({M}5)')]:
     L, ans, v = two_term_expl(a, b, op)
+    if '(' in q: L = staged_expl([('', a), ('-', b)])[0].split('<br>')
     lo, hi = min(a, ans, 0) - 1, max(a, ans, 0) + 1
     sv = addsvg('t' + str(len(SVG)), nl(lo, hi, [(a, fm(a), P, None), (ans, fm(ans), G if ans > 0 else Rd, None)], [(a, ans, O, sg(v), None)], show_nums=hi - lo <= 16))
     Q(T5, 1, f'[[{q} =]]', opts(ans, [-ans, a - v if op == '-' else a - b, abs(a) + abs(b)]), '<br>'.join(L), sv)
@@ -430,6 +437,104 @@ for r in R:
     if w is None: w = auto_why(r[2], r[3], r[3][0])
     assert w and len(w) == 3 and all(w), ('NO WHY', r[2])
     r.append(w)
+
+# ================= number line in every explanation =================
+KEEP_Q = {'pq', 'ab53', 'ab26', 'pq72', 'ab', 'ab2', 'c102', 't38'}  # question pictures that don't reveal the answer
+def chain_svg(start, moves, endlab=None):
+    pos = [start]
+    for m_ in moves: pos.append(num(pos[-1] + m_))
+    lo = int(min(pos + [0]) // 1) - 1; hi = int(-(-max(pos + [0]) // 1)) + 1
+    span = hi - lo
+    marks = [(start, fm(start), P, 0.2)]
+    jumps = []
+    for k, m_ in enumerate(moves):
+        jumps.append((pos[k], pos[k + 1], G if m_ > 0 else Rd, sg(m_), 0.6 + k * 1.3))
+    end = pos[-1]
+    marks.append((end, (endlab or fm(end)) + ' ✓', O, 0.6 + len(moves) * 1.3))
+    return nl(lo, hi, marks, jumps, show_nums=span <= 16)
+def parse_chain(ex):
+    toks = re.findall(r'([+-]?)\s*(?:\(([+-]?\d+(?:\.\d+)?)\)|(\d+(?:\.\d+)?))', ex.replace(' ', ''))
+    vals = []
+    for op, b_, p_ in toks:
+        v = float(b_ if b_ else p_); v = -v if op == '-' else v
+        vals.append(num(v))
+    return vals
+STORY = {'עלתה ב־[[7°]]': (-4, [7], '3°'), 'הפקיד [[200]]': (-120, [200], '80'), 'ירדה ב־[[8°]], אחר הצהריים': (3, [-8, 2, -4], '−7°'),
+         'בחשבון של נועה': (-50, [-30, 100], '20'), 'כמה כסף נמשך?': (40, [-110], '−70'), 'דני כתב': (5, [-8], None),
+         'סיפור מתאים לתרגיל': (-3, [8, -6], '−1°'), 'כדי שהתרגיל יהיה נכון': (5, [-8], None), 'מאיה פתרה': (-5, [3, 4, -6], None)}
+def vis(r):
+    q = r[2]; qc = _cl(q); a = _f(r[3][0])
+    for k_, (st, mv, lab) in STORY.items():
+        if k_ in q: return chain_svg(st, mv, lab)
+    m_ = re.fullmatch(r'(.*)=', qc)
+    if m_ and '☐' not in qc and '|' not in qc and '?' not in qc:
+        v = parse_chain(m_.group(1))
+        if len(v) >= 2: return chain_svg(v[0], v[1:])
+    if 'איזה מספר חסר' in q:
+        L = qc.split('?')[1].split('=')[0].replace('☐', '(' + fm(a).replace(M, '-') + ')')
+        v = parse_chain(L)
+        if len(v) >= 2: return chain_svg(v[0], v[1:])
+    if 'איזה סימן מתאים' in q and 'a' not in qc.split('?')[1]:
+        L, Rr = qc.split('?')[1].split('☐'); v1, v2 = num(_ev(L)), num(_ev(Rr))
+        lo = int(min(v1, v2, 0)) - 1; hi = int(max(v1, v2, 0)) + 1
+        return nl(lo, hi, [(v1, fm(v1), Rd if v1 < v2 else G, .3), (v2, fm(v2), G if v1 < v2 else Rd, .9)], show_nums=hi - lo <= 16) + \
+            f"<b style='color:{G}'>{fm(max(v1, v2))}</b> מימין ← הוא הגדול"
+    if 'הנגדי' in q and a is not None and '[[' in q:
+        n_ = -a
+        if a == 0: return nl(-3, 3, [(0, '0 ✓', O, .3)])
+        lo, hi = -int(abs(a)) - 1, int(abs(a)) + 1
+        return nl(lo, hi, [(n_, fm(n_), P, .2), (a, fm(a) + ' ✓', O, 1.6)], [(n_, a, O, 'הנגדי', .7)], show_nums=hi - lo <= 16)
+    if qc.startswith('|') or qc.startswith('-|'):
+        x_ = _ev(qc.strip('= ').replace('-|', '|', 1).replace('|', '', 2)) if False else None
+        inner = re.search(r'\|([^|]+)\|', qc).group(1); x_ = num(float(inner))
+        lo, hi = int(min(x_, 0)) - 1, int(max(x_, 0)) + 1
+        return nl(lo, hi, [(x_, fm(x_), P, .2)], [(0, x_, O, fm(abs(x_)) + ' צעדים', .6)], show_nums=hi - lo <= 16)
+    return None
+def opp_svg(x):
+    lo, hi = -abs(x) - 1, abs(x) + 1
+    return nl(lo, hi, [(x, fm(x), P, .2), (-x, fm(-x) + ' ✓', O, 1.6)], [(x, -x, O, 'הנגדי', .7)])
+def marks_svg(vals, ok=None):
+    lo, hi = int(min(vals + [0])) - 1, int(max(vals + [0])) + 1
+    vs = sorted(vals)
+    return nl(lo, hi, [(v, fm(v) + (' ✓' if v == ok else ''), O if v == ok else P, .3 + k * .5) for k, v in enumerate(vs)], show_nums=hi - lo <= 16)
+def abs_pair(n, ok=None):
+    return nl(-n - 1, n + 1, [(-n, fm(-n) + (' ✓' if ok == -n else ''), Rd, 1.2), (n, fm(n) + (' ✓' if ok == n else ''), G, 1.2)], [(0, n, G, str(n), .3), (0, -n, Rd, str(n), .3)])
+MANUAL = {f'[[{M}({M}7) =]]': opp_svg(-7), 'מה פירוש': opp_svg(-5), 'מה נכון לגבי': opp_svg(-4),
+          'סדרו מהקטן לגדול: [[3,': marks_svg([3, -7, 0, -2, 5]), 'סדרו מהקטן לגדול: [[4,': marks_svg([4, -4, 1, -9, 0]),
+          'ערך מוחלט [[7]]?': abs_pair(7), '[[|x| = 6]]': abs_pair(6, -6),
+          'הסכום של שני מספרים שליליים': chain_svg(-2, [-3]), 'כשמחברים מספר': chain_svg(5, [-2]), 'ההפרש בין שני מספרים שליליים': chain_svg(-2, [5]),
+          'כשמחסרים מספר': chain_svg(4, [2]), 'הערך המוחלט של מספר הוא תמיד': nl(-7, 1, [(-6, M + '6', P, .2)], [(0, -6, O, '6 צעדים', .6)]),
+          'המספר הנגדי של מספר הוא תמיד': opp_svg(-4), 'מספר שלילי פחות מספר חיובי': chain_svg(-2, [-3]),
+          'אילו סימנים צריך בתיבות': chain_svg(7, [-2, -8, -5]), 'התוצאה הגדולה ביותר': chain_svg(-3, [8])}
+for r in R:
+    svg_q = SVG.get(r[5]) if r[5] else None
+    pic = None
+    if r[5] and r[5] not in KEEP_Q:
+        pic = svg_q; r[5] = ''
+    for k_, v_ in MANUAL.items():
+        if pic is None and k_ in r[2]: pic = v_
+    if pic is None: pic = vis(r)
+    if pic is None and r[5] in ('ab', 'ab2'): pic = None
+    if pic:
+        r[4] = '📍 <b>על ציר המספרים:</b><br>' + pic + '<br>' + r[4]
+NOPIC = [r[2][:40] for r in R if '<svg' not in r[4] and r[5] not in KEEP_Q]
+print('no number line in explanation:', len(NOPIC)); [print('  ', x) for x in NOPIC]
+
+# ================= marking questions (סימון על הציר) =================
+T10 = 'סימון על הציר'
+def MK(l, q, ans, e, n=None, pic=None):
+    e = '📍 <b>על ציר המספרים:</b><br>' + (pic or marks_svg(ans)) + '<br>' + e
+    R.append([T10, l, q, [' ו־'.join('[[' + fm(v) + ']]' for v in sorted(ans))], e, '', [], {'lo': -8, 'hi': 8, 'ans': ans, 'n': n or len(ans)}])
+MK(1, f'סמנו על הציר את המספר [[{M}4]].', [-4], f'1️⃣ מינוס ← משמאל ל־0.<br>2️⃣ סופרים 4 צעדים שמאלה מ־0.<br>✅ [[{M}4]]', pic=nl(-6, 2, [(-4, M + '4 ✓', O, 1.4)], [(0, -4, Rd, '4 צעדים', .3)]))
+MK(1, 'סמנו על הציר את המספר הנגדי ל־[[5]].', [-5], f'🪞 5 נמצא 5 ימינה ← הנגדי 5 <b>שמאלה</b>.<br>✅ [[{M}5]]', pic=opp_svg(5))
+MK(2, f'חשבו וסמנו על הציר את התוצאה: [[({M}3) + (+5)]]', [2], f'1️⃣ מתחילים ב־[[{M}3]].<br>2️⃣ מוסיפים חיובי ← 5 ימינה.<br>✅ [[2]]', pic=chain_svg(-3, [5]))
+MK(2, f'חשבו וסמנו על הציר: [[|{M}6|]]', [6], f'📏 [[|{M}6|]] = המרחק מ־0 = 6.<br>✅ מסמנים את [[6]] (חיובי!).', pic=nl(-7, 7, [(-6, M + '6', P, .2), (6, '6 ✓', O, 1.4)], [(0, -6, Rd, '6', .4), (0, 6, G, '6', .9)]))
+MK(2, f'חשבו וסמנו על הציר את התוצאה: [[{M}2 {M} 4]]', [-6], f'1️⃣ מתחילים ב־[[{M}2]].<br>2️⃣ מחסרים 4 ← 4 צעדים שמאלה.<br>✅ [[{M}6]]', pic=chain_svg(-2, [-4]))
+MK(3, 'סמנו על הציר את <b>שני</b> המספרים שהערך המוחלט שלהם [[3]]. נמקו לעצמכם: למה יש שניים?', [-3, 3], f'📏 ערך מוחלט 3 = מרחק 3 מ־0.<br>1️⃣ 3 ימינה ← [[3]]<br>2️⃣ 3 שמאלה ← [[{M}3]]<br>💬 <b>הנמקה:</b> ממרחק אחד מ־0 אפשר ללכת לשני כיוונים.', pic=abs_pair(3))
+MK(3, f'סמנו על הציר את <b>שני</b> המספרים שנמצאים במרחק 2 מ־[[{M}5]].', [-7, -3], f'👣 מ־[[{M}5]] הולכים 2 צעדים לשני הכיוונים.<br>1️⃣ שמאלה: [[{M}5 {M} 2 = {M}7]]<br>2️⃣ ימינה: [[{M}5 + 2 = {M}3]]<br>✅ [[{M}7]] ו־[[{M}3]]', pic=nl(-9, 1, [(-5, M + '5', P, .2), (-7, M + '7 ✓', O, 1.5), (-3, M + '3 ✓', O, 1.5)], [(-5, -7, Rd, '2', .5), (-5, -3, G, '2', .5)]))
+MK(3, f'מצאו את המספר החסר וסמנו אותו על הציר: [[{BOX} {M} 3 = {M}5]]', [-2], f'🔙 הורידו 3 והגיעו ל־[[{M}5]] ← הולכים אחורה 3 ימינה: [[{M}5 + 3 = {M}2]].<br>🔍 בדיקה: [[{M}2 {M} 3 = {M}5]] ✓<br>✅ [[{M}2]]', pic=chain_svg(-2, [-3], M + '5'))
+MK(4, 'סמנו על הציר שני מספרים <b>נגדיים</b> שהמרחק ביניהם 12. נמקו לעצמכם איך מצאתם.', [-6, 6], f'🪞 נגדיים = אותו מרחק מ־0 משני הצדדים.<br>1️⃣ [[12 : 2 = 6]]<br>2️⃣ 6 ימינה ו־6 שמאלה<br>💬 <b>הנמקה:</b> מ־[[{M}6]] עד 6 יש 12 צעדים, ושניהם במרחק 6 מ־0.', pic=abs_pair(6))
+MK(4, f'x מספר שלילי, ו־[[|x| = 7]]. סמנו את x על הציר.', [-7], f'1️⃣ [[|x| = 7]] ← x הוא [[7]] או [[{M}7]].<br>2️⃣ x שלילי ← רק [[{M}7]].<br>✅ [[{M}7]]', pic=abs_pair(7, -7))
 # ---------- check counts ----------
 from collections import Counter
 cnt = Counter(r[1] for r in R)
@@ -518,6 +623,7 @@ SUM = [
     ['↔️ השוואה', f'<p>על הציר: <b>ימינה = גדול</b>, שמאלה = קטן.</p><p>[[{M}2 > {M}10]] · [[{M}1 < 0]] · כל חיובי > כל שלילי</p>'],
     ['➕ חיבור', f'<p>מוסיפים חיובי ← <b style="color:{G}">ימינה</b>. מוסיפים שלילי ← <b style="color:{Rd}">שמאלה</b>.</p><p>[[({M}3) + 5 = 2]] · [[2 + ({M}6) = {M}4]]</p>'],
     ['➖ חיסור', f'<p>חיסור = חיבור של הנגדי:</p><p>[[4 {M} ({M}2) = 4 + 2 = 6]] · [[{M}3 {M} 5 = {M}8]]</p>'],
+    ['🧹 השמטת סוגריים – 4 כללים', f'<table><tr><th>כתוב</th><th>נהיה</th><th>דוגמה</th></tr><tr><td>[[+ (+)]]</td><td style="color:{G}">[[+]]</td><td>[[+ (+3) = + 3]]</td></tr><tr><td>[[+ ({M})]]</td><td style="color:{Rd}">[[{M}]]</td><td>[[+ ({M}3) = {M} 3]]</td></tr><tr><td>[[{M} (+)]]</td><td style="color:{Rd}">[[{M}]]</td><td>[[{M} (+3) = {M} 3]]</td></tr><tr><td>[[{M} ({M})]]</td><td style="color:{G}">[[+]]</td><td>[[{M} ({M}3) = + 3]]</td></tr></table><div class="tip">💡 סימנים <b>זהים</b> ← פלוס · סימנים <b>שונים</b> ← מינוס</div>'],
     ['🪜 תרגיל ארוך', f'<p>1️⃣ מורידים סוגריים 2️⃣ חיוביים יחד, שליליים יחד 3️⃣ מחשבים</p><p>[[(+4) {M} ({M}6) + ({M}8) = 4 + 6 {M} 8 = 10 {M} 8 = 2]]</p>'],
     ['🔲 מספר חסר', f'<p>הולכים <b>אחורה</b> ועושים את ההפך, ובסוף בודקים בהצבה.</p><p>[[{BOX} + 9 = 4]] ← [[4 {M} 9 = {M}5]] · בדיקה: [[{M}5 + 9 = 4]] ✓</p>'],
     ['🔎 טענות', '<p>על ציר עם a ו־b: בוחרים <b>דוגמה מספרית</b> שמתאימה לציור ומציבים.</p><p>"תמיד"? – דוגמה נגדית אחת מספיקה כדי להפריך.</p>'],
@@ -547,11 +653,12 @@ KNOW = {T1: f'נגדי = אותו מרחק מ־0 בצד השני. מינוס = �
         T8: 'עלתה / הפקדה = פלוס. ירדה / משיכה = מינוס. כותבים תרגיל אחד ופותרים בשלבים.',
         T9: 'בוחרים דוגמה מספרית שמתאימה לציור. "תמיד"? – דוגמה נגדית אחת מספיקה. נסו שליליים ו־0.'}
 
+KNOW[T10] = 'סופרים צעדים מ־0: ימינה = חיובי, שמאלה = שלילי. "במרחק" או "ערך מוחלט" ← בודקים לשני הכיוונים.'
 D = {'title': 'מספרים מכוונים', 'icon': '➖', 'flashSub': 'תרגיל ← תשובה', 'maxL': 4, 'scratch': 1,
      'lvNames': {1: '★ זוכרים', 2: '★★ מיישמים', 3: '★★★ מבינים ומסבירים', 4: '★★★★ חושבים לעומק'},
-     'mockWant': {1: 5, 2: 6, 3: 5, 4: 4}, 'blitzPlan': [[1, 3], [2, 3], [3, 2], [4, 2]],
+     'mockWant': {1: 8, 2: 9, 3: 9, 4: 9}, 'tabs': 1, 'sub': 'כיתה ז׳ · הכנה לבוחן במספרים מכוונים', 'blitzPlan': [[1, 3], [2, 3], [3, 2], [4, 2]],
      'blitzT': '⚡ בוחן בזק – בחן את עצמך', 'blitzSecs': {1: 45, 2: 60, 3: 90, 4: 120}, 'why': 1, 'homeBtn': 1, 'tipsT': '⚠️ מה להיזהר?', 'tipsS': 'המלכודות שהכי הרבה תלמידים נופלים בהן',
-     'lessonMenu': {'t': '👀 איך פותרים? – הראה לי', 'sub': '7 דוגמאות מונפשות · ואז מנסים לבד', 'c': '#be185d', 'hint': 'בחרו נושא – רואים דוגמה מונפשת, ואז מנסים לבד'},
+     'lessonMenu': {'t': '👀 הראה לי', 'sub': '7 דוגמאות מונפשות · ואז מנסים לבד', 'c': '#be185d', 'hint': 'בחרו נושא – רואים דוגמה מונפשת, ואז מנסים לבד'},
      'summary': SUM, 'tips': TIPS, 'flash': FLASH, 'know': KNOW, 'svg': SVG, 'lessons': LES}
 js = 'var D=' + json.dumps(D, ensure_ascii=False) + ';\nvar R=' + json.dumps(R, ensure_ascii=False) + ';\n'
 open('mechuvanim.js', 'w').write(js)
