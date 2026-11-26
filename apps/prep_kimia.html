@@ -86,6 +86,11 @@ svg{display:block;max-width:100%;margin:6px auto}
 .pu{transform-box:fill-box;transform-origin:center;animation:pu .7s ease-in-out 4 alternate}@keyframes pu{to{transform:scale(1.7)}}
 .mv{animation:mv 1.1s ease-in-out forwards}@keyframes mv{to{transform:translate(var(--dx),var(--dy))}}
 .anim p{margin-bottom:6px}
+.topic{background:#7c3aed;color:#fff;border-radius:10px;padding:7px 12px;font-size:16px;font-weight:bold;margin:-4px 0 10px;display:block}
+.why{background:#fff1f2;border:2px solid #fda4af;border-radius:12px;padding:12px;margin:12px 0 4px;font-size:17px;line-height:1.75}
+.why .ch{display:block;font-weight:bold;color:#be123c;margin-bottom:4px}
+.homeb{position:fixed;right:10px;bottom:10px;z-index:20;background:#fff;color:#4c1d95;border:0;border-radius:22px;padding:8px 14px;font-size:15px;font-weight:bold;opacity:.95;box-shadow:0 4px 12px rgba(0,0,0,.35);cursor:pointer}
+
 .spbtn{position:fixed;left:10px;bottom:10px;z-index:20;background:#facc15;color:#1f2937;border:0;border-radius:22px;padding:8px 12px;font-size:15px;opacity:.92;font-weight:bold;box-shadow:0 4px 12px rgba(0,0,0,.35);cursor:pointer}
 .sp{position:fixed;inset:0;z-index:30;background:#fff;display:flex;flex-direction:column}.sp[hidden]{display:none}
 .sptl{display:flex;gap:6px;padding:8px;background:#1e1b4b;align-items:center;flex-wrap:wrap}.sptl button{border:0;border-radius:10px;padding:9px 12px;font-size:16px;font-weight:bold;cursor:pointer;background:#fff}
@@ -190,7 +195,7 @@ var R=[
 ];
 D.know={"סוגי חומרים":"יסוד = סוג אטום אחד. תרכובת = כמה סוגים קשורים. תערובת = מעורבבים בלי קשר.","מבנה האטום":"בגרעין: פרוטונים (+) ונייטרונים (0). סביב: אלקטרונים (−).","מספר אטומי":"מספר אטומי = מספר פרוטונים. ניטרלי ← פרוטונים = אלקטרונים.","יונים":"איבד אלקטרונים ← חיובי. קיבל אלקטרונים ← שלילי. הפרוטונים לא משתנים.","משיכה ודחייה":"מנוגדים נמשכים, זהים נדחים.","מתכות ואל-מתכות":"מתכות – שמאל, מבריקות, מוליכות ([[Fe]], [[Au]], [[Cu]]). אל-מתכות – ימין ([[O]], [[C]], [[S]]).","שפה כימית":"המספר הקטן = כמה אטומים מהסמל שלפניו. אין מספר = 1.","תגובה כימית":"מגיבים לפני החץ, תוצרים אחריו. [[(s)]] מוצק, [[(l)]] נוזל, [[(g)]] גז.","פיזיקלי או כימי":"נוצר חומר חדש? כימי. רק צורה או מצב צבירה? פיזיקלי."};
 
-D.Q=R.map(function(r){return {t:r[0],l:r[1],q:r[2],o:r[3],e:r[4],d:r[5]};});
+D.Q=R.map(function(r){return {t:r[0],l:r[1],q:r[2],o:r[3],e:r[4],d:r[5],w:r[6]};});
 if(!D.svg)D.svg={};
 
 
@@ -249,6 +254,8 @@ function lpick(b){var q=LS.s[LI][2],ok=b.dataset.c==='1';
  document.getElementById('ex').innerHTML='<div class="exp '+(ok?'ok':'no')+'"><b class="h">'+(ok?'✅ נכון!':'❌ לא נורא – מסתכלים שוב על הציור:')+'</b>'+F(q[2])+'</div>'+
  (ok?'':'<button class="next" style="background:#f59e0b" onclick="les(LI)">🔁 לנסות שוב את השלב</button>')+
  '<button class="next" onclick="'+(last?'start(Q.filter(function(x){return x.t==LS.topic;}),\'all\')':'les(LI+1)')+'">'+(last?'🧠 עכשיו לשאלות של הנושא ←':'לשלב הבא ←')+'</button>';}
+function TH(x){return D.why?'<span class="topic">📌 נושא: '+x.t+' <span style="float:left;color:#fde68a">'+stars(x.l)+'</span></span>':'<span class="tag">'+x.t+'</span><span class="lvl">'+stars(x.l)+'</span>';}
+function WHY(x,k){if(!D.why||!x.w||!k||!x.w[k-1])return '';return '<div class="why"><span class="ch">❌ בחרת: '+F(x.o[k])+'</span>'+F(x.w[k-1]).replace('⚠️','<br>⚠️').replace('🔍','<br>🔍')+'</div>';}
 function sh(a){a=a.slice();for(var k=a.length-1;k>0;k--){var j=Math.floor(Math.random()*(k+1));var t=a[k];a[k]=a[j];a[j]=t;}return a;}
 function stars(l){var M=D.maxL||3;return '★'.repeat(l)+'☆'.repeat(Math.max(0,M-l));}
 function LB(n){var L=LESS[n];return '<button class="btn" style="background:'+(L.c||'#be185d')+'" onclick="LS=LESS['+n+'];les(0)">'+L.t+'<small>'+(L.sub||'שלב אחר שלב · ציור + שאלת הבנה בכל שלב')+'</small></button>';}
@@ -290,19 +297,19 @@ function showFlash(open){
 function start(arr,m){list=arr;mode=m;i=0;good=0;wrong=[];ask();}
 function ask(){
  if(window.spReset)spReset();
- var x=list[i],opts=sh(x.o.map(function(t,k){return {t:t,c:k===0};}));
+ var x=list[i],opts=sh(x.o.map(function(t,k){return {t:t,c:k===0,k:k};}));
  var h='<div class="top"><button class="back" onclick="home()">→ תפריט</button><span>שאלה '+(i+1)+' / '+list.length+' · ✅ '+good+'</span></div>'+
  '<div class="bar"><div style="width:'+(i/list.length*100)+'%"></div></div>'+
- '<div class="card"><span class="tag">'+x.t+'</span><span class="lvl">'+stars(x.l)+'</span><div class="q">'+F(x.q)+'</div>'+(x.d?D.svg[x.d]:'');
- opts.forEach(function(o,k){h+='<button class="opt" data-c="'+(o.c?1:0)+'" onclick="pick(this)">'+F(o.t)+'</button>';});
+ '<div class="card">'+TH(x)+'<div class="q">'+F(x.q)+'</div>'+(x.d?D.svg[x.d]:'');
+ opts.forEach(function(o,k){h+='<button class="opt" data-c="'+(o.c?1:0)+'" data-k="'+o.k+'" onclick="pick(this)">'+F(o.t)+'</button>';});
  app.innerHTML=h+'<div id="ex"></div></div>';
  window.scrollTo(0,0);
 }
 function pick(b){
  var all=document.querySelectorAll('.opt'),ok=b.dataset.c==='1',x=list[i];
  all.forEach(function(o){o.disabled=true;if(o.dataset.c==='1')o.classList.add('ok');});
- if(ok)good++;else{b.classList.add('no');wrong.push(x);}
- document.getElementById('ex').innerHTML='<div class="exp '+(ok?'ok':'no')+'"><b class="h">'+(ok?'✅ נכון! בואו נבין למה:':'❌ לא נורא! בואו נפתור ביחד:')+'</b><div class="qr">📝 <b>התרגיל:</b> '+F(x.q)+'<br>🎯 <b>התשובה הנכונה:</b> '+F(x.o[0])+'</div><b>👣 הפתרון צעד אחר צעד:</b>'+EX(x.e)+'</div>'+
+ if(ok)good++;else{b.classList.add('no');wrong.push(x);x._c=+b.dataset.k;}
+ document.getElementById('ex').innerHTML='<div class="exp '+(ok?'ok':'no')+'"><b class="h">'+(ok?'✅ נכון! בואו נבין למה:':'❌ לא נורא! בואו נבין מה קרה:')+'</b>'+(ok?'':WHY(x,+b.dataset.k))+'<div class="qr">📝 <b>התרגיל:</b> '+F(x.q)+'<br>🎯 <b>התשובה הנכונה:</b> '+F(x.o[0])+'</div><b>👣 '+(D.why?'למה זו התשובה הנכונה – צעד אחר צעד:':'הפתרון צעד אחר צעד:')+'</b>'+EX(x.e)+'</div>'+
  '<button class="next" onclick="nxt()">'+(i<list.length-1?'לשאלה הבאה ←':'לתוצאות 🏁')+'</button>';
 }
 function nxt(){i++;if(i<list.length)ask();else end();}
@@ -324,15 +331,16 @@ function blitz(){
  var out=[],used={};(D.blitzPlan||[[1,5],[2,4],[3,1]]).map(function(p){return p.slice();}).forEach(function(p){sh(Q.filter(function(q){return q.l==p[0];})).forEach(function(q){if(p[1]>0&&!used[q.t+p[0]]){out.push(q);used[q.t+p[0]]=1;p[1]--;}});
   sh(Q.filter(function(q){return q.l==p[0]&&out.indexOf(q)<0;})).slice(0,p[1]).forEach(function(q){out.push(q);});});
  list=sh(out.slice(0,BN()));mode='blitz';i=0;good=0;wrong=[];BZ.pts=0;BZ.st=0;BZ.best=0;
- app.innerHTML='<div class="card" style="text-align:center"><h2>'+(D.blitzT||'⚡ מבחן בזק')+'</h2><p>'+BN()+' שאלות · 20 שניות לכל שאלה<br>תשובה מהירה = יותר נקודות · רצף נכון = 🔥 בונוס</p><div class="score" id="cd">3</div></div>';
+ app.innerHTML='<div class="card" style="text-align:center"><h2>'+(D.blitzT||'⚡ מבחן בזק')+'</h2><p>'+BN()+' שאלות · '+(D.blitzSecs?'זמן לפי הרמה: '+Object.keys(D.blitzSecs).map(function(l){return '★'.repeat(l)+' '+D.blitzSecs[l]+' שנ׳';}).join(' · '):'20 שניות לכל שאלה')+'<br>תשובה מהירה = יותר נקודות · רצף נכון = 🔥 בונוס</p><div class="score" id="cd">3</div></div>';
  var c=3,iv=setInterval(function(){c--;var d=document.getElementById('cd');if(!d){clearInterval(iv);return;}if(c>0){d.textContent=c;d.className='score pop';}else{clearInterval(iv);bask();}},800);
 }
 function bhead(){return '<div class="top"><button class="back" onclick="clearInterval(BZ.tm);home()">→ תפריט</button><span>שאלה '+(i+1)+' / '+list.length+'</span></div><div class="bz-h"><span>⭐ <span class="bz-s" id="bzp">'+BZ.pts+'</span></span><span id="bzst">'+(BZ.st>1?'<span class="bz-f">🔥 רצף '+BZ.st+'</span>':'')+'</span><span>⏱️ <b id="bzc">'+BZ.T+'</b></span></div><div class="bz-t"><i id="bzt"></i></div>';}
 function bask(){
  if(window.spReset)spReset();
- var x=list[i],opts=sh(x.o.map(function(t,k){return {t:t,c:k===0};}));
- var h=bhead()+'<div class="card qin"><span class="tag">'+x.t+'</span><span class="lvl">'+stars(x.l)+'</span><div class="q">'+F(x.q)+'</div>'+(x.d?D.svg[x.d]:'');
- opts.forEach(function(o){h+='<button class="opt" data-c="'+(o.c?1:0)+'" onclick="bpick(this)">'+F(o.t)+'</button>';});
+ BZ.T=(D.blitzSecs&&D.blitzSecs[list[i].l])||20;
+ var x=list[i],opts=sh(x.o.map(function(t,k){return {t:t,c:k===0,k:k};}));
+ var h=bhead()+'<div class="card qin">'+TH(x)+'<div class="q">'+F(x.q)+'</div>'+(x.d?D.svg[x.d]:'');
+ opts.forEach(function(o){h+='<button class="opt" data-c="'+(o.c?1:0)+'" data-k="'+o.k+'" onclick="bpick(this)">'+F(o.t)+'</button>';});
  app.innerHTML=h+'<div id="ex"></div></div>';window.scrollTo(0,0);
  BZ.t0=Date.now();var bar=document.getElementById('bzt');bar.style.transition='width '+BZ.T+'s linear';requestAnimationFrame(function(){requestAnimationFrame(function(){bar.style.width='0%';});});
  clearInterval(BZ.tm);BZ.tm=setInterval(function(){var l=Math.max(0,BZ.T-Math.floor((Date.now()-BZ.t0)/1000)),c=document.getElementById('bzc');if(c)c.textContent=l;if(l<=0)bpick(null);},250);
@@ -346,8 +354,8 @@ function bpick(b){
   document.getElementById('bzp').textContent=BZ.pts;document.getElementById('bzst').innerHTML=BZ.st>1?'<span class="bz-f">🔥 רצף '+BZ.st+'</span>':'';
   document.getElementById('ex').innerHTML='<div class="fb ok pop">✅ נכון! '+(left>12?'⚡ ובמהירות!':'')+'</div>';
   setTimeout(bnext,1300);return;}
- BZ.st=0;wrong.push(x);if(b){b.classList.add('no','shake');}
- document.getElementById('ex').innerHTML='<div class="exp no"><b class="h">'+(b?'❌ לא נורא! הנה איפה טעינו:':'⏰ נגמר הזמן! הנה הפתרון:')+'</b><div class="qr">🎯 <b>התשובה הנכונה:</b> '+F(x.o[0])+'</div>'+EX(x.e)+'</div><button class="next" onclick="bnext()">'+(i<list.length-1?'לשאלה הבאה ←':'לתוצאות 🏁')+'</button>';
+ BZ.st=0;wrong.push(x);if(b){b.classList.add('no','shake');x._c=+b.dataset.k;}else x._c=null;
+ document.getElementById('ex').innerHTML='<div class="exp no"><b class="h">'+(b?'❌ לא נורא! הנה איפה טעינו:':'⏰ נגמר הזמן! הנה הפתרון:')+'</b>'+(b?WHY(x,+b.dataset.k):'')+'<div class="qr">🎯 <b>התשובה הנכונה:</b> '+F(x.o[0])+'</div>'+EX(x.e)+'</div><button class="next" onclick="bnext()">'+(i<list.length-1?'לשאלה הבאה ←':'לתוצאות 🏁')+'</button>';
 }
 function bnext(){if(mode!='blitz')return;i++;if(i<list.length)bask();else bend();}
 function bend(){
@@ -355,7 +363,7 @@ function bend(){
  var h='<div class="card" style="text-align:center"><h2>⚡ סיום מבחן הבזק!</h2><div style="font-size:44px;letter-spacing:6px">'+[1,2,3].map(function(k){return '<span class="dp" style="animation-delay:'+(k*.35)+'s;'+(k>s?'filter:grayscale(1);opacity:.35':'')+'">⭐</span>';}).join('')+'</div><div class="score" id="bzf">0</div><div>נקודות</div><div style="font-size:18px;margin:10px 0">'+good+' מתוך '+list.length+' נכונות · 🔥 הרצף הכי ארוך: '+BZ.best+'</div>'+
  '<div class="fb '+(p>=.7?'ok':'no')+'">'+(p>=.9?'🏆 אלופים! מהירים ומדויקים.':p>=.7?'💪 יפה מאוד! עוד סיבוב ואתם שם.':p>=.5?'👍 בדרך הנכונה – כדאי לעבור על הטעויות למטה.':'📘 כדאי לקרוא את הסיכום ואת הטיפים, ואז לנסות שוב.')+'</div>';
  if(wrong.length){h+='<button class="next" style="background:#db2777" onclick="start(wrong.slice(),\'w\')">🔁 לתרגל רק את '+wrong.length+' הטעויות (בלי שעון)</button><h3 style="color:#6d28d9;text-align:right">איפה טעיתי:</h3>';
-  wrong.forEach(function(w){h+='<div class="rev" style="text-align:right">📝 '+F(w.q)+(w.d?D.svg[w.d]:'')+'<br>🎯 <b>'+F(w.o[0])+'</b><div class="exp ok" style="margin-top:6px">'+EX(w.e)+'</div></div>';});}
+  wrong.forEach(function(w){h+='<div class="rev" style="text-align:right">📝 '+F(w.q)+(w.d?D.svg[w.d]:'')+'<br>'+(w._c?WHY(w,w._c):'')+'🎯 <b>'+F(w.o[0])+'</b><div class="exp ok" style="margin-top:6px">'+EX(w.e)+'</div></div>';});}
  app.innerHTML=h+'<button class="next" style="background:#f59e0b" onclick="blitz()">⚡ עוד סיבוב בזק</button><button class="next" onclick="home()">חזרה לתפריט</button></div>';window.scrollTo(0,0);
  var n=0,el=document.getElementById('bzf'),iv=setInterval(function(){n=Math.min(BZ.pts,n+Math.ceil(BZ.pts/40)+1);if(el)el.textContent=n;if(n>=BZ.pts)clearInterval(iv);},30);
  if(p>=.7)for(var k=0;k<40;k++){var c=document.createElement('div');c.className='cf';c.style.left=Math.random()*100+'vw';c.style.background=MC[k%4];c.style.animationDelay=Math.random()*.8+'s';document.body.appendChild(c);setTimeout(function(c){return function(){c.remove();};}(c),3400);}
@@ -379,7 +387,7 @@ function end(){
  }
  if(wrong.length){
   h+='<button class="next" style="background:#db2777" onclick="start(wrong.slice(),\'w\')">🔁 תרגל שוב רק את '+wrong.length+' הטעויות</button><h3 style="margin-top:14px;color:#6d28d9">איפה טעיתי:</h3>';
-  wrong.forEach(function(w){h+='<div class="rev">📝 '+F(w.q)+(w.d?D.svg[w.d]:'')+'<br>🎯 <b>'+F(w.o[0])+'</b><div class="exp ok" style="margin-top:6px">'+EX(w.e)+'</div></div>';});
+  wrong.forEach(function(w){h+='<div class="rev">📝 '+F(w.q)+(w.d?D.svg[w.d]:'')+'<br>'+(w._c?WHY(w,w._c):'')+'🎯 <b>'+F(w.o[0])+'</b><div class="exp ok" style="margin-top:6px">'+EX(w.e)+'</div></div>';});
  }
  if(mode=='test')h+='<button class="next" style="background:#16a34a" onclick="start(mock(),\'test\')">🏁 מבחן דמה חדש (שאלות אחרות)</button>';
  app.innerHTML=h+'<button class="next" onclick="home()">חזרה לתפריט</button></div>';
@@ -401,6 +409,10 @@ if(D.scratch){document.body.insertAdjacentHTML('beforeend','<button class="spbtn
   document.querySelectorAll('.spk').forEach(function(b){b.onclick=function(){col=b.dataset.c;document.querySelectorAll('.spk').forEach(function(x){x.classList.toggle('on',x===b);});};});
   window.addEventListener('resize',function(){if(!sp.hidden)fit();});
   window.spReset=function(){st=[];if(!sp.hidden)draw();};})();}
+
+if(D.homeBtn){document.body.insertAdjacentHTML('beforeend','<button class="homeb" id="hmb" type="button" aria-label="חזרה לתפריט">🏠 תפריט</button>');
+ var hmb=document.getElementById('hmb');hmb.onclick=function(){clearInterval(BZ.tm);mode='';home();};
+ new MutationObserver(function(){hmb.style.display=app.querySelector('.b1')?'none':'block';}).observe(app,{childList:true});hmb.style.display='none';}
 if(/quick/.test(location.hash))setTimeout(blitz,0);
 home();
 if('serviceWorker' in navigator){navigator.serviceWorker.register('../sw.js',{scope:'../'}).catch(()=>{});}
